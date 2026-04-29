@@ -1,0 +1,54 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Jumia Clone API",
+    "description": "OpenAPI documentation for the Modular Ecommerce Infrastructure (Core Endpoints)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api"
+    }
+  ],
+  "paths": {
+    "/catalog/products": {
+      "get": {
+        "summary": "List all products",
+        "parameters": [
+          { "name": "categoryId", "in": "query", "schema": { "type": "string" } },
+          { "name": "brandId", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Success" }
+        }
+      }
+    },
+    "/catalog/product/{slug}": {
+      "get": {
+        "summary": "Get product details by slug",
+        "parameters": [
+          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Success" }
+        }
+      }
+    },
+    "/cart/get": {
+      "get": {
+        "summary": "Get current user cart",
+        "responses": {
+          "200": { "description": "Success" }
+        }
+      }
+    },
+    "/order/list": {
+      "get": {
+        "summary": "List user orders",
+        "responses": {
+          "200": { "description": "Success" }
+        }
+      }
+    }
+  }
+}

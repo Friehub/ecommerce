@@ -1,5 +1,4 @@
-import { prisma } from '@ecom/db'
-import { Decimal } from '@prisma/client/runtime/library'
+import { prisma, Decimal } from '@ecom/db'
 
 export const promoService = {
   async validateCoupon(code: string, userId?: string, orderTotal?: number) {

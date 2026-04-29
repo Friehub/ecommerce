@@ -1,6 +1,5 @@
-import { prisma } from '@ecom/db'
+import { prisma, Decimal } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
-import { Decimal } from '@prisma/client/runtime/library'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
 

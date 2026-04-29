@@ -9,17 +9,21 @@ export const catalogRouter = createTRPCRouter({
   }),
 
   listProducts: publicProcedure
+    .meta({ openapi: { method: 'GET', path: '/catalog/products' } })
     .input(z.object({
       categoryId: z.string().optional(),
       brandId: z.string().optional(),
       search: z.string().optional(),
     }))
+    .output(z.any())
     .query(async ({ input }) => {
       return await catalogService.listProducts(input);
     }),
 
-  getProduct: publicProcedure
+  getProductBySlug: publicProcedure
+    .meta({ openapi: { method: 'GET', path: '/catalog/product/{slug}' } })
     .input(z.object({ slug: z.string() }))
+    .output(z.any())
     .query(async ({ input }) => {
       return await catalogService.getProductBySlug(input.slug);
     }),
@@ -34,5 +38,11 @@ export const catalogRouter = createTRPCRouter({
     .input(categorySchema)
     .mutation(async ({ input }) => {
       return await catalogService.createCategory(input);
+    }),
+
+  getCategoryBySlug: publicProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ input }) => {
+      return await catalogService.getCategoryBySlug(input.slug);
     }),
 });

@@ -1,4 +1,5 @@
 import { initTRPC, TRPCError } from '@trpc/server'
+import { type OpenApiMeta } from "trpc-openapi";
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 export interface TRPCContext {
@@ -6,7 +7,7 @@ export interface TRPCContext {
   req?: Request;
 }
 
-export const t = initTRPC.context<TRPCContext>().create({
+export const t = initTRPC.context<TRPCContext>().meta<OpenApiMeta>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
     return {

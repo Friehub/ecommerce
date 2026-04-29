@@ -6,6 +6,58 @@ for all design, architecture, and implementation decisions.
 
 ---
 
+## 🚀 Implemented Status (14-Day Sprint)
+
+This repository contains a fully functional **Modular Monolith** implementation of the Jumia ecosystem.
+
+| Module | Status | Features |
+|---|---|---|
+| **IAM** | ✅ Done | RBAC, JWT, Multi-role (Buyer, Seller, Admin, Agent) |
+| **Catalog** | ✅ Done | Hierarchical Categories, Multi-variant Products, Media Pipeline |
+| **Inventory** | ✅ Done | **Redis Atomic Reservations**, Warehouse management |
+| **Cart** | ✅ Done | Guest/User sync, **Price Snapshotting** |
+| **OMS** | ✅ Done | Multi-seller Package Splitting, **SLA BullMQ Enforcement** |
+| **Payment** | ✅ Done | Paystack, **JumiaPay Wallet**, Escrow logic |
+| **Seller Hub** | ✅ Done | Dashboard metrics, GMV tracking, Product management |
+| **Logistics** | ✅ Done | Agent assignment, Proof of Delivery, Status Ledger |
+| **Revenue** | ✅ Done | **Automatic Commission Calculation**, Payout management |
+| **Performance**| ✅ Done | **Redis Caching Layer**, Strategic DB Indexing |
+
+---
+
+## 🛠️ Local Development Setup
+
+### 1. Infrastructure (Docker)
+Ensure Docker is running, then start the services:
+```bash
+docker-compose up -d
+```
+*   **Postgres**: `localhost:5433`
+*   **Redis**: `localhost:6380`
+
+### 2. Environment Configuration
+Copy `.env.example` to `.env` in the root:
+```bash
+cp .env.example .env
+```
+*Required: `DATABASE_URL`, `REDIS_URL`, `PAYSTACK_SECRET_KEY`*
+
+### 3. Installation & Database
+```bash
+pnpm install
+pnpm db:push
+pnpm db:seed
+```
+
+### 4. Run the Application
+```bash
+pnpm dev
+```
+*   **Web App**: `http://localhost:3000`
+*   **API**: Integrated via tRPC
+
+---
+
 ## Full System Architecture
 
 ```

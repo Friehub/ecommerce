@@ -78,5 +78,12 @@ export const catalogService = {
       where: { parentId: null },
       include: { children: { include: { children: true } } }
     });
+  },
+
+  async getCategoryBySlug(slug: string) {
+    return prisma.category.findUnique({
+      where: { slug },
+      include: { children: true }
+    });
   }
 };

@@ -1,5 +1,4 @@
-import { prisma } from '@ecom/db'
-import { Decimal } from '@prisma/client/runtime/library'
+import { prisma, Decimal } from '@ecom/db'
 
 export const revenueService = {
   async calculateCommission(packageId: string) {

@@ -1,7 +1,6 @@
-import { prisma } from '@ecom/db'
+import { prisma, Decimal } from '@ecom/db'
 import { publishEvent, queues } from '@ecom/shared'
 import { inventoryService } from '../../inventory/services/inventory-service'
-import { Decimal } from '@prisma/client/runtime/library'
 
 export const orderService = {
   async createFromCart(userId: string, cartId: string, paymentMethod: string) {
@@ -66,7 +65,7 @@ export const orderService = {
     await publishEvent('order.created', { orderId: order.id, userId });
 
     // 6. Schedule SLA check (Cancel if not paid in 30 mins)
-    await queues.orders.add('sla-payment-timeout', { orderId: order.id }, { delay: 30 * 60 * 1000 });
+    await queues.orderQueue.add('sla-payment-timeout', { orderId: order.id }, { delay: 30 * 60 * 1000 });
 
     return order;
   },

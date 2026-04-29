@@ -1,5 +1,5 @@
 import { Queue } from 'bullmq'
-import { redis } from '@/infra/redis'
+import { redis } from '../infra/redis'
 import { EventType, BaseEvent } from './types'
 import { nanoid } from 'nanoid'
 

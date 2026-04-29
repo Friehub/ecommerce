@@ -8,7 +8,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ecom/db": "workspace:*",
     "@trpc/server": "latest",
+    "superjson": "^2.2.6",
     "zod": "latest"
   },
   "devDependencies": {

@@ -11,10 +11,10 @@
     "studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "latest"
+    "@prisma/client": "^6.0.0"
   },
   "devDependencies": {
-    "prisma": "latest",
+    "prisma": "^6.0.0",
     "ts-node": "latest",
     "typescript": "^5"
   }

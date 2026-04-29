@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: ecom
       POSTGRES_PASSWORD: ecom
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -24,7 +24,7 @@ services:
     container_name: ecom-redis
     restart: unless-stopped
     ports:
-      - '6379:6379'
+      - '6380:6379'
     command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']

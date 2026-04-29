@@ -3,6 +3,9 @@ import { z } from 'zod'
 export const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  phone: z.string().min(1),
   role: z.enum(['BUYER', 'SELLER']).default('BUYER'),
 })
 
@@ -12,8 +15,10 @@ export const loginSchema = z.object({
 })
 
 export const addressSchema = z.object({
-  label: z.string().min(1),
-  line1: z.string().min(1),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  phone: z.string().min(1),
+  streetAddress: z.string().min(1),
   city: z.string().min(1),
   state: z.string().min(1),
   country: z.string().min(1).default('Nigeria'),

@@ -6,12 +6,13 @@ import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
+  session: { strategy: 'jwt' },
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
+    // Google({
+    //   clientId: process.env.GOOGLE_CLIENT_ID,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    // }),
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
@@ -20,31 +21,45 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         try {
-          return await userService.validateCredentials(
+          console.log("Authorizing:", credentials.email);
+          const user = await userService.validateCredentials(
             credentials.email as string,
             credentials.password as string
           );
+          if (!user) {
+            console.log("No user found or invalid password");
+            return null;
+          }
+          console.log("User authorized:", user.id);
+          return {
+            id: user.id,
+            email: user.email,
+            // @ts-ignore
+            role: user.role,
+          };
         } catch (error) {
+          console.error("Auth error in authorize:", error);
           return null;
         }
       }
     })
   ],
   callbacks: {
-    session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
-        // @ts-ignore
-        session.user.role = token.role;
-      }
-      return session;
-    },
     jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         // @ts-ignore
         token.role = user.role;
       }
       return token;
+    },
+    session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = token.id as string;
+        // @ts-ignore
+        session.user.role = token.role;
+      }
+      return session;
     }
   },
 })

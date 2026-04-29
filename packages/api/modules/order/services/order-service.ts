@@ -3,7 +3,7 @@ import { publishEvent, queues } from '@ecom/shared'
 import { inventoryService } from '../../inventory/services/inventory-service'
 
 export const orderService = {
-  async createFromCart(userId: string, cartId: string, paymentMethod: string) {
+  async createFromCart(userId: string, cartId: string, paymentMethod: string, addressId: string) {
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
       include: { items: { include: { variant: true } } }
@@ -26,6 +26,7 @@ export const orderService = {
       const newOrder = await tx.order.create({
         data: {
           userId,
+          addressId,
           paymentMethod,
           subtotal,
           shippingFee: 500, // Fixed for contest demo

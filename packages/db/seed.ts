@@ -129,7 +129,41 @@ async function main() {
         },
       },
     },
+    include: { variants: true }
   })
+
+  // 5. Create Warehouse
+  const warehouse = await prisma.warehouse.upsert({
+    where: { id: 'main-wh' },
+    update: {},
+    create: {
+      id: 'main-wh',
+      name: 'Main Jumia Hub',
+      address: 'Lagos, Nigeria',
+      type: 'JUMIA_HUB',
+    },
+  })
+
+  // 6. Create Stock
+  for (const variant of product.variants) {
+    await prisma.stockLevel.upsert({
+      where: {
+        variantId_sellerId_warehouseId: {
+          variantId: variant.id,
+          sellerId: seller.id,
+          warehouseId: warehouse.id,
+        }
+      },
+      update: { qtyOnHand: 100 },
+      create: {
+        variantId: variant.id,
+        sellerId: seller.id,
+        warehouseId: warehouse.id,
+        qtyOnHand: 100,
+        qtyReserved: 0,
+      }
+    })
+  }
 
   console.log('Seed completed successfully.')
 }

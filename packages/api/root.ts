@@ -1,14 +1,8 @@
-import { createTRPCRouter, publicProcedure } from './trpc'
-import { z } from 'zod'
+import { createTRPCRouter } from './trpc'
+import { iamRouter } from './modules/iam/router'
 
 export const appRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      }
-    }),
+  iam: iamRouter,
 })
 
 export type AppRouter = typeof appRouter

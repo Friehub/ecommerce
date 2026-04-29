@@ -1,0 +1,61 @@
+import { prisma } from '@ecom/db'
+import bcrypt from 'bcryptjs'
+import { publishEvent } from '@ecom/shared'
+import type { RegisterInput, AddressInput, SellerOnboardingInput } from '../schemas'
+
+export const userService = {
+  async findByEmail(email: string) {
+    return prisma.user.findUnique({ where: { email } })
+  },
+
+  async findById(id: string) {
+    return prisma.user.findUnique({
+      where: { id },
+      include: { addresses: true, sellerProfile: true },
+    })
+  },
+
+  async register({ email, password, role }: RegisterInput) {
+    const existing = await prisma.user.findUnique({ where: { email } })
+    if (existing) throw new Error('EMAIL_IN_USE')
+
+    const passwordHash = await bcrypt.hash(password, 12)
+
+    const user = await prisma.user.create({
+      data: { email, passwordHash, role },
+    })
+
+    await publishEvent('user.created', { userId: user.id, email: user.email, role })
+    return user
+  },
+
+  async validateCredentials(email: string, password: string) {
+    const user = await prisma.user.findUnique({ where: { email } })
+    if (!user || !user.passwordHash) return null
+
+    const valid = await bcrypt.compare(password, user.passwordHash)
+    if (!valid) return null
+
+    if (!user.isActive) throw new Error('ACCOUNT_SUSPENDED')
+
+    return user
+  },
+
+  async addAddress(userId: string, data: AddressInput) {
+    if (data.isDefault) {
+      await prisma.userAddress.updateMany({
+        where: { userId },
+        data: { isDefault: false },
+      })
+    }
+    return prisma.userAddress.create({ data: { ...data, userId } })
+  },
+
+  async getAddresses(userId: string) {
+    return prisma.userAddress.findMany({ where: { userId } })
+  },
+
+  async deleteAddress(id: string, userId: string) {
+    return prisma.userAddress.deleteMany({ where: { id, userId } })
+  },
+}

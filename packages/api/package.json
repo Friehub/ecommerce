@@ -10,10 +10,12 @@
   "dependencies": {
     "@ecom/db": "workspace:*",
     "@trpc/server": "latest",
+    "bcryptjs": "^3.0.3",
     "superjson": "^2.2.6",
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
     "typescript": "^5"
   }
 }

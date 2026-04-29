@@ -1,24 +1,18 @@
 {
-  "name": "jumia-clone",
-  "version": "0.1.0",
+  "name": "jumia-clone-root",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "next": "16.2.4",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "db:generate": "pnpm --filter @ecom/db generate",
+    "db:migrate": "pnpm --filter @ecom/db migrate",
+    "db:seed": "pnpm --filter @ecom/db seed",
+    "db:studio": "pnpm --filter @ecom/db studio"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.4",
-    "typescript": "^5"
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
   }
 }

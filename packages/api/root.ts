@@ -8,6 +8,8 @@ import { orderRouter } from './modules/order/router'
 import { paymentRouter } from './modules/payment/router'
 import { sellerRouter } from './modules/seller/router'
 import { logisticsRouter } from './modules/logistics/router'
+import { reviewRouter } from './modules/review/router'
+import { returnRouter } from './modules/return/router'
 
 export const appRouter = createTRPCRouter({
   iam: iamRouter,
@@ -19,6 +21,8 @@ export const appRouter = createTRPCRouter({
   payment: paymentRouter,
   seller: sellerRouter,
   logistics: logisticsRouter,
+  review: reviewRouter,
+  return: returnRouter,
 })
 
 export type AppRouter = typeof appRouter

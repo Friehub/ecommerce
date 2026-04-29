@@ -37,6 +37,45 @@ async function main() {
     },
   })
 
+  const computing = await prisma.category.upsert({
+    where: { slug: 'computing' },
+    update: {},
+    create: {
+      name: 'Computing',
+      slug: 'computing',
+      commissionRate: 7.0,
+    },
+  })
+
+  const beauty = await prisma.category.upsert({
+    where: { slug: 'health-beauty' },
+    update: {},
+    create: {
+      name: 'Health & Beauty',
+      slug: 'health-beauty',
+      commissionRate: 10.0,
+    },
+  })
+
+  // 3. Create Brands
+  const apple = await prisma.brand.upsert({
+    where: { slug: 'apple' },
+    update: {},
+    create: { name: 'Apple', slug: 'apple', isVerified: true },
+  })
+
+  const samsung = await prisma.brand.upsert({
+    where: { slug: 'samsung' },
+    update: {},
+    create: { name: 'Samsung', slug: 'samsung', isVerified: true },
+  })
+
+  const hp = await prisma.brand.upsert({
+    where: { slug: 'hp' },
+    update: {},
+    create: { name: 'HP', slug: 'hp', isVerified: true },
+  })
+
   // 3. Create Seller
   const sellerUser = await prisma.user.upsert({
     where: { email: 'seller@ecom.dev' },
@@ -71,12 +110,14 @@ async function main() {
   })
 
   // 5. Create Product
-  const product = await prisma.product.create({
-    data: {
+  const product = await prisma.product.upsert({
+    where: { slug: 'super-phone-pro' },
+    update: {},
+    create: {
       title: 'Super Phone Pro',
       slug: 'super-phone-pro',
       description: 'The best phone ever.',
-      brandId: brand.id,
+      brandId: apple.id,
       categoryId: electronics.id,
       sellerId: seller.id,
       status: 'ACTIVE',

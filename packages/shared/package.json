@@ -8,6 +8,10 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/sharp": "^0.32.0",
     "typescript": "^5"
+  },
+  "dependencies": {
+    "sharp": "^0.34.5"
   }
 }

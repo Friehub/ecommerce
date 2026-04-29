@@ -233,7 +233,7 @@ enum PackageStatus {
 
 model Cart {
   id        String     @id @default(cuid())
-  userId    String?
+  userId    String?    @unique
   sessionId String     @unique
   updatedAt DateTime   @updatedAt
   items     CartItem[]
@@ -249,6 +249,8 @@ model CartItem {
 
   cart          Cart           @relation(fields: [cartId], references: [id])
   variant       ProductVariant @relation(fields: [variantId], references: [id])
+
+  @@unique([cartId, variantId])
 }
 
 model Order {

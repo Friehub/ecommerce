@@ -1,0 +1,36 @@
+import { createTRPCRouter, sellerProcedure, adminProcedure } from "../../../trpc";
+import { z } from "zod";
+import { revenueService } from "../services/revenue-service";
+import { prisma } from "@ecom/db";
+
+export const revenueRouter = createTRPCRouter({
+  requestPayout: sellerProcedure
+    .input(z.object({ amount: z.number().positive() }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new Error('NOT_A_SELLER');
+      return await revenueService.requestPayout(seller.id, input.amount);
+    }),
+
+  listMyPayouts: sellerProcedure.query(async ({ ctx }) => {
+    const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+    if (!seller) throw new Error('NOT_A_SELLER');
+    return await prisma.payoutRequest.findMany({
+      where: { sellerId: seller.id },
+      orderBy: { createdAt: 'desc' }
+    });
+  }),
+
+  approvePayout: adminProcedure
+    .input(z.object({ payoutId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await revenueService.approvePayout(input.payoutId, ctx.session.user.id);
+    }),
+
+  listPendingPayouts: adminProcedure.query(async () => {
+    return await prisma.payoutRequest.findMany({
+      where: { status: 'PENDING' },
+      include: { seller: true }
+    });
+  }),
+});

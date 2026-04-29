@@ -11,6 +11,8 @@ import { logisticsRouter } from './modules/logistics/router'
 import { reviewRouter } from './modules/review/router'
 import { returnRouter } from './modules/return/router'
 import { contentRouter } from './modules/content/router'
+import { opsRouter } from './modules/ops/router'
+import { revenueRouter } from './modules/revenue/router'
 
 export const appRouter = createTRPCRouter({
   iam: iamRouter,
@@ -25,6 +27,8 @@ export const appRouter = createTRPCRouter({
   review: reviewRouter,
   return: returnRouter,
   content: contentRouter,
+  ops: opsRouter,
+  revenue: revenueRouter,
 })
 
 export type AppRouter = typeof appRouter

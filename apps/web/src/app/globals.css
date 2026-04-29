@@ -224,3 +224,26 @@ input {
 
 /* Gradients */
 .bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)); }
+
+/* Responsive Utils */
+@media (min-width: 1024px) {
+  .lg\:flex-row { flex-direction: row; }
+  .lg\:w-2\/5 { width: 40%; }
+  .lg\:w-\[280px\] { width: 280px; }
+  .lg\:p-6 { padding: 24px; }
+}
+
+.aspect-square { aspect-ratio: 1 / 1; }
+.object-contain { object-fit: contain; }
+.border-b { border-bottom: 1px solid var(--gray-200); }
+.border { border: 1px solid var(--gray-200); }
+.rounded-lg { border-radius: var(--radius-md); }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leading-tight { line-height: 1.25; }
+.leading-relaxed { line-height: 1.625; }
+.max-w-none { max-width: none; }
+.whitespace-pre-wrap { white-space: pre-wrap; }
+.capitalize { text-transform: capitalize; }
+.hover\:underline:hover { text-decoration: underline; }
+.hover\:bg-gray-100:hover { background-color: var(--gray-100); }
+

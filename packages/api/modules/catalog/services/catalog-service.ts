@@ -1,5 +1,5 @@
 import { prisma } from '@ecom/db'
-import { publishEvent } from '@ecom/shared'
+import { publishEvent, cacheService } from '@ecom/shared'
 import type { ProductInput, CategoryInput } from '../schemas'
 
 const slugify = (text: string) => 

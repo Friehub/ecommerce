@@ -3,8 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { ShoppingCart, User, Search, HelpCircle } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 export const Navbar = () => {
+  const { totalItems, setIsOpen } = useCart();
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container h-[72px] flex items-center justify-between gap-8">
@@ -43,13 +45,18 @@ export const Navbar = () => {
             <span>Help</span>
           </button>
 
-          <Link href="/cart" className="flex items-center gap-2 text-gray-700 hover:text-[#F68B1E] font-medium relative">
+          <button 
+            onClick={() => setIsOpen(true)}
+            className="flex items-center gap-2 text-gray-700 hover:text-[#F68B1E] font-medium relative"
+          >
             <ShoppingCart size={24} />
             <span>Cart</span>
-            <span className="absolute -top-2 -right-2 bg-[#F68B1E] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
-              0
-            </span>
-          </Link>
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#F68B1E] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white font-bold">
+                {totalItems}
+              </span>
+            )}
+          </button>
         </nav>
       </div>
       

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 interface ProductActionsProps {
   product: any;
@@ -14,6 +15,12 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
   const price = selectedVariant?.price || 0;
   const comparePrice = selectedVariant?.comparePrice;
   const discount = comparePrice ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
+
+  const { addToCart, isLoading: isCartLoading } = useCart();
+
+  const handleAddToCart = async () => {
+    await addToCart(selectedVariant.id, quantity);
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -66,6 +73,7 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
             <button 
               onClick={() => setQuantity(q => Math.max(1, q - 1))}
               className="px-4 hover:bg-gray-100 h-full transition-colors font-bold"
+              disabled={isCartLoading}
             >
               -
             </button>
@@ -73,13 +81,18 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
             <button 
               onClick={() => setQuantity(q => q + 1)}
               className="px-4 hover:bg-gray-100 h-full transition-colors font-bold"
+              disabled={isCartLoading}
             >
               +
             </button>
           </div>
-          <button className="flex-1 bg-[#F68B1E] text-white h-12 rounded-lg font-bold shadow-md hover:bg-[#e07b14] transition-all flex items-center justify-center gap-2">
+          <button 
+            onClick={handleAddToCart}
+            disabled={isCartLoading}
+            className="flex-1 bg-[#F68B1E] text-white h-12 rounded-lg font-bold shadow-md hover:bg-[#e07b14] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          >
             <ShoppingCart size={20} />
-            ADD TO CART
+            {isCartLoading ? 'ADDING...' : 'ADD TO CART'}
           </button>
         </div>
         

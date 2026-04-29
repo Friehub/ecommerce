@@ -47,3 +47,10 @@ export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   }
   return next();
 });
+
+export const agentProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.session.user.role !== "AGENT" && ctx.session.user.role !== "ADMIN") {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  return next();
+});

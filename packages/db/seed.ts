@@ -1,4 +1,5 @@
 import { PrismaClient, UserRole, SellerTier, SellerStatus } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -164,6 +165,27 @@ async function main() {
       }
     })
   }
+
+  // 7. Create Agent
+  const agentUser = await prisma.user.upsert({
+    where: { email: 'agent@ecom.dev' },
+    update: {},
+    create: {
+      email: 'agent@ecom.dev',
+      passwordHash: await bcrypt.hash('agent123', 12),
+      role: 'AGENT',
+    }
+  })
+
+  await prisma.deliveryAgent.upsert({
+    where: { userId: agentUser.id },
+    update: {},
+    create: {
+      userId: agentUser.id,
+      zone: 'Lagos Island',
+      status: 'ACTIVE'
+    }
+  })
 
   console.log('Seed completed successfully.')
 }

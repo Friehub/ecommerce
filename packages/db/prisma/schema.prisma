@@ -128,6 +128,11 @@ model Product {
   media       ProductMedia[]
   reviews     Review[]
   adGroups    AdGroup[]
+
+  @@index([status])
+  @@index([brandId])
+  @@index([categoryId])
+  @@index([sellerId])
 }
 
 model ProductVariant {
@@ -270,6 +275,9 @@ model Order {
   payments      Payment[]
   reservations  StockReservation[]
   commissions   Commission[]
+
+  @@index([userId])
+  @@index([status])
 }
 
 model OrderPackage {
@@ -283,6 +291,10 @@ model OrderPackage {
   order             Order         @relation(fields: [orderId], references: [id])
   lines             OrderLine[]
   shipments         Shipment[]
+
+  @@index([orderId])
+  @@index([sellerId])
+  @@index([status])
 }
 
 model OrderLine {
@@ -815,6 +827,9 @@ model Review {
   user        User      @relation(fields: [userId], references: [id])
   orderLine   OrderLine @relation(fields: [orderLineId], references: [id])
   media       ReviewMedia[]
+
+  @@index([productId])
+  @@index([userId])
 }
 
 model ReviewMedia {

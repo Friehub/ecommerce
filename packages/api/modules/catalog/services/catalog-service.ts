@@ -38,16 +38,18 @@ export const catalogService = {
   },
 
   async getProductBySlug(slug: string) {
-    return prisma.product.findUnique({
-      where: { slug },
-      include: { 
-        variants: true, 
-        brand: true, 
-        category: true,
-        media: true,
-        seller: true 
-      }
-    });
+    return cacheService.wrap(`catalog:product:${slug}`, async () => {
+      return prisma.product.findUnique({
+        where: { slug },
+        include: { 
+          variants: true, 
+          brand: true, 
+          category: true,
+          media: true,
+          seller: true 
+        }
+      });
+    }, 300);
   },
 
   async listProducts(filters: { categoryId?: string, brandId?: string, search?: string }) {

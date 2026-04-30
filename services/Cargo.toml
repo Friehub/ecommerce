@@ -5,7 +5,7 @@ members = [
     "auction",
     "inventory",
     "fraud",
-    # "recommendations",
+    "recommendations",
     # "image-processor",
 ]
 resolver = "2"

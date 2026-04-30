@@ -6,7 +6,7 @@ members = [
     "inventory",
     "fraud",
     "recommendations",
-    # "image-processor",
+    "image-processor",
 ]
 resolver = "2"
 

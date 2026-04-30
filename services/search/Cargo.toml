@@ -1,0 +1,11 @@
+[package]
+name = "search"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ecom-shared = { workspace = true }
+tokio = { workspace = true }
+axum = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

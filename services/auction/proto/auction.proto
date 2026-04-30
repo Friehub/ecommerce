@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package auction;
+
+service Auction {
+  rpc ResolveAuction (ResolveAuctionRequest) returns (ResolveAuctionResponse);
+}
+
+message ResolveAuctionRequest {
+  repeated string keywords = 1;
+  string category = 2;
+  string user_id = 3;
+  string device_type = 4;
+}
+
+message ResolveAuctionResponse {
+  repeated AdPlacement placements = 1;
+}
+
+message AdPlacement {
+  string campaign_id = 1;
+  string product_id = 2;
+  string slot_id = 3;
+  string ad_type = 4; // "SPONSORED_PRODUCT", "BANNER"
+  double bid_amount = 5;
+}

@@ -2,7 +2,7 @@
 members = [
     "shared",
     "search",
-    # "auction",
+    "auction",
     "inventory",
     # "fraud",
     # "recommendations",

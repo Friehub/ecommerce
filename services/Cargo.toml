@@ -4,7 +4,7 @@ members = [
     "search",
     "auction",
     "inventory",
-    # "fraud",
+    "fraud",
     # "recommendations",
     # "image-processor",
 ]

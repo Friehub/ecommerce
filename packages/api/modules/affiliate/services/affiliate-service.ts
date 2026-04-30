@@ -83,5 +83,21 @@ export const affiliateService = {
     await paymentService.fundWallet(commission.agent.userId, commission.amount.toNumber());
 
     return updated;
+  },
+
+  async getMyProfile(userId: string) {
+    return prisma.affiliateAgent.findUnique({
+      where: { userId },
+      include: {
+        links: {
+          include: { _count: { select: { clicks: true } } },
+          orderBy: { id: 'desc' }
+        },
+        commissions: {
+          orderBy: { createdAt: 'desc' },
+          take: 50
+        }
+      }
+    });
   }
 };

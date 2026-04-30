@@ -43,4 +43,9 @@ export const disputeRouter = createTRPCRouter({
         ctx.session.user.id
       );
     }),
+
+  listMyDisputes: protectedProcedure
+    .query(async ({ ctx }) => {
+      return disputeService.getMyDisputes(ctx.session.user.id);
+    }),
 });

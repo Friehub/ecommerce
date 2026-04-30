@@ -111,5 +111,20 @@ export const disputeService = {
     }
 
     return dispute;
+  },
+
+  async getMyDisputes(userId: string) {
+    return prisma.dispute.findMany({
+      where: {
+        OR: [
+          { buyerId: userId },
+          { sellerId: userId }
+        ]
+      },
+      include: {
+        order: { select: { id: true, total: true } }
+      },
+      orderBy: { updatedAt: 'desc' }
+    });
   }
 };

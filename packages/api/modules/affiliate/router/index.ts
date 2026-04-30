@@ -22,4 +22,9 @@ export const affiliateRouter = createTRPCRouter({
       const ip = ctx.req?.headers?.get('x-forwarded-for') || undefined;
       return affiliateService.recordClick(input.slug, input.sessionId, ip);
     }),
+
+  getMyProfile: protectedProcedure
+    .query(async ({ ctx }) => {
+      return affiliateService.getMyProfile(ctx.session.user.id);
+    }),
 });

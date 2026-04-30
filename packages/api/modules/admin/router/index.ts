@@ -1,3 +1,4 @@
+import { prisma } from '@ecom/db';
 import { createTRPCRouter, adminProcedure } from '../../../trpc';
 import { ApproveSellerSchema, ResolveDisputeSchema, ManualRefundSchema } from '../schemas';
 import { adminService } from '../services/admin-service';
@@ -12,6 +13,15 @@ export const adminRouter = createTRPCRouter({
   getDisputeQueue: adminProcedure
     .query(async () => {
       return adminService.getDisputeQueue();
+    }),
+
+  getPendingSellers: adminProcedure
+    .query(async () => {
+      return prisma.seller.findMany({
+        where: { status: 'PENDING_APPROVAL' },
+        include: { user: { select: { email: true, firstName: true, lastName: true } } },
+        orderBy: { createdAt: 'asc' }
+      });
     }),
 
   resolveDispute: adminProcedure

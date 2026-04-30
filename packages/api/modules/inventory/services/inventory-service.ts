@@ -20,13 +20,14 @@ export const inventoryService = {
    * Stub for the Rust Inventory Service.
    * Uses Redis DECR for high-concurrency safety during the contest.
    */
-  async reserveStock(variantId: string, quantity: number, orderId?: string, userId: string = 'system') {
+  async reserveStock(variantId: string, quantity: number, orderId?: string, userId: string = 'system', tx?: any) {
+    const db = tx || prisma;
     // Attempt to use Rust Inventory Service for high-performance atomic reservation
     try {
       const response = await RustClient.inventory.reserve(variantId, quantity, userId);
       if (response && response.reservation_id) {
         // Record reservation in local DB for persistence and sync
-        await prisma.stockReservation.create({
+        await db.stockReservation.create({
           data: {
             id: response.reservation_id,
             variantId,
@@ -47,7 +48,7 @@ export const inventoryService = {
     // 1. Check/Set Redis cache if not exists (Lazy load from DB)
     let stock = await redis.get(key);
     if (stock === null) {
-      const dbStock = await prisma.stockLevel.aggregate({
+      const dbStock = await db.stockLevel.aggregate({
         where: { variantId },
         _sum: { qtyOnHand: true, qtyReserved: true }
       });
@@ -61,7 +62,7 @@ export const inventoryService = {
     
     if (result === 1) {
       // 3. Record reservation in DB for persistence
-      await prisma.stockReservation.create({
+      await db.stockReservation.create({
         data: {
           variantId,
           orderId,

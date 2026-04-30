@@ -1,0 +1,93 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+   Compiling jobserver v0.1.34
+   Compiling powerfmt v0.2.0
+   Compiling num-conv v0.2.1
+   Compiling time-core v0.1.8
+   Compiling deranged v0.5.8
+   Compiling ownedbytes v0.7.0
+   Compiling cc v1.2.61
+   Compiling crunchy v0.2.4
+   Compiling utf8-ranges v1.0.5
+   Compiling bitpacking v0.9.3
+   Compiling tantivy-bitpacker v0.6.0
+   Compiling tantivy-fst v0.5.0
+   Compiling crossbeam-deque v0.8.6
+   Compiling rand_distr v0.4.3
+   Compiling linux-raw-sys v0.4.15
+   Compiling time v0.3.47
+   Compiling foldhash v0.1.5
+   Compiling linux-raw-sys v0.12.1
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling murmurhash32 v0.3.1
+   Compiling rustix v0.38.44
+   Compiling rustix v1.1.4
+   Compiling tantivy-common v0.7.0
+   Compiling hashbrown v0.15.5
+   Compiling rayon-core v1.13.0
+   Compiling tantivy-stacker v0.3.0
+   Compiling itertools v0.12.1
+   Compiling instant v0.1.13
+   Compiling fastrand v2.4.1
+   Compiling downcast-rs v1.2.1
+   Compiling fastdivide v0.4.2
+   Compiling tempfile v3.27.0
+   Compiling measure_time v0.8.3
+   Compiling lru v0.12.5
+   Compiling rayon v1.12.0
+   Compiling crc32fast v1.5.0
+   Compiling tantivy-query-grammar v0.22.0
+   Compiling fs4 v0.8.4
+   Compiling regex v1.12.3
+   Compiling arc-swap v1.9.1
+   Compiling tantivy-tokenizer-api v0.3.0
+   Compiling rust-stemmers v1.2.0
+   Compiling sketches-ddsketch v0.2.2
+   Compiling aho-corasick v1.1.4
+   Compiling num_cpus v1.17.0
+   Compiling memmap2 v0.9.10
+   Compiling census v0.4.2
+   Compiling oneshot v0.1.13
+   Compiling rustc-hash v1.1.0
+   Compiling levenshtein_automata v0.2.1
+   Compiling lz4_flex v0.11.6
+   Compiling htmlescape v0.3.1
+   Compiling zstd-safe v7.2.4
+   Compiling zstd v0.13.3
+   Compiling tantivy-sstable v0.3.0
+   Compiling tantivy-columnar v0.3.0
+   Compiling tantivy v0.22.1
+   Compiling search v0.1.0 (/home/oxisrael/Friehub/Taas/jumia-clone/services/search)
+warning: fields `id`, `category`, `price`, and `attributes` are never read
+  --> search/src/index.rs:14:9
+   |
+13 | pub struct ProductFields {
+   |            ------------- fields in this struct
+14 |     pub id: Field,
+   |         ^^
+...
+17 |     pub category: Field,
+   |         ^^^^^^^^
+18 |     pub price: Field,
+   |         ^^^^^
+19 |     pub attributes: Field,
+   |         ^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: method `get_writer` is never used
+  --> search/src/index.rs:57:12
+   |
+22 | impl SearchIndex {
+   | ---------------- method in this implementation
+...
+57 |     pub fn get_writer(&self, memory_budget_bytes: usize) -> Result<IndexWriter> {
+   |            ^^^^^^^^^^
+
+warning: `search` (bin "search") generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6m 32s
+     Running `target/debug/search`
+[2m2026-04-30T07:14:15.573329Z[0m [32m INFO[0m [2msearch[0m[2m:[0m Search service listening on 0.0.0.0:3001

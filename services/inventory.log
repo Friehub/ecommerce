@@ -1,0 +1,57 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+   Compiling cpufeatures v0.3.0
+   Compiling combine v4.6.7
+   Compiling socket2 v0.5.10
+   Compiling sha1_smol v1.0.1
+   Compiling chacha20 v0.10.0
+   Compiling rand v0.10.1
+   Compiling tokio-retry v0.3.1
+   Compiling redis v0.25.4
+   Compiling inventory v0.1.0 (/home/oxisrael/Friehub/Taas/jumia-clone/services/inventory)
+warning: unused import: `std::sync::Arc`
+ --> inventory/src/redis_client.rs:3:5
+  |
+3 | use std::sync::Arc;
+  |     ^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: use of deprecated method `redis::Client::get_async_connection`: aio::Connection is deprecated. Use client::get_multiplexed_async_connection instead.
+  --> inventory/src/redis_client.rs:16:36
+   |
+16 |         let mut conn = self.client.get_async_connection().await?;
+   |                                    ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `redis::Client::get_async_connection`: aio::Connection is deprecated. Use client::get_multiplexed_async_connection instead.
+  --> inventory/src/redis_client.rs:51:36
+   |
+51 |         let mut conn = self.client.get_async_connection().await?;
+   |                                    ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated method `redis::Client::get_async_connection`: aio::Connection is deprecated. Use client::get_multiplexed_async_connection instead.
+  --> inventory/src/redis_client.rs:60:36
+   |
+60 |         let mut conn = self.client.get_async_connection().await?;
+   |                                    ^^^^^^^^^^^^^^^^^^^^
+
+warning: method `release_reservation` is never used
+  --> inventory/src/redis_client.rs:59:18
+   |
+9  | impl InventoryRedis {
+   | ------------------- method in this implementation
+...
+59 |     pub async fn release_reservation(&self, sku: &str, reservation_id: &str) -> Result<bool> {
+   |                  ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: `inventory` (bin "inventory") generated 5 warnings (run `cargo fix --bin "inventory"` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7m 07s
+     Running `target/debug/inventory`
+[2m2026-04-30T07:14:50.811981Z[0m [32m INFO[0m [2minventory[0m[2m:[0m Inventory service listening on 0.0.0.0:3002

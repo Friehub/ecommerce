@@ -251,6 +251,8 @@ model Cart {
   sessionId String     @unique
   updatedAt DateTime   @updatedAt
   items     CartItem[]
+
+  @@unique([userId, sessionId], name: "userId_sessionId")
 }
 
 model CartItem {

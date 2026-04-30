@@ -11,22 +11,26 @@ export const opsService = {
       _sum: { total: true }
     });
 
+    const activeSessions = await prisma.session.count({
+      where: {
+        expiresAt: { gt: new Date() }
+      }
+    });
+
     return {
       totalOrders,
       totalSellers,
       totalUsers,
       gmv: gmvResult._sum.total?.toNumber() || 0,
-      activeSessions: 142 // Placeholder for real-time data
+      activeSessions
     };
   },
 
   async logAdminAction(adminId: string, action: string, targetId: string, metadata: any) {
-    return prisma.auditLog.create({
+    return prisma.eventLog.create({
       data: {
-        adminId,
-        action,
-        targetId,
-        metadata
+        topic: 'ADMIN_ACTION',
+        payload: { adminId, action, targetId, metadata }
       }
     });
   }

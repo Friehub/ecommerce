@@ -18,7 +18,7 @@ cron.schedule('30 0 * * *', async () => {
   console.log('⏳ Running daily escrow release...');
   try {
     const released = await ledgerService.releaseMatureEscrow();
-    console.log(`✅ Escrow release complete. Released ${released.length} entries.`);
+    console.log(`✅ Escrow release complete. Released ${released.count} entries.`);
   } catch (error) {
     console.error('❌ Escrow release failed:', error);
   }
@@ -40,6 +40,42 @@ cron.schedule('0 1 * * 1', async () => {
     console.log(`✅ Weekly statements generated for ${activeSellers.length} sellers.`);
   } catch (error) {
     console.error('❌ Weekly statement generation failed:', error);
+  }
+});
+
+// Nightly Search Sync & Autocomplete Builder (runs at 02:00 UTC every day)
+import { catalogService } from '../modules/catalog/services/catalog-service';
+import { redis } from '@ecom/shared';
+
+cron.schedule('0 2 * * *', async () => {
+  console.log('⏳ Running nightly search sync and autocomplete builder...');
+  try {
+    // We get all active products
+    const variants = await prisma.productVariant.findMany({
+      where: { product: { status: 'ACTIVE' } },
+      include: { product: true }
+    });
+
+    let count = 0;
+    for (const variant of variants) {
+      // 1. Sync to Rust Search Service
+      await catalogService.syncToSearch(variant.id);
+      
+      // 2. Build Autocomplete Trie in Redis (Prefix indexing)
+      const title = variant.product.title.toLowerCase();
+      // Generate prefixes: "a", "ap", "app", "appl", "apple"
+      for (let i = 1; i <= title.length; i++) {
+        const prefix = title.substring(0, i);
+        // Using ZADD with score 0 enables lexicographical sorting in Redis
+        await redis.zadd('autocomplete_trie', 0, prefix);
+      }
+      // Add a terminal character '*' to denote a complete word
+      await redis.zadd('autocomplete_trie', 0, `${title}*`);
+      count++;
+    }
+    console.log(`✅ Search sync complete. Processed ${count} active variants.`);
+  } catch (error) {
+    console.error('❌ Search sync failed:', error);
   }
 });
 

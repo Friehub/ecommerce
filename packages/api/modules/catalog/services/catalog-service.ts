@@ -62,6 +62,27 @@ export const catalogService = {
     return product;
   },
 
+  async updateProduct(sellerId: string, productId: string, data: Partial<ProductInput> & { status?: string }) {
+    const product = await prisma.product.update({
+      where: { id: productId, sellerId }, // ensure seller owns it
+      data: {
+        title: data.title,
+        description: data.description,
+        status: data.status as any
+      },
+      include: { variants: true }
+    });
+
+    await publishEvent('product.updated', { productId, sellerId });
+
+    // Sync to search index for all variants
+    for (const variant of product.variants) {
+      await this.syncToSearch(variant.id);
+    }
+
+    return product;
+  },
+
   async syncToSearch(variantId: string) {
     const variant = await prisma.productVariant.findUnique({
       where: { id: variantId },

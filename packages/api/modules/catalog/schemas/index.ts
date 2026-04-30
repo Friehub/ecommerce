@@ -26,6 +26,13 @@ export const categorySchema = z.object({
   attributeSchema: z.record(z.any()).optional(),
 })
 
+export const updateProductSchema = z.object({
+  title: z.string().min(3).optional(),
+  description: z.string().min(10).optional(),
+  status: z.enum(['DRAFT', 'PENDING_APPROVAL', 'ACTIVE', 'INACTIVE', 'DELETED']).optional()
+})
+
 export type ProductInput = z.infer<typeof productSchema>
 export type ProductVariantInput = z.infer<typeof productVariantSchema>
 export type CategoryInput = z.infer<typeof categorySchema>
+export type UpdateProductInput = z.infer<typeof updateProductSchema>

@@ -1,2 +1,6 @@
+# Compiled output — never commit
 target/
-Cargo.lock
+
+# Local data written by running services
+*.log
+data/

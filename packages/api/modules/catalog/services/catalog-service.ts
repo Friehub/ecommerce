@@ -21,6 +21,7 @@ export const catalogService = {
         brandId: data.brandId,
         categoryId: data.categoryId,
         sellerId,
+        status: 'ACTIVE', // Auto-activate for demo
         variants: {
           create: data.variants.map(v => ({
             sku: v.sku,
@@ -29,12 +30,32 @@ export const catalogService = {
             attributes: v.attributes,
             weightGrams: v.weightGrams,
           }))
+        },
+        media: {
+          create: data.images?.map((url, i) => ({
+            url,
+            position: i,
+          }))
         }
       },
       include: { variants: true }
     });
 
     await publishEvent('product.created', { productId: product.id, sellerId });
+
+    // Initialize stock levels for all variants
+    for (const variant of product.variants) {
+      await prisma.stockLevel.create({
+        data: {
+          variantId: variant.id,
+          sellerId,
+          warehouseId: 'main-wh', // Default warehouse from seed
+          qtyOnHand: data.variants.find(v => v.sku === variant.sku)?.stock || 0,
+          qtyReserved: 0,
+        }
+      });
+    }
+
     return product;
   },
 

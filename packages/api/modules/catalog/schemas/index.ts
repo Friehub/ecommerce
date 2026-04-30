@@ -6,6 +6,7 @@ export const productVariantSchema = z.object({
   comparePrice: z.number().positive().optional(),
   attributes: z.record(z.any()),
   weightGrams: z.number().int().positive().optional(),
+  stock: z.number().int().min(0).optional().default(0),
 })
 
 export const productSchema = z.object({
@@ -13,6 +14,7 @@ export const productSchema = z.object({
   description: z.string().min(10),
   brandId: z.string(),
   categoryId: z.string(),
+  images: z.array(z.string()).optional(),
   variants: z.array(productVariantSchema).min(1),
 })
 

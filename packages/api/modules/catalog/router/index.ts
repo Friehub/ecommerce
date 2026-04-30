@@ -1,4 +1,5 @@
 import { createTRPCRouter, publicProcedure, sellerProcedure } from "../../../trpc";
+import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { productSchema, categorySchema } from "../schemas";
 import { catalogService } from "../services/catalog-service";
@@ -31,7 +32,11 @@ export const catalogRouter = createTRPCRouter({
   createProduct: sellerProcedure
     .input(productSchema)
     .mutation(async ({ ctx, input }) => {
-      return await catalogService.createProduct(ctx.session.user.id, input);
+      const seller = await prisma.seller.findUnique({
+        where: { userId: ctx.session.user.id }
+      });
+      if (!seller) throw new Error('NOT_A_SELLER');
+      return await catalogService.createProduct(seller.id, input);
     }),
 
   createCategory: publicProcedure // In reality, this should be adminProcedure
@@ -45,4 +50,10 @@ export const catalogRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await catalogService.getCategoryBySlug(input.slug);
     }),
+
+  getBrands: publicProcedure.query(async () => {
+    return await prisma.brand.findMany({
+      orderBy: { name: 'asc' }
+    });
+  }),
 });

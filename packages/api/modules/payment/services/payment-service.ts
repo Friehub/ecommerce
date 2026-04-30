@@ -25,13 +25,44 @@ export const paymentService = {
       console.warn('Rust fraud service unavailable, proceeding with caution:', e);
     }
 
+    const amountInKobo = amount * 100; // Paystack expects amount in kobo
     const reference = `ORD-${orderId}-${Date.now()}`;
     
+    // Call Paystack API
+    const response = await fetch('https://api.paystack.co/transaction/initialize', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        amount: amountInKobo,
+        reference,
+        callback_url: `${process.env.NEXTAUTH_URL}/checkout/success?orderId=${orderId}`,
+        metadata: {
+          orderId,
+          custom_fields: [
+            {
+              display_name: "Order ID",
+              variable_name: "order_id",
+              value: orderId
+            }
+          ]
+        }
+      }),
+    });
+
+    const data = await response.json();
+    if (!data.status) {
+      throw new Error(`PAYSTACK_INIT_FAILED: ${data.message}`);
+    }
+
     // Create payment record
     await prisma.payment.create({
       data: {
         orderId,
-        userId: email, // Placeholder logic: normally we'd have the actual userId
+        userId: email, 
         amount: new Decimal(amount),
         method: 'CARD',
         status: 'PENDING',
@@ -40,7 +71,7 @@ export const paymentService = {
     });
 
     return {
-      authorization_url: `https://checkout.paystack.com/${reference}`,
+      authorization_url: data.data.authorization_url,
       reference
     };
   },

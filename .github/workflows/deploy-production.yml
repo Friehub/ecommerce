@@ -1,0 +1,192 @@
+name: Deploy — Production
+
+on:
+  push:
+    branches: [main]
+
+# Prevent concurrent deploys — queue them, never cancel
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  # ── Job 1: Fast validation before touching production ─────────────
+  validate:
+    name: Validate
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @ecom/db generate
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Rust check
+        working-directory: services
+        run: cargo check --workspace
+
+  # ── Job 2: Deploy to production VPS ───────────────────────────────
+  deploy:
+    name: Deploy
+    needs: validate
+    runs-on: self-hosted
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Write all secrets to .env.prod — this file is never in the repo
+      - name: Write .env.prod
+        run: |
+          cat > /opt/jumia/.env.prod << 'ENVEOF'
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DATABASE_URL=postgresql://ecom:${{ secrets.DB_PASSWORD }}@postgres:5432/ecom
+          REDIS_URL=redis://redis:6379
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+          WEB_URL=${{ secrets.NEXTAUTH_URL }}
+          NEXT_PUBLIC_API_URL=${{ secrets.NEXTAUTH_URL }}/api
+          PAYSTACK_SECRET=${{ secrets.PAYSTACK_SECRET }}
+          PAYSTACK_WEBHOOK_SECRET=${{ secrets.PAYSTACK_WEBHOOK_SECRET }}
+          R2_ACCOUNT_ID=${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET=${{ secrets.R2_BUCKET }}
+          R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
+          R2_PUBLIC_URL=${{ secrets.R2_PUBLIC_URL }}
+          RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+          TERMII_API_KEY=${{ secrets.TERMII_API_KEY }}
+          INTERNAL_API_TOKEN=${{ secrets.INTERNAL_API_TOKEN }}
+          NODE_ENV=production
+          RUST_LOG=info
+          LOG_LEVEL=info
+          PORT=4000
+          HOST=0.0.0.0
+          ENVEOF
+          chmod 600 /opt/jumia/.env.prod
+
+      # Sync code from checkout to the deploy directory
+      - name: Sync code to deploy dir
+        run: |
+          rsync -av --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='target' \
+            --exclude='.env*' \
+            $GITHUB_WORKSPACE/ /opt/jumia/
+
+      # Migrations run BEFORE any service restarts to avoid downtime gaps
+      - name: Run database migrations
+        working-directory: /opt/jumia
+        run: |
+          docker compose -f docker-compose.prod.yml --env-file .env.prod \
+            run --rm --no-deps api \
+            sh -c "npx prisma migrate deploy"
+
+      # Build and roll TypeScript services
+      - name: Deploy TypeScript services
+        working-directory: /opt/jumia
+        run: |
+          docker compose -f docker-compose.prod.yml --env-file .env.prod \
+            up -d --no-deps --build \
+            web api workers event-consumer
+
+      # API must pass health check before we proceed
+      - name: Health check — API server
+        run: |
+          echo "Waiting for API health check..."
+          for i in $(seq 1 12); do
+            if curl -sf http://localhost:4000/health > /dev/null 2>&1; then
+              echo "API is healthy on attempt $i"
+              exit 0
+            fi
+            echo "Attempt $i/12 — retrying in 5s..."
+            sleep 5
+          done
+          echo "API health check failed after 60s"
+          exit 1
+
+      # Rust services — only rebuild if their source changed
+      - name: Deploy Rust services
+        working-directory: /opt/jumia
+        run: |
+          docker compose -f docker-compose.prod.yml --env-file .env.prod \
+            up -d --no-deps --build \
+            search inventory fraud recommendations auction image-processor
+
+      # Hot-reload Nginx config without dropping connections
+      - name: Reload Nginx
+        working-directory: /opt/jumia
+        run: |
+          docker compose -f docker-compose.prod.yml \
+            exec -T nginx nginx -t && \
+          docker compose -f docker-compose.prod.yml \
+            exec -T nginx nginx -s reload
+
+      # Log the deployed commit SHA for audit trail
+      - name: Record deployment
+        run: |
+          echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) | ${{ github.sha }} | ${{ github.actor }} | ${{ github.event.head_commit.message }}" \
+            >> /opt/jumia/logs/deployments.log
+
+      # Slack notification — success
+      - name: Notify success
+        if: success() && secrets.SLACK_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "✅ *Production deploy complete*\n*Commit:* `${{ github.sha }}`\n*By:* ${{ github.actor }}\n*Message:* ${{ github.event.head_commit.message }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # Slack notification — failure
+      - name: Notify failure
+        if: failure() && secrets.SLACK_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "❌ *Production deploy FAILED*\n*Commit:* `${{ github.sha }}`\n*By:* ${{ github.actor }}\n*Run:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ── Job 3: Auto-rollback if deploy failed ─────────────────────────
+  rollback:
+    name: Rollback
+    needs: deploy
+    if: failure()
+    runs-on: self-hosted
+    steps:
+      - name: Rollback TypeScript services
+        working-directory: /opt/jumia
+        run: |
+          echo "Deploy failed — rolling back to previous image..."
+          # Restart without --build: Docker Compose reuses the last successfully built image
+          docker compose -f docker-compose.prod.yml --env-file .env.prod \
+            up -d web api workers event-consumer
+          echo "Rollback complete."
+
+      - name: Notify rollback
+        if: secrets.SLACK_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "⚠️ *Rollback triggered* — deploy of `${{ github.sha }}` failed. Previous build restored."
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

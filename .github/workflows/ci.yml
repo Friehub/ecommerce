@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches-ignore: [main, staging]
+  pull_request:
+    branches: [main, staging, develop]
+
+jobs:
+  typecheck:
+    name: Typecheck
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @ecom/db generate
+
+      - name: Typecheck all packages
+        run: pnpm -r typecheck
+
+  lint:
+    name: Lint
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm -r lint
+
+  rust-check:
+    name: Rust Check
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rust check
+        working-directory: services
+        run: cargo check --workspace
+
+      - name: Clippy
+        working-directory: services
+        run: cargo clippy --workspace -- -D warnings

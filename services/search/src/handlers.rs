@@ -54,23 +54,29 @@ pub async fn search_handler(
 
     let top_docs_collector = TopDocs::with_limit(limit).and_offset(offset);
     
-    let top_docs = if let Some(sort) = params.sort_by {
+    let top_docs: Vec<tantivy::DocAddress> = if let Some(sort) = params.sort_by {
         match sort.as_str() {
-            "price_asc" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<f64>(index.fields.price, Order::Asc)),
-            "price_desc" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<f64>(index.fields.price, Order::Desc)),
-            "rating" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<f64>(index.fields.rating, Order::Desc)),
-            "newest" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<i64>(index.fields.created_at, Order::Desc)),
-            _ => searcher.search(&base_query, &top_docs_collector),
+            "price_asc" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<f64>("price", Order::Asc))
+                .map(|res| res.into_iter().map(|(_, doc)| doc).collect()),
+            "price_desc" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<f64>("price", Order::Desc))
+                .map(|res| res.into_iter().map(|(_, doc)| doc).collect()),
+            "rating" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<f64>("rating", Order::Desc))
+                .map(|res| res.into_iter().map(|(_, doc)| doc).collect()),
+            "newest" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<i64>("created_at", Order::Desc))
+                .map(|res| res.into_iter().map(|(_, doc)| doc).collect()),
+            _ => searcher.search(&base_query, &top_docs_collector)
+                .map(|res| res.into_iter().map(|(_, doc)| doc).collect()),
         }
     } else {
         searcher.search(&base_query, &top_docs_collector)
+            .map(|res| res.into_iter().map(|(_, doc)| doc).collect())
     }.map_err(|e| {
         (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() })))
     })?;
 
     // 3. Process Results
     let mut results = Vec::new();
-    for (_score, doc_address) in top_docs {
+    for doc_address in top_docs {
         let retrieved_doc: TantivyDocument = searcher.doc(doc_address).map_err(|e| {
             (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() })))
         })?;
@@ -128,30 +134,35 @@ pub async fn upsert_handler(
     writer.delete_term(term);
 
     // Add new
-    let mut tantivy_doc = TantivyDocument::default();
-    tantivy_doc.add_text(index.fields.variant_id, &doc.variant_id);
-    tantivy_doc.add_text(index.fields.product_id, &doc.product_id);
-    tantivy_doc.add_text(index.fields.title, &doc.title);
-    tantivy_doc.add_text(index.fields.description, &doc.description);
-    tantivy_doc.add_text(index.fields.brand_name, &doc.brand_name);
-    tantivy_doc.add_text(index.fields.category_id, &doc.category_id);
-    tantivy_doc.add_text(index.fields.category_name, &doc.category_name);
-    tantivy_doc.add_text(index.fields.seller_id, &doc.seller_id);
-    tantivy_doc.add_text(index.fields.seller_name, &doc.seller_name);
-    tantivy_doc.add_f64(index.fields.price, doc.price);
-    tantivy_doc.add_f64(index.fields.compare_price, doc.compare_price.unwrap_or(0.0));
-    tantivy_doc.add_f64(index.fields.discount_pct, doc.discount_pct.unwrap_or(0.0));
-    tantivy_doc.add_f64(index.fields.rating, doc.rating);
-    tantivy_doc.add_i64(index.fields.review_count, doc.review_count);
-    tantivy_doc.add_f64(index.fields.sales_velocity, doc.sales_velocity);
-    tantivy_doc.add_u64(index.fields.is_active, if doc.is_active { 1 } else { 0 });
-    tantivy_doc.add_u64(index.fields.is_in_stock, if doc.is_in_stock { 1 } else { 0 });
-    tantivy_doc.add_u64(index.fields.is_flash_sale, if doc.is_flash_sale { 1 } else { 0 });
-    tantivy_doc.add_u64(index.fields.is_official_store, if doc.is_official_store { 1 } else { 0 });
-    tantivy_doc.add_i64(index.fields.shipping_days, doc.shipping_days);
-    tantivy_doc.add_json(index.fields.attributes, doc.attributes);
-    tantivy_doc.add_text(index.fields.image_url, &doc.image_url);
-    tantivy_doc.add_i64(index.fields.created_at, doc.created_at);
+    let json_doc_str = serde_json::json!({
+        "variant_id": doc.variant_id,
+        "product_id": doc.product_id,
+        "title": doc.title,
+        "description": doc.description,
+        "brand_name": doc.brand_name,
+        "category_id": doc.category_id,
+        "category_name": doc.category_name,
+        "seller_id": doc.seller_id,
+        "seller_name": doc.seller_name,
+        "price": doc.price,
+        "compare_price": doc.compare_price.unwrap_or(0.0),
+        "discount_pct": doc.discount_pct.unwrap_or(0.0),
+        "rating": doc.rating,
+        "review_count": doc.review_count,
+        "sales_velocity": doc.sales_velocity,
+        "is_active": if doc.is_active { 1 } else { 0 },
+        "is_in_stock": if doc.is_in_stock { 1 } else { 0 },
+        "is_flash_sale": if doc.is_flash_sale { 1 } else { 0 },
+        "is_official_store": if doc.is_official_store { 1 } else { 0 },
+        "shipping_days": doc.shipping_days,
+        "attributes": doc.attributes,
+        "image_url": doc.image_url,
+        "created_at": doc.created_at,
+    }).to_string();
+
+    let tantivy_doc = TantivyDocument::parse_json(&index.schema, &json_doc_str).map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": format!("JSON parse error: {}", e) })))
+    })?;
 
     writer.add_document(tantivy_doc).map_err(|e| {
         (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() })))

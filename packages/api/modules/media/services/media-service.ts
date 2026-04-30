@@ -5,6 +5,7 @@ import { generateId } from '@ecom/shared'
 
 const BUCKET = process.env.R2_BUCKET || 'ecom-media';
 
+export const mediaService = {
   async getUploadUrl(path: string, contentType: string) {
     const key = `uploads/${generateId()}-${path}`;
     const command = new PutObjectCommand({

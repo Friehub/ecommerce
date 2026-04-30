@@ -15,7 +15,7 @@ export const revenueRouter = createTRPCRouter({
   listMyPayouts: sellerProcedure.query(async ({ ctx }) => {
     const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
     if (!seller) throw new Error('NOT_A_SELLER');
-    return await prisma.payoutRequest.findMany({
+    return await prisma.payout.findMany({
       where: { sellerId: seller.id },
       orderBy: { createdAt: 'desc' }
     });
@@ -34,7 +34,7 @@ export const revenueRouter = createTRPCRouter({
     }),
 
   listPendingPayouts: adminProcedure.query(async () => {
-    return await prisma.payoutRequest.findMany({
+    return await prisma.payout.findMany({
       where: { status: 'PENDING' },
       include: { seller: true }
     });

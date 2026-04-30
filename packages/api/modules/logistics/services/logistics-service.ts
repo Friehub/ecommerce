@@ -103,7 +103,7 @@ export const logisticsService = {
           include: { 
             order: {
               include: {
-                shippingAddress: true
+                address: true
               }
             } 
           } 

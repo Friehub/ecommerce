@@ -67,6 +67,7 @@ enum LedgerEntryType {
   AD_SPEND
   PENALTY
   REFUND
+  WITHDRAWAL
 }
 
 model SellerStatement {
@@ -88,12 +89,12 @@ model SellerStatement {
 model Payout {
   id          String   @id @default(cuid())
   sellerId    String
-  statementId String
+  statementId String?
   amount      Decimal  @db.Decimal(12, 2)
   status      String // e.g., "PENDING", "SUCCESS", "FAILED"
   bankRef     String?
   createdAt   DateTime @default(now())
 
   seller    Seller          @relation(fields: [sellerId], references: [id])
-  statement SellerStatement @relation(fields: [statementId], references: [id])
+  statement    SellerStatement? @relation(fields: [statementId], references: [id])
 }

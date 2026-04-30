@@ -1,15 +1,17 @@
 import { prisma, Decimal } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
 import { RustClient } from '../../../rust-client'
+import * as crypto from 'crypto'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
+const PAYSTACK_WEBHOOK_SECRET = process.env.PAYSTACK_WEBHOOK_SECRET || 'whsec_test_placeholder';
 
 export const paymentService = {
-  async initializePaystack(orderId: string, email: string, amount: number, ipAddress: string = 'unknown') {
+  async initializePaystack(orderId: string, userId: string, email: string, amount: number, ipAddress: string = 'unknown') {
     // 1. Perform Fraud Check via Rust Fraud Service
     try {
       const fraudCheck = await RustClient.fraud.check({
-        user_id: email,
+        user_id: userId,
         amount,
         currency: 'NGN',
         ip_address: ipAddress,
@@ -62,7 +64,7 @@ export const paymentService = {
     await prisma.payment.create({
       data: {
         orderId,
-        userId: email, 
+        userId, 
         amount: new Decimal(amount),
         method: 'CARD',
         status: 'PENDING',
@@ -74,6 +76,11 @@ export const paymentService = {
       authorization_url: data.data.authorization_url,
       reference
     };
+  },
+
+  verifyWebhookSignature(rawBody: string, signature: string): boolean {
+    const hash = crypto.createHmac('sha512', PAYSTACK_WEBHOOK_SECRET).update(rawBody).digest('hex');
+    return hash === signature;
   },
 
   async handleWebhook(reference: string, status: string) {

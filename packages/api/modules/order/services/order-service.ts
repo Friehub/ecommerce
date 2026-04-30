@@ -1,6 +1,7 @@
 import { prisma, Decimal, OrderStatus } from '@ecom/db'
 import { publishEvent, queues } from '@ecom/shared'
 import { inventoryService } from '../../inventory/services/inventory-service'
+import { ledgerService } from '../../revenue/services/ledger-service'
 
 const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   PENDING_PAYMENT: ['PAID', 'CANCELLED'],

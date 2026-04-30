@@ -120,9 +120,15 @@ importers:
       '@trpc/server':
         specifier: ^10.45.2
         version: 10.45.4
+      '@types/node-cron':
+        specifier: ^3.0.11
+        version: 3.0.11
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
+      node-cron:
+        specifier: ^4.2.1
+        version: 4.2.1
       sharp:
         specifier: ^0.34.5
         version: 0.34.5
@@ -1407,6 +1413,9 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==, tarball: https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz}
 
+  '@types/node-cron@3.0.11':
+    resolution: {integrity: sha512-0ikrnug3/IyneSHqCBeslAhlK2aBfYek1fGo4bP4QnZPmiqSGRK+Oy7ZMisLWkesffJvQ1cqAcBnJC+8+nxIAg==, tarball: https://registry.npmjs.org/@types/node-cron/-/node-cron-3.0.11.tgz}
+
   '@types/node@20.19.39':
     resolution: {integrity: sha512-orrrD74MBUyK8jOAD/r0+lfa1I2MO6I+vAkmAWzMYbCcgrN4lCrmK52gRFQq/JRxfYPfonkr4b0jcY7Olqdqbw==, tarball: https://registry.npmjs.org/@types/node/-/node-20.19.39.tgz}
 
@@ -2675,6 +2684,10 @@ packages:
 
   node-abort-controller@3.1.1:
     resolution: {integrity: sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==, tarball: https://registry.npmjs.org/node-abort-controller/-/node-abort-controller-3.1.1.tgz}
+
+  node-cron@4.2.1:
+    resolution: {integrity: sha512-lgimEHPE/QDgFlywTd8yTR61ptugX3Qer29efeyWw2rv259HtGBNn1vZVmp8lB9uo9wC0t/AT4iGqXxia+CJFg==, tarball: https://registry.npmjs.org/node-cron/-/node-cron-4.2.1.tgz}
+    engines: {node: '>=6.0.0'}
 
   node-exports-info@1.6.0:
     resolution: {integrity: sha512-pyFS63ptit/P5WqUkt+UUfe+4oevH+bFeIiPPdfb0pFeYEu/1ELnJu5l+5EcTKYL5M7zaAa7S8ddywgXypqKCw==, tarball: https://registry.npmjs.org/node-exports-info/-/node-exports-info-1.6.0.tgz}
@@ -5004,6 +5017,8 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
+  '@types/node-cron@3.0.11': {}
+
   '@types/node@20.19.39':
     dependencies:
       undici-types: 6.21.0
@@ -6459,6 +6474,8 @@ snapshots:
       - babel-plugin-macros
 
   node-abort-controller@3.1.1: {}
+
+  node-cron@4.2.1: {}
 
   node-exports-info@1.6.0:
     dependencies:

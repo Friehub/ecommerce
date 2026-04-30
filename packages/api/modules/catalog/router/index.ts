@@ -15,6 +15,11 @@ export const catalogRouter = createTRPCRouter({
       categoryId: z.string().optional(),
       brandId: z.string().optional(),
       search: z.string().optional(),
+      minPrice: z.number().optional(),
+      maxPrice: z.number().optional(),
+      sortBy: z.string().optional(),
+      limit: z.number().optional(),
+      offset: z.number().optional(),
     }))
     .output(z.any())
     .query(async ({ input }) => {

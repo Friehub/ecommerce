@@ -140,35 +140,75 @@ export const catalogService = {
     }, 300);
   },
 
-  async listProducts(filters: { categoryId?: string, brandId?: string, search?: string }) {
+  async listProducts(filters: { 
+    categoryId?: string, 
+    brandId?: string, 
+    search?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    sortBy?: string,
+    limit?: number,
+    offset?: number
+  }) {
     if (filters.search) {
       try {
-        const searchResults = await RustClient.search.query(filters.search);
-        // If we have search results from Rust, we might want to fetch full product objects from Prisma
-        // Or the search results might already contain what we need.
-        // For now, let's assume Rust returns IDs or slugs.
-        if (searchResults && searchResults.length > 0) {
-           const productIds = searchResults.map((r: any) => r.id);
-           return prisma.product.findMany({
-             where: { id: { in: productIds } },
-             include: { variants: true, media: true }
+        const searchResponse = await RustClient.search.query({
+          q: filters.search,
+          category_id: filters.categoryId,
+          min_price: filters.minPrice,
+          max_price: filters.maxPrice,
+          sort_by: filters.sortBy,
+          limit: filters.limit,
+          offset: filters.offset,
+        });
+
+        if (searchResponse && searchResponse.results.length > 0) {
+           const variantIds = searchResponse.results.map((r: any) => r.variant_id[0]);
+           const results = await prisma.productVariant.findMany({
+             where: { id: { in: variantIds } },
+             include: { 
+               product: { include: { media: true, brand: true, category: true } }
+             }
            });
+           
+           // Re-sort to match search relevance or requested sort
+           return {
+             results: variantIds.map(id => results.find(r => r.id === id)).filter(Boolean),
+             total: searchResponse.total || results.length,
+             facets: searchResponse.facets
+           };
         }
+        
+        return { results: [], total: 0, facets: {} };
       } catch (e) {
         console.error('Rust search failed, falling back to Prisma:', e);
       }
     }
 
-    return prisma.product.findMany({
-      where: {
+    const where: any = {
+      product: {
         status: 'ACTIVE',
         categoryId: filters.categoryId,
         brandId: filters.brandId,
-        title: filters.search ? { contains: filters.search, mode: 'insensitive' } : undefined,
       },
-      include: { variants: true, media: true },
-      orderBy: { createdAt: 'desc' }
-    });
+      price: {
+        gte: filters.minPrice,
+        lte: filters.maxPrice,
+      }
+    };
+
+    const [results, total] = await Promise.all([
+      prisma.productVariant.findMany({
+        where,
+        include: { product: { include: { media: true, brand: true, category: true } } },
+        orderBy: filters.sortBy === 'price_asc' ? { price: 'asc' } : filters.sortBy === 'price_desc' ? { price: 'desc' } : { createdAt: 'desc' },
+        take: filters.limit || 20,
+        skip: filters.offset || 0,
+      }),
+      prisma.productVariant.count({ where })
+    ]);
+
+    return { results, total, facets: {} };
   },
 
   async createCategory(data: CategoryInput) {

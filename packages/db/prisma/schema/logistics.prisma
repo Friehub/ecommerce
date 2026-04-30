@@ -1,0 +1,79 @@
+// logistics.prisma
+model DeliveryAgent {
+  id        String      @id @default(cuid())
+  userId    String      @unique
+  zone      String
+  status    AgentStatus @default(ACTIVE)
+  shipments Shipment[]
+}
+
+enum AgentStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+}
+
+model Shipment {
+  id              String         @id @default(cuid())
+  packageId       String
+  agentId         String
+  pickupStationId String?
+  status          ShipmentStatus @default(PENDING)
+  proofUrl        String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  package       OrderPackage    @relation(fields: [packageId], references: [id])
+  agent         DeliveryAgent   @relation(fields: [agentId], references: [id])
+  pickupStation PickupStation?  @relation(fields: [pickupStationId], references: [id])
+  events        ShipmentEvent[]
+}
+
+enum ShipmentStatus {
+  PENDING
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  FAILED
+}
+
+model ShipmentEvent {
+  id         String         @id @default(cuid())
+  shipmentId String
+  status     ShipmentStatus
+  note       String?
+  location   String?
+  createdAt  DateTime       @default(now())
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id])
+}
+
+model PickupStation {
+  id        String     @id @default(cuid())
+  name      String
+  address   String
+  city      String
+  state     String
+  lat       Float?
+  lng       Float?
+  isActive  Boolean    @default(true)
+  shipments Shipment[]
+}
+
+model ReturnShipment {
+  id              String    @id @default(cuid())
+  orderLineId     String
+  reason          String
+  status          String
+  qcResult        QCResult?
+  refundTriggered Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+
+  orderLine OrderLine @relation(fields: [orderLineId], references: [id])
+}
+
+enum QCResult {
+  PASS
+  FAIL
+}

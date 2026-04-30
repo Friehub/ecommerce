@@ -54,9 +54,63 @@ export const catalogService = {
           qtyReserved: 0,
         }
       });
+      
+      // Sync to search index
+      await this.syncToSearch(variant.id);
     }
 
     return product;
+  },
+
+  async syncToSearch(variantId: string) {
+    const variant = await prisma.productVariant.findUnique({
+      where: { id: variantId },
+      include: {
+        product: {
+          include: {
+            category: true,
+            brand: true,
+            seller: true,
+            media: true,
+          }
+        }
+      }
+    });
+
+    if (!variant) return;
+
+    const stock = await prisma.stockLevel.aggregate({
+      where: { variantId },
+      _sum: { qtyOnHand: true, qtyReserved: true }
+    });
+
+    const qty = (stock._sum.qtyOnHand || 0) - (stock._sum.qtyReserved || 0);
+
+    await RustClient.search.upsert({
+      variant_id: variant.id,
+      product_id: variant.productId,
+      title: variant.product.title,
+      description: variant.product.description || '',
+      brand_name: variant.product.brand?.name || 'Generic',
+      category_id: variant.product.categoryId,
+      category_name: variant.product.category.name,
+      seller_id: variant.product.sellerId,
+      seller_name: variant.product.seller.name,
+      price: variant.price,
+      compare_price: variant.comparePrice,
+      discount_pct: variant.comparePrice ? Math.round(((variant.comparePrice - variant.price) / variant.comparePrice) * 100) : 0,
+      rating: 4.5, // Mock rating for now
+      review_count: 10,
+      sales_velocity: 0.1,
+      is_active: variant.product.status === 'ACTIVE',
+      is_in_stock: qty > 0,
+      is_flash_sale: false,
+      is_official_store: variant.product.seller.isVerified || false,
+      shipping_days: 3,
+      attributes: variant.attributes || {},
+      image_url: variant.product.media[0]?.url || '',
+      created_at: variant.createdAt.getTime(),
+    }).catch(e => console.error('Failed to sync search index:', e));
   },
 
   async getProductBySlug(slug: string) {

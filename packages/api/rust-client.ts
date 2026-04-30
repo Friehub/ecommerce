@@ -33,7 +33,17 @@ export class RustClient {
 
     // Search Service
     static search = {
-        query: (q: string) => this.request<any[]>(SERVICES.SEARCH, `/search?q=${encodeURIComponent(q)}`),
+        query: (params: { q: string, limit?: number, offset?: number, category_id?: string, brand?: string, min_price?: number, max_price?: number, sort_by?: string }) => {
+            const searchParams = new URLSearchParams();
+            Object.entries(params).forEach(([key, value]) => {
+                if (value !== undefined) searchParams.append(key, value.toString());
+            });
+            return this.request<any>(SERVICES.SEARCH, `/search?${searchParams.toString()}`);
+        },
+        upsert: (doc: any) => this.request(SERVICES.SEARCH, '/upsert', {
+            method: 'POST',
+            body: JSON.stringify(doc),
+        }),
         health: () => this.request(SERVICES.SEARCH, '/health'),
     };
 

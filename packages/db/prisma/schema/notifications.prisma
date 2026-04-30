@@ -1,0 +1,25 @@
+// notifications.prisma
+model NotificationPreference {
+  id     String  @id @default(cuid())
+  userId String
+  type   String // e.g., "ORDER_UPDATE", "PROMOTION"
+  email  Boolean @default(true)
+  sms    Boolean @default(false)
+  push   Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, type])
+}
+
+model NotificationLog {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}

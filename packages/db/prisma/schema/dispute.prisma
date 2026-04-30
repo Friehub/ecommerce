@@ -1,0 +1,46 @@
+// dispute.prisma
+model Dispute {
+  id          String        @id @default(cuid())
+  orderId     String
+  orderLineId String?
+  buyerId     String
+  sellerId    String
+  reason      String
+  status      DisputeStatus @default(OPEN)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  order     Order             @relation(fields: [orderId], references: [id])
+  orderLine OrderLine?        @relation(fields: [orderLineId], references: [id])
+  buyer     User              @relation("BuyerDisputes", fields: [buyerId], references: [id])
+  seller    Seller            @relation("SellerDisputes", fields: [sellerId], references: [id])
+  messages  DisputeMessage[]
+  evidence  DisputeEvidence[]
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+model DisputeMessage {
+  id        String   @id @default(cuid())
+  disputeId String
+  senderId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  dispute Dispute @relation(fields: [disputeId], references: [id])
+}
+
+model DisputeEvidence {
+  id        String   @id @default(cuid())
+  disputeId String
+  url       String
+  type      String
+  createdAt DateTime @default(now())
+
+  dispute Dispute @relation(fields: [disputeId], references: [id])
+}

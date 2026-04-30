@@ -1,0 +1,91 @@
+// seller.prisma
+model Seller {
+  id           String       @id @default(cuid())
+  userId       String       @unique
+  businessName String
+  tier         SellerTier   @default(STANDARD)
+  status       SellerStatus @default(PENDING_VERIFICATION)
+  rating       Decimal      @default(0) @db.Decimal(3, 2)
+  createdAt    DateTime     @default(now())
+
+  user        User                @relation(fields: [userId], references: [id])
+  documents   SellerDocument[]
+  products    Product[]
+  ledger      SellerLedgerEntry[]
+  statements  SellerStatement[]
+  payouts     Payout[]
+  adCampaigns AdCampaign[]
+  flashSales  FlashSale[]
+  disputes    Dispute[]           @relation("SellerDisputes")
+}
+
+enum SellerTier {
+  STANDARD
+  EXPRESS
+  BRAND
+}
+
+enum SellerStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+}
+
+model SellerDocument {
+  id       String         @id @default(cuid())
+  sellerId String
+  type     String // e.g., "ID", "CAC", "BANK"
+  url      String
+  status   DocumentStatus @default(PENDING)
+
+  seller Seller @relation(fields: [sellerId], references: [id])
+}
+
+model SellerLedgerEntry {
+  id          String          @id @default(cuid())
+  sellerId    String
+  orderLineId String?
+  type        LedgerEntryType
+  amount      Decimal         @db.Decimal(12, 2)
+  createdAt   DateTime        @default(now())
+
+  seller    Seller     @relation(fields: [sellerId], references: [id])
+  orderLine OrderLine? @relation(fields: [orderLineId], references: [id])
+}
+
+enum LedgerEntryType {
+  SALE
+  COMMISSION
+  AD_SPEND
+  PENALTY
+  REFUND
+}
+
+model SellerStatement {
+  id          String   @id @default(cuid())
+  sellerId    String
+  periodStart DateTime
+  periodEnd   DateTime
+  gross       Decimal  @db.Decimal(12, 2)
+  commission  Decimal  @db.Decimal(12, 2)
+  adSpend     Decimal  @db.Decimal(12, 2)
+  penalties   Decimal  @db.Decimal(12, 2)
+  net         Decimal  @db.Decimal(12, 2)
+  status      String // e.g., "OPEN", "CLOSED", "PAID"
+
+  seller  Seller   @relation(fields: [sellerId], references: [id])
+  payouts Payout[]
+}
+
+model Payout {
+  id          String   @id @default(cuid())
+  sellerId    String
+  statementId String
+  amount      Decimal  @db.Decimal(12, 2)
+  status      String // e.g., "PENDING", "SUCCESS", "FAILED"
+  bankRef     String?
+  createdAt   DateTime @default(now())
+
+  seller    Seller          @relation(fields: [sellerId], references: [id])
+  statement SellerStatement @relation(fields: [statementId], references: [id])
+}

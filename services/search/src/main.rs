@@ -26,6 +26,7 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/health", get(health_handler))
         .route("/search", get(search_handler))
+        .route("/upsert", axum::routing::post(crate::handlers::upsert_handler))
         .layer(tower_http::cors::CorsLayer::permissive())
         .with_state(search_index);
 

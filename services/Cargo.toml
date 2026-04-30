@@ -3,7 +3,7 @@ members = [
     "shared",
     "search",
     # "auction",
-    # "inventory",
+    "inventory",
     # "fraud",
     # "recommendations",
     # "image-processor",

@@ -1,4 +1,4 @@
-import { prisma } from '@ecom/db'
+import { prisma, Prisma } from '@ecom/db'
 import { publishEvent, cacheService } from '@ecom/shared'
 import type { ProductInput, CategoryInput } from '../schemas'
 import { RustClient } from '../../../rust-client'
@@ -95,21 +95,21 @@ export const catalogService = {
       category_id: variant.product.categoryId,
       category_name: variant.product.category.name,
       seller_id: variant.product.sellerId,
-      seller_name: variant.product.seller.name,
-      price: variant.price,
-      compare_price: variant.comparePrice,
-      discount_pct: variant.comparePrice ? Math.round(((variant.comparePrice - variant.price) / variant.comparePrice) * 100) : 0,
+      seller_name: variant.product.seller.businessName,
+      price: variant.price.toNumber(),
+      compare_price: variant.comparePrice?.toNumber() || 0,
+      discount_pct: variant.comparePrice ? Math.round(((variant.comparePrice.toNumber() - variant.price.toNumber()) / variant.comparePrice.toNumber()) * 100) : 0,
       rating: 4.5, // Mock rating for now
       review_count: 10,
       sales_velocity: 0.1,
       is_active: variant.product.status === 'ACTIVE',
       is_in_stock: qty > 0,
       is_flash_sale: false,
-      is_official_store: variant.product.seller.isVerified || false,
+      is_official_store: variant.product.seller.status === 'ACTIVE' || false,
       shipping_days: 3,
-      attributes: variant.attributes || {},
+      attributes: variant.attributes as any || {},
       image_url: variant.product.media[0]?.url || '',
-      created_at: variant.createdAt.getTime(),
+      created_at: variant.createdAt instanceof Date ? variant.createdAt.getTime() : new Date(variant.createdAt).getTime(),
     }).catch(e => console.error('Failed to sync search index:', e));
   },
 
@@ -173,7 +173,7 @@ export const catalogService = {
            
            // Re-sort to match search relevance or requested sort
            return {
-             results: variantIds.map(id => results.find(r => r.id === id)).filter(Boolean),
+             results: variantIds.map((id: string) => results.find(r => r.id === id)).filter(Boolean),
              total: searchResponse.total || results.length,
              facets: searchResponse.facets
            };
@@ -212,10 +212,15 @@ export const catalogService = {
   },
 
   async createCategory(data: CategoryInput) {
+    const createData: Prisma.CategoryCreateInput = {
+      name: data.name,
+      slug: data.slug,
+      commissionRate: data.commissionRate,
+      attributeSchema: data.attributeSchema,
+      parent: data.parentId ? { connect: { id: data.parentId } } : undefined
+    };
     return prisma.category.create({
-      data: {
-        ...data,
-      }
+      data: createData
     });
   },
 

@@ -22,23 +22,65 @@ export const revenueService = {
     return { totalRevenue, totalCommission, sellerNet: totalRevenue.sub(totalCommission) };
   },
 
-  async requestPayout(sellerId: string, amount: number) {
-    // 1. Verify seller has enough cleared balance
-    // (In a real app, we'd have a 'ClearedBalance' ledger)
-    
-    return prisma.payoutRequest.create({
-      data: {
-        sellerId,
-        amount: new Decimal(amount),
-        status: 'PENDING'
-      }
+  async getSellerStats(sellerId: string) {
+    const entries = await prisma.sellerLedgerEntry.findMany({
+      where: { sellerId }
     });
+
+    const pending = entries
+      .filter(e => e.status === 'PENDING')
+      .reduce((acc, e) => acc.add(e.amount), new Decimal(0));
+
+    const available = entries
+      .filter(e => e.status === 'AVAILABLE')
+      .reduce((acc, e) => acc.add(e.amount), new Decimal(0));
+
+    const totalSales = entries
+      .filter(e => e.type === 'SALE')
+      .reduce((acc, e) => acc.add(e.amount), new Decimal(0));
+
+    const totalCommission = entries
+      .filter(e => e.type === 'COMMISSION')
+      .reduce((acc, e) => acc.add(e.amount), new Decimal(0)).abs();
+
+    return {
+      pendingBalance: pending,
+      availableBalance: available,
+      totalSales,
+      totalCommission,
+      netRevenue: totalSales.sub(totalCommission)
+    };
   },
 
-  async approvePayout(payoutId: string, adminId: string) {
-    return prisma.payoutRequest.update({
-      where: { id: payoutId },
-      data: { status: 'COMPLETED' }
+  async requestPayout(sellerId: string, amount: number) {
+    const stats = await this.getSellerStats(sellerId);
+    
+    if (stats.availableBalance.lt(new Decimal(amount))) {
+      throw new Error('INSUFFICIENT_FUNDS');
+    }
+    
+    return prisma.$transaction(async (tx) => {
+      // 1. Create payout request
+      const payout = await tx.payoutRequest.create({
+        data: {
+          sellerId,
+          amount: new Decimal(amount),
+          status: 'PENDING'
+        }
+      });
+
+      // 2. Deduct from available balance (as a negative ledger entry)
+      await tx.sellerLedgerEntry.create({
+        data: {
+          sellerId,
+          type: 'PENALTY', // Reusing PENALTY or could add WITHDRAWAL
+          amount: new Decimal(amount).negated(),
+          status: 'AVAILABLE',
+          availableAt: new Date()
+        }
+      });
+
+      return payout;
     });
-  }
+  },
 };

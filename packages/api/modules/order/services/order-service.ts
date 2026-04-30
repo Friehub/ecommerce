@@ -111,8 +111,13 @@ export const orderService = {
     // Side effects
     if (status === 'PAID') {
       await inventoryService.confirmStock(orderId);
-      // Trigger seller notifications for each package
+      
+      // Record sales in ledger (Pending)
       for (const pkg of order.packages) {
+        const lines = await prisma.orderLine.findMany({ where: { packageId: pkg.id } });
+        for (const line of lines) {
+          await ledgerService.recordSale(line.id);
+        }
         await publishEvent('package.pending_confirmation', { packageId: pkg.id, sellerId: pkg.sellerId });
       }
     }
@@ -123,7 +128,10 @@ export const orderService = {
     }
 
     if (status === 'DELIVERED') {
-      // Start 7-day escrow timer
+      // Set release date for ledger entries (7-day window)
+      await ledgerService.scheduleEscrowRelease(orderId);
+      
+      // Start 7-day escrow timer job in background
       await queues.orderQueue.add('escrow-release', { orderId }, { delay: 7 * 24 * 60 * 60 * 1000 });
     }
 

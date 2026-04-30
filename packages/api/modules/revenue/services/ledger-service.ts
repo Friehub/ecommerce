@@ -1,4 +1,4 @@
-import { prisma, Decimal, LedgerEntryType } from '@ecom/db'
+import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
 
 export const ledgerService = {
   async recordSale(orderLineId: string) {
@@ -6,7 +6,7 @@ export const ledgerService = {
       where: { id: orderLineId },
       include: { 
         variant: { include: { product: { include: { category: true } } } },
-        package: true 
+        package: { select: { sellerId: true } }
       }
     });
 
@@ -18,23 +18,25 @@ export const ledgerService = {
     const commissionAmount = grossAmount.mul(commissionRate).div(100);
 
     return await prisma.$transaction(async (tx) => {
-      // 1. Record Gross Sale
+      // 1. Record Gross Sale (PENDING)
       const saleEntry = await tx.sellerLedgerEntry.create({
         data: {
           sellerId,
           orderLineId,
-          type: 'SALE' as LedgerEntryType,
-          amount: grossAmount
+          type: LedgerEntryType.SALE,
+          amount: grossAmount,
+          status: LedgerStatus.PENDING
         }
       });
 
-      // 2. Record Platform Commission
+      // 2. Record Platform Commission (PENDING)
       const commissionEntry = await tx.sellerLedgerEntry.create({
         data: {
           sellerId,
           orderLineId,
-          type: 'COMMISSION' as LedgerEntryType,
-          amount: commissionAmount.negated()
+          type: LedgerEntryType.COMMISSION,
+          amount: commissionAmount.negated(),
+          status: LedgerStatus.PENDING
         }
       });
 
@@ -42,11 +44,43 @@ export const ledgerService = {
     });
   },
 
+  async scheduleEscrowRelease(orderId: string) {
+    const lines = await prisma.orderLine.findMany({
+      where: { package: { orderId } }
+    });
+
+    const releaseDate = new Date();
+    releaseDate.setDate(releaseDate.getDate() + 7); // 7 day return window
+
+    await prisma.sellerLedgerEntry.updateMany({
+      where: { 
+        orderLineId: { in: lines.map(l => l.id) },
+        status: LedgerStatus.PENDING
+      },
+      data: {
+        availableAt: releaseDate
+      }
+    });
+  },
+
+  async releaseMatureEscrow() {
+    const now = new Date();
+    return await prisma.sellerLedgerEntry.updateMany({
+      where: {
+        status: LedgerStatus.PENDING,
+        availableAt: { lte: now }
+      },
+      data: {
+        status: LedgerStatus.AVAILABLE
+      }
+    });
+  },
+
   async recordPenalty(sellerId: string, amount: number, reason: string) {
     return await prisma.sellerLedgerEntry.create({
       data: {
         sellerId,
-        type: 'PENALTY' as LedgerEntryType,
+        type: LedgerEntryType.PENALTY,
         amount: new Decimal(amount).negated()
       }
     });

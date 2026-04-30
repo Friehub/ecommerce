@@ -21,6 +21,12 @@ export const revenueRouter = createTRPCRouter({
     });
   }),
 
+  getMyStats: sellerProcedure.query(async ({ ctx }) => {
+    const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+    if (!seller) throw new Error('NOT_A_SELLER');
+    return await revenueService.getSellerStats(seller.id);
+  }),
+
   approvePayout: adminProcedure
     .input(z.object({ payoutId: z.string() }))
     .mutation(async ({ ctx, input }) => {

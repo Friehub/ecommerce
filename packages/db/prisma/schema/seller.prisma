@@ -47,10 +47,18 @@ model SellerLedgerEntry {
   orderLineId String?
   type        LedgerEntryType
   amount      Decimal         @db.Decimal(12, 2)
+  status      LedgerStatus    @default(PENDING)
+  availableAt DateTime?
   createdAt   DateTime        @default(now())
 
   seller    Seller     @relation(fields: [sellerId], references: [id])
   orderLine OrderLine? @relation(fields: [orderLineId], references: [id])
+}
+
+enum LedgerStatus {
+  PENDING
+  AVAILABLE
+  REVERSED
 }
 
 enum LedgerEntryType {

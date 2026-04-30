@@ -1,16 +1,21 @@
 import { Worker } from 'bullmq';
 import { redis } from '@ecom/shared/src/infra/redis';
 import { catalogService } from '@ecom/api/modules/catalog/services/catalog-service';
+import { ledgerService } from '@ecom/api/modules/revenue/services/ledger-service';
 import { prisma } from '@ecom/db';
 import * as dotenv from 'dotenv';
+import { startMetricsServer, orderProcessingLatency } from './metrics';
 
 dotenv.config();
 
 console.log('🚀 Event Consumer Service starting...');
 
-const worker = new Worker('system-events', async job => {
+// Start metrics server
+startMetricsServer(Number(process.env.METRICS_PORT) || 9090);
+
+const eventWorker = new Worker('system-events', async job => {
   const event = job.data;
-  console.log(`[Worker] Processing: ${job.name} (${event.id})`);
+  console.log(`[EventWorker] Processing: ${job.name} (${event.id})`);
 
   try {
     switch (event.type) {
@@ -34,33 +39,54 @@ const worker = new Worker('system-events', async job => {
         break;
       }
 
-      case 'order.created': {
-        // Potentially update search rank based on sales velocity
-        console.log(`[Analytics] Order created: ${event.payload.orderId}`);
-        break;
-      }
-
       default:
-        console.log(`[Worker] Unhandled event type: ${event.type}`);
+        console.log(`[EventWorker] Unhandled event type: ${event.type}`);
     }
   } catch (error) {
-    console.error(`[Worker] Error processing job ${job.id}:`, error);
-    throw error; // Let BullMQ handle retry
+    console.error(`[EventWorker] Error processing job ${job.id}:`, error);
+    throw error;
   }
 }, { 
   connection: redis,
   concurrency: 5 
 });
 
-worker.on('completed', job => {
-  console.log(`[Worker] Job ${job.id} completed`);
+const orderWorker = new Worker('orders', async job => {
+  const end = orderProcessingLatency.startTimer({ job_name: job.name });
+  console.log(`[OrderWorker] Processing: ${job.name} for order ${job.data.orderId}`);
+
+  try {
+    if (job.name === 'escrow-release') {
+      const { orderId } = job.data;
+      const order = await prisma.order.findUnique({
+        where: { id: orderId }
+      });
+
+      if (!order) return;
+
+      // Only release if still delivered (not returned/cancelled)
+      if (order.status === 'DELIVERED' || order.status === 'COMPLETED') {
+        console.log(`[Settlement] Releasing escrow for order ${orderId}`);
+        await ledgerService.releaseMatureEscrow();
+      }
+    }
+  } catch (error) {
+    console.error(`[OrderWorker] Error processing job ${job.id}:`, error);
+    throw error;
+  } finally {
+    end();
+  }
+}, {
+  connection: redis,
+  concurrency: 2
 });
 
-worker.on('failed', (job, err) => {
-  console.error(`[Worker] Job ${job?.id} failed: ${err.message}`);
+eventWorker.on('completed', job => {
+  console.log(`[Worker] Job ${job.id} completed`);
 });
 
 process.on('SIGTERM', async () => {
   console.log('Gracefully shutting down...');
-  await worker.close();
+  await eventWorker.close();
+  await orderWorker.close();
 });

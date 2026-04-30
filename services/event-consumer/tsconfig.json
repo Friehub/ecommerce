@@ -2,7 +2,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDirs": ["src", "../../packages"],
+    "baseUrl": ".",
+    "paths": {
+      "@ecom/db": ["../../packages/db"],
+      "@ecom/shared/*": ["../../packages/shared/*"],
+      "@ecom/api/*": ["../../packages/api/*"]
+    }
   },
   "include": ["src/**/*"]
 }

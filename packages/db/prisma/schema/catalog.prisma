@@ -71,6 +71,8 @@ model ProductVariant {
   flashSales   FlashSale[]
   reservations StockReservation[]
   media        ProductMedia[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 }
 
 model ProductMedia {

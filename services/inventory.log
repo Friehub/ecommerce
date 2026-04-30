@@ -3,15 +3,6 @@
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on build directory
-   Compiling cpufeatures v0.3.0
-   Compiling combine v4.6.7
-   Compiling socket2 v0.5.10
-   Compiling sha1_smol v1.0.1
-   Compiling chacha20 v0.10.0
-   Compiling rand v0.10.1
-   Compiling tokio-retry v0.3.1
-   Compiling redis v0.25.4
-   Compiling inventory v0.1.0 (/home/oxisrael/Friehub/Taas/jumia-clone/services/inventory)
 warning: unused import: `std::sync::Arc`
  --> inventory/src/redis_client.rs:3:5
   |
@@ -52,6 +43,6 @@ warning: method `release_reservation` is never used
    = note: `#[warn(dead_code)]` on by default
 
 warning: `inventory` (bin "inventory") generated 5 warnings (run `cargo fix --bin "inventory"` to apply 1 suggestion)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7m 07s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 25s
      Running `target/debug/inventory`
-[2m2026-04-30T07:14:50.811981Z[0m [32m INFO[0m [2minventory[0m[2m:[0m Inventory service listening on 0.0.0.0:3002
+[2m2026-04-30T17:55:53.747424Z[0m [32m INFO[0m [2minventory[0m[2m:[0m Inventory service listening on 0.0.0.0:3002

@@ -1,63 +1,8 @@
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
-    Blocking waiting for file lock on build directory
-   Compiling simd-adler32 v0.3.9
-   Compiling equator v0.4.2
-   Compiling num-integer v0.1.46
-   Compiling adler2 v2.0.1
-   Compiling as-slice v0.2.1
-   Compiling thiserror v2.0.18
-   Compiling miniz_oxide v0.8.9
-   Compiling aligned v0.4.3
-   Compiling aligned-vec v0.6.4
-   Compiling no_std_io2 v0.9.3
-   Compiling num-bigint v0.4.6
-   Compiling v_frame v0.3.9
-   Compiling nom v8.0.0
-   Compiling y4m v0.8.0
-   Compiling quick-error v2.0.1
-   Compiling profiling v1.0.17
-   Compiling flate2 v1.1.9
-   Compiling bitstream-io v4.10.0
-   Compiling maybe-rayon v0.1.1
-   Compiling itertools v0.14.0
-   Compiling num-rational v0.4.2
-   Compiling half v2.7.1
-   Compiling av-scenechange v0.14.1
-   Compiling zune-core v0.5.1
-   Compiling new_debug_unreachable v1.0.6
-   Compiling imgref v1.12.1
-   Compiling weezl v0.1.12
-   Compiling loop9 v0.1.5
-   Compiling sha1 v0.10.6
-   Compiling zune-jpeg v0.5.15
-   Compiling zune-inflate v0.2.54
-   Compiling fdeflate v0.3.7
-   Compiling av1-grain v0.2.5
-   Compiling avif-serialize v0.8.8
-   Compiling headers-core v0.3.0
-   Compiling bit_field v0.10.3
-   Compiling rgb v0.8.53
-   Compiling color_quant v1.1.0
-   Compiling rav1e v0.8.1
-   Compiling fax v0.2.7
-   Compiling lebe v0.5.3
-   Compiling bytemuck v1.25.0
-   Compiling pxfm v0.1.29
-   Compiling byteorder-lite v0.1.0
-   Compiling qoi v0.4.1
-   Compiling image-webp v0.2.4
-   Compiling exr v1.74.0
-   Compiling tiff v0.11.3
-   Compiling moxcms v0.8.1
-   Compiling ravif v0.13.0
-   Compiling gif v0.14.2
-   Compiling headers v0.4.1
-   Compiling png v0.18.1
-   Compiling axum-extra v0.9.6
-   Compiling image v0.25.10
-   Compiling image-processor v0.1.0 (/home/oxisrael/Friehub/Taas/jumia-clone/services/image-processor)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8m 05s
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on shared package cache
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 9.34s
      Running `target/debug/image-processor`
-[2m2026-04-30T07:15:48.366736Z[0m [32m INFO[0m [2mimage_processor[0m[2m:[0m Image Processor service listening on 0.0.0.0:3006
+[2m2026-04-30T17:54:34.198558Z[0m [32m INFO[0m [2mimage_processor[0m[2m:[0m Image Processor service listening on 0.0.0.0:3006

@@ -4,11 +4,24 @@ import superjson from "superjson";
 export const transformer = superjson;
 
 function getBaseUrl() {
-  if (typeof window !== "undefined") return "";
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (typeof window !== "undefined") {
+    // Browser: in production the API server is behind the same Nginx on /api
+    // In dev it falls back to Next.js own /api/trpc handler
+    return process.env.NEXT_PUBLIC_API_URL ?? "";
+  }
+  // Server-side rendering: talk directly to the API container on the Docker network
+  if (process.env.NODE_ENV === "production") {
+    return "http://api:4000";
+  }
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 
 export function getUrl() {
-  return getBaseUrl() + "/api/trpc";
+  const base = getBaseUrl();
+  // In production, tRPC lives at /trpc on the API server
+  // In development, Next.js still handles /api/trpc internally
+  if (process.env.NODE_ENV === "production") {
+    return base + "/trpc";
+  }
+  return base + "/api/trpc";
 }

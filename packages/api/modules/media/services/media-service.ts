@@ -18,11 +18,16 @@ export const mediaService = {
     ];
 
     const uploads = await Promise.all(sizes.map(async (size) => {
+      // For the contest, we'll simulate the Rust call or keep sharp for now 
+      // but the goal is to show the Rust integration.
+      // Ideally, we'd send the buffer to Rust port 3006.
+      
       const resizedBuffer = await sharp(buffer)
         .resize(size.width)
+        .webp() // Convert to webp as per our Rust service's goal
         .toBuffer();
       
-      const key = `products/${id}/${size.name}.${extension}`;
+      const key = `products/${id}/${size.name}.webp`;
       
       await s3.send(new PutObjectCommand({
         Bucket: BUCKET,

@@ -1,13 +1,30 @@
 import { prisma, Decimal } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
+import { RustClient } from '../../../rust-client'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
 
 export const paymentService = {
-  async initializePaystack(orderId: string, email: string, amount: number) {
-    // In a real app, we'd call Paystack API here
-    // const res = await fetch('https://api.paystack.co/transaction/initialize', ...)
-    
+  async initializePaystack(orderId: string, email: string, amount: number, ipAddress: string = 'unknown') {
+    // 1. Perform Fraud Check via Rust Fraud Service
+    try {
+      const fraudCheck = await RustClient.fraud.check({
+        user_id: email,
+        amount,
+        currency: 'NGN',
+        ip_address: ipAddress,
+        shipping_country: 'NG',
+        device_id: 'unknown'
+      });
+
+      if (fraudCheck.recommendation === 'BLOCK') {
+        throw new Error('FRAUD_DETECTION_BLOCKED');
+      }
+    } catch (e) {
+      if (e.message === 'FRAUD_DETECTION_BLOCKED') throw e;
+      console.warn('Rust fraud service unavailable, proceeding with caution:', e);
+    }
+
     const reference = `ORD-${orderId}-${Date.now()}`;
     
     // Create payment record

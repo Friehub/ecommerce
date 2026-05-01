@@ -73,6 +73,9 @@ jobs:
         run: |
           DATABASE_URL="postgresql://ecom:${{ secrets.DB_PASSWORD }}@localhost:5433/ecom_staging" pnpm --filter @ecom/db prisma migrate deploy
 
+      - name: Prune Docker build cache
+        run: docker builder prune -a -f || true
+
       - name: Deploy staging
         working-directory: /opt/runner-work/jumia-staging
         run: |

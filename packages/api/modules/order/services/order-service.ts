@@ -4,7 +4,7 @@ import { inventoryService } from '../../inventory/services/inventory-service'
 import { ledgerService } from '../../revenue/services/ledger-service'
 
 const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
-  PENDING_PAYMENT: ['PAID', 'CANCELLED'],
+  PENDING_PAYMENT: ['PAID', 'CANCELLED', 'PROCESSING'],
   PAID: ['PROCESSING', 'CANCELLED'],
   PROCESSING: ['SHIPPED', 'CANCELLED'],
   SHIPPED: ['DELIVERED', 'CANCELLED'],
@@ -82,8 +82,12 @@ export const orderService = {
       total: order.total.toNumber() 
     });
 
-    // 6. Schedule SLA check (Cancel if not paid in 30 mins)
-    await queues.orderQueue.add('sla-payment-timeout', { orderId: order.id }, { delay: 30 * 60 * 1000 });
+    if (paymentMethod === 'POD' || paymentMethod === 'PAY_ON_DELIVERY') {
+      await orderService.updateStatus(order.id, 'PROCESSING');
+    } else {
+      // 6. Schedule SLA check (Cancel if not paid in 30 mins)
+      await queues.orderQueue.add('sla-payment-timeout', { orderId: order.id }, { delay: 30 * 60 * 1000 });
+    }
 
     return order;
   },

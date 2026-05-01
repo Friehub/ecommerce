@@ -6,7 +6,59 @@ import * as crypto from 'crypto'
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
 const PAYSTACK_WEBHOOK_SECRET = process.env.PAYSTACK_WEBHOOK_SECRET || 'whsec_test_placeholder';
 
+import { getPaymentAdapter } from '../adapters'
+
 export const paymentService = {
+  async initializeTransaction(provider: string, orderId: string, userId: string, email: string, amount: number, ipAddress: string = 'unknown') {
+    // 1. Perform Fraud Check via Rust Fraud Service
+    try {
+      const fraudCheck = await RustClient.fraud.check({
+        user_id: userId,
+        amount,
+        currency: 'NGN',
+        ip_address: ipAddress,
+        shipping_country: 'NG',
+        device_id: 'unknown'
+      });
+
+      if (fraudCheck.recommendation === 'BLOCK') {
+        throw new Error('FRAUD_DETECTION_BLOCKED');
+      }
+    } catch (e: any) {
+      if (e.message === 'FRAUD_DETECTION_BLOCKED') throw e;
+      console.warn('Rust fraud service unavailable, proceeding with caution:', e);
+    }
+
+    const adapter = getPaymentAdapter(provider);
+    const callbackUrl = `${process.env.NEXTAUTH_URL}/checkout/success?orderId=${orderId}`;
+
+    const initResult = await adapter.initializeTransaction({
+      orderId,
+      userId,
+      email,
+      amountInSubunit: amount * 100,
+      currency: 'NGN',
+      callbackUrl,
+    });
+
+    // Create payment record
+    await prisma.payment.create({
+      data: {
+        orderId,
+        userId, 
+        amount: new Decimal(amount),
+        method: provider.toUpperCase(),
+        status: 'PENDING',
+        providerRef: initResult.providerRef,
+      }
+    });
+
+    return {
+      authorization_url: initResult.authorizationUrl,
+      reference: initResult.reference
+    };
+  },
+
   async initializePaystack(orderId: string, userId: string, email: string, amount: number, ipAddress: string = 'unknown') {
     // 1. Perform Fraud Check via Rust Fraud Service
     try {

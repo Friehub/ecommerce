@@ -1,0 +1,6 @@
+# Compiled output — never commit
+target/
+
+# Local data written by running services
+*.log
+data/

@@ -6,6 +6,7 @@ export const productVariantSchema = z.object({
   comparePrice: z.number().positive().optional(),
   attributes: z.record(z.any()),
   weightGrams: z.number().int().positive().optional(),
+  stock: z.number().int().min(0).optional().default(0),
 })
 
 export const productSchema = z.object({
@@ -13,6 +14,7 @@ export const productSchema = z.object({
   description: z.string().min(10),
   brandId: z.string(),
   categoryId: z.string(),
+  images: z.array(z.string()).optional(),
   variants: z.array(productVariantSchema).min(1),
 })
 
@@ -24,6 +26,13 @@ export const categorySchema = z.object({
   attributeSchema: z.record(z.any()).optional(),
 })
 
+export const updateProductSchema = z.object({
+  title: z.string().min(3).optional(),
+  description: z.string().min(10).optional(),
+  status: z.enum(['DRAFT', 'PENDING_APPROVAL', 'ACTIVE', 'INACTIVE', 'DELETED']).optional()
+})
+
 export type ProductInput = z.infer<typeof productSchema>
 export type ProductVariantInput = z.infer<typeof productVariantSchema>
 export type CategoryInput = z.infer<typeof categorySchema>
+export type UpdateProductInput = z.infer<typeof updateProductSchema>

@@ -3,23 +3,23 @@ import { inventoryService } from '../../inventory/services/inventory-service'
 
 export const cartService = {
   async getCart(sessionId: string, userId?: string) {
-    let cart = await prisma.cart.findUnique({
-      where: userId ? { userId_sessionId: { userId, sessionId } } : { sessionId },
-      include: { 
-        items: { 
-          include: { variant: { include: { product: true } } } 
-        } 
-      }
-    });
-
-    if (!cart) {
-      cart = await prisma.cart.create({
-        data: { sessionId, userId },
+    // 1. If userId is provided, prioritize finding the user's primary cart
+    if (userId) {
+      const userCart = await prisma.cart.findUnique({
+        where: { userId },
         include: { items: { include: { variant: { include: { product: true } } } } }
       });
+      if (userCart) return userCart;
     }
 
-    return cart;
+    // 2. Use upsert to either find the session cart or create it atomically
+    // If userId is provided but no userCart was found, this will "claim" the session cart for the user
+    return await prisma.cart.upsert({
+      where: { sessionId },
+      update: userId ? { userId } : {},
+      create: { sessionId, userId },
+      include: { items: { include: { variant: { include: { product: true } } } } }
+    });
   },
 
   async addItem(sessionId: string, variantId: string, quantity: number, userId?: string) {

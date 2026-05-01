@@ -20,8 +20,10 @@ export const reviewService = {
         productId,
         rating,
         comment,
-        images,
-        status: 'PENDING' // Moderation by default
+        status: 'PENDING', // Moderation by default
+        media: {
+          create: images.map(url => ({ url }))
+        }
       }
     });
   },

@@ -16,11 +16,11 @@ export const cacheService = {
   },
 
   async wrap<T>(key: string, fn: () => Promise<T>, ttlSeconds: number = 3600): Promise<T> {
-    const cached = await this.get<T>(key);
+    const cached = await cacheService.get<T>(key);
     if (cached) return cached;
 
     const fresh = await fn();
-    await this.set(key, fresh, ttlSeconds);
+    await cacheService.set(key, fresh, ttlSeconds);
     return fresh;
   }
 };

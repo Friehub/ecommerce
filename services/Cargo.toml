@@ -1,0 +1,67 @@
+[workspace]
+members = [
+    "shared",
+    "search",
+    "auction",
+    "inventory",
+    "fraud",
+    "recommendations",
+    "image-processor",
+]
+resolver = "2"
+
+[workspace.dependencies]
+# Async runtime
+tokio          = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "net", "signal"] }
+tokio-util     = { version = "0.7", features = ["full"] }
+
+# Serialization
+serde          = { version = "1.0", features = ["derive"] }
+serde_json     = "1.0"
+
+# HTTP server
+axum           = { version = "0.7", features = ["macros", "json"] }
+tower-http     = { version = "0.5", features = ["cors", "request-id", "propagate-header", "util"] }
+tower          = "0.5"
+
+# gRPC (Ad Auction service only)
+tonic          = "0.14"
+prost          = "0.14"
+tonic-prost    = "0.14"
+tonic-prost-build = "0.14"
+
+# Error handling
+thiserror      = "1.0"
+anyhow         = "1.0"
+
+# Tracing / Observability
+tracing            = { version = "0.1", features = ["attributes"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+metrics                    = "0.24"
+metrics-exporter-prometheus = "0.16"
+
+# Utilities
+uuid       = { version = "1.0", features = ["v4", "serde"] }
+dashmap    = "6.1"
+governor   = "0.7"
+async-trait = "0.1"
+futures    = "0.3"
+rand       = "0.8"
+regex      = "1"
+reqwest    = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+
+# Money — CRITICAL: never use f64 for money
+rust_decimal        = { version = "1.35", features = ["serde-float"] }
+rust_decimal_macros = "1.35"
+
+# In-memory cache
+moka = { version = "0.12", features = ["future"] }
+
+# Redis (inventory reservation)
+redis = { version = "0.25", features = ["tokio-comp", "connection-manager"] }
+
+# Database (fraud + recommendations read models)
+sqlx = { version = "0.7", features = ["postgres", "runtime-tokio", "uuid", "rust_decimal"] }
+
+# Shared crate
+ecom-shared = { path = "shared" }

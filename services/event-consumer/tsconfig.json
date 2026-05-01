@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDirs": ["src", "../../packages"],
+    "baseUrl": ".",
+    "paths": {
+      "@ecom/db": ["../../packages/db"],
+      "@ecom/shared/*": ["../../packages/shared/*"],
+      "@ecom/api/*": ["../../packages/api/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}

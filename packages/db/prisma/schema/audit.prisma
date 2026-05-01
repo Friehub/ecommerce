@@ -1,0 +1,8 @@
+// audit.prisma
+model EventLog {
+  id        String   @id @default(cuid())
+  topic     String
+  payload   Json
+  status    String   @default("PUBLISHED") // PUBLISHED, FAILED, RETRIED
+  createdAt DateTime @default(now())
+}

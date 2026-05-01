@@ -1,0 +1,8 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on shared package cache
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 9.34s
+     Running `target/debug/image-processor`
+[2m2026-04-30T17:54:34.198558Z[0m [32m INFO[0m [2mimage_processor[0m[2m:[0m Image Processor service listening on 0.0.0.0:3006

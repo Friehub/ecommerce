@@ -1,0 +1,38 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+warning: unused import: `Deserialize`
+ --> fraud/src/handlers.rs:2:13
+  |
+2 | use serde::{Deserialize, Serialize};
+  |             ^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused variable: `user_id`
+  --> fraud/src/db.rs:15:42
+   |
+15 |     pub async fn get_user_history(&self, user_id: &str) -> Result<(i64, Decimal)> {
+   |                                          ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_user_id`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: field `pool` is never read
+ --> fraud/src/db.rs:7:5
+  |
+6 | pub struct FraudDb {
+  |            ------- field in this struct
+7 |     pool: PgPool,
+  |     ^^^^
+  |
+  = note: `#[warn(dead_code)]` on by default
+
+warning: `fraud` (bin "fraud") generated 3 warnings (run `cargo fix --bin "fraud"` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 29s
+     Running `target/debug/fraud`
+Error: error returned from database: password authentication failed for user "postgres"
+
+Caused by:
+    password authentication failed for user "postgres"

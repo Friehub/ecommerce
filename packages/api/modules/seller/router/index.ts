@@ -27,4 +27,27 @@ export const sellerRouter = createTRPCRouter({
       include: { user: true, documents: true }
     });
   }),
+
+  listMyProducts: sellerProcedure.query(async ({ ctx }) => {
+    const seller = await prisma.seller.findUnique({
+      where: { userId: ctx.session.user.id }
+    });
+    
+    if (!seller) throw new Error('NOT_A_SELLER');
+    
+    return await prisma.product.findMany({
+      where: { sellerId: seller.id },
+      include: {
+        variants: {
+          include: {
+            stockLevels: true
+          }
+        },
+        category: true,
+        brand: true,
+        media: true,
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  }),
 });

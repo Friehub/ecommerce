@@ -1,0 +1,48 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+warning: unused import: `std::sync::Arc`
+ --> inventory/src/redis_client.rs:3:5
+  |
+3 | use std::sync::Arc;
+  |     ^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: use of deprecated method `redis::Client::get_async_connection`: aio::Connection is deprecated. Use client::get_multiplexed_async_connection instead.
+  --> inventory/src/redis_client.rs:16:36
+   |
+16 |         let mut conn = self.client.get_async_connection().await?;
+   |                                    ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `redis::Client::get_async_connection`: aio::Connection is deprecated. Use client::get_multiplexed_async_connection instead.
+  --> inventory/src/redis_client.rs:51:36
+   |
+51 |         let mut conn = self.client.get_async_connection().await?;
+   |                                    ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated method `redis::Client::get_async_connection`: aio::Connection is deprecated. Use client::get_multiplexed_async_connection instead.
+  --> inventory/src/redis_client.rs:60:36
+   |
+60 |         let mut conn = self.client.get_async_connection().await?;
+   |                                    ^^^^^^^^^^^^^^^^^^^^
+
+warning: method `release_reservation` is never used
+  --> inventory/src/redis_client.rs:59:18
+   |
+9  | impl InventoryRedis {
+   | ------------------- method in this implementation
+...
+59 |     pub async fn release_reservation(&self, sku: &str, reservation_id: &str) -> Result<bool> {
+   |                  ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: `inventory` (bin "inventory") generated 5 warnings (run `cargo fix --bin "inventory"` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 25s
+     Running `target/debug/inventory`
+[2m2026-04-30T17:55:53.747424Z[0m [32m INFO[0m [2minventory[0m[2m:[0m Inventory service listening on 0.0.0.0:3002

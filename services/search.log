@@ -1,0 +1,93 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+   Compiling search v0.1.0 (/home/oxisrael/Friehub/Taas/jumia-clone/services/search)
+warning: unused import: `Count`
+ --> search/src/handlers.rs:5:35
+  |
+5 | use tantivy::collector::{TopDocs, Count};
+  |                                   ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused imports: `RangeQuery` and `TermQuery`
+ --> search/src/handlers.rs:6:35
+  |
+6 | use tantivy::query::{QueryParser, TermQuery, RangeQuery};
+  |                                   ^^^^^^^^^  ^^^^^^^^^^
+
+warning: unused import: `Facet`
+ --> search/src/handlers.rs:7:29
+  |
+7 | use tantivy::schema::{Term, Facet, Document};
+  |                             ^^^^^
+
+warning: multiple fields are never read
+  --> search/src/index.rs:15:9
+   |
+13 | pub struct ProductFields {
+   |            ------------- fields in this struct
+14 |     pub variant_id: Field,
+15 |     pub product_id: Field,
+   |         ^^^^^^^^^^
+...
+19 |     pub category_id: Field,
+   |         ^^^^^^^^^^^
+20 |     pub category_name: Field,
+   |         ^^^^^^^^^^^^^
+21 |     pub seller_id: Field,
+   |         ^^^^^^^^^
+22 |     pub seller_name: Field,
+   |         ^^^^^^^^^^^
+23 |     pub price: Field,
+   |         ^^^^^
+24 |     pub compare_price: Field,
+   |         ^^^^^^^^^^^^^
+25 |     pub discount_pct: Field,
+   |         ^^^^^^^^^^^^
+26 |     pub rating: Field,
+   |         ^^^^^^
+27 |     pub review_count: Field,
+   |         ^^^^^^^^^^^^
+28 |     pub sales_velocity: Field,
+   |         ^^^^^^^^^^^^^^
+29 |     pub is_active: Field,
+   |         ^^^^^^^^^
+30 |     pub is_in_stock: Field,
+   |         ^^^^^^^^^^^
+31 |     pub is_flash_sale: Field,
+   |         ^^^^^^^^^^^^^
+32 |     pub is_official_store: Field,
+   |         ^^^^^^^^^^^^^^^^^
+33 |     pub shipping_days: Field,
+   |         ^^^^^^^^^^^^^
+34 |     pub attributes: Field,
+   |         ^^^^^^^^^^
+35 |     pub image_url: Field,
+   |         ^^^^^^^^^
+36 |     pub created_at: Field,
+   |         ^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: fields `category_id`, `brand`, `min_price`, and `max_price` are never read
+  --> search/src/handlers.rs:16:9
+   |
+12 | pub struct SearchParams {
+   |            ------------ fields in this struct
+...
+16 |     pub category_id: Option<String>,
+   |         ^^^^^^^^^^^
+17 |     pub brand: Option<String>,
+   |         ^^^^^
+18 |     pub min_price: Option<f64>,
+   |         ^^^^^^^^^
+19 |     pub max_price: Option<f64>,
+   |         ^^^^^^^^^
+
+warning: `search` (bin "search") generated 5 warnings (run `cargo fix --bin "search"` to apply 3 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 17s
+     Running `target/debug/search`
+[2m2026-04-30T17:55:48.135013Z[0m [32m INFO[0m [2msearch[0m[2m:[0m Search service listening on 0.0.0.0:3001

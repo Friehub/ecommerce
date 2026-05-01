@@ -1,0 +1,69 @@
+name: Deploy — Staging
+
+on:
+  push:
+    branches: [staging]
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: true  # staging deploys can be superseded
+
+jobs:
+  deploy:
+    name: Deploy Staging
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @ecom/db generate
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Write staging .env
+        run: |
+          cat > /opt/jumia-staging/.env.staging << 'ENVEOF'
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DATABASE_URL=postgresql://ecom:${{ secrets.DB_PASSWORD }}@postgres:5433/ecom_staging
+          REDIS_URL=redis://redis:6380
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL=https://staging.yourdomain.com
+          PAYSTACK_SECRET=${{ secrets.PAYSTACK_SECRET }}
+          NODE_ENV=production
+          RUST_LOG=info
+          PORT=4001
+          ENVEOF
+          chmod 600 /opt/jumia-staging/.env.staging
+
+      - name: Sync code
+        run: |
+          rsync -av --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='target' \
+            --exclude='.env*' \
+            $GITHUB_WORKSPACE/ /opt/jumia-staging/
+
+      - name: Migrate staging database
+        working-directory: /opt/jumia-staging
+        run: |
+          docker compose -f docker-compose.staging.yml --env-file .env.staging \
+            run --rm --no-deps api \
+            sh -c "npx prisma migrate deploy"
+
+      - name: Deploy staging
+        working-directory: /opt/jumia-staging
+        run: |
+          docker compose -f docker-compose.staging.yml --env-file .env.staging \
+            up -d --build

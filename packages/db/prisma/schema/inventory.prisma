@@ -1,0 +1,45 @@
+// inventory.prisma
+model Warehouse {
+  id          String        @id @default(cuid())
+  name        String
+  address     String
+  type        WarehouseType @default(SELLER_MANAGED)
+  stockLevels StockLevel[]
+}
+
+enum WarehouseType {
+  SELLER_MANAGED
+  JUMIA_HUB
+}
+
+model StockLevel {
+  id          String @id @default(cuid())
+  variantId   String
+  sellerId    String
+  warehouseId String
+  qtyOnHand   Int    @default(0)
+  qtyReserved Int    @default(0)
+
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  warehouse Warehouse      @relation(fields: [warehouseId], references: [id])
+
+  @@unique([variantId, sellerId, warehouseId])
+}
+
+model StockReservation {
+  id        String            @id @default(cuid())
+  variantId String
+  orderId   String?
+  quantity  Int
+  expiresAt DateTime
+  status    ReservationStatus @default(ACTIVE)
+
+  variant ProductVariant @relation(fields: [variantId], references: [id])
+  order   Order?         @relation(fields: [orderId], references: [id])
+}
+
+enum ReservationStatus {
+  ACTIVE
+  CONFIRMED
+  RELEASED
+}

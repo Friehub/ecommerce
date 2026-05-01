@@ -1,13 +1,14 @@
 import { createTRPCRouter, protectedProcedure, sellerProcedure } from "../../../trpc";
-import { prisma } from "@ecom/db";
+import { prisma, PackageStatus } from "@ecom/db";
 import { z } from "zod";
 import { orderService } from "../services/order-service";
+import { packageService } from "../services/package-service";
 
 export const orderRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({
       cartId: z.string(),
-      paymentMethod: z.enum(['CARD', 'POD', 'WALLET']),
+      paymentMethod: z.string(), // Loosen for different providers
       addressId: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -31,12 +32,10 @@ export const orderRouter = createTRPCRouter({
   updatePackageStatus: sellerProcedure
     .input(z.object({
       packageId: z.string(),
-      status: z.any(),
+      status: z.nativeEnum(PackageStatus),
+      trackingNumber: z.string().optional(),
     }))
     .mutation(async ({ input }) => {
-      return await prisma.orderPackage.update({
-        where: { id: input.packageId },
-        data: { status: input.status }
-      });
+      return await packageService.updateStatus(input.packageId, input.status, input.trackingNumber);
     }),
 });

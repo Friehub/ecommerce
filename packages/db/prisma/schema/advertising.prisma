@@ -1,0 +1,73 @@
+// advertising.prisma
+model AdCampaign {
+  id        String         @id @default(cuid())
+  sellerId  String
+  name      String
+  budget    Decimal        @db.Decimal(12, 2)
+  status    CampaignStatus @default(ACTIVE)
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime       @default(now())
+
+  seller   Seller    @relation(fields: [sellerId], references: [id])
+  adGroups AdGroup[]
+}
+
+enum CampaignStatus {
+  ACTIVE
+  PAUSED
+  ENDED
+  OUT_OF_BUDGET
+}
+
+model AdGroup {
+  id         String  @id @default(cuid())
+  campaignId String
+  productId  String
+  bid        Decimal @db.Decimal(12, 2)
+
+  campaign      AdCampaign     @relation(fields: [campaignId], references: [id])
+  product       Product        @relation(fields: [productId], references: [id])
+  keywords      AdKeyword[]
+  impressions   AdImpression[]
+  clicks        AdClick[]
+  adConversions AdConversion[]
+}
+
+model AdKeyword {
+  id        String @id @default(cuid())
+  adGroupId String
+  text      String
+
+  adGroup AdGroup @relation(fields: [adGroupId], references: [id])
+}
+
+model AdImpression {
+  id        String   @id @default(cuid())
+  adGroupId String
+  userId    String?
+  createdAt DateTime @default(now())
+
+  adGroup AdGroup @relation(fields: [adGroupId], references: [id])
+}
+
+model AdClick {
+  id        String   @id @default(cuid())
+  adGroupId String
+  userId    String?
+  cost      Decimal  @db.Decimal(12, 2)
+  createdAt DateTime @default(now())
+
+  adGroup AdGroup @relation(fields: [adGroupId], references: [id])
+}
+
+model AdConversion {
+  id          String   @id @default(cuid())
+  adGroupId   String
+  orderLineId String
+  amount      Decimal  @db.Decimal(12, 2)
+  createdAt   DateTime @default(now())
+
+  adGroup   AdGroup   @relation(fields: [adGroupId], references: [id])
+  orderLine OrderLine @relation(fields: [orderLineId], references: [id])
+}

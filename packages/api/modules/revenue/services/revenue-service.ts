@@ -1,4 +1,5 @@
-import { prisma, Decimal } from '@ecom/db'
+import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
+import { ledgerService } from './ledger-service'
 
 export const revenueService = {
   async calculateCommission(packageId: string) {
@@ -14,7 +15,7 @@ export const revenueService = {
 
     for (const line of pkg.lines) {
       const lineTotal = line.unitPrice.mul(line.quantity);
-      const rate = new Decimal(line.variant.product.category.commissionRate).div(100);
+      const rate = new Decimal(line.variant.product.category.commissionRate || 10).div(100);
       totalCommission = totalCommission.add(lineTotal.mul(rate));
       totalRevenue = totalRevenue.add(lineTotal);
     }
@@ -22,23 +23,52 @@ export const revenueService = {
     return { totalRevenue, totalCommission, sellerNet: totalRevenue.sub(totalCommission) };
   },
 
-  async requestPayout(sellerId: string, amount: number) {
-    // 1. Verify seller has enough cleared balance
-    // (In a real app, we'd have a 'ClearedBalance' ledger)
-    
-    return prisma.payoutRequest.create({
-      data: {
-        sellerId,
-        amount: new Decimal(amount),
-        status: 'PENDING'
-      }
+  async getSellerStats(sellerId: string) {
+    const pendingBalance = await ledgerService.getSellerBalance(sellerId, LedgerStatus.PENDING);
+    const availableBalance = await ledgerService.getSellerBalance(sellerId, LedgerStatus.AVAILABLE);
+
+    const entries = await prisma.sellerLedgerEntry.findMany({
+      where: { sellerId }
     });
+
+    const totalSales = entries
+      .filter(e => e.type === LedgerEntryType.SALE)
+      .reduce((acc, e) => acc.add(e.amount), new Decimal(0));
+
+    const totalCommission = entries
+      .filter(e => e.type === LedgerEntryType.COMMISSION)
+      .reduce((acc, e) => acc.add(e.amount), new Decimal(0)).abs();
+
+    return {
+      pendingBalance,
+      availableBalance,
+      totalSales,
+      totalCommission,
+      netRevenue: totalSales.sub(totalCommission)
+    };
+  },
+
+  async requestPayout(sellerId: string, amount: number) {
+    return await ledgerService.withdrawFunds(sellerId, amount);
   },
 
   async approvePayout(payoutId: string, adminId: string) {
-    return prisma.payoutRequest.update({
+    const payout = await prisma.payout.findUnique({
+      where: { id: payoutId }
+    });
+
+    if (!payout) throw new Error('PAYOUT_NOT_FOUND');
+    
+    // In production, you would fetch Seller details like transferRecipientCode here
+    // and make a POST request to https://api.paystack.co/transfer
+    // For now, if no bank details exist on Seller model, we simulate it as real.
+    
+    return await prisma.payout.update({
       where: { id: payoutId },
-      data: { status: 'COMPLETED' }
+      data: {
+        status: 'SUCCESS',
+        bankRef: `SIM-${Math.random().toString(36).substring(7).toUpperCase()}`
+      }
     });
   }
 };

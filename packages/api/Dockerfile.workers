@@ -1,0 +1,39 @@
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+RUN npm install -g pnpm
+
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY packages/api/package.json ./packages/api/
+COPY packages/db/package.json ./packages/db/
+COPY packages/shared/package.json ./packages/shared/
+
+RUN pnpm install --frozen-lockfile --filter @ecom/api...
+
+FROM node:20-alpine AS builder
+RUN npm install -g pnpm
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+RUN pnpm --filter @ecom/db generate
+RUN pnpm --filter @ecom/api build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 worker
+
+COPY --from=builder /app/packages/api/dist ./packages/api/dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages ./packages
+
+USER worker
+
+# run-workers.ts compiles to dist/scripts/run-workers.js
+CMD ["node", "packages/api/dist/scripts/run-workers.js"]

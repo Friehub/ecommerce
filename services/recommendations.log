@@ -1,0 +1,37 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+warning: unused import: `std::sync::Arc`
+ --> recommendations/src/service.rs:4:5
+  |
+4 | use std::sync::Arc;
+  |     ^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused variable: `user_id`
+  --> recommendations/src/engine.rs:29:44
+   |
+29 |     pub fn get_user_recommendations(&self, user_id: &str) -> Vec<RecommendedProduct> {
+   |                                            ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_user_id`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: field `db` is never read
+ --> recommendations/src/service.rs:8:5
+  |
+7 | pub struct RecommendationService {
+  |            --------------------- field in this struct
+8 |     db: PgPool,
+  |     ^^
+  |
+  = note: `#[warn(dead_code)]` on by default
+
+warning: `recommendations` (bin "recommendations") generated 3 warnings (run `cargo fix --bin "recommendations"` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 32s
+     Running `target/debug/recommendations`
+Error: error returned from database: password authentication failed for user "postgres"
+
+Caused by:
+    password authentication failed for user "postgres"

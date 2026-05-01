@@ -1,6 +1,19 @@
-import { prisma, Decimal } from '@ecom/db'
+import { prisma, Decimal, OrderStatus } from '@ecom/db'
 import { publishEvent, queues } from '@ecom/shared'
 import { inventoryService } from '../../inventory/services/inventory-service'
+import { ledgerService } from '../../revenue/services/ledger-service'
+
+const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+  PENDING_PAYMENT: ['PAID', 'CANCELLED'],
+  PAID: ['PROCESSING', 'CANCELLED'],
+  PROCESSING: ['SHIPPED', 'CANCELLED'],
+  SHIPPED: ['DELIVERED', 'CANCELLED'],
+  DELIVERED: ['COMPLETED', 'RETURN_REQUESTED'],
+  COMPLETED: [],
+  CANCELLED: [],
+  RETURN_REQUESTED: ['RETURNED', 'DELIVERED'],
+  RETURNED: []
+};
 
 export const orderService = {
   async createFromCart(userId: string, cartId: string, paymentMethod: string, addressId: string) {
@@ -52,7 +65,7 @@ export const orderService = {
 
       // 3. Reserve stock for all items
       for (const item of cart.items) {
-        const reserved = await inventoryService.reserveStock(item.variantId, item.quantity, newOrder.id);
+        const reserved = await inventoryService.reserveStock(item.variantId, item.quantity, newOrder.id, userId, tx);
         if (!reserved) throw new Error(`STOCK_EXHAUSTED:${item.variantId}`);
       }
 
@@ -63,7 +76,11 @@ export const orderService = {
     });
 
     // 5. Fire event
-    await publishEvent('order.created', { orderId: order.id, userId });
+    await publishEvent('order.created', { 
+      orderId: order.id, 
+      userId, 
+      total: order.total.toNumber() 
+    });
 
     // 6. Schedule SLA check (Cancel if not paid in 30 mins)
     await queues.orderQueue.add('sla-payment-timeout', { orderId: order.id }, { delay: 30 * 60 * 1000 });
@@ -71,7 +88,19 @@ export const orderService = {
     return order;
   },
 
-  async updateStatus(orderId: string, status: any) {
+  async updateStatus(orderId: string, status: OrderStatus) {
+    const currentOrder = await prisma.order.findUnique({
+      where: { id: orderId }
+    });
+
+    if (!currentOrder) throw new Error('ORDER_NOT_FOUND');
+
+    // Enforce state machine
+    const allowed = ORDER_TRANSITIONS[currentOrder.status];
+    if (!allowed.includes(status)) {
+      throw new Error(`INVALID_TRANSITION:${currentOrder.status}->${status}`);
+    }
+
     const order = await prisma.order.update({
       where: { id: orderId },
       data: { status },
@@ -80,8 +109,31 @@ export const orderService = {
 
     await publishEvent('order.status_updated', { orderId, status });
 
+    // Side effects
     if (status === 'PAID') {
       await inventoryService.confirmStock(orderId);
+      
+      // Record sales in ledger (Pending)
+      for (const pkg of order.packages) {
+        const lines = await prisma.orderLine.findMany({ where: { packageId: pkg.id } });
+        for (const line of lines) {
+          await ledgerService.recordSale(line.id);
+        }
+        await publishEvent('package.pending_confirmation', { packageId: pkg.id, sellerId: pkg.sellerId });
+      }
+    }
+
+    if (status === 'CANCELLED') {
+      await inventoryService.releaseStock(orderId);
+      await publishEvent('order.cancelled', { orderId, reason: 'Manual update' });
+    }
+
+    if (status === 'DELIVERED') {
+      // Set release date for ledger entries (7-day window)
+      await ledgerService.scheduleEscrowRelease(orderId);
+      
+      // Start 7-day escrow timer job in background
+      await queues.orderQueue.add('escrow-release', { orderId }, { delay: 7 * 24 * 60 * 60 * 1000 });
     }
 
     return order;

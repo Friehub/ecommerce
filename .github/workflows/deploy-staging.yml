@@ -61,15 +61,19 @@ jobs:
             --exclude='.env*' \
             $GITHUB_WORKSPACE/ /opt/runner-work/jumia-staging/
 
+      - name: Start database
+        working-directory: /opt/runner-work/jumia-staging
+        run: |
+          docker compose -f docker-compose.staging.yml --env-file .env.staging up -d postgres
+          echo "Waiting for database to be ready..."
+          sleep 10
+
       - name: Migrate staging database
         working-directory: /opt/runner-work/jumia-staging
         run: |
-          docker compose -f docker-compose.staging.yml --env-file .env.staging \
-            run --rm --no-deps api \
-            sh -c "npx prisma migrate deploy"
+          DATABASE_URL="postgresql://ecom:${{ secrets.DB_PASSWORD }}@localhost:5433/ecom_staging" pnpm --filter @ecom/db prisma migrate deploy
 
       - name: Deploy staging
         working-directory: /opt/runner-work/jumia-staging
         run: |
-          docker compose -f docker-compose.staging.yml --env-file .env.staging \
-            up -d --build
+          docker compose -f docker-compose.staging.yml --env-file .env.staging up -d --build

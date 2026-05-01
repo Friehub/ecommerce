@@ -1,0 +1,20 @@
+// wishlist.prisma
+model Wishlist {
+  id     String         @id @default(cuid())
+  userId String         @unique
+  items  WishlistItem[]
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model WishlistItem {
+  id         String   @id @default(cuid())
+  wishlistId String
+  variantId  String
+  addedAt    DateTime @default(now())
+
+  wishlist Wishlist       @relation(fields: [wishlistId], references: [id])
+  variant  ProductVariant @relation(fields: [variantId], references: [id])
+
+  @@unique([wishlistId, variantId])
+}

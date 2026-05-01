@@ -24,10 +24,35 @@ export const notificationService = {
       });
     }
 
-    // 3. Dispatch external (stubs)
+    // 3. Dispatch external via Resend API using standard Fetch
     if (sendEmail) {
-      console.log(`[STUB] Sending Email to user ${userId} | Subject: ${title}`);
-      // e.g. Resend.sendEmail(...)
+      const RESEND_API_KEY = process.env.RESEND_API_KEY || 're_placeholder';
+      const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'help@friehub.cloud';
+
+      if (RESEND_API_KEY !== 're_placeholder') {
+        try {
+          const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+          if (user?.email) {
+            await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                from: `Friehub Jumia <${RESEND_FROM_EMAIL}>`,
+                to: [user.email],
+                subject: title,
+                html: message
+              })
+            });
+          }
+        } catch (err: any) {
+          console.warn('Could not send email via Resend:', err.message);
+        }
+      } else {
+        console.log(`[STUB/TEST] Sending Email via Resend to user ${userId} | Subject: ${title}`);
+      }
     }
 
     if (sendSms) {

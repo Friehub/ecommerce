@@ -1,4 +1,6 @@
 import { orderWorker } from '../modules/order/workers/order-worker';
+import { notificationWorker } from '../modules/notification/workers/notification-worker';
+import { bulkImportWorker } from '../modules/catalog/workers/bulk-import-worker';
 import { ledgerService } from '../modules/revenue/services/ledger-service';
 import { prisma } from '@ecom/db';
 import * as cron from 'node-cron';
@@ -12,6 +14,15 @@ orderWorker.on('completed', (job) => {
 orderWorker.on('failed', (job, err) => {
   console.error(`❌ Job ${job?.id} failed:`, err);
 });
+
+notificationWorker.on('completed', (job) => {
+  console.log(`✅ Notification Job ${job.id} completed`);
+});
+
+notificationWorker.on('failed', (job, err) => {
+  console.error(`❌ Notification Job ${job?.id} failed:`, err);
+});
+
 
 // Daily Escrow Release (runs at 00:30 UTC every day)
 cron.schedule('30 0 * * *', async () => {
@@ -83,6 +94,8 @@ cron.schedule('0 2 * * *', async () => {
 process.on('SIGTERM', async () => {
   console.log('Stopping workers...');
   await orderWorker.close();
+  await notificationWorker.close();
+  await bulkImportWorker.close();
   process.exit(0);
 });
 

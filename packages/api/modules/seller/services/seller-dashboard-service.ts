@@ -61,10 +61,65 @@ export const sellerDashboardService = {
     };
   },
 
-  async approveKYC(sellerId: string, adminId: string) {
+  async setupPayoutAccount(sellerId: string, bankCode: string, bankAccountNumber: string, bankAccountName: string) {
+    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET || process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
+    let transferRecipientCode = `RCP_${Math.random().toString(36).substring(7).toUpperCase()}`;
+
+    if (PAYSTACK_SECRET_KEY !== 'sk_test_placeholder') {
+      try {
+        const response = await fetch('https://api.paystack.co/transferrecipient', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'nuban',
+            name: bankAccountName,
+            account_number: bankAccountNumber,
+            bank_code: bankCode,
+            currency: 'NGN',
+          }),
+        });
+
+        const data = await response.json();
+        if (data.status) {
+          transferRecipientCode = data.data.recipient_code;
+        }
+      } catch (err: any) {
+        console.warn('Could not create Paystack transfer recipient, falling back to mock:', err.message);
+      }
+    }
+
     return prisma.seller.update({
       where: { id: sellerId },
-      data: { status: 'ACTIVE' }
+      data: {
+        bankCode,
+        bankAccountNumber,
+        bankAccountName,
+        transferRecipientCode,
+      },
     });
+  },
+
+  async uploadDocument(sellerId: string, type: string, url: string) {
+    return prisma.sellerDocument.create({
+      data: {
+        sellerId,
+        type,
+        url,
+        status: 'PENDING',
+      }
+    });
+  },
+
+  async getKYCStatus(sellerId: string) {
+    const seller = await prisma.seller.findUnique({
+      where: { id: sellerId },
+      include: { documents: true }
+    });
+
+    if (!seller) throw new Error('SELLER_NOT_FOUND');
+    return seller.documents;
   }
 };

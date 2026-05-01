@@ -22,6 +22,7 @@ model User {
   reviews       Review[]
   notifications NotificationLog[]
   pref          NotificationPreference[]
+  wishlist      Wishlist?
 }
 
 enum UserRole {

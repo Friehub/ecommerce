@@ -14,7 +14,7 @@ export const reviewService = {
     if (!delivered) throw new Error('NOT_ELIGIBLE_TO_REVIEW');
 
     // 2. Create review
-    return prisma.review.create({
+    const review = await prisma.review.create({
       data: {
         userId,
         productId,
@@ -25,6 +25,31 @@ export const reviewService = {
         }
       }
     });
+
+    // 3. Recalculate seller average rating
+    try {
+      const product = await prisma.product.findUnique({
+        where: { id: productId },
+        select: { sellerId: true }
+      });
+
+      if (product) {
+        const avgResult = await prisma.review.aggregate({
+          where: { product: { sellerId: product.sellerId } },
+          _avg: { rating: true }
+        });
+
+        const newAvg = avgResult._avg.rating || 0;
+        await prisma.seller.update({
+          where: { id: product.sellerId },
+          data: { rating: newAvg }
+        });
+      }
+    } catch (err: any) {
+      console.warn('Failed to update seller rating:', err.message);
+    }
+
+    return review;
   },
 
   async getProductReviews(productId: string) {

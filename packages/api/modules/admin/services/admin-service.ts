@@ -22,6 +22,51 @@ export const adminService = {
     return seller;
   },
 
+  async reviewDocument(adminId: string, documentId: string, decision: 'APPROVED' | 'REJECTED', rejectionReason?: string) {
+    const doc = await prisma.sellerDocument.findUnique({
+      where: { id: documentId },
+      include: { seller: { include: { documents: true } } }
+    });
+
+    if (!doc) throw new Error('DOCUMENT_NOT_FOUND');
+
+    const updatedDoc = await prisma.sellerDocument.update({
+      where: { id: documentId },
+      data: {
+        status: decision,
+        rejectionReason: decision === 'REJECTED' ? rejectionReason : null,
+        reviewedAt: new Date(),
+        reviewedBy: adminId
+      }
+    });
+
+    // Check auto-activation rules based on User's Q2:
+    // Need at least one of [NIN] + one [BANK] document approved
+    const allDocs = doc.seller.documents;
+    // Replace the current one with its new status
+    const mappedDocs = allDocs.map(d => d.id === documentId ? updatedDoc : d);
+
+    const hasApprovedNIN = mappedDocs.some(d => d.type === 'NIN' && d.status === 'APPROVED');
+    const hasApprovedBank = mappedDocs.some(d => d.type === 'BANK' && d.status === 'APPROVED');
+
+    if (hasApprovedNIN && hasApprovedBank) {
+      await prisma.seller.update({
+        where: { id: doc.sellerId },
+        data: { status: 'ACTIVE' }
+      });
+      await publishEvent('seller.approved', { sellerId: doc.sellerId });
+    }
+
+    return updatedDoc;
+  },
+
+  async getPendingKYCQueue() {
+    return prisma.seller.findMany({
+      where: { status: 'PENDING_VERIFICATION' },
+      include: { documents: true }
+    });
+  },
+
   async getDisputeQueue() {
     return prisma.dispute.findMany({
       where: {

@@ -1,6 +1,7 @@
 import { createTRPCRouter, sellerProcedure, adminProcedure } from "../../../trpc";
 import { prisma } from "@ecom/db";
 import { z } from "zod";
+import { adminService } from "../../admin/services/admin-service";
 import { sellerDashboardService } from "../services/seller-dashboard-service";
 
 export const sellerRouter = createTRPCRouter({
@@ -18,7 +19,7 @@ export const sellerRouter = createTRPCRouter({
   approveSeller: adminProcedure
     .input(z.object({ sellerId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      return await sellerDashboardService.approveKYC(input.sellerId, ctx.session.user.id);
+      return await adminService.approveSellerKYC(ctx.session.user.id, input.sellerId);
     }),
 
   listPendingSellers: adminProcedure.query(async () => {

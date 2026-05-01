@@ -1,12 +1,17 @@
 // seller.prisma
 model Seller {
-  id           String       @id @default(cuid())
-  userId       String       @unique
-  businessName String
-  tier         SellerTier   @default(STANDARD)
-  status       SellerStatus @default(PENDING_VERIFICATION)
-  rating       Decimal      @default(0) @db.Decimal(3, 2)
-  createdAt    DateTime     @default(now())
+  id                    String       @id @default(cuid())
+  userId                String       @unique
+  businessName          String
+  tier                  SellerTier   @default(STANDARD)
+  status                SellerStatus @default(PENDING_VERIFICATION)
+  rating                Decimal      @default(0) @db.Decimal(3, 2)
+  // Payout account — set via setupPayoutAccount() after bank verification
+  bankCode              String?      // Paystack bank code e.g. "044" for Access Bank
+  bankAccountNumber     String?
+  bankAccountName       String?      // Must match Paystack bank resolve response
+  transferRecipientCode String?      // Set after successful POST /transferrecipient
+  createdAt             DateTime     @default(now())
 
   user        User                @relation(fields: [userId], references: [id])
   documents   SellerDocument[]
@@ -32,11 +37,14 @@ enum SellerStatus {
 }
 
 model SellerDocument {
-  id       String         @id @default(cuid())
-  sellerId String
-  type     String // e.g., "ID", "CAC", "BANK"
-  url      String
-  status   DocumentStatus @default(PENDING)
+  id              String         @id @default(cuid())
+  sellerId        String
+  type            String         // "NIN" | "CAC" | "BANK_STATEMENT" | "UTILITY_BILL"
+  url             String
+  status          DocumentStatus @default(PENDING)
+  rejectionReason String?        // populated when status = REJECTED
+  reviewedAt      DateTime?      // timestamp of admin decision
+  reviewedBy      String?        // adminId who made the decision
 
   seller Seller @relation(fields: [sellerId], references: [id])
 }

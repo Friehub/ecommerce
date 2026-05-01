@@ -59,20 +59,22 @@ model ProductVariant {
   id           String   @id @default(cuid())
   productId    String
   sku          String   @unique
+  ean          String?  @unique // International Article Number (barcode) for warehouse scanning
   attributes   Json // e.g., { "color": "Red", "size": "XL" }
   price        Decimal  @db.Decimal(12, 2)
   comparePrice Decimal? @db.Decimal(12, 2)
   weightGrams  Int?
 
-  product      Product            @relation(fields: [productId], references: [id])
-  stockLevels  StockLevel[]
-  cartItems    CartItem[]
-  orderLines   OrderLine[]
-  flashSales   FlashSale[]
-  reservations StockReservation[]
-  media        ProductMedia[]
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  product       Product            @relation(fields: [productId], references: [id])
+  stockLevels   StockLevel[]
+  cartItems     CartItem[]
+  orderLines    OrderLine[]
+  flashSales    FlashSale[]
+  reservations  StockReservation[]
+  media         ProductMedia[]
+  wishlistItems WishlistItem[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 }
 
 model ProductMedia {

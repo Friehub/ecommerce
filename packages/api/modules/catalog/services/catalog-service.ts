@@ -83,6 +83,32 @@ export const catalogService = {
     return product;
   },
 
+  async updateVariantPrice(variantId: string, newPrice: number) {
+    const variant = await prisma.productVariant.findUnique({
+      where: { id: variantId }
+    });
+
+    if (!variant) throw new Error('VARIANT_NOT_FOUND');
+
+    const oldPrice = variant.price.toNumber();
+
+    const updated = await prisma.productVariant.update({
+      where: { id: variantId },
+      data: { price: newPrice }
+    });
+
+    // Fire price drop alert if new price is lower
+    if (newPrice < oldPrice) {
+      const { wishlistService } = await import('./wishlist-service');
+      await wishlistService.notifyPriceDrops(variantId, oldPrice, newPrice);
+    }
+
+    // Sync to search index
+    await this.syncToSearch(variantId);
+
+    return updated;
+  },
+
   async syncToSearch(variantId: string) {
     const variant = await prisma.productVariant.findUnique({
       where: { id: variantId },

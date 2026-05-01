@@ -132,5 +132,13 @@ export const inventoryService = {
     const available = (dbStock._sum.qtyOnHand || 0) - (dbStock._sum.qtyReserved || 0);
     await redis.set(`stock:${variantId}`, available);
     return available;
+  },
+
+  async getAvailableStock(variantId: string) {
+    const cached = await redis.get(`stock:${variantId}`);
+    if (cached !== null) {
+      return parseInt(cached, 10);
+    }
+    return this.syncStockFromDB(variantId);
   }
 };

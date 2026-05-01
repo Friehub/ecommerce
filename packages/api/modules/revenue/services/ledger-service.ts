@@ -170,6 +170,19 @@ export const ledgerService = {
   },
 
   async generateStatement(sellerId: string, periodStart: Date, periodEnd: Date) {
+    const existing = await prisma.sellerStatement.findFirst({
+      where: {
+        sellerId,
+        periodStart,
+        periodEnd
+      }
+    });
+
+    if (existing) {
+      console.log(`Statement already exists for seller ${sellerId} from ${periodStart} to ${periodEnd}. Returning existing statement.`);
+      return existing;
+    }
+
     const entries = await prisma.sellerLedgerEntry.findMany({
       where: {
         sellerId,

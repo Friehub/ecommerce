@@ -51,6 +51,12 @@ export const advertisingService = {
     if (!adGroup) throw new Error('AD_GROUP_NOT_FOUND');
     if (adGroup.campaign.status !== 'ACTIVE') return null; // Ignore clicks for inactive campaigns
 
+    // Prevent self-clicks from recording charges
+    if (userId && adGroup.campaign.seller.userId === userId) {
+      console.log(`Self-click detected for seller ${adGroup.campaign.sellerId}. Ignoring.`);
+      return null;
+    }
+
     const bidCost = adGroup.bid;
 
     return prisma.$transaction(async (tx) => {

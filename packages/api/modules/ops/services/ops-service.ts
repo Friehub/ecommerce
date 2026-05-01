@@ -7,7 +7,9 @@ export const opsService = {
     const totalUsers = await prisma.user.count();
 
     const gmvResult = await prisma.order.aggregate({
-      where: { status: 'PAID' },
+      where: {
+        status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED', 'RETURN_REQUESTED'] }
+      },
       _sum: { total: true }
     });
 

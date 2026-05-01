@@ -18,7 +18,8 @@ export const affiliateService = {
   },
 
   async generateLink(agentId: string, targetType: string, targetId?: string) {
-    const slug = Math.random().toString(36).substring(2, 10);
+    const crypto = await import('crypto');
+    const slug = crypto.randomBytes(4).toString('hex');
     
     return prisma.referralLink.create({
       data: {

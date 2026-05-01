@@ -13,6 +13,7 @@ interface CartContextType {
   totalItems: number;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  sessionId: string | null;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -81,7 +82,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         removeFromCart, 
         totalItems,
         isOpen,
-        setIsOpen
+        setIsOpen,
+        sessionId
       }}
     >
       {children}

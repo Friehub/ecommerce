@@ -1,6 +1,6 @@
 'use client';
 
-import { trpc } from '@/utils/trpc';
+import { api } from '@/trpc/react';
 import { 
   Wallet, 
   ArrowUpRight, 
@@ -8,16 +8,15 @@ import {
   Download,
   Loader2
 } from 'lucide-react';
-import { format } from 'date-fns';
 import { useState } from 'react';
 
 export default function SellerFinance() {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
-  const { data: stats, isLoading: statsLoading } = trpc.revenue.getMyStats.useQuery();
-  const { data: payouts, isLoading: payoutsLoading } = trpc.revenue.listMyPayouts.useQuery();
+  const { data: stats, isLoading: statsLoading } = api.revenue.getMyStats.useQuery();
+  const { data: payouts, isLoading: payoutsLoading } = api.revenue.listMyPayouts.useQuery();
   
-  const utils = trpc.useContext();
-  const requestPayout = trpc.revenue.requestPayout.useMutation({
+  const utils = api.useUtils();
+  const requestPayout = api.revenue.requestPayout.useMutation({
     onSuccess: () => {
       utils.revenue.getMyStats.invalidate();
       utils.revenue.listMyPayouts.invalidate();
@@ -120,7 +119,7 @@ export default function SellerFinance() {
               <tr key={payout.id} className="hover:bg-gray-50/50 transition-all">
                 <td className="px-6 py-5">
                   <div className="text-xs font-bold text-gray-900">{payout.id}</div>
-                  <div className="text-gray-400 text-[10px] mt-1">{format(new Date(payout.createdAt), 'MMM d, yyyy • HH:mm')}</div>
+                  <div className="text-gray-400 text-[10px] mt-1">{new Date(payout.createdAt).toLocaleString()}</div>
                 </td>
                 <td className="px-6 py-5 font-bold text-gray-900 text-xs">
                   ₦{Number(payout.amount).toLocaleString()}

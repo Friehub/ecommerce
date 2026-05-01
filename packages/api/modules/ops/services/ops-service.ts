@@ -19,12 +19,21 @@ export const opsService = {
       }
     });
 
+    const openDisputes = await prisma.dispute.count({
+      where: { status: 'OPEN' }
+    });
+
+    const gmv = gmvResult._sum.total?.toNumber() || 0;
+
     return {
       totalOrders,
       totalSellers,
+      activeSellers: totalSellers,
       totalUsers,
-      gmv: gmvResult._sum.total?.toNumber() || 0,
-      activeSessions
+      gmv,
+      totalGmv30d: gmv,
+      activeSessions,
+      openDisputes
     };
   },
 

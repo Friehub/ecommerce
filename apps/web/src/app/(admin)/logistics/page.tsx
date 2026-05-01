@@ -1,6 +1,6 @@
 'use client';
 
-import { api } from "@/utils/api";
+import { api } from "@/trpc/react";
 import { useState } from "react";
 
 export default function LogisticsAdminPage() {

@@ -59,7 +59,7 @@ export default function AccountPage() {
                  </div>
                  <div className="flex justify-between text-sm">
                    <span className="text-gray-500">Account Type</span>
-                   <span className="font-medium capitalize">{session.user?.role || 'Buyer'}</span>
+                   <span className="font-medium capitalize">{(session.user as any)?.role || 'Buyer'}</span>
                  </div>
               </div>
             </div>

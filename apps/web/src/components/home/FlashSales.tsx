@@ -24,7 +24,7 @@ export const FlashSales = () => {
   }
 
   // Filter for products that have a discount for flash sales (mock)
-  const flashProducts = products?.slice(0, 6) || [];
+  const flashProducts = products?.results?.slice(0, 6) || [];
 
   return (
     <section className="container mt-6">

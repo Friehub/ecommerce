@@ -8,6 +8,10 @@ export const opsRouter = createTRPCRouter({
     return await opsService.getGlobalMetrics();
   }),
 
+  getGlobalMetrics: adminProcedure.query(async () => {
+    return await opsService.getGlobalMetrics();
+  }),
+
   getAuditLogs: adminProcedure.query(async () => {
     return [];
   }),

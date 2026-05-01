@@ -1,6 +1,6 @@
 'use client';
 
-import { api } from "@/utils/api";
+import { api } from "@/trpc/react";
 import { useState } from "react";
 
 export default function AgentDashboard() {
@@ -82,7 +82,7 @@ export default function AgentDashboard() {
             <div style={{ marginBottom: '1rem' }}>
               <p style={{ fontWeight: 600, fontSize: '1rem' }}>Lagos Delivery</p>
               <p style={{ fontSize: '0.875rem', color: 'var(--gray-600)' }}>
-                {shipment.package.order.shippingAddress?.street || 'No address provided'}
+                {(shipment.package.order as any).address?.streetAddress || (shipment.package.order as any).shippingAddress?.street || 'No address provided'}
               </p>
             </div>
 

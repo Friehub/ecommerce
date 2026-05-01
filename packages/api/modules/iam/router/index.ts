@@ -37,7 +37,7 @@ export const iamRouter = createTRPCRouter({
     .input(sellerOnboardingSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        return await sellerService.onboard(ctx.session.user.id, input);
+        return await sellerService.onboard(ctx.session.user.id, input as any);
       } catch (error: any) {
         throw new TRPCError({
           code: "BAD_REQUEST",

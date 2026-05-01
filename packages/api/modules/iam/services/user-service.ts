@@ -48,7 +48,7 @@ export const userService = {
         data: { isDefault: false },
       })
     }
-    return prisma.userAddress.create({ data: { ...data, userId } })
+    return prisma.userAddress.create({ data: { ...data, userId } as any })
   },
 
   async getAddresses(userId: string) {

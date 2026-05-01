@@ -57,7 +57,7 @@ function SearchResults() {
               <h1 className="text-xl font-bold">
                 {query ? `Search results for "${query}"` : 'All Products'}
               </h1>
-              <p className="text-xs text-gray-500">{products?.length || 0} products found</p>
+              <p className="text-xs text-gray-500">{products?.results?.length || 0} products found</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm">
@@ -79,9 +79,9 @@ function SearchResults() {
                 <div key={i} className="aspect-[3/4] bg-gray-100 rounded animate-pulse" />
               ))}
             </div>
-          ) : products && products.length > 0 ? (
+          ) : products?.results && products.results.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {products.map((product: any) => (
+              {products.results.map((product: any) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

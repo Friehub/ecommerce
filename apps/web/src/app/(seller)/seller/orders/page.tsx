@@ -101,7 +101,7 @@ export default function SellerOrders() {
                       <Package size={18} className="text-gray-300" />
                     </div>
                     <div className="max-w-[180px] truncate">
-                      <div className="text-gray-900 font-bold text-xs">{pkg.lines[0]?.variant.product.name}</div>
+                      <div className="text-gray-900 font-bold text-xs">{(pkg.lines[0]?.variant as any)?.product?.title || (pkg.lines[0]?.variant as any)?.product?.name}</div>
                       {pkg.lines.length > 1 && <div className="text-gray-400 text-[10px]">+{pkg.lines.length - 1} other items</div>}
                     </div>
                   </div>

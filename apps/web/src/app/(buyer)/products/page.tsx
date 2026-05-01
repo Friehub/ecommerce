@@ -3,12 +3,13 @@ import { api } from "@/trpc/server";
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: { category?: string; brand?: string; q?: string };
+  searchParams: Promise<{ category?: string; brand?: string; q?: string }>;
 }) {
-  const products = await api.catalog.listProducts({
-    categoryId: searchParams.category,
-    brandId: searchParams.brand,
-    search: searchParams.q,
+  const sp = await searchParams;
+  const { results: products } = await api.catalog.listProducts.query({
+    categoryId: sp.category,
+    brandId: sp.brand,
+    search: sp.q,
   });
 
   return (

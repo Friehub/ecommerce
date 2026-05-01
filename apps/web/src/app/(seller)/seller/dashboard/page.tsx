@@ -26,14 +26,14 @@ export default function SellerDashboard() {
     },
     { 
       name: 'Total Orders', 
-      value: (metrics?.totalOrders || 0).toString(), 
+      value: ((metrics as any)?.totalOrders || (metrics?.deliveredOrders || 0) + (metrics?.pendingOrders || 0)).toString(), 
       change: 'Active', 
       icon: ShoppingBag, 
       color: 'text-blue-400' 
     },
     { 
       name: 'Fulfillment Rate', 
-      value: `${(metrics?.fulfillmentRate || 100).toFixed(1)}%`, 
+      value: `${((metrics as any)?.fulfillmentRate || 100).toFixed(1)}%`, 
       change: 'Goal: 95%', 
       icon: Package, 
       color: 'text-purple-400' 
@@ -141,19 +141,19 @@ export default function SellerDashboard() {
               <div>
                 <div className="flex justify-between text-[10px] mb-2 uppercase tracking-widest">
                   <span className="text-gray-500 font-bold">Fulfillment Rate</span>
-                  <span className="text-gray-900 font-bold">{(metrics?.fulfillmentRate || 100).toFixed(1)}%</span>
+                  <span className="text-gray-900 font-bold">{((metrics as any)?.fulfillmentRate || 100).toFixed(1)}%</span>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500" style={{ width: `${metrics?.fulfillmentRate || 100}%` }} />
+                  <div className="h-full bg-green-500" style={{ width: `${(metrics as any)?.fulfillmentRate || 100}%` }} />
                 </div>
               </div>
               <div>
                 <div className="flex justify-between text-[10px] mb-2 uppercase tracking-widest">
                   <span className="text-gray-500 font-bold">Average Rating</span>
-                  <span className="text-gray-900 font-bold">{(metrics?.rating || 0).toFixed(1)} / 5.0</span>
+                  <span className="text-gray-900 font-bold">{((metrics as any)?.rating || 0).toFixed(1)} / 5.0</span>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#f68b1e]" style={{ width: `${(metrics?.rating || 0) * 20}%` }} />
+                  <div className="h-full bg-[#f68b1e]" style={{ width: `${((metrics as any)?.rating || 0) * 20}%` }} />
                 </div>
               </div>
             </div>

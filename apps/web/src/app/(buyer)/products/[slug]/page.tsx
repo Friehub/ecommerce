@@ -90,7 +90,7 @@ export default async function ProductDetailPage({
               <div className="bg-white border rounded-lg p-4">
                 <h4 className="text-xs font-bold uppercase text-gray-500 mb-3">Seller Information</h4>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium">{product.seller.name || "Jumia Store"}</p>
+                  <p className="text-sm font-medium">{product.seller.businessName || "Jumia Store"}</p>
                   <p className="text-[10px] text-gray-500">85% Seller Score</p>
                   <p className="text-[10px] text-gray-500">2,345 Followers</p>
                 </div>

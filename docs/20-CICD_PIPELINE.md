@@ -83,7 +83,7 @@ tar xzf ./actions-runner-linux-x64-2.319.1.tar.gz
 
 # 3. Configure with your repo token
 ./config.sh \
-  --url https://github.com/YOUR_ORG/YOUR_REPO \
+  --url https://github.com/Friehub/ecommerce \
   --token YOUR_RUNNER_TOKEN \
   --name vps-production \
   --labels production \

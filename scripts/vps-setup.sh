@@ -45,7 +45,7 @@ echo "Skipped — run manually after Cloudflare DNS is propagated."
 
 echo "── Step 6: Clone repo ──────────────────────────────────────"
 mkdir -p /opt/jumia
-git clone https://github.com/YOUR_ORG/YOUR_REPO.git /opt/jumia
+git clone https://github.com/Friehub/ecommerce.git /opt/jumia
 echo "Edit /opt/jumia/.env.prod before deploying."
 
 echo "── Step 7: Certbot SSL ─────────────────────────────────────"

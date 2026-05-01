@@ -41,6 +41,8 @@ jobs:
     needs: validate
     runs-on: self-hosted
     environment: production
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
       - uses: actions/checkout@v4
@@ -142,7 +144,7 @@ jobs:
 
       # Slack notification — success
       - name: Notify success
-        if: success() && secrets.SLACK_WEBHOOK_URL != ''
+        if: success() && env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
@@ -154,7 +156,7 @@ jobs:
 
       # Slack notification — failure
       - name: Notify failure
-        if: failure() && secrets.SLACK_WEBHOOK_URL != ''
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
@@ -170,6 +172,8 @@ jobs:
     needs: deploy
     if: failure()
     runs-on: self-hosted
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - name: Rollback TypeScript services
         working-directory: /opt/jumia
@@ -181,7 +185,7 @@ jobs:
           echo "Rollback complete."
 
       - name: Notify rollback
-        if: secrets.SLACK_WEBHOOK_URL != ''
+        if: env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1
         with:
           payload: |

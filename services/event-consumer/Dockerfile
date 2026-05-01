@@ -25,4 +25,4 @@ WORKDIR /app/services/event-consumer
 
 USER consumer
 
-CMD ["node", "dist/index.js"]
+CMD ["pnpm", "start"]

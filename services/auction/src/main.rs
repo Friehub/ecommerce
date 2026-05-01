@@ -23,7 +23,7 @@ async fn main() -> anyhow::Result<()> {
     // Initialize gRPC Service
     let auction_service = MyAuction { engine };
 
-    let addr = "[0.0.0.0]:50051".parse()?;
+    let addr = "0.0.0.0:50051".parse()?;
     tracing::info!("Auction gRPC service listening on {}", addr);
 
     Server::builder()

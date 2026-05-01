@@ -2,9 +2,10 @@
   "name": "@ecom/shared",
   "version": "0.1.0",
   "private": true,
-  "main": "./src/index.ts",
+  "main": "./index.js",
   "types": "./src/index.ts",
   "scripts": {
+    "build": "tsc",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

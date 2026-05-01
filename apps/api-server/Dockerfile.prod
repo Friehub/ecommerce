@@ -8,6 +8,8 @@ COPY . .
 
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @ecom/db generate
+RUN pnpm --filter @ecom/shared build
+RUN pnpm --filter @ecom/api build
 RUN pnpm --filter @ecom/api-server build
 
 # ── Stage 3: Production runner ─────────────────────────────────

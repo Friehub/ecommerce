@@ -1,0 +1,225 @@
+version: '3.9'
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  search_index:
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ecom
+      POSTGRES_USER: ecom
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [internal]
+    command: >
+      postgres
+        -c shared_buffers=2GB
+        -c effective_cache_size=6GB
+        -c work_mem=64MB
+        -c max_connections=100
+        -c checkpoint_completion_target=0.9
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecom"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: >
+      redis-server
+        --maxmemory 512mb
+        --maxmemory-policy allkeys-lru
+        --appendonly yes
+        --save 900 1
+    volumes:
+      - redis_data:/data
+    networks: [internal]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./apps/web/.next/static:/var/www/_next/static:ro
+    networks: [internal]
+    depends_on:
+      web:
+        condition: service_started
+      api:
+        condition: service_started
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.prod
+    restart: always
+    environment:
+      NODE_ENV: production
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
+    networks: [internal]
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api-server/Dockerfile.prod
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      PAYSTACK_SECRET: ${PAYSTACK_SECRET}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
+      PORT: 4000
+      HOST: 0.0.0.0
+    networks: [internal]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  search:
+    build:
+      context: ./services
+      dockerfile: search/Dockerfile
+    restart: always
+    environment:
+      RUST_LOG: info
+    volumes:
+      - search_index:/data/index
+    networks: [internal]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  inventory:
+    build:
+      context: ./services
+      dockerfile: inventory/Dockerfile
+    restart: always
+    environment:
+      REDIS_URL: redis://redis:6379
+      RUST_LOG: info
+    networks: [internal]
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  fraud:
+    build:
+      context: ./services
+      dockerfile: fraud/Dockerfile
+    restart: always
+    networks: [internal]
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  recommendations:
+    build:
+      context: ./services
+      dockerfile: recommendations/Dockerfile
+    restart: always
+    networks: [internal]
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  auction:
+    build:
+      context: ./services
+      dockerfile: auction/Dockerfile
+    restart: always
+    networks: [internal]
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  image-processor:
+    build:
+      context: ./services
+      dockerfile: image-processor/Dockerfile
+    restart: always
+    environment:
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
+      R2_BUCKET: ${R2_BUCKET}
+    networks: [internal]
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  workers:
+    build:
+      context: .
+      dockerfile: packages/api/Dockerfile.workers
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
+      REDIS_URL: redis://redis:6379
+    networks: [internal]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  event-consumer:
+    build:
+      context: .
+      dockerfile: services/event-consumer/Dockerfile
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
+      REDIS_URL: redis://redis:6379
+    networks: [internal]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M

@@ -38,18 +38,7 @@ jobs:
       - name: Write staging .env
         run: |
           mkdir -p /opt/runner-work/jumia-staging
-          cat > /opt/runner-work/jumia-staging/.env.staging << 'ENVEOF'
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          DATABASE_URL=postgresql://ecom:${{ secrets.DB_PASSWORD }}@postgres:5433/ecom_staging
-          REDIS_URL=redis://redis:6380
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-          NEXTAUTH_URL=https://staging.yourdomain.com
-          PAYSTACK_SECRET=${{ secrets.PAYSTACK_SECRET }}
-          NODE_ENV=production
-          RUST_LOG=info
-          PORT=4001
-          ENVEOF
+          echo "${{ secrets.STAGING_ENV }}" > /opt/runner-work/jumia-staging/.env.staging
           chmod 600 /opt/runner-work/jumia-staging/.env.staging
 
       - name: Sync code

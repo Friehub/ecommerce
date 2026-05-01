@@ -37,9 +37,8 @@ jobs:
 
       - name: Write staging .env
         run: |
-          sudo mkdir -p /opt/jumia-staging || mkdir -p /opt/jumia-staging
-          sudo chown -R $USER /opt/jumia-staging || true
-          cat > /opt/jumia-staging/.env.staging << 'ENVEOF'
+          mkdir -p /opt/runner-work/jumia-staging
+          cat > /opt/runner-work/jumia-staging/.env.staging << 'ENVEOF'
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           DATABASE_URL=postgresql://ecom:${{ secrets.DB_PASSWORD }}@postgres:5433/ecom_staging
           REDIS_URL=redis://redis:6380
@@ -51,7 +50,7 @@ jobs:
           RUST_LOG=info
           PORT=4001
           ENVEOF
-          chmod 600 /opt/jumia-staging/.env.staging
+          chmod 600 /opt/runner-work/jumia-staging/.env.staging
 
       - name: Sync code
         run: |
@@ -60,17 +59,17 @@ jobs:
             --exclude='node_modules' \
             --exclude='target' \
             --exclude='.env*' \
-            $GITHUB_WORKSPACE/ /opt/jumia-staging/
+            $GITHUB_WORKSPACE/ /opt/runner-work/jumia-staging/
 
       - name: Migrate staging database
-        working-directory: /opt/jumia-staging
+        working-directory: /opt/runner-work/jumia-staging
         run: |
           docker compose -f docker-compose.staging.yml --env-file .env.staging \
             run --rm --no-deps api \
             sh -c "npx prisma migrate deploy"
 
       - name: Deploy staging
-        working-directory: /opt/jumia-staging
+        working-directory: /opt/runner-work/jumia-staging
         run: |
           docker compose -f docker-compose.staging.yml --env-file .env.staging \
             up -d --build

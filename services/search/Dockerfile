@@ -9,25 +9,8 @@ RUN apk add --no-cache musl-dev pkgconfig openssl-dev
 
 WORKDIR /app
 
-# Cache dependencies by copying manifests first
-COPY Cargo.toml Cargo.lock ./
-COPY shared/Cargo.toml ./shared/
-COPY search/Cargo.toml ./search/
-COPY inventory/Cargo.toml ./inventory/
-COPY auction/Cargo.toml ./auction/
-COPY fraud/Cargo.toml ./fraud/
-COPY recommendations/Cargo.toml ./recommendations/
-COPY image-processor/Cargo.toml ./image-processor/
-
-# Dummy src to let cargo fetch and cache all deps
-RUN mkdir -p shared/src && echo "pub fn main() {}" > shared/src/lib.rs
-RUN mkdir -p search/src && echo "fn main() {}" > search/src/main.rs
-RUN cargo build --release --bin search
-RUN rm -rf shared/src search/src
-
-# Now copy actual source and rebuild only what changed
+# Now copy actual source and build
 COPY . .
-RUN touch search/src/main.rs shared/src/lib.rs
 RUN cargo build --release --bin search
 
 # ── Stage 2: Minimal runtime ───────────────────────────────────

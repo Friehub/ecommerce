@@ -17,9 +17,11 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 consumer
 
-COPY --from=builder /app/services/event-consumer/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages ./packages
+COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/packages /app/packages
+COPY --from=builder /app/services/event-consumer /app/services/event-consumer
+
+WORKDIR /app/services/event-consumer
 
 USER consumer
 

@@ -19,9 +19,11 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 apiuser
 
-COPY --from=builder /app/apps/api-server/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages ./packages
+COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/packages /app/packages
+COPY --from=builder /app/apps/api-server /app/apps/api-server
+
+WORKDIR /app/apps/api-server
 
 USER apiuser
 

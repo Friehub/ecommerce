@@ -17,11 +17,10 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 worker
 
-COPY --from=builder /app/packages/api/dist ./packages/api/dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages ./packages
 
 USER worker
 
-# run-workers.ts compiles to dist/scripts/run-workers.js
-CMD ["node", "packages/api/dist/scripts/run-workers.js"]
+# run-workers.ts compiles to dist/api/scripts/run-workers.js
+CMD ["node", "packages/api/dist/api/scripts/run-workers.js"]

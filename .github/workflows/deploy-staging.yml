@@ -47,6 +47,7 @@ jobs:
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='target' \
+            --exclude='apps/web/.next/' \
             --exclude='.env*' \
             $GITHUB_WORKSPACE/ /opt/runner-work/jumia-staging/
 

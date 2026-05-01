@@ -84,3 +84,4 @@ yarn-error.log*
 
 # ─── Internal docs not for public ──────────────────────────────────
 docs/14-TAAS_EXTRACTION.md
+claude.md

@@ -7,6 +7,13 @@ exports.redis = void 0;
 const ioredis_1 = __importDefault(require("ioredis"));
 const globalForRedis = global;
 exports.redis = globalForRedis.redis ||
-    new ioredis_1.default(process.env.REDIS_URL || 'redis://localhost:6380');
+    new ioredis_1.default(process.env.REDIS_URL || 'redis://localhost:6380', {
+        lazyConnect: true,
+        maxRetriesPerRequest: null,
+        enableOfflineQueue: false
+    });
+exports.redis.on('error', function(err) {
+    // Swallow connection errors to prevent unhandled crashing
+});
 if (process.env.NODE_ENV !== 'production')
     globalForRedis.redis = exports.redis;

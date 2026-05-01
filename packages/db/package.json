@@ -19,8 +19,5 @@
     "prisma": "^6.0.0",
     "ts-node": "latest",
     "typescript": "^5"
-  },
-  "prisma": {
-    "schema": "prisma/schema"
   }
 }

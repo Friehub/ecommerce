@@ -76,7 +76,22 @@ jobs:
       - name: Prune Docker build cache
         run: docker builder prune -a -f || true
 
+      - name: Build staging services sequentially
+        working-directory: /opt/runner-work/jumia-staging
+        run: |
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build postgres redis
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build search
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build inventory
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build fraud
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build recommendations
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build auction
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build image-processor
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build api
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build workers event-consumer
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build web
+          docker compose -f docker-compose.staging.yml --env-file .env.staging build nginx
+
       - name: Deploy staging
         working-directory: /opt/runner-work/jumia-staging
         run: |
-          docker compose -f docker-compose.staging.yml --env-file .env.staging up -d --build
+          docker compose -f docker-compose.staging.yml --env-file .env.staging up -d

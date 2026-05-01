@@ -3,7 +3,7 @@
 # Usage: docker build -f search/Dockerfile -t ecom-search .
 
 # ── Stage 1: Build ─────────────────────────────────────────────
-FROM rust:1.78-alpine AS builder
+FROM rust:alpine AS builder
 
 RUN apk add --no-cache musl-dev pkgconfig openssl-dev
 

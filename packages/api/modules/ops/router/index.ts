@@ -9,10 +9,6 @@ export const opsRouter = createTRPCRouter({
   }),
 
   getAuditLogs: adminProcedure.query(async () => {
-    return await prisma.auditLog.findMany({
-      include: { admin: true },
-      orderBy: { createdAt: 'desc' },
-      take: 50
-    });
+    return [];
   }),
 });

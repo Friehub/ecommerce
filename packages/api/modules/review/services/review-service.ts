@@ -20,7 +20,6 @@ export const reviewService = {
         productId,
         rating,
         comment,
-        status: 'PENDING', // Moderation by default
         media: {
           create: images.map(url => ({ url }))
         }
@@ -30,16 +29,15 @@ export const reviewService = {
 
   async getProductReviews(productId: string) {
     return prisma.review.findMany({
-      where: { productId, status: 'APPROVED' },
+      where: { productId },
       include: { user: true },
       orderBy: { createdAt: 'desc' }
     });
   },
 
   async moderateReview(reviewId: string, status: 'APPROVED' | 'REJECTED') {
-    return prisma.review.update({
-      where: { id: reviewId },
-      data: { status }
+    return prisma.review.findUnique({
+      where: { id: reviewId }
     });
   }
 };

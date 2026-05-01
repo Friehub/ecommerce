@@ -14,8 +14,7 @@ export const returnRouter = createTRPCRouter({
       return await returnService.initiateReturn(
         ctx.session.user.id,
         input.orderLineId,
-        input.reason,
-        input.images
+        input.reason
       );
     }),
 
@@ -26,9 +25,9 @@ export const returnRouter = createTRPCRouter({
     }),
 
   listPending: adminProcedure.query(async () => {
-    return await prisma.returnRequest.findMany({
+    return await prisma.returnShipment.findMany({
       where: { status: 'PENDING' },
-      include: { user: true, orderLine: { include: { variant: { include: { product: true } } } } }
+      include: { orderLine: { include: { variant: { include: { product: true } } } } }
     });
   }),
 });

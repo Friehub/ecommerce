@@ -38,13 +38,14 @@ export async function createContext(opts: {
 
   // ── 2. Try NextAuth session cookie (web browser) ───────────────
   // NextAuth session token is validated via the DB session table
+  const cookies = (req as any).cookies;
   const sessionToken =
-    req.cookies?.['__Secure-authjs.session-token'] ??
-    req.cookies?.['authjs.session-token'];
+    cookies?.['__Secure-authjs.session-token'] ??
+    cookies?.['authjs.session-token'];
 
   if (sessionToken) {
     const dbSession = await prisma.session.findUnique({
-      where: { sessionToken },
+      where: { tokenHash: sessionToken },
       include: {
         user: {
           select: { id: true, email: true, role: true, firstName: true, lastName: true },
@@ -52,7 +53,7 @@ export async function createContext(opts: {
       },
     });
 
-    if (dbSession && dbSession.expires > new Date()) {
+    if (dbSession && dbSession.expiresAt > new Date()) {
       return {
         session: { user: dbSession.user },
         req: req.raw as unknown as Request,

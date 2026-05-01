@@ -18,7 +18,7 @@ export const adminRouter = createTRPCRouter({
   getPendingSellers: adminProcedure
     .query(async () => {
       return prisma.seller.findMany({
-        where: { status: 'PENDING_APPROVAL' },
+        where: { status: 'PENDING_VERIFICATION' },
         include: { user: { select: { email: true, firstName: true, lastName: true } } },
         orderBy: { createdAt: 'asc' }
       });

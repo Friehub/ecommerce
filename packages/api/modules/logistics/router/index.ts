@@ -52,8 +52,6 @@ export const logisticsRouter = createTRPCRouter({
     }),
 
   listAgents: adminProcedure.query(async () => {
-    return await prisma.deliveryAgent.findMany({
-      include: { user: true }
-    });
+    return await prisma.deliveryAgent.findMany({});
   }),
 });

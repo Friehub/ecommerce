@@ -10,24 +10,10 @@ export const promoService = {
     if (!coupon) throw new Error('COUPON_NOT_FOUND');
     
     const promo = coupon.promotion;
-    
-    // 1. Check expiration (if we add dates later)
-    // 2. Check min order
-    if (orderTotal && new Decimal(orderTotal).lt(promo.minOrder)) {
-      throw new Error('MIN_ORDER_NOT_MET');
-    }
 
-    // 3. Check usage limit
-    if (promo.maxUses) {
-      const usedCount = await prisma.coupon.count({
-        where: { promotionId: promo.id, usedByUserId: { not: null } }
-      });
-      if (usedCount >= promo.maxUses) throw new Error('COUPON_EXHAUSTED');
-    }
-
-    // 4. Check if single use by this user
-    if (coupon.isSingleUse && coupon.usedByUserId) {
-       throw new Error('COUPON_ALREADY_USED');
+    // Check usage limit
+    if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
+      throw new Error('COUPON_EXHAUSTED');
     }
 
     return promo;
@@ -37,8 +23,8 @@ export const promoService = {
     const now = new Date();
     return prisma.flashSale.findMany({
       where: {
-        startAt: { lte: now },
-        endAt: { gte: now },
+        startTime: { lte: now },
+        endTime: { gte: now },
       },
       include: { variant: { include: { product: true } } }
     });
@@ -49,8 +35,8 @@ export const promoService = {
     return prisma.flashSale.findFirst({
       where: {
         variantId,
-        startAt: { lte: now },
-        endAt: { gte: now },
+        startTime: { lte: now },
+        endTime: { gte: now },
       }
     });
   }

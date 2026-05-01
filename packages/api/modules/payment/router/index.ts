@@ -12,6 +12,7 @@ export const paymentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await paymentService.initializePaystack(
         input.orderId,
+        ctx.session.user.id,
         ctx.session.user.email!,
         input.amount
       );

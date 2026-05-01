@@ -22,7 +22,7 @@ export const paymentService = {
       if (fraudCheck.recommendation === 'BLOCK') {
         throw new Error('FRAUD_DETECTION_BLOCKED');
       }
-    } catch (e) {
+    } catch (e: any) {
       if (e.message === 'FRAUD_DETECTION_BLOCKED') throw e;
       console.warn('Rust fraud service unavailable, proceeding with caution:', e);
     }

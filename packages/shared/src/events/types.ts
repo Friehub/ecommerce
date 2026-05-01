@@ -7,6 +7,7 @@ export type EventType =
   | 'order.delivered'
   | 'order.cancelled'
   | 'package.pending_confirmation'
+  | 'package.status_updated'
   | 'shipment.agent_assigned'
   | 'shipment.status_updated'
   | 'shipment.delivered'

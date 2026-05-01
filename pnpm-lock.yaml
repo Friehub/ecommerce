@@ -302,6 +302,9 @@ importers:
       ts-node-dev:
         specifier: ^2.0.0
         version: 2.0.0(@types/node@20.19.39)(typescript@5.9.3)
+      tsx:
+        specifier: ^4.19.2
+        version: 4.21.0
       typescript:
         specifier: ^5.0.0
         version: 5.9.3

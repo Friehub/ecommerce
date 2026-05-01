@@ -1,17 +1,43 @@
 import Redis from 'ioredis'
 
-const globalForRedis = global as unknown as { redis: Redis }
+class MockRedis {
+  constructor() {
+    return new Proxy(this, {
+      get(target, prop) {
+        if (prop === 'on' || prop === 'off' || prop === 'once') {
+          return () => target;
+        }
+        if (prop === 'quit' || prop === 'disconnect') {
+          return () => Promise.resolve();
+        }
+        return (...args: any[]) => Promise.resolve(null);
+      }
+    });
+  }
+}
+
+const isBuild = typeof window === 'undefined' && (
+  process.env.NEXT_PHASE === 'phase-production-build' ||
+  process.env.IS_BUILD === 'true' ||
+  process.env.BUILDING === 'true'
+);
+
+const globalForRedis = global as unknown as { redis: any }
 
 export const redis =
   globalForRedis.redis ||
-  new Redis(process.env.REDIS_URL || 'redis://localhost:6380', {
-    lazyConnect: true,
-    maxRetriesPerRequest: null,
-    enableOfflineQueue: false,
-  })
+  (isBuild
+    ? new MockRedis()
+    : new Redis(process.env.REDIS_URL || 'redis://localhost:6380', {
+        lazyConnect: true,
+        maxRetriesPerRequest: null,
+        enableOfflineQueue: false,
+      }))
 
-redis.on('error', (err) => {
-  // Swallow connection errors to prevent unhandled crashing
-})
+if (!isBuild && typeof (redis as any).on === 'function') {
+  (redis as any).on('error', () => {
+    // Swallow connection errors to prevent unhandled crashing
+  })
+}
 
 if (process.env.NODE_ENV !== 'production') globalForRedis.redis = redis

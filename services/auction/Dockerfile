@@ -1,5 +1,5 @@
 FROM rust:alpine AS builder
-RUN apk add --no-cache musl-dev pkgconfig openssl-dev
+RUN apk add --no-cache musl-dev pkgconfig openssl-dev protobuf-dev
 WORKDIR /app
 # Now copy actual source and build
 COPY . .

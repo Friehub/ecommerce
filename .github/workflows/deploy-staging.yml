@@ -37,6 +37,8 @@ jobs:
 
       - name: Write staging .env
         run: |
+          sudo mkdir -p /opt/jumia-staging || mkdir -p /opt/jumia-staging
+          sudo chown -R $USER /opt/jumia-staging || true
           cat > /opt/jumia-staging/.env.staging << 'ENVEOF'
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           DATABASE_URL=postgresql://ecom:${{ secrets.DB_PASSWORD }}@postgres:5433/ecom_staging

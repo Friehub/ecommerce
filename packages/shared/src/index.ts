@@ -5,4 +5,5 @@ export const queues = allQueues
 export * from './events/types'
 export * from './events/bus'
 export * from './utils/id'
+export * from './utils/crypto'
 export * from './cache'

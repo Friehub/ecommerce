@@ -17,8 +17,21 @@ export const orderWorker = new Worker('orders', async (job: Job) => {
     case 'sla-shipment-timeout':
       await handleShipmentTimeout(job.data.orderId);
       break;
+    case 'fraud-review':
+      await handleFraudReview(job.data.orderId, job.data.verdict);
+      break;
   }
 }, { connection: redis });
+
+async function handleFraudReview(orderId: string, verdict: 'PASS' | 'FAIL') {
+  if (verdict === 'FAIL') {
+    console.log(`Order ${orderId} failed fraud review. Cancelling.`);
+    await orderService.updateStatus(orderId, 'CANCELLED');
+  } else {
+    console.log(`Order ${orderId} passed fraud review.`);
+    // Potentially transition to PROCESSING if it was HELD
+  }
+}
 
 async function handlePaymentTimeout(orderId: string) {
   const order = await prisma.order.findUnique({ where: { id: orderId } });

@@ -114,11 +114,13 @@ export const disputeService = {
   },
 
   async getMyDisputes(userId: string) {
+    const seller = await prisma.seller.findUnique({ where: { userId } });
+    
     return prisma.dispute.findMany({
       where: {
         OR: [
           { buyerId: userId },
-          { sellerId: userId }
+          { sellerId: seller?.id || 'NON_EXISTENT' }
         ]
       },
       include: {

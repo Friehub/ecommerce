@@ -6,6 +6,9 @@ model Review {
   orderLineId String?
   rating      Int
   comment     String?  @db.Text
+  status      ReviewStatus @default(PENDING)
+  reviewedAt  DateTime?
+  reviewedBy  String?
   createdAt   DateTime @default(now())
 
   product   Product       @relation(fields: [productId], references: [id])
@@ -21,4 +24,10 @@ model ReviewMedia {
   type     MediaType @default(IMAGE)
 
   review Review @relation(fields: [reviewId], references: [id])
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

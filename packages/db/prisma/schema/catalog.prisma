@@ -30,6 +30,8 @@ model Product {
   categoryId  String
   sellerId    String
   status      ProductStatus @default(DRAFT)
+  averageRating Decimal      @default(0) @db.Decimal(3, 2)
+  reviewCount   Int          @default(0)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 

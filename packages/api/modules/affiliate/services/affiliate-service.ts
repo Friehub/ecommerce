@@ -86,6 +86,30 @@ export const affiliateService = {
     return updated;
   },
 
+  async confirmMatureCommissions() {
+    const yesterday = new Date();
+    yesterday.setHours(yesterday.getHours() - 24);
+
+    const pending = await prisma.commission.findMany({
+      where: {
+        status: 'PENDING',
+        order: {
+          status: 'DELIVERED',
+          updatedAt: { lte: yesterday }
+        }
+      },
+      select: { id: true }
+    });
+
+    let count = 0;
+    for (const comm of pending) {
+      await this.confirmCommission(comm.id);
+      count++;
+    }
+
+    return { count };
+  },
+
   async getMyProfile(userId: string) {
     return prisma.affiliateAgent.findUnique({
       where: { userId },

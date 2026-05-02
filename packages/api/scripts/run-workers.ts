@@ -3,6 +3,7 @@ import { notificationWorker } from '../modules/notification/workers/notification
 import { bulkImportWorker } from '../modules/catalog/workers/bulk-import-worker';
 import { ledgerService } from '../modules/revenue/services/ledger-service';
 import { prisma } from '@ecom/db';
+import { affiliateService } from '../modules/affiliate/services/affiliate-service';
 import * as cron from 'node-cron';
 
 console.log('🚀 Starting System Workers...');
@@ -51,6 +52,17 @@ cron.schedule('0 1 * * 1', async () => {
     console.log(`✅ Weekly statements generated for ${activeSellers.length} sellers.`);
   } catch (error) {
     console.error('❌ Weekly statement generation failed:', error);
+  }
+});
+
+// Hourly Affiliate Commission Confirmation (runs at minute 0 every hour)
+cron.schedule('0 * * * *', async () => {
+  console.log('⏳ Running hourly affiliate commission confirmation...');
+  try {
+    const result = await affiliateService.confirmMatureCommissions();
+    console.log(`✅ Affiliate commission confirmation complete. Confirmed ${result.count} commissions.`);
+  } catch (error) {
+    console.error('❌ Affiliate commission confirmation failed:', error);
   }
 });
 

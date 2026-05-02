@@ -238,3 +238,18 @@ services:
       resources:
         limits:
           memory: 256M
+  event-consumer-rs:
+    build:
+      context: ./services
+      dockerfile: event-consumer-rust/Dockerfile
+    restart: always
+    environment:
+      REDIS_URL: redis://redis:6379
+    networks: [internal]
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 64M

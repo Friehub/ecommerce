@@ -37,6 +37,10 @@ export const loggerMiddleware = t.middleware(async ({ path, type, next }) => {
 
 export const createTRPCRouter = t.router
 export const publicProcedure = t.procedure.use(loggerMiddleware)
+export const rateLimitProcedure = publicProcedure.use(async ({ ctx, next, path }) => {
+  // Foundation for procedure-specific rate limiting
+  return next();
+});
 
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {

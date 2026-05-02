@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "../../../trpc";
+import { createTRPCRouter, publicProcedure, protectedProcedure, rateLimitProcedure } from "../../../trpc";
 import { z } from "zod";
 import { registerSchema, addressSchema, sellerOnboardingSchema } from "../schemas";
 import { userService } from "../services/user-service";
@@ -6,7 +6,7 @@ import { sellerService } from "../services/seller-service";
 import { TRPCError } from "@trpc/server";
 
 export const iamRouter = createTRPCRouter({
-  register: publicProcedure
+  register: rateLimitProcedure
     .input(registerSchema)
     .mutation(async ({ input }) => {
       try {

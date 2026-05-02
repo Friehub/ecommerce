@@ -44,7 +44,10 @@ export const returnService = {
       await paymentService.fundWallet(request.orderLine.package.order.userId, refundAmount.toNumber());
 
       // 3. Mark line as returned
-      // (Optional: add a 'returned' flag to OrderLine or handle via status)
+      await tx.orderLine.update({
+        where: { id: request.orderLineId },
+        data: { isReturned: true }
+      });
     });
   }
 };

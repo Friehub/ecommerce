@@ -78,6 +78,7 @@ model OrderLine {
   disputes      Dispute[]
   reviews       Review[]
   conversions   AdConversion[]
+  isReturned    Boolean             @default(false)
 }
 
 model Cart {

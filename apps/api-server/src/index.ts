@@ -52,6 +52,19 @@ async function start() {
     keyGenerator: (req) => (req.headers['x-forwarded-for'] as string) || req.ip,
   });
 
+  // ── Service-to-Service Auth ──────────────────────────────────────
+  server.addHook('preHandler', async (req, reply) => {
+    if (req.url.startsWith('/api/internal/')) {
+      const internalToken = process.env.INTERNAL_API_TOKEN;
+      const clientToken = req.headers['x-internal-token'] || req.headers['authorization'];
+      
+      if (!internalToken || clientToken !== `Bearer ${internalToken}`) {
+        reply.code(401).send({ error: 'Unauthorized internal request' });
+        return;
+      }
+    }
+  });
+
   // ── Health check ──────────────────────────────────────────────────
   server.get('/health', async () => ({ status: 'ok', uptime: process.uptime() }));
 

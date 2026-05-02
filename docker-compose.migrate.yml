@@ -1,0 +1,19 @@
+version: '3.9'
+
+networks:
+  db-net:
+    driver: bridge
+    internal: true
+
+services:
+  migration-runner:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
+    networks:
+      - db-net
+    command: >
+      sh -c "npm install -g prisma && prisma migrate deploy"

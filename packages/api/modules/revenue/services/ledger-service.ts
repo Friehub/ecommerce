@@ -138,7 +138,7 @@ export const ledgerService = {
       const payout = await tx.payout.create({
         data: {
           sellerId,
-          statementId: statementId || undefined,
+          statementId: statementId || null,
           amount: decimalAmount,
           status: 'PENDING'
         }

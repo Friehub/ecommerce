@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'fastify-api',
-      script: './packages/api/dist/index.js',
+      script: './apps/api-server/dist/index.js',
       instances: 'max',
       exec_mode: 'cluster',
       env: {

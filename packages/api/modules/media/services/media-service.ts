@@ -49,7 +49,7 @@ export const mediaService = {
         Bucket: BUCKET,
         Key: key,
         Body: resizedBuffer,
-        ContentType: `image/${extension === 'jpg' ? 'jpeg' : extension}`,
+        ContentType: 'image/webp',
       }));
 
       return { size: size.name, url: `${process.env.R2_PUBLIC_URL || 'http://localhost:9000/ecom-media'}/${key}` };

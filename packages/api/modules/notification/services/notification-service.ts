@@ -68,9 +68,24 @@ export const notificationService = {
     });
   },
 
+  async listNotifications(userId: string) {
+    return prisma.notificationLog.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 100
+    });
+  },
+
   async markAsRead(userId: string, notificationId: string) {
     return prisma.notificationLog.updateMany({
       where: { id: notificationId, userId },
+      data: { isRead: true }
+    });
+  },
+
+  async markAllAsRead(userId: string) {
+    return prisma.notificationLog.updateMany({
+      where: { userId, isRead: false },
       data: { isRead: true }
     });
   },

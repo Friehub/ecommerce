@@ -21,8 +21,22 @@ export const t = initTRPC.context<TRPCContext>().meta<OpenApiMeta>().create({
   },
 })
 
+export const loggerMiddleware = t.middleware(async ({ path, type, next }) => {
+  const start = Date.now();
+  const result = await next();
+  const durationMs = Date.now() - start;
+  
+  if (result.ok) {
+    console.log(`[tRPC] ${type} ${path} - OK (${durationMs}ms)`);
+  } else {
+    console.error(`[tRPC] ${type} ${path} - ERROR (${durationMs}ms): ${result.error.message}`);
+  }
+  
+  return result;
+});
+
 export const createTRPCRouter = t.router
-export const publicProcedure = t.procedure
+export const publicProcedure = t.procedure.use(loggerMiddleware)
 
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {

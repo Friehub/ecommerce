@@ -26,6 +26,9 @@ export function startMetricsServer(port: number = 9090) {
         res.statusCode = 500;
         res.end(err instanceof Error ? err.message : 'Unknown error');
       }
+    } else if (req.url === '/health') {
+      res.statusCode = 200;
+      res.end('ok');
     } else {
       res.statusCode = 404;
       res.end('Not Found');

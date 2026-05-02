@@ -7,6 +7,8 @@ import { fastifyTRPCPlugin, FastifyTRPCPluginOptions } from '@trpc/server/adapte
 import { appRouter, type AppRouter } from '@ecom/api';
 import { createContext } from './context';
 
+import Redis from 'ioredis';
+
 const server = Fastify({
   logger: {
     level: process.env.LOG_LEVEL ?? 'info',
@@ -19,6 +21,19 @@ const server = Fastify({
 
 // ── Security & middleware ─────────────────────────────────────────
 async function start() {
+  // Validate critical environment variables
+  const criticalEnv = ['DATABASE_URL', 'REDIS_URL', 'AUTH_SECRET', 'PAYSTACK_WEBHOOK_SECRET'];
+  for (const env of criticalEnv) {
+    if (!process.env[env] || process.env[env].includes('placeholder')) {
+      server.log.error(`Critical environment variable ${env} is missing or contains 'placeholder'!`);
+      if (process.env.NODE_ENV === 'production') {
+        process.exit(1);
+      }
+    }
+  }
+
+  const redis = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379');
+
   await server.register(helmet, { contentSecurityPolicy: false });
 
   await server.register(cors, {
@@ -29,7 +44,8 @@ async function start() {
   await server.register(rateLimit, {
     max: 100,
     timeWindow: '1 minute',
-    keyGenerator: (req) => req.headers['x-forwarded-for'] as string || req.ip,
+    redis: redis,
+    keyGenerator: (req) => (req.headers['x-forwarded-for'] as string) || req.ip,
   });
 
   // ── Health check ──────────────────────────────────────────────────

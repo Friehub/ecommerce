@@ -2,68 +2,59 @@ name: CI
 
 on:
   push:
-    branches-ignore: [main, staging]
+    branches: [ main, develop, 'fix/*' ]
   pull_request:
-    branches: [main, staging, develop]
+    branches: [ main, develop ]
 
 jobs:
-  typecheck:
-    name: Typecheck
-    runs-on: self-hosted
+  typescript:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Setup pnpm
+      
+      - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma client
-        run: pnpm --filter @ecom/db generate
-
-      - name: Typecheck all packages
-        run: pnpm -r typecheck
-
-  lint:
-    name: Lint
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
+          
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
+          cache: 'pnpm'
+          
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
+        run: pnpm install --no-frozen-lockfile
+        
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+        
+      - name: Typecheck
+        run: pnpm typecheck
+        
       - name: Lint
-        run: pnpm -r lint
+        run: pnpm lint
 
-  rust-check:
+  rust:
     name: Rust Check
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Rust check
-        working-directory: services
-        run: cargo check --workspace
-
-      - name: Clippy
-        working-directory: services
-        run: cargo clippy --workspace -- -D warnings
+      
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: services -> target
+          
+      - name: Install Protoc
+        run: sudo apt-get install -y protobuf-compiler
+        
+      - name: Cargo Check
+        run: cargo check --manifest-path services/Cargo.toml
+        
+      - name: Cargo Clippy
+        run: cargo clippy --manifest-path services/Cargo.toml -- -D warnings

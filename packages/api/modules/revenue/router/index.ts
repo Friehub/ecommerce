@@ -39,4 +39,12 @@ export const revenueRouter = createTRPCRouter({
       include: { seller: true }
     });
   }),
+
+  listAllPayouts: adminProcedure.query(async () => {
+    return await prisma.payout.findMany({
+      include: { seller: true },
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    });
+  }),
 });

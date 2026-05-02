@@ -7,6 +7,9 @@ COPY . .
 
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @ecom/db generate
+RUN pnpm --filter @ecom/db build
+RUN pnpm --filter @ecom/shared build
+RUN pnpm --filter @ecom/api build
 RUN pnpm --filter @ecom/event-consumer build
 
 FROM node:20-alpine AS runner
@@ -25,4 +28,4 @@ WORKDIR /app/services/event-consumer
 
 USER consumer
 
-CMD ["pnpm", "start"]
+CMD ["node", "dist/services/event-consumer/src/index.js"]

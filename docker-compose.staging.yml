@@ -144,6 +144,8 @@ services:
       context: ./services
       dockerfile: fraud/Dockerfile
     restart: always
+    environment:
+      DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
     networks: [internal]
     deploy:
       resources:
@@ -155,6 +157,8 @@ services:
       context: ./services
       dockerfile: recommendations/Dockerfile
     restart: always
+    environment:
+      DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
     networks: [internal]
     deploy:
       resources:

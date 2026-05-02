@@ -1,10 +1,72 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { CategorySidebar } from '@/components/home/CategorySidebar';
 import { HeroCarousel } from '@/components/home/HeroCarousel';
 import { FlashSales } from '@/components/home/FlashSales';
-import { Package, ShieldCheck, RotateCcw } from 'lucide-react';
+import { Package, ShieldCheck, RotateCcw, Smartphone, Home as HomeIcon, ChefHat, Tv, Laptop, Baby, ShoppingBag, Gamepad2, Dumbbell, Car, MoreHorizontal } from 'lucide-react';
+import { api } from '@/trpc/react';
+
+const categoryIcons: Record<string, any> = {
+  'Phones & Tablets': Smartphone,
+  'Home & Office': HomeIcon,
+  'Appliances': ChefHat,
+  'Electronics': Tv,
+  'Computing': Laptop,
+  'Baby Products': Baby,
+  'Fashion': ShoppingBag,
+  'Gaming': Gamepad2,
+  'Sporting Goods': Dumbbell,
+  'Automobile': Car,
+};
+
+const TopCategoriesSection = () => {
+  const { data: categories, isLoading } = api.catalog.getCategories.useQuery();
+
+  if (isLoading) {
+    return (
+      <section className="container mt-6">
+        <div className="bg-white rounded shadow-sm p-4">
+          <h2 className="text-lg font-bold mb-4 uppercase">Top Categories</h2>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="flex flex-col items-center gap-2 animate-pulse">
+                <div className="w-20 h-20 bg-gray-100 rounded-full" />
+                <div className="h-3 bg-gray-100 rounded w-16" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="container mt-6">
+      <div className="bg-white rounded shadow-sm p-4">
+        <h2 className="text-lg font-bold mb-4 uppercase">Top Categories</h2>
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+          {categories?.slice(0, 6).map((category: any) => {
+            const Icon = categoryIcons[category.name] || MoreHorizontal;
+            return (
+              <Link 
+                key={category.id} 
+                href={`/category/${category.slug}`}
+                className="flex flex-col items-center gap-2 group cursor-pointer text-center"
+              >
+                <div className="w-20 h-20 bg-gray-50 text-gray-700 rounded-full group-hover:scale-110 transition-all flex items-center justify-center border border-gray-100 shadow-sm group-hover:bg-[#F68B1E]/10 group-hover:text-[#F68B1E] group-hover:border-[#F68B1E]/20">
+                  <Icon size={32} />
+                </div>
+                <span className="text-xs font-medium text-gray-600 group-hover:text-[#F68B1E] transition-colors line-clamp-1">{category.name}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 export default function Home() {
   return (
@@ -58,20 +120,8 @@ export default function Home() {
       {/* Flash Sales */}
       <FlashSales />
 
-      {/* Top Categories (Placeholder) */}
-      <section className="container mt-6">
-        <div className="bg-white rounded shadow-sm p-4">
-          <h2 className="text-lg font-bold mb-4 uppercase">Top Categories</h2>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 group cursor-pointer">
-                <div className="w-20 h-20 bg-gray-100 rounded-full group-hover:scale-110 transition-transform" />
-                <span className="text-xs font-medium text-gray-600">Category {i + 1}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Top Categories */}
+      <TopCategoriesSection />
 
       <style jsx>{`
         .container {

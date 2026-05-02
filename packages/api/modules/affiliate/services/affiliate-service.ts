@@ -94,7 +94,7 @@ export const affiliateService = {
       where: {
         status: 'PENDING',
         order: {
-          status: 'DELIVERED',
+          status: 'COMPLETED',
           updatedAt: { lte: yesterday }
         }
       },

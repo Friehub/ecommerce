@@ -11,9 +11,20 @@ export const promoService = {
     
     const promo = coupon.promotion;
 
+    // Check isActive
+    if (!promo.isActive) {
+      throw new Error('COUPON_INACTIVE');
+    }
+
     // Check usage limit
     if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
       throw new Error('COUPON_EXHAUSTED');
+    }
+
+    // Check date window
+    const now = new Date();
+    if (now < promo.startDate || now > promo.endDate) {
+      throw new Error('COUPON_EXPIRED');
     }
 
     return promo;

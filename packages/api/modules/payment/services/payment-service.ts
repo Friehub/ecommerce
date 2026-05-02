@@ -2,6 +2,7 @@ import { prisma, Decimal } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
 import { RustClient } from '../../../rust-client'
 import * as crypto from 'crypto'
+import { orderService } from '../../order/services/order-service'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
 const PAYSTACK_WEBHOOK_SECRET = process.env.PAYSTACK_WEBHOOK_SECRET || 'whsec_test_placeholder';
@@ -149,10 +150,8 @@ export const paymentService = {
           data: { status: 'SUCCESS' }
         });
 
-        await tx.order.update({
-          where: { id: payment.orderId },
-          data: { status: 'PAID' }
-        });
+        // Use orderService to ensure side effects are triggered
+        await orderService.updateStatus(payment.orderId, 'PAID', tx);
       });
 
       await publishEvent('payment.confirmed', { orderId: payment.orderId, amount: payment.amount });
@@ -205,10 +204,8 @@ export const paymentService = {
         }
       });
 
-      await tx.order.update({
-        where: { id: orderId },
-        data: { status: 'PAID' }
-      });
+      // Use orderService to ensure side effects are triggered
+      await orderService.updateStatus(orderId, 'PAID', tx);
 
       await tx.payment.create({
         data: {

@@ -1,5 +1,6 @@
 import { prisma } from '@ecom/db'
 import { paymentService } from '../../payment/services/payment-service'
+import { publishEvent } from '@ecom/shared'
 
 export const returnService = {
   async initiateReturn(userId: string, orderLineId: string, reason: string) {
@@ -28,7 +29,7 @@ export const returnService = {
 
     if (!request) throw new Error('REQUEST_NOT_FOUND');
 
-    return prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       // 1. Update status
       await tx.returnShipment.update({
         where: { id: returnId },
@@ -48,6 +49,14 @@ export const returnService = {
         where: { id: request.orderLineId },
         data: { isReturned: true }
       });
+
+      return refundAmount;
+    });
+
+    await publishEvent('refund.processed', {
+      userId: request.orderLine.package.order.userId,
+      orderId: request.orderLine.package.order.id,
+      amount: result.toNumber()
     });
   }
 };

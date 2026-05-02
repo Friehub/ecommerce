@@ -5,8 +5,39 @@ import { ProductCard } from '../ui/ProductCard';
 import { api } from '@/trpc/react';
 import { Zap } from 'lucide-react';
 
+import { useState, useEffect } from 'react';
+
+const CountdownTimer = ({ endTime }: { endTime: any }) => {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const end = new Date(endTime).getTime();
+      const diff = end - now;
+
+      if (diff <= 0) {
+        setTimeLeft('00h : 00m : 00s');
+        clearInterval(timer);
+      } else {
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        setTimeLeft(
+          `${String(hours).padStart(2, '0')}h : ${String(minutes).padStart(2, '0')}m : ${String(seconds).padStart(2, '0')}s`
+        );
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [endTime]);
+
+  return <span>{timeLeft || '00h : 00m : 00s'}</span>;
+};
+
 export const FlashSales = () => {
-  const { data: products, isLoading } = api.catalog.listProducts.useQuery({});
+  const { data: flashSales, isLoading } = api.promo.getFlashSales.useQuery();
 
   if (isLoading) {
     return (
@@ -23,8 +54,27 @@ export const FlashSales = () => {
     );
   }
 
-  // Filter for products that have a discount for flash sales (mock)
-  const flashProducts = products?.results?.slice(0, 6) || [];
+  if (!flashSales || flashSales.length === 0) {
+    return null;
+  }
+
+  // Convert flash sales into product items with specific flash prices
+  const flashProducts = flashSales.slice(0, 6).map((fs: any) => {
+    const p = { ...fs.variant.product };
+    p.variants = [
+      {
+        ...fs.variant,
+        price: parseFloat(fs.salePrice),
+        comparePrice: parseFloat(fs.variant.price)
+      }
+    ];
+    return p;
+  });
+
+  const earliestEnd = flashSales.reduce((prev: Date, curr: any) => {
+    const d = new Date(curr.endTime);
+    return !prev || d < prev ? d : prev;
+  }, new Date(flashSales[0].endTime));
 
   return (
     <section className="container mt-6">
@@ -36,8 +86,10 @@ export const FlashSales = () => {
             <h2 className="font-bold uppercase tracking-tight">Flash Sales</h2>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm font-medium hidden sm:inline">Time Left: 08h : 22m : 45s</span>
-            <button className="text-xs font-bold hover:underline">SEE ALL &gt;</button>
+            <div className="text-sm font-medium hidden sm:inline">
+              Time Left: <CountdownTimer endTime={earliestEnd} />
+            </div>
+            <a href="/flash-sales" className="text-xs font-bold hover:underline">SEE ALL &gt;</a>
           </div>
         </div>
 
@@ -48,6 +100,7 @@ export const FlashSales = () => {
           ))}
         </div>
       </div>
+
 
       <style jsx>{`
         .container {

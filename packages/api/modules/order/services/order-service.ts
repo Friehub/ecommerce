@@ -105,20 +105,21 @@ export const orderService = {
     return order;
   },
 
-  async updateStatus(orderId: string, status: OrderStatus) {
-    const currentOrder = await prisma.order.findUnique({
+  async updateStatus(orderId: string, status: OrderStatus, tx?: any) {
+    const db = tx || prisma;
+    const currentOrder = await db.order.findUnique({
       where: { id: orderId }
     });
 
     if (!currentOrder) throw new Error('ORDER_NOT_FOUND');
 
     // Enforce state machine
-    const allowed = ORDER_TRANSITIONS[currentOrder.status];
+    const allowed = ORDER_TRANSITIONS[currentOrder.status as OrderStatus];
     if (!allowed.includes(status)) {
       throw new Error(`INVALID_TRANSITION:${currentOrder.status}->${status}`);
     }
 
-    const order = await prisma.order.update({
+    const order = await db.order.update({
       where: { id: orderId },
       data: { status },
       include: { packages: true }
@@ -132,7 +133,7 @@ export const orderService = {
       
       // Record sales in ledger (Pending)
       for (const pkg of order.packages) {
-        const lines = await prisma.orderLine.findMany({ where: { packageId: pkg.id } });
+        const lines = await db.orderLine.findMany({ where: { packageId: pkg.id } });
         for (const line of lines) {
           await ledgerService.recordSale(line.id);
         }
@@ -141,7 +142,7 @@ export const orderService = {
     }
 
     if (status === 'CANCELLED') {
-      await inventoryService.releaseStock(orderId);
+      await inventoryService.releaseStockByOrderId(orderId, tx);
       await publishEvent('order.cancelled', { orderId, reason: 'Manual update' });
     }
 

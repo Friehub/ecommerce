@@ -2,9 +2,19 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Heart, ChevronRight, ShoppingBag } from 'lucide-react';
+import { api } from '@/trpc/react';
+import { ProductCard } from '@/components/ui/ProductCard';
+import { Heart, ChevronRight } from 'lucide-react';
 
 export default function SavedItemsPage() {
+  const { data: wishlist, isLoading } = api.catalog.getWishlist.useQuery();
+
+  const products = wishlist?.items?.map((item: any) => {
+    const p = { ...item.variant.product };
+    p.variants = [item.variant];
+    return p;
+  }) || [];
+
   return (
     <div className="bg-[#F5F5F5] min-h-screen pb-12">
       <div className="container py-6">
@@ -16,21 +26,36 @@ export default function SavedItemsPage() {
 
         <div className="bg-white rounded shadow-sm overflow-hidden">
           <div className="p-4 border-b">
-            <h1 className="text-xl font-bold">Saved Items</h1>
+            <h1 className="text-xl font-bold">Saved Items ({products.length})</h1>
           </div>
 
-          <div className="py-20 text-center px-4">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Heart size={28} className="text-gray-400" />
+          {isLoading ? (
+            <div className="p-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 animate-pulse">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="aspect-[3/4] bg-gray-100 rounded" />
+              ))}
             </div>
-            <h3 className="font-bold text-lg text-gray-900">You haven’t saved any items yet</h3>
-            <p className="text-gray-500 text-sm mt-1 mb-6">Found something you like? Tap on the heart icon to save it!</p>
-            <Link href="/" className="px-6 py-2 bg-[#F68B1E] text-white rounded font-bold text-sm uppercase">
-              Start Shopping
-            </Link>
-          </div>
+          ) : products.length > 0 ? (
+            <div className="p-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {products.map((product: any) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="py-20 text-center px-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart size={28} className="text-gray-400" />
+              </div>
+              <h3 className="font-bold text-lg text-gray-900">You haven’t saved any items yet</h3>
+              <p className="text-gray-500 text-sm mt-1 mb-6">Found something you like? Tap on the heart icon to save it!</p>
+              <Link href="/" className="px-6 py-2 bg-[#F68B1E] text-white rounded font-bold text-sm uppercase">
+                Start Shopping
+              </Link>
+            </div>
+          )}
         </div>
       </div>
+
 
       <style jsx>{`
         .container {

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { api } from '@/trpc/react';
 
 interface ProductActionsProps {
   product: any;
@@ -17,6 +18,33 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
   const discount = comparePrice ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
 
   const { addToCart, isLoading: isCartLoading } = useCart();
+  
+  const utils = api.useUtils();
+  const { data: wishlist } = api.catalog.getWishlist.useQuery(undefined, {
+    retry: false,
+  });
+
+  const addToWishlist = api.catalog.addToWishlist.useMutation({
+    onSuccess: () => {
+      utils.catalog.getWishlist.invalidate();
+    }
+  });
+
+  const removeFromWishlist = api.catalog.removeFromWishlist.useMutation({
+    onSuccess: () => {
+      utils.catalog.getWishlist.invalidate();
+    }
+  });
+
+  const isInWishlist = wishlist?.items?.some((item: any) => item.variantId === selectedVariant.id);
+
+  const handleWishlistToggle = async () => {
+    if (isInWishlist) {
+      await removeFromWishlist.mutateAsync({ variantId: selectedVariant.id });
+    } else {
+      await addToWishlist.mutateAsync({ variantId: selectedVariant.id });
+    }
+  };
 
   const handleAddToCart = async () => {
     await addToCart(selectedVariant.id, quantity);
@@ -96,9 +124,14 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
           </button>
         </div>
         
-        <button className="flex items-center justify-center gap-2 text-sm font-medium text-gray-600 hover:text-[#F68B1E] transition-colors py-2">
-          <Heart size={18} />
-          ADD TO WISHLIST
+        <button 
+          onClick={handleWishlistToggle}
+          className={`flex items-center justify-center gap-2 text-sm font-medium transition-colors py-2 ${
+            isInWishlist ? 'text-[#DF3131]' : 'text-gray-600 hover:text-[#F68B1E]'
+          }`}
+        >
+          <Heart size={18} fill={isInWishlist ? '#DF3131' : 'none'} />
+          {isInWishlist ? 'REMOVE FROM WISHLIST' : 'ADD TO WISHLIST'}
         </button>
       </div>
 

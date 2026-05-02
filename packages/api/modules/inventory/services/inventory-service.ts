@@ -95,6 +95,25 @@ export const inventoryService = {
     });
   },
 
+  async releaseStockByOrderId(orderId: string, tx?: any) {
+    const db = tx || prisma;
+    const reservations = await db.stockReservation.findMany({
+      where: { orderId, status: 'ACTIVE' }
+    });
+
+    for (const res of reservations) {
+      // Return to Redis
+      const key = `stock:${res.variantId}`;
+      await redis.incrby(key, res.quantity);
+
+      // Mark in DB
+      await db.stockReservation.update({
+        where: { id: res.id },
+        data: { status: 'RELEASED' }
+      });
+    }
+  },
+
   async confirmStock(orderId: string) {
     const reservations = await prisma.stockReservation.findMany({
       where: { orderId, status: 'ACTIVE' }

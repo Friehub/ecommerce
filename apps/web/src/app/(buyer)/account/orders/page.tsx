@@ -63,7 +63,7 @@ export default function OrdersPage() {
                       </div>
                     </div>
                     <Link 
-                      href={`/orders/${order.id}`}
+                      href={`/account/orders/${order.id}`}
                       className="text-[#F68B1E] text-sm font-bold uppercase tracking-wider hover:underline flex items-center gap-1"
                     >
                       See Details

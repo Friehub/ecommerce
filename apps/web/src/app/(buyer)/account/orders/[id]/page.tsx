@@ -29,7 +29,7 @@ export default function OrderDetailPage() {
     return (
       <div className="container py-20 text-center">
         <h2 className="text-xl font-bold mb-4">Order not found</h2>
-        <Link href="/orders" className="text-[#F68B1E] font-bold">Back to My Orders</Link>
+        <Link href="/account/orders" className="text-[#F68B1E] font-bold">Back to My Orders</Link>
       </div>
     );
   }
@@ -37,15 +37,12 @@ export default function OrderDetailPage() {
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
       <div className="container py-6">
-        <Link href="/orders" className="flex items-center gap-1 text-gray-500 hover:text-[#F68B1E] transition-colors text-sm mb-6">
+        <Link href="/account/orders" className="flex items-center gap-1 text-gray-500 hover:text-[#F68B1E] transition-colors text-sm mb-6">
           <ChevronLeft size={16} />
           Back to My Orders
         </Link>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Order Header */}
             <div className="bg-white rounded shadow-sm p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b">
                 <div>

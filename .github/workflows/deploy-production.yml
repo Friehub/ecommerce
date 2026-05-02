@@ -173,6 +173,12 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
+      - name: Cleanup build artifacts
+        if: always()
+        run: |
+          docker builder prune -f
+          docker image prune -f
+
   # ── Job 3: Auto-rollback if deploy failed ─────────────────────────
   rollback:
     name: Rollback
@@ -201,3 +207,9 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Cleanup rollback artifacts
+        if: always()
+        run: |
+          docker builder prune -f
+          docker image prune -f

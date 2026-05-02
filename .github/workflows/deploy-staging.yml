@@ -88,3 +88,9 @@ jobs:
         working-directory: /opt/runner-work/jumia-staging
         run: |
           docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
+
+      - name: Cleanup build artifacts
+        if: always()
+        run: |
+          docker builder prune -f
+          docker image prune -f

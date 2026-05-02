@@ -62,7 +62,7 @@ jobs:
       - name: Migrate staging database
         working-directory: /opt/runner-work/jumia-staging
         run: |
-          DATABASE_URL="postgresql://ecom:${{ secrets.DB_PASSWORD }}@localhost:5433/ecom_staging" pnpm --filter @ecom/db prisma migrate deploy
+          DATABASE_URL="postgresql://ecom:${{ secrets.DB_PASSWORD }}@localhost:5433/ecom" pnpm --filter @ecom/db prisma migrate deploy
 
 # Removed Prune Docker build cache step to preserve cargo chef cache for faster builds
 

@@ -22,7 +22,7 @@ These break core user flows if left unresolved.
 ## P1 — Settlement & Finance Integrity
 
 - [x] **[STUB] `revenue-service.ts` — simulated payout fallback** — The `SIM-XXXXXX` bank reference is generated for any environment where `PAYSTACK_SECRET_KEY` equals `sk_test_placeholder`. This will ship to staging if `.env` is not set correctly. Add a hard assertion that refuses to run `approvePayout` without a real key outside of `NODE_ENV=test`.
-- [ ] **[STUB] `ledger-service.ts` — `withdrawFunds` empty `statementId`** — Old callers may still pass an empty string `''`. The current code does `statementId: statementId || undefined` which coerces `''` to `undefined` — this is correct now, but there is no explicit null path. Add a unit test that asserts `statementId: null` is stored when no statement is supplied.
+- [x] **[STUB] `ledger-service.ts` — `withdrawFunds` empty `statementId`** — Old callers may still pass an empty string `''`. The current code does `statementId: statementId || undefined` which coerces `''` to `undefined` — this is correct now, but there is no explicit null path. Add a unit test that asserts `statementId: null` is stored when no statement is supplied.
 - [x] **[MISSING] `run-workers.ts` — fraud review queue processor** — There is no cron or worker that processes orders flagged as `FRAUD_REVIEW` by the Rust fraud service. Add a daily BullMQ job that fetches `Order` records where `status = 'FRAUD_REVIEW'`, surfaces them to the admin queue, and auto-cancels those older than 48 hours.
 - [x] **[MISSING] Affiliate commission confirmation job** — `affiliateService.recordCommission` creates commissions with `status: 'PENDING'`. There is no scheduled job to confirm commissions after the 7-day return window passes. Add a daily cron that calls `affiliateService.confirmCommission` for all pending commissions where the parent order is `COMPLETED` and `createdAt` is older than 7 days.
 - [x] **[STUB] `run-workers.ts` — search sync uses `catalogService.syncToSearch`** — The `catalogService.syncToSearch` function needs to be verified: confirm it actually calls the Rust search service HTTP endpoint at `RUST_SEARCH_URL` rather than a no-op. If the Rust service is unavailable the cron should log a warning and not crash.
@@ -33,15 +33,15 @@ These break core user flows if left unresolved.
 
 The backend modules exist but there are no corresponding frontend pages.
 
-- [ ] **[MISSING] Notifications inbox page** — Create `apps/web/src/app/(buyer)/notifications/page.tsx`. Display unread notifications from `notification.getUnreadNotifications`, with a mark-all-as-read button. Show a notification badge count in `Navbar.tsx` based on the unread count.
-- [ ] **[MISSING] Dispute center — seller view** — There is a buyer dispute page at `(buyer)/disputes/` but no equivalent under `(seller)/seller/disputes/`. Sellers need to see open disputes against their packages and submit responses. Create `apps/web/src/app/(seller)/seller/disputes/page.tsx` and `[id]/page.tsx`.
-- [ ] **[MISSING] Affiliate portal** — `apps/web/src/app/affiliate/page.tsx` exists but is a placeholder. Implement the full portal: agent registration, referral link list with copy-to-clipboard, click counts, pending vs. confirmed commission table, and total earnings.
-- [ ] **[MISSING] Admin — seller management list** — `(admin)/dashboard/page.tsx` shows metrics. There is no page for listing sellers, filtering by KYC status, or taking suspension actions. Create `apps/web/src/app/(admin)/sellers/page.tsx`.
-- [ ] **[MISSING] Admin — fraud queue** — No admin page to view and act on fraud-flagged orders. Create `apps/web/src/app/(admin)/fraud/page.tsx` with allow/block actions wired to the admin router.
-- [ ] **[MISSING] Admin — payout approvals** — Sellers request payouts but there is no admin UI to approve or reject them. Create `apps/web/src/app/(admin)/payouts/page.tsx`.
-- [ ] **[MISSING] Order tracking page (buyer)** — There is a checkout success page but no dedicated order detail/tracking page at `(buyer)/orders/[id]/page.tsx`. Buyers have no way to view the shipment status timeline after checkout.
-- [ ] **[MISSING] Buyer — orders list** — There is no `(buyer)/orders/page.tsx` to list all buyer orders. This is a core buyer flow.
-- [ ] **[MISSING] Delivery agent — dedicated portal** — `apps/web/src/app/apps/agent/page.tsx` exists as a stub. Implement: daily delivery list, mark picked-up, mark delivered with proof photo upload, and failed delivery reporting.
+- [x] **[MISSING] Notifications inbox page** — Create `apps/web/src/app/(buyer)/notifications/page.tsx`. Display unread notifications from `notification.getUnreadNotifications`, with a mark-all-as-read button. Show a notification badge count in `Navbar.tsx` based on the unread count.
+- [x] **[MISSING] Dispute center — seller view** — There is a buyer dispute page at `(buyer)/disputes/` but no equivalent under `(seller)/seller/disputes/`. Sellers need to see open disputes against their packages and submit responses. Create `apps/web/src/app/(seller)/seller/disputes/page.tsx` and `[id]/page.tsx`.
+- [x] **[MISSING] Affiliate portal** — `apps/web/src/app/affiliate/page.tsx` exists but is a placeholder. Implement the full portal: agent registration, referral link list with copy-to-clipboard, click counts, pending vs. confirmed commission table, and total earnings.
+- [x] **[MISSING] Admin — seller management list** — `(admin)/dashboard/page.tsx` shows metrics. There is no page for listing sellers, filtering by KYC status, or taking suspension actions. Create `apps/web/src/app/(admin)/sellers/page.tsx`.
+- [x] **[MISSING] Admin — fraud queue** — No admin page to view and act on fraud-flagged orders. Create `apps/web/src/app/(admin)/fraud/page.tsx` with allow/block actions wired to the admin router.
+- [x] **[MISSING] Admin — payout approvals** — Sellers request payouts but there is no admin UI to approve or reject them. Create `apps/web/src/app/(admin)/payouts/page.tsx`.
+- [x] **[MISSING] Order tracking page (buyer)** — There is a checkout success page but no dedicated order detail/tracking page at `(buyer)/orders/[id]/page.tsx`. Buyers have no way to view the shipment status timeline after checkout.
+- [x] **[MISSING] Buyer — orders list** — There is no `(buyer)/orders/page.tsx` to list all buyer orders. This is a core buyer flow.
+- [x] **[MISSING] Delivery agent — dedicated portal** — `apps/web/src/app/apps/agent/page.tsx` exists as a stub. Implement: daily delivery list, mark picked-up, mark delivered with proof photo upload, and failed delivery reporting.
 
 ---
 

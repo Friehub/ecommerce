@@ -15,6 +15,14 @@ const server = Fastify({
     transport: process.env.NODE_ENV === 'development'
       ? { target: 'pino-pretty' }
       : undefined,
+    redact: [
+      'req.headers.authorization',
+      'req.headers["x-internal-token"]',
+      'req.body.password',
+      'req.body.nin',
+      'req.body.cvv',
+      'res.body.nin'
+    ],
   },
   trustProxy: true, // behind Nginx
 });

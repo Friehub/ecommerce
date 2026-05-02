@@ -20,7 +20,7 @@ export const sellerDashboardService = {
 
     // Get actual revenue from ledger
     const ledgerEntries = await prisma.sellerLedgerEntry.findMany({
-      where: { sellerId }
+      where: { sellerId, type: { in: ['SALE', 'COMMISSION'] } }
     });
     const revenue = ledgerEntries.reduce((acc, entry) => acc.add(entry.amount), new Decimal(0));
 

@@ -110,9 +110,9 @@ export default function Home() {
           <div className="bg-[#282828] rounded shadow-sm overflow-hidden h-[180px] relative p-4 text-white">
             <h3 className="font-bold text-lg leading-tight mb-2">SELL ON JUMIA</h3>
             <p className="text-xs text-gray-400">Join thousands of successful sellers</p>
-            <button className="mt-4 border border-white text-white px-4 py-2 rounded text-xs font-bold hover:bg-white hover:text-black transition-all">
+            <Link href="/seller/register" className="mt-4 border border-white text-white px-4 py-2 rounded text-xs font-bold hover:bg-white hover:text-black transition-all inline-block text-center">
               REGISTER NOW
-            </button>
+            </Link>
           </div>
         </div>
       </section>

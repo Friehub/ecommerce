@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { ShoppingCart, User, Search, HelpCircle, LogOut, Package, Heart, ChevronDown } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { NotificationInbox } from '@/components/layout/NotificationInbox';
 
 export const Navbar = () => {
   const { totalItems, setIsOpen } = useCart();
@@ -120,6 +121,8 @@ export const Navbar = () => {
             <HelpCircle size={24} />
             <span>Help</span>
           </button>
+
+          <NotificationInbox />
 
           <button 
             onClick={() => setIsOpen(true)}

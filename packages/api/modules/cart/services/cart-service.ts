@@ -1,5 +1,6 @@
 import { prisma } from '@ecom/db'
 import { inventoryService } from '../../inventory/services/inventory-service'
+import { promoService } from '../../promo/services/promo-service'
 
 export const cartService = {
   async getCart(sessionId: string, userId?: string) {
@@ -37,7 +38,11 @@ export const cartService = {
     const available = await inventoryService.syncStockFromDB(variantId);
     if (available < quantity) throw new Error('INSUFFICIENT_STOCK');
 
-    // 3. Upsert item with price snapshot
+    // 3. Check for Flash Sale price
+    const flashSale = await promoService.getFlashSaleForVariant(variantId);
+    const finalPrice = flashSale ? flashSale.salePrice : variant.price;
+
+    // 4. Upsert item with price snapshot
     return prisma.cartItem.upsert({
       where: {
         cartId_variantId: {
@@ -47,14 +52,14 @@ export const cartService = {
       },
       update: {
         quantity: { increment: quantity },
-        priceSnapshot: variant.price, // Refresh snapshot
+        priceSnapshot: finalPrice, // Refresh snapshot
       },
       create: {
         cartId: cart.id,
         variantId,
         sellerId: variant.product.sellerId,
         quantity,
-        priceSnapshot: variant.price,
+        priceSnapshot: finalPrice,
       }
     });
   },

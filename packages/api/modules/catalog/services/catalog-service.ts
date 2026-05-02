@@ -146,8 +146,8 @@ export const catalogService = {
       price: variant.price.toNumber(),
       compare_price: variant.comparePrice?.toNumber() || 0,
       discount_pct: variant.comparePrice ? Math.round(((variant.comparePrice.toNumber() - variant.price.toNumber()) / variant.comparePrice.toNumber()) * 100) : 0,
-      rating: 4.5, // Mock rating for now
-      review_count: 10,
+      rating: variant.product.averageRating ? variant.product.averageRating.toNumber() : 0,
+      review_count: variant.product.reviewCount || 0,
       sales_velocity: 0.1,
       is_active: variant.product.status === 'ACTIVE',
       is_in_stock: qty > 0,

@@ -16,6 +16,38 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = React.useState<'CARD' | 'POD' | 'WALLET'>('POD');
   const [isPlacingOrder, setIsPlacingOrder] = React.useState(false);
 
+  const [couponCode, setCouponCode] = React.useState('');
+  const [discountValue, setDiscountValue] = React.useState(0);
+  const [appliedCoupon, setAppliedCoupon] = React.useState<string | null>(null);
+  const [isCheckingCoupon, setIsCheckingCoupon] = React.useState(false);
+
+  const utils = api.useUtils();
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setIsCheckingCoupon(true);
+    try {
+      const promo = await utils.promo.validateCoupon.fetch({ code: couponCode.trim() });
+      if (promo) {
+        let discountAmount = 0;
+        if (promo.type === 'PERCENTAGE') {
+          discountAmount = subtotal * (parseFloat(String(promo.value)) / 100);
+        } else if (promo.type === 'FIXED_AMOUNT') {
+          discountAmount = parseFloat(String(promo.value));
+        }
+        setDiscountValue(discountAmount);
+        setAppliedCoupon(couponCode);
+        alert('Coupon applied successfully!');
+      } else {
+        alert('Invalid or expired coupon');
+      }
+    } catch (err: any) {
+      alert('Invalid or expired coupon: ' + (err.message || 'Error checking coupon'));
+    } finally {
+      setIsCheckingCoupon(false);
+    }
+  };
+
   const { data: addresses, isLoading: isAddressesLoading } = api.iam.getAddresses.useQuery(
     undefined,
     { enabled: !!session }
@@ -83,7 +115,7 @@ export default function CheckoutPage() {
 
   const subtotal = cart?.items.reduce((acc, item) => acc + (item.price * item.quantity), 0) || 0;
   const shipping = 1200;
-  const total = subtotal + shipping;
+  const total = Math.max(0, subtotal + shipping - discountValue);
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
@@ -196,6 +228,32 @@ export default function CheckoutPage() {
                   <span className="text-gray-500">Shipping</span>
                   <span className="font-medium text-gray-800">₦ {shipping.toLocaleString()}</span>
                 </div>
+                {discountValue > 0 && (
+                  <div className="flex justify-between text-sm text-[#388E3C] font-semibold">
+                    <span>Discount ({appliedCoupon})</span>
+                    <span>- ₦ {discountValue.toLocaleString()}</span>
+                  </div>
+                )}
+
+                <div className="border-t pt-4 space-y-2">
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Coupon Code" 
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="flex-1 border rounded-md px-3 py-1.5 text-sm outline-none focus:border-[#F68B1E]" 
+                    />
+                    <button 
+                      onClick={handleApplyCoupon}
+                      disabled={isCheckingCoupon}
+                      className="px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-xs font-bold uppercase transition-colors disabled:opacity-50"
+                    >
+                      {isCheckingCoupon ? '...' : 'Apply'}
+                    </button>
+                  </div>
+                </div>
+
                 <div className="border-t pt-4 flex justify-between items-center">
                   <span className="font-bold text-gray-800">Total</span>
                   <span className="font-bold text-[#F68B1E] text-xl">₦ {total.toLocaleString()}</span>

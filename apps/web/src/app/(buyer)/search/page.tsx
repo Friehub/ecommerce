@@ -10,9 +10,22 @@ function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
 
+  const [minPrice, setMinPrice] = React.useState<string>('');
+  const [maxPrice, setMaxPrice] = React.useState<string>('');
+  const [brandId, setBrandId] = React.useState<string>('');
+  const [sortBy, setSortBy] = React.useState<string>('newest');
+
+  const { data: brands } = api.catalog.getBrands.useQuery();
+
   const { data: products, isLoading } = api.catalog.listProducts.useQuery(
-    { search: query },
-    { enabled: !!query }
+    {
+      search: query || undefined,
+      minPrice: minPrice ? parseFloat(minPrice) : undefined,
+      maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+      brandId: brandId || undefined,
+      sortBy: sortBy || undefined,
+    },
+    { enabled: true }
   );
 
   return (
@@ -28,24 +41,53 @@ function SearchResults() {
               <div>
                 <h4 className="text-xs font-bold uppercase text-gray-400 mb-2">Price (₦)</h4>
                 <div className="flex items-center gap-2">
-                  <input type="number" placeholder="Min" className="w-full border rounded px-2 py-1 text-sm focus:border-[#F68B1E] outline-none" />
+                  <input 
+                    type="number" 
+                    placeholder="Min" 
+                    className="w-full border rounded px-2 py-1 text-sm focus:border-[#F68B1E] outline-none" 
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                  />
                   <span className="text-gray-400">-</span>
-                  <input type="number" placeholder="Max" className="w-full border rounded px-2 py-1 text-sm focus:border-[#F68B1E] outline-none" />
+                  <input 
+                    type="number" 
+                    placeholder="Max" 
+                    className="w-full border rounded px-2 py-1 text-sm focus:border-[#F68B1E] outline-none" 
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                  />
                 </div>
-                <button className="w-full mt-3 bg-[#F68B1E] text-white py-1.5 rounded text-xs font-bold uppercase tracking-wider">Apply</button>
               </div>
               
-              <div className="border-t pt-4">
-                <h4 className="text-xs font-bold uppercase text-gray-400 mb-2">Brands</h4>
-                <div className="space-y-2">
-                  {['Samsung', 'Apple', 'Sony', 'LG'].map(brand => (
-                    <label key={brand} className="flex items-center gap-2 text-sm cursor-pointer group">
-                      <input type="checkbox" className="rounded border-gray-300 text-[#F68B1E] focus:ring-[#F68B1E]" />
-                      <span className="group-hover:text-[#F68B1E] transition-colors">{brand}</span>
+              {brands && brands.length > 0 && (
+                <div className="border-t pt-4">
+                  <h4 className="text-xs font-bold uppercase text-gray-400 mb-2">Brands</h4>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    <label className="flex items-center gap-2 text-sm cursor-pointer group">
+                      <input 
+                        type="radio" 
+                        name="brand"
+                        checked={!brandId}
+                        onChange={() => setBrandId('')}
+                        className="rounded-full border-gray-300 text-[#F68B1E] focus:ring-[#F68B1E]" 
+                      />
+                      <span className="group-hover:text-[#F68B1E] transition-colors">All Brands</span>
                     </label>
-                  ))}
+                    {brands.map((b: any) => (
+                      <label key={b.id} className="flex items-center gap-2 text-sm cursor-pointer group">
+                        <input 
+                          type="radio" 
+                          name="brand"
+                          checked={brandId === b.id}
+                          onChange={() => setBrandId(b.id)}
+                          className="rounded-full border-gray-300 text-[#F68B1E] focus:ring-[#F68B1E]" 
+                        />
+                        <span className="group-hover:text-[#F68B1E] transition-colors">{b.name}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </aside>
@@ -63,11 +105,14 @@ function SearchResults() {
               <div className="flex items-center gap-2 text-sm">
                 <SortAsc size={16} className="text-gray-400" />
                 <span className="hidden sm:inline text-gray-500">Sort By:</span>
-                <select className="border-none bg-transparent font-bold focus:ring-0 text-sm cursor-pointer">
-                  <option>Popularity</option>
-                  <option>Newest Arrivals</option>
-                  <option>Price: Low to High</option>
-                  <option>Price: High to Low</option>
+                <select 
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="border-none bg-transparent font-bold focus:ring-0 text-sm cursor-pointer outline-none"
+                >
+                  <option value="newest">Newest Arrivals</option>
+                  <option value="price_asc">Price: Low to High</option>
+                  <option value="price_desc">Price: High to Low</option>
                 </select>
               </div>
             </div>

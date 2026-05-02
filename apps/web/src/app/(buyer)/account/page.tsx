@@ -27,10 +27,10 @@ export default function AccountPage() {
   if (!session) return null;
 
   const menuItems = [
-    { label: 'Orders', icon: <Package size={24} />, href: '/account/orders', desc: 'Check your order status and history' },
-    { label: 'Saved Items', icon: <Heart size={24} />, href: '/account/saved', desc: 'View items you saved for later' },
+    { label: 'Orders', icon: <Package size={24} />, href: '/orders', desc: 'Check your order status and history' },
+    { label: 'Notifications', icon: <User size={24} />, href: '/notifications', desc: 'View your messages and alerts' },
+    { label: 'Saved Items', icon: <Heart size={24} />, href: '/saved', desc: 'View items you saved for later' },
     { label: 'Addresses', icon: <MapPin size={24} />, href: '/account/addresses', desc: 'Manage your delivery addresses' },
-    { label: 'Payment Methods', icon: <CreditCard size={24} />, href: '/account/payment', desc: 'Manage your saved cards' },
     { label: 'Account Settings', icon: <Settings size={24} />, href: '/account/settings', desc: 'Update your profile and password' },
   ];
 

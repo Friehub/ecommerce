@@ -21,6 +21,7 @@
     "@trpc/server": "^10.45.2",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.76.4",
+    "date-fns": "^4.1.0",
     "ioredis": "^5.10.1",
     "lucide-react": "^1.14.0",
     "nanoid": "^5.1.9",

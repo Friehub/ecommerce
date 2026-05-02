@@ -31,7 +31,8 @@ export type EventType =
   | 'ad.conversion'
   | 'user.registered'
   | 'seller.approved'
-  | 'payout.triggered';
+  | 'payout.triggered'
+  | 'dispute.escalated';
 
 export interface BaseEvent<T = any> {
   id: string;

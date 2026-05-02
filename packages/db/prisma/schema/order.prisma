@@ -34,6 +34,7 @@ enum OrderStatus {
   CANCELLED
   RETURN_REQUESTED
   RETURNED
+  FRAUD_REVIEW
 }
 
 model OrderPackage {

@@ -1,8 +1,9 @@
-import { createTRPCRouter, publicProcedure, sellerProcedure } from "../../../trpc";
+import { createTRPCRouter, publicProcedure, sellerProcedure, protectedProcedure } from "../../../trpc";
 import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { productSchema, categorySchema } from "../schemas";
 import { catalogService } from "../services/catalog-service";
+import { wishlistService } from "../services/wishlist-service";
 
 export const catalogRouter = createTRPCRouter({
   getCategories: publicProcedure.query(async () => {
@@ -61,4 +62,21 @@ export const catalogRouter = createTRPCRouter({
       orderBy: { name: 'asc' }
     });
   }),
+
+  addToWishlist: protectedProcedure
+    .input(z.object({ variantId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await wishlistService.addItem(ctx.session.user.id, input.variantId);
+    }),
+
+  removeFromWishlist: protectedProcedure
+    .input(z.object({ variantId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await wishlistService.removeItem(ctx.session.user.id, input.variantId);
+    }),
+
+  getWishlist: protectedProcedure
+    .query(async ({ ctx }) => {
+      return await wishlistService.getWishlist(ctx.session.user.id);
+    }),
 });

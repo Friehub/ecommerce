@@ -12,7 +12,8 @@ const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   COMPLETED: [],
   CANCELLED: [],
   RETURN_REQUESTED: ['RETURNED', 'DELIVERED'],
-  RETURNED: []
+  RETURNED: [],
+  FRAUD_REVIEW: ['PAID', 'CANCELLED']
 };
 
 export const orderService = {

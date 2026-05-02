@@ -29,7 +29,9 @@ export const loggerMiddleware = t.middleware(async ({ path, type, next }) => {
   if (result.ok) {
     console.log(`[tRPC] ${type} ${path} - OK (${durationMs}ms)`);
   } else {
-    console.error(`[tRPC] ${type} ${path} - ERROR (${durationMs}ms): ${result.error.message}`);
+    // Narrow result to access error safely
+    const error = (result as { ok: false; error: any }).error;
+    console.error(`[tRPC] ${type} ${path} - ERROR (${durationMs}ms): ${error?.message ?? 'Unknown Error'}`);
   }
   
   return result;

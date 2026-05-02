@@ -6,9 +6,20 @@ export const opsService = {
     const totalSellers = await prisma.seller.count({ where: { status: 'ACTIVE' } });
     const totalUsers = await prisma.user.count();
 
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
     const gmvResult = await prisma.order.aggregate({
       where: {
         status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED', 'RETURN_REQUESTED'] }
+      },
+      _sum: { total: true }
+    });
+
+    const gmv30dResult = await prisma.order.aggregate({
+      where: {
+        status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED', 'RETURN_REQUESTED'] },
+        createdAt: { gte: thirtyDaysAgo }
       },
       _sum: { total: true }
     });
@@ -24,6 +35,7 @@ export const opsService = {
     });
 
     const gmv = gmvResult._sum.total?.toNumber() || 0;
+    const gmv30d = gmv30dResult._sum.total?.toNumber() || 0;
 
     return {
       totalOrders,
@@ -31,7 +43,7 @@ export const opsService = {
       activeSellers: totalSellers,
       totalUsers,
       gmv,
-      totalGmv30d: gmv,
+      totalGmv30d: gmv30d,
       activeSessions,
       openDisputes
     };

@@ -105,7 +105,8 @@ export const logisticsService = {
               include: {
                 address: true
               }
-            } 
+            },
+            lines: true 
           } 
         } 
       },

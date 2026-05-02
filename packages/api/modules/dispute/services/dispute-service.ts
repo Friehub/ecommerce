@@ -125,8 +125,11 @@ export const disputeService = {
 
     if (!dispute) throw new Error('DISPUTE_NOT_FOUND');
     
-    // Ensure the caller is either the buyer or the seller
-    if (dispute.buyerId !== userId && dispute.sellerId !== userId) {
+    // Ensure the caller is either the buyer, the seller, or an admin
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const isAdmin = user?.role === 'ADMIN';
+
+    if (dispute.buyerId !== userId && dispute.sellerId !== userId && !isAdmin) {
       throw new Error('UNAUTHORIZED');
     }
 

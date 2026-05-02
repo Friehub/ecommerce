@@ -91,7 +91,7 @@ export default function AdminPayoutsPage() {
                         disabled={approvePayout.isLoading}
                         className="bg-[#282828] text-white px-4 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest hover:bg-black transition-colors disabled:opacity-50"
                       >
-                        {approvePayout.isLoading && approvePayout.variables?.payoutId === payout.id ? 'Approving...' : 'Approve & Pay'}
+                        {approvePayout.isLoading && (approvePayout as any).variables?.payoutId === payout.id ? 'Approving...' : 'Approve & Pay'}
                       </button>
                     )}
                     {payout.bankRef && (

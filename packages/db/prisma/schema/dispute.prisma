@@ -21,6 +21,7 @@ model Dispute {
 enum DisputeStatus {
   OPEN
   UNDER_REVIEW
+  ESCALATED
   RESOLVED
   REJECTED
 }

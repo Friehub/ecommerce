@@ -10,9 +10,16 @@ export const orderRouter = createTRPCRouter({
       cartId: z.string(),
       paymentMethod: z.string(), // Loosen for different providers
       addressId: z.string(),
+      referralLinkId: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      return await orderService.createFromCart(ctx.session.user.id, input.cartId, input.paymentMethod, input.addressId);
+      return await orderService.createFromCart(
+        ctx.session.user.id, 
+        input.cartId, 
+        input.paymentMethod, 
+        input.addressId,
+        input.referralLinkId
+      );
     }),
 
   get: protectedProcedure

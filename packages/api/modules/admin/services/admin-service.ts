@@ -94,6 +94,16 @@ export const adminService = {
         data: { status: resolution }
       });
 
+      // 1. Create Resolution Record
+      await tx.disputeResolution.create({
+        data: {
+          disputeId,
+          resolvedById: adminId,
+          resolution: resolution === 'RESOLVED' ? 'REFUND_APPROVED' : 'CLAIM_REJECTED',
+          refundAmount: refundAmount || 0
+        }
+      });
+
       if (resolution === 'RESOLVED' && refundAmount && refundAmount > 0) {
         // Trigger refund via payment service (funding the wallet)
         await paymentService.fundWallet(dispute.buyerId, refundAmount);

@@ -26,5 +26,13 @@ export const emailTemplates = {
   PRICE_DROP_ALERT: (payload: { productTitle: string; oldPrice: number; newPrice: number }) => ({
     subject: `Price Drop Alert: ${payload.productTitle}`,
     html: `<p>Awesome news! A variant of <strong>${payload.productTitle}</strong> on your wishlist dropped from ₦${payload.oldPrice} to <strong>₦${payload.newPrice}</strong>.</p>`
+  }),
+  ORDER_DELIVERED: (payload: { orderId: string }) => ({
+    subject: `Order Delivered #${payload.orderId}`,
+    html: `<p>Your order <strong>#${payload.orderId}</strong> has been delivered. We hope you enjoy your purchase!</p>`
+  }),
+  REFUND_PROCESSED: (payload: { orderId: string; amount: number; reason?: string }) => ({
+    subject: `Refund Processed #${payload.orderId}`,
+    html: `<p>A refund of <strong>₦${payload.amount}</strong> for order <strong>#${payload.orderId}</strong> has been processed to your wallet.${payload.reason ? ` Reason: ${payload.reason}` : ''}</p>`
   })
 } satisfies Record<string, (p: any) => { subject: string; html: string }>;

@@ -16,6 +16,7 @@ model Dispute {
   seller    Seller            @relation("SellerDisputes", fields: [sellerId], references: [id])
   messages  DisputeMessage[]
   evidence  DisputeEvidence[]
+  resolution DisputeResolution?
 }
 
 enum DisputeStatus {
@@ -44,4 +45,16 @@ model DisputeEvidence {
   createdAt DateTime @default(now())
 
   dispute Dispute @relation(fields: [disputeId], references: [id])
+}
+
+model DisputeResolution {
+  id           String   @id @default(cuid())
+  disputeId    String   @unique
+  resolvedById  String
+  resolution   String
+  refundAmount Decimal  @db.Decimal(12, 2) @default(0)
+  createdAt    DateTime @default(now())
+
+  dispute    Dispute @relation(fields: [disputeId], references: [id])
+  resolvedBy User    @relation(fields: [resolvedById], references: [id])
 }

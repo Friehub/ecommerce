@@ -16,7 +16,7 @@ const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 };
 
 export const orderService = {
-  async createFromCart(userId: string, cartId: string, paymentMethod: string, addressId: string) {
+  async createFromCart(userId: string, cartId: string, paymentMethod: string, addressId: string, referralLinkId?: string) {
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
       include: { items: { include: { variant: true } } }
@@ -72,10 +72,22 @@ export const orderService = {
       // 4. Clear cart
       await tx.cartItem.deleteMany({ where: { cartId } });
 
+      // 5. Record Affiliate Commission if referral exists
+      if (referralLinkId) {
+        const { affiliateService } = await import('../../affiliate/services/affiliate-service');
+        const link = await tx.referralLink.findUnique({
+          where: { id: referralLinkId }
+        });
+        
+        if (link) {
+          await affiliateService.recordCommission(link.agentId, newOrder.id, newOrder.total.toNumber());
+        }
+      }
+
       return newOrder;
     });
 
-    // 5. Fire event
+    // 6. Fire event
     await publishEvent('order.created', { 
       orderId: order.id, 
       userId, 
@@ -85,7 +97,7 @@ export const orderService = {
     if (paymentMethod === 'POD' || paymentMethod === 'PAY_ON_DELIVERY') {
       await orderService.updateStatus(order.id, 'PROCESSING');
     } else {
-      // 6. Schedule SLA check (Cancel if not paid in 30 mins)
+      // 7. Schedule SLA check (Cancel if not paid in 30 mins)
       await queues.orderQueue.add('sla-payment-timeout', { orderId: order.id }, { delay: 30 * 60 * 1000 });
     }
 

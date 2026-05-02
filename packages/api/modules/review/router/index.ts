@@ -34,4 +34,10 @@ export const reviewRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       return await reviewService.moderateReview(input.reviewId, input.status);
     }),
+
+  getRatingStats: publicProcedure
+    .input(z.object({ productId: z.string() }))
+    .query(async ({ input }) => {
+      return await reviewService.getProductRatingStats(input.productId);
+    }),
 });

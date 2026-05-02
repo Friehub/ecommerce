@@ -51,4 +51,26 @@ export const sellerRouter = createTRPCRouter({
       orderBy: { createdAt: 'desc' }
     });
   }),
+
+  bulkDeactivateProducts: sellerProcedure
+    .input(z.object({
+      productIds: z.array(z.string())
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({
+        where: { userId: ctx.session.user.id }
+      });
+      
+      if (!seller) throw new Error('NOT_A_SELLER');
+      
+      return await prisma.product.updateMany({
+        where: {
+          id: { in: input.productIds },
+          sellerId: seller.id
+        },
+        data: {
+          status: 'DRAFT' // Or DEACTIVATED if we have that status
+        }
+      });
+    }),
 });

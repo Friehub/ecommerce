@@ -1,4 +1,5 @@
 import { createTRPCRouter, sellerProcedure, publicProcedure } from '../../../trpc';
+import { z } from 'zod';
 import { CreateCampaignSchema, AddAdGroupSchema, RecordActionSchema } from '../schemas';
 import { advertisingService } from '../services/advertising-service';
 
@@ -43,5 +44,18 @@ export const advertisingRouter = createTRPCRouter({
   getCampaigns: sellerProcedure
     .query(async ({ ctx }) => {
       return advertisingService.getSellerCampaigns(ctx.session.user.sellerProfile!.id);
+    }),
+
+  updateStatus: sellerProcedure
+    .input(z.object({
+      campaignId: z.string(),
+      status: z.enum(['ACTIVE', 'PAUSED', 'ENDED'])
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return advertisingService.updateCampaignStatus(
+        ctx.session.user.sellerProfile!.id,
+        input.campaignId,
+        input.status
+      );
     }),
 });

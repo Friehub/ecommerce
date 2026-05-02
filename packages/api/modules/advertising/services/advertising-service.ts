@@ -113,5 +113,54 @@ export const advertisingService = {
       },
       orderBy: { createdAt: 'desc' }
     });
+  },
+
+  async updateCampaignStatus(sellerId: string, campaignId: string, status: 'ACTIVE' | 'PAUSED' | 'ENDED') {
+    return prisma.adCampaign.update({
+      where: { id: campaignId, sellerId },
+      data: { status }
+    });
+  },
+
+  async selectSponsoredResult(query: string) {
+    if (!query) return null;
+    
+    // Find highest bidder for matching keywords
+    const matchingGroups = await prisma.adGroup.findMany({
+      where: {
+        campaign: { status: 'ACTIVE' },
+        keywords: {
+          some: {
+            text: { contains: query.trim().toLowerCase(), mode: 'insensitive' }
+          }
+        }
+      },
+      include: {
+        product: {
+          include: { 
+            media: { orderBy: { position: 'asc' }, take: 1 }, 
+            brand: true, 
+            category: true,
+            variants: { take: 1 } 
+          }
+        },
+        campaign: { select: { sellerId: true } }
+      },
+      orderBy: { bid: 'desc' },
+      take: 1
+    });
+
+    const group = matchingGroups[0];
+    if (!group) return null;
+
+    // Record an implicit impression when selected for search
+    await this.recordImpression(group.id);
+
+    return {
+      ...group.product,
+      adGroupId: group.id,
+      isSponsored: true,
+      bid: group.bid
+    };
   }
 };

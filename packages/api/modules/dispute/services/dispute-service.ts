@@ -1,5 +1,5 @@
 import { prisma } from '@ecom/db';
-import { publishEvent } from '@ecom/shared';
+import { publishEvent, queues } from '@ecom/shared';
 
 export const disputeService = {
   async openDispute(buyerId: string, orderId: string, reason: string, orderLineId?: string) {
@@ -42,7 +42,27 @@ export const disputeService = {
 
     await publishEvent('dispute.opened', { disputeId: dispute.id, orderId, buyerId, sellerId });
 
+    // 3. Schedule auto-escalation check (72 hours)
+    await queues.orderQueue.add('dispute-auto-escalate', { disputeId: dispute.id }, { delay: 72 * 60 * 60 * 1000 });
+
     return dispute;
+  },
+
+  async escalateDispute(disputeId: string, userId: string) {
+    const dispute = await prisma.dispute.findUnique({ where: { id: disputeId } });
+    if (!dispute) throw new Error('DISPUTE_NOT_FOUND');
+
+    // Only buyer can manually escalate if they feel seller is not cooperating
+    if (dispute.buyerId !== userId) throw new Error('UNAUTHORIZED');
+
+    const updated = await prisma.dispute.update({
+      where: { id: disputeId },
+      data: { status: 'ESCALATED' }
+    });
+
+    await publishEvent('dispute.escalated', { disputeId, reason: 'MANUAL_ESCALATION' });
+
+    return updated;
   },
 
   async respondToDispute(disputeId: string, senderId: string, content: string) {

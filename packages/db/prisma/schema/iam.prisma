@@ -23,6 +23,7 @@ model User {
   notifications NotificationLog[]
   pref          NotificationPreference[]
   wishlist      Wishlist?
+  resolvedDisputes DisputeResolution[]
 }
 
 enum UserRole {

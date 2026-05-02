@@ -32,15 +32,23 @@ export const notificationWorker = new Worker('system-events', async (job: Job) =
         break;
       }
       case 'order.status_updated': {
+        const order = await prisma.order.findUnique({
+          where: { id: payload.orderId }
+        });
+        if (!order) break;
+
         if (payload.status === 'SHIPPED') {
-          const order = await prisma.order.findUnique({
-            where: { id: payload.orderId }
-          });
-          if (order) {
-            const template = emailTemplates.ORDER_SHIPPED(payload);
-            await notificationService.sendNotification(order.userId, 'ORDER_UPDATE', template.subject, template.html);
-          }
+          const template = emailTemplates.ORDER_SHIPPED(payload);
+          await notificationService.sendNotification(order.userId, 'ORDER_UPDATE', template.subject, template.html);
+        } else if (payload.status === 'DELIVERED') {
+          const template = emailTemplates.ORDER_DELIVERED(payload);
+          await notificationService.sendNotification(order.userId, 'ORDER_UPDATE', template.subject, template.html);
         }
+        break;
+      }
+      case 'refund.processed': {
+        const template = emailTemplates.REFUND_PROCESSED(payload);
+        await notificationService.sendNotification(payload.userId, 'BILLING_UPDATE', template.subject, template.html);
         break;
       }
       case 'seller.approved': {

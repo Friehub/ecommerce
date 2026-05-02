@@ -18,6 +18,7 @@ import { adminRouter } from './modules/admin/router'
 import { notificationRouter } from './modules/notification/router'
 import { advertisingRouter } from './modules/advertising/router'
 import { affiliateRouter } from './modules/affiliate/router'
+import { mediaRouter } from './modules/media/router'
 
 export const appRouter = createTRPCRouter({
   iam: iamRouter,
@@ -39,6 +40,7 @@ export const appRouter = createTRPCRouter({
   notification: notificationRouter,
   advertising: advertisingRouter,
   affiliate: affiliateRouter,
-})
+  media: mediaRouter,
+});
 
 export type AppRouter = typeof appRouter

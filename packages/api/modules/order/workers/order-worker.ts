@@ -20,8 +20,24 @@ export const orderWorker = new Worker('orders', async (job: Job) => {
     case 'fraud-review':
       await handleFraudReview(job.data.orderId, job.data.verdict);
       break;
+    case 'dispute-auto-escalate':
+      await handleDisputeAutoEscalate(job.data.disputeId);
+      break;
   }
 }, { connection: redis });
+
+async function handleDisputeAutoEscalate(disputeId: string) {
+  const dispute = await prisma.dispute.findUnique({ where: { id: disputeId } });
+  if (dispute && dispute.status === 'OPEN') {
+    console.log(`Dispute ${disputeId} timed out for seller response. Escalating.`);
+    await prisma.dispute.update({
+      where: { id: disputeId },
+      data: { status: 'ESCALATED' }
+    });
+    const { publishEvent } = await import('@ecom/shared');
+    await publishEvent('dispute.escalated', { disputeId, reason: 'AUTO_ESCALATION_TIMEOUT' });
+  }
+}
 
 async function handleFraudReview(orderId: string, verdict: 'PASS' | 'FAIL') {
   if (verdict === 'FAIL') {

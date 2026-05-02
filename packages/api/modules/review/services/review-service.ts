@@ -83,5 +83,13 @@ export const reviewService = {
         reviewedAt: new Date()
       }
     });
+  },
+
+  async getProductRatingStats(productId: string) {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { averageRating: true, reviewCount: true }
+    });
+    return product || { averageRating: 0, reviewCount: 0 };
   }
 };

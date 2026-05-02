@@ -199,6 +199,9 @@ export const catalogService = {
   }) {
     if (filters.search) {
       try {
+        const { advertisingService } = await import('../../advertising/services/advertising-service');
+        const sponsoredProduct = await advertisingService.selectSponsoredResult(filters.search);
+
         const searchResponse = await RustClient.search.query({
           q: filters.search,
           category_id: filters.categoryId,
@@ -211,7 +214,7 @@ export const catalogService = {
 
         if (searchResponse && searchResponse.results.length > 0) {
            const variantIds = searchResponse.results.map((r: any) => r.variant_id[0]);
-           const results = await prisma.productVariant.findMany({
+           let results = await prisma.productVariant.findMany({
              where: { id: { in: variantIds } },
              include: { 
                product: { include: { media: true, brand: true, category: true } }
@@ -219,9 +222,25 @@ export const catalogService = {
            });
            
            // Re-sort to match search relevance or requested sort
+           let sortedResults = variantIds.map((id: string) => results.find(r => r.id === id)).filter(Boolean);
+
+           if (sponsoredProduct) {
+             // Fetch the first variant for the sponsored product to match return type
+             const sponsoredVariant = await prisma.productVariant.findFirst({
+               where: { productId: sponsoredProduct.id },
+               include: { product: { include: { media: true, brand: true, category: true } } }
+             });
+
+             if (sponsoredVariant) {
+               (sponsoredVariant as any).isSponsored = true;
+               (sponsoredVariant as any).adGroupId = (sponsoredProduct as any).adGroupId;
+               sortedResults = [sponsoredVariant, ...sortedResults];
+             }
+           }
+
            return {
-             results: variantIds.map((id: string) => results.find(r => r.id === id)).filter(Boolean),
-             total: searchResponse.total || results.length,
+             results: sortedResults,
+             total: (searchResponse.total || results.length) + (sponsoredProduct ? 1 : 0),
              facets: searchResponse.facets
            };
         }

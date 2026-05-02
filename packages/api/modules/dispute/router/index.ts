@@ -48,4 +48,10 @@ export const disputeRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       return disputeService.getMyDisputes(ctx.session.user.id);
     }),
+
+  escalate: protectedProcedure
+    .input(GetDisputeSchema)
+    .mutation(async ({ ctx, input }) => {
+      return disputeService.escalateDispute(input.disputeId, ctx.session.user.id);
+    }),
 });

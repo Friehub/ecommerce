@@ -1,4 +1,4 @@
-import { prisma, SellerStatus } from '@ecom/db';
+import { prisma, SellerStatus, OrderStatus } from '@ecom/db';
 import { createTRPCRouter, adminProcedure } from '../../../trpc';
 import { ApproveSellerSchema, ResolveDisputeSchema, ManualRefundSchema } from '../schemas';
 import { adminService } from '../services/admin-service';
@@ -28,6 +28,28 @@ export const adminRouter = createTRPCRouter({
       return prisma.seller.update({
         where: { id: input.sellerId },
         data: { status: input.status }
+      });
+    }),
+
+  getFraudQueue: adminProcedure
+    .query(async () => {
+      return prisma.order.findMany({
+        where: { status: 'FRAUD_REVIEW' },
+        include: { user: { select: { email: true, firstName: true, lastName: true } } },
+        orderBy: { createdAt: 'desc' }
+      });
+    }),
+
+  resolveFraudReview: adminProcedure
+    .input(z.object({
+      orderId: z.string(),
+      action: z.enum(['ALLOW', 'BLOCK'])
+    }))
+    .mutation(async ({ input }) => {
+      const status = input.action === 'ALLOW' ? 'PAID' : 'CANCELLED';
+      return prisma.order.update({
+        where: { id: input.orderId },
+        data: { status }
       });
     }),
 

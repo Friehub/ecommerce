@@ -30,9 +30,7 @@ target/
 .env.production.local
 .env.prod
 .env.staging
-# .env.example IS committed — it is a safe template with no real values
-# (the negation must come after the pattern it overrides)
-!.env.example
+.env.example
 
 # ─── Logs ──────────────────────────────────────────────────────────
 *.log

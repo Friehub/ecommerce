@@ -8,8 +8,8 @@ COPY . .
 
 RUN pnpm install --frozen-lockfile
 
-# Generate Prisma client
 RUN pnpm --filter @ecom/db generate
+RUN pnpm --filter @ecom/db build
 RUN pnpm --filter @ecom/shared build
 RUN pnpm --filter @ecom/api build
 

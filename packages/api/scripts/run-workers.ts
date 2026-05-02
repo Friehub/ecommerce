@@ -102,6 +102,28 @@ cron.schedule('0 2 * * *', async () => {
   }
 });
 
+// Nightly Fraud Queue Auto-Cleanup (runs at 03:00 UTC every day)
+cron.schedule('0 3 * * *', async () => {
+  console.log('⏳ Running nightly fraud queue cleanup...');
+  try {
+    const fortyEightHoursAgo = new Date();
+    fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
+
+    const cancelled = await prisma.order.updateMany({
+      where: {
+        status: 'FRAUD_REVIEW',
+        createdAt: { lte: fortyEightHoursAgo }
+      },
+      data: {
+        status: 'CANCELLED'
+      }
+    });
+    console.log(`✅ Fraud queue cleanup complete. Auto-cancelled ${cancelled.count} suspicious orders.`);
+  } catch (error) {
+    console.error('❌ Fraud queue cleanup failed:', error);
+  }
+});
+
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('Stopping workers...');

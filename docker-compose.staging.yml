@@ -1,8 +1,13 @@
 version: '3.9'
 
 networks:
-  internal:
+  edge-net:
     driver: bridge
+  app-net:
+    driver: bridge
+  db-net:
+    driver: bridge
+    internal: true
 
 volumes:
   postgres_data:
@@ -21,7 +26,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "127.0.0.1:5433:5432"
-    networks: [internal]
+    networks: [db-net]
     command: >
       postgres
         -c shared_buffers=2GB
@@ -46,7 +51,7 @@ services:
         --save 900 1
     volumes:
       - redis_data:/data
-    networks: [internal]
+    networks: [app-net, db-net]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -62,7 +67,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
-    networks: [internal]
+    networks: [edge-net]
     depends_on:
       web:
         condition: service_healthy
@@ -79,7 +84,7 @@ services:
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
-    networks: [internal]
+    networks: [edge-net, app-net, db-net]
     healthcheck:
       test: ["CMD-SHELL", "nc -z 127.0.0.1 3000 || exit 1"]
       interval: 10s
@@ -104,7 +109,7 @@ services:
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
       PORT: 4000
       HOST: 0.0.0.0
-    networks: [internal]
+    networks: [app-net, db-net]
     depends_on:
       postgres:
         condition: service_healthy
@@ -130,7 +135,7 @@ services:
       RUST_LOG: info
     volumes:
       - search_index:/data/index
-    networks: [internal]
+    networks: [app-net]
     deploy:
       resources:
         limits:
@@ -144,7 +149,7 @@ services:
     environment:
       REDIS_URL: redis://redis:6379
       RUST_LOG: info
-    networks: [internal]
+    networks: [app-net]
     deploy:
       resources:
         limits:
@@ -157,7 +162,7 @@ services:
     restart: always
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
-    networks: [internal]
+    networks: [app-net, db-net]
     depends_on:
       postgres:
         condition: service_healthy
@@ -173,7 +178,7 @@ services:
     restart: always
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
-    networks: [internal]
+    networks: [app-net, db-net]
     depends_on:
       postgres:
         condition: service_healthy
@@ -187,7 +192,7 @@ services:
       context: ./services
       dockerfile: auction/Dockerfile
     restart: always
-    networks: [internal]
+    networks: [app-net]
     deploy:
       resources:
         limits:
@@ -203,7 +208,7 @@ services:
       R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID}
       R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
       R2_BUCKET: ${R2_BUCKET}
-    networks: [internal]
+    networks: [app-net]
     deploy:
       resources:
         limits:
@@ -217,7 +222,7 @@ services:
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
       REDIS_URL: redis://redis:6379
-    networks: [internal]
+    networks: [app-net, db-net]
     depends_on:
       postgres:
         condition: service_healthy
@@ -236,7 +241,7 @@ services:
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
       REDIS_URL: redis://redis:6379
-    networks: [internal]
+    networks: [app-net, db-net]
     depends_on:
       postgres:
         condition: service_healthy

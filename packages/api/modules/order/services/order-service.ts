@@ -149,9 +149,10 @@ export const orderService = {
       include: { 
         packages: { 
           include: { 
-            lines: { include: { variant: { include: { product: true } } } } 
+            lines: { include: { variant: { include: { product: true } } } },
+            shipments: { include: { events: { orderBy: { createdAt: 'desc' } } } }
           } 
-        } 
+        }
       }
     });
   },

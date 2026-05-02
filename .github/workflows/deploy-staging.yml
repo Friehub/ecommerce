@@ -69,8 +69,8 @@ jobs:
       - name: Build staging services sequentially
         working-directory: /opt/runner-work/jumia-staging
         env:
-          DOCKER_BUILDKIT: 0
-          COMPOSE_DOCKER_CLI_BUILD: 0
+          DOCKER_BUILDKIT: 1
+          COMPOSE_DOCKER_CLI_BUILD: 1
         run: |
           docker compose -f docker-compose.staging.yml --env-file .env.staging build postgres redis
           docker compose -f docker-compose.staging.yml --env-file .env.staging build search

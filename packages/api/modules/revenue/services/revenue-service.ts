@@ -77,7 +77,7 @@ export const revenueService = {
             source: 'balance',
             reason: `Payout for seller ${payout.seller.businessName}`,
             amount: payout.amount.mul(100).toNumber(), // Paystack expects amount in kobo
-            recipient: payout.id // using payout ID as recipient placeholder or real recipient code if stored
+            recipient: payout.seller.transferRecipientCode
           }),
         });
 

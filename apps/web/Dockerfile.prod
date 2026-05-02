@@ -10,6 +10,8 @@ RUN pnpm install --frozen-lockfile
 
 # Generate Prisma client
 RUN pnpm --filter @ecom/db generate
+RUN pnpm --filter @ecom/shared build
+RUN pnpm --filter @ecom/api build
 
 # Build the Next.js app
 ENV NEXT_TELEMETRY_DISABLED 1

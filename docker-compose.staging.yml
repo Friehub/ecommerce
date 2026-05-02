@@ -81,7 +81,7 @@ services:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
     networks: [internal]
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/ || exit 1"]
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 3000 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -111,7 +111,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:4000/ || exit 1"]
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 4000 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5

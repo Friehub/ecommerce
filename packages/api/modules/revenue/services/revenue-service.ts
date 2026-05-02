@@ -111,6 +111,11 @@ export const revenueService = {
         });
       }
     }
+    if (PAYSTACK_SECRET_KEY === 'sk_test_placeholder') {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('PAYOUT_SIMULATION_BLOCKED_IN_PRODUCTION: Missing Paystack Secret');
+      }
+    }
 
     // Default simulation for non-prod or fallback environments
     return await prisma.payout.update({

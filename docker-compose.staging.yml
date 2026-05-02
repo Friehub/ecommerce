@@ -158,6 +158,9 @@ services:
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
     networks: [internal]
+    depends_on:
+      postgres:
+        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -171,6 +174,9 @@ services:
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
     networks: [internal]
+    depends_on:
+      postgres:
+        condition: service_healthy
     deploy:
       resources:
         limits:

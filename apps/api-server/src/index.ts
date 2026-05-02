@@ -22,7 +22,7 @@ const server = Fastify({
 // ── Security & middleware ─────────────────────────────────────────
 async function start() {
   // Validate critical environment variables
-  const criticalEnv = ['DATABASE_URL', 'REDIS_URL', 'AUTH_SECRET', 'PAYSTACK_WEBHOOK_SECRET'];
+  const criticalEnv = ['DATABASE_URL', 'REDIS_URL', 'JWT_SECRET', 'PAYSTACK_WEBHOOK_SECRET'];
   for (const env of criticalEnv) {
     if (!process.env[env] || process.env[env].includes('placeholder')) {
       server.log.error(`Critical environment variable ${env} is missing or contains 'placeholder'!`);

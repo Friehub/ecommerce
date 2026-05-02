@@ -43,11 +43,8 @@ async function handleEscrowRelease(orderId: string) {
   if (order && order.status === 'DELIVERED') {
     console.log(`Releasing escrow for order ${orderId}`);
     
-    for (const pkg of order.packages) {
-      for (const line of pkg.lines) {
-        await ledgerService.recordSale(line.id);
-      }
-    }
+    // Proactively trigger mature escrow release
+    await ledgerService.releaseMatureEscrow();
 
     await orderService.updateStatus(orderId, 'COMPLETED');
   }

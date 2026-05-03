@@ -84,6 +84,8 @@ services:
       NODE_ENV: production
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      AUTH_SECRET: ${NEXTAUTH_SECRET}
+      AUTH_TRUST_HOST: "true"
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
     networks: [edge-net, app-net, db-net]
     healthcheck:

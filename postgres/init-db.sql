@@ -6,6 +6,7 @@ ALTER DATABASE ecom SET statement_timeout = '5000ms';
 
 -- Revoke all permissions to the public schema to prevent any leakage
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO ecom;
 
 -- Create ecom_api user with limited permissions (if it doesn't already exist)
 DO $$

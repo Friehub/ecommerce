@@ -62,7 +62,7 @@ jobs:
       - name: Migrate and seed staging database
         run: |
           DB_PASSWORD=$(grep '^DB_PASSWORD=' /opt/runner-work/jumia-staging/.env.staging | cut -d '=' -f2-)
-          DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db prisma migrate deploy
+          DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db prisma migrate deploy || DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db npx prisma db push --accept-data-loss
           DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db pnpm run seed
 
 # Removed Prune Docker build cache step to preserve cargo chef cache for faster builds

@@ -77,23 +77,21 @@ export const FlashSales = () => {
 
   return (
     <section className="container mt-6">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300">
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
         {/* Header */}
-        <div className="bg-gradient-to-r from-red-600 to-orange-500 h-14 flex items-center justify-between px-5 text-white select-none shadow-sm">
+        <div className="bg-red-600 h-14 flex items-center justify-between px-5 text-white">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/20">
-              <Zap size={18} className="text-yellow-300 animate-pulse" style={{ fill: 'currentColor' }} />
-            </div>
-            <h2 className="font-extrabold uppercase tracking-tight text-white text-base md:text-lg">
+            <Zap size={22} className="text-yellow-400" style={{ fill: 'currentColor' }} />
+            <h2 className="font-bold uppercase tracking-tight text-white text-base md:text-lg">
               Flash Sales
             </h2>
           </div>
           <div className="flex items-center gap-5">
-            <div className="text-sm font-bold bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-1.5 rounded-lg hidden sm:inline-flex items-center gap-2">
-              <span className="text-white/80 font-medium">Ends in:</span>
+            <div className="text-sm font-bold bg-red-700/60 px-3 py-1.5 rounded hidden sm:inline-flex items-center gap-2">
+              <span className="text-red-100 font-medium">Ends in:</span>
               <CountdownTimer endTime={earliestEnd} />
             </div>
-            <a href="/flash-sales" className="text-xs font-extrabold hover:underline uppercase tracking-wide bg-white/20 hover:bg-white/30 transition-all px-3 py-1.5 rounded-lg border border-white/10">
+            <a href="/flash-sales" className="text-xs font-bold hover:underline uppercase tracking-wide bg-red-700 hover:bg-red-800 transition-all px-3 py-1.5 rounded">
               See All
             </a>
           </div>

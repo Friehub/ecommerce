@@ -21,7 +21,48 @@ export default function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = React.useState<string | null>(null);
   const [isCheckingCoupon, setIsCheckingCoupon] = React.useState(false);
 
+  // Address creation state
+  const [isAddingAddress, setIsAddingAddress] = React.useState(false);
+  const [addrFirstName, setAddrFirstName] = React.useState('');
+  const [addrLastName, setAddrLastName] = React.useState('');
+  const [addrStreet, setAddrStreet] = React.useState('');
+  const [addrCity, setAddrCity] = React.useState('');
+  const [addrState, setAddrState] = React.useState('');
+  const [addrPhone, setAddrPhone] = React.useState('');
+  const [addrIsDefault, setAddrIsDefault] = React.useState(false);
+
   const utils = api.useUtils();
+
+  const addAddress = api.iam.addAddress.useMutation({
+    onSuccess: () => {
+      utils.iam.getAddresses.invalidate();
+      setIsAddingAddress(false);
+      setAddrFirstName('');
+      setAddrLastName('');
+      setAddrStreet('');
+      setAddrCity('');
+      setAddrState('');
+      setAddrPhone('');
+      setAddrIsDefault(false);
+    },
+    onError: (err) => {
+      alert(err.message || 'Failed to add address');
+    }
+  });
+
+  const handleCreateAddress = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!addrFirstName || !addrLastName || !addrStreet || !addrCity || !addrState || !addrPhone) return;
+    addAddress.mutate({
+      firstName: addrFirstName,
+      lastName: addrLastName,
+      streetAddress: addrStreet,
+      city: addrCity,
+      state: addrState,
+      phone: addrPhone,
+      isDefault: addrIsDefault,
+    });
+  };
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -52,6 +93,7 @@ export default function CheckoutPage() {
     undefined,
     { enabled: !!session }
   );
+
 
   const createOrder = api.order.create.useMutation({
     onSuccess: (order) => {
@@ -160,13 +202,19 @@ export default function CheckoutPage() {
                         <p className="text-[11px] text-gray-400 font-medium mt-2">{addr.phone}</p>
                       </div>
                     ))}
-                    <button className="p-4 border-2 border-dashed border-gray-200 hover:border-orange-200 bg-gray-50/50 hover:bg-orange-50/30 rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-[#F68B1E] transition-all group min-h-[120px] cursor-pointer">
+                    <button 
+                      onClick={() => setIsAddingAddress(true)}
+                      className="p-4 border-2 border-dashed border-gray-200 hover:border-orange-200 bg-gray-50/50 hover:bg-orange-50/30 rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-[#F68B1E] transition-all group min-h-[120px] cursor-pointer"
+                    >
                       <Plus size={24} className="group-hover:scale-110 duration-200 transition-transform" />
                       <span className="text-xs font-extrabold uppercase tracking-wider">Add New Address</span>
                     </button>
                   </div>
                 ) : (
-                   <button className="w-full p-8 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center gap-3 text-gray-400 hover:text-[#F68B1E] hover:border-orange-200 transition-all bg-gray-50/50">
+                    <button 
+                      onClick={() => setIsAddingAddress(true)}
+                      className="w-full p-8 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center gap-3 text-gray-400 hover:text-[#F68B1E] hover:border-orange-200 transition-all bg-gray-50/50"
+                    >
                     <MapPin size={32} />
                     <div className="text-center">
                       <p className="font-extrabold text-base text-gray-800">No saved addresses</p>
@@ -179,6 +227,127 @@ export default function CheckoutPage() {
                 )}
               </div>
             </section>
+
+            {/* Modal for adding a new address */}
+            {isAddingAddress && (
+              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 overflow-hidden animate-fade-in">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-extrabold uppercase tracking-tight text-gray-900">Add New Address</h3>
+                    <button onClick={() => setIsAddingAddress(false)} className="text-gray-400 hover:text-gray-600 font-bold text-lg select-none">
+                      ✕
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleCreateAddress} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">First Name</label>
+                        <input
+                          type="text"
+                          value={addrFirstName}
+                          onChange={(e) => setAddrFirstName(e.target.value)}
+                          className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                          placeholder="John"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">Last Name</label>
+                        <input
+                          type="text"
+                          value={addrLastName}
+                          onChange={(e) => setAddrLastName(e.target.value)}
+                          className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                          placeholder="Doe"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">Street Address</label>
+                      <input
+                        type="text"
+                        value={addrStreet}
+                        onChange={(e) => setAddrStreet(e.target.value)}
+                        className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                        placeholder="123 Jumia Way"
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">City</label>
+                        <input
+                          type="text"
+                          value={addrCity}
+                          onChange={(e) => setAddrCity(e.target.value)}
+                          className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                          placeholder="Ikeja"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">State</label>
+                        <input
+                          type="text"
+                          value={addrState}
+                          onChange={(e) => setAddrState(e.target.value)}
+                          className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                          placeholder="Lagos"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">Phone Number</label>
+                      <input
+                        type="tel"
+                        value={addrPhone}
+                        onChange={(e) => setAddrPhone(e.target.value)}
+                        className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                        placeholder="08012345678"
+                        required
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2 select-none">
+                      <input 
+                        type="checkbox" 
+                        id="default-address"
+                        checked={addrIsDefault}
+                        onChange={(e) => setAddrIsDefault(e.target.checked)}
+                        className="accent-[#F68B1E]"
+                      />
+                      <label htmlFor="default-address" className="text-xs font-bold text-gray-600 select-none cursor-pointer">
+                        Set as Default Address
+                      </label>
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                      <button 
+                        type="button" 
+                        onClick={() => setIsAddingAddress(false)}
+                        className="flex-1 h-11 border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 rounded-xl font-bold text-sm tracking-wide uppercase transition-all select-none"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        type="submit" 
+                        disabled={addAddress.isLoading}
+                        className="flex-1 h-11 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-xl font-extrabold text-sm tracking-wide uppercase flex items-center justify-center gap-2 transition-all hover:shadow-lg disabled:opacity-50 select-none"
+                      >
+                        {addAddress.isLoading ? <Loader2 className="animate-spin" size={18} /> : 'Save Address'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
 
             {/* 2. Payment Method */}
             <section className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md overflow-hidden select-none">

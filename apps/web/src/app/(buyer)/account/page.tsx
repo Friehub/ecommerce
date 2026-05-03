@@ -5,10 +5,58 @@ import { useSession } from 'next-auth/react';
 import { User, Package, Heart, MapPin, Settings, ChevronRight, CreditCard, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { api } from '@/trpc/react';
 
 export default function AccountPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+
+  const [isAddingAddress, setIsAddingAddress] = React.useState(false);
+  const [addrFirstName, setAddrFirstName] = React.useState('');
+  const [addrLastName, setAddrLastName] = React.useState('');
+  const [addrStreet, setAddrStreet] = React.useState('');
+  const [addrCity, setAddrCity] = React.useState('');
+  const [addrState, setAddrState] = React.useState('');
+  const [addrPhone, setAddrPhone] = React.useState('');
+  const [addrIsDefault, setAddrIsDefault] = React.useState(false);
+
+  const utils = api.useUtils();
+
+  const { data: addresses, isLoading: isAddressesLoading } = api.iam.getAddresses.useQuery(
+    undefined,
+    { enabled: !!session }
+  );
+
+  const addAddress = api.iam.addAddress.useMutation({
+    onSuccess: () => {
+      utils.iam.getAddresses.invalidate();
+      setIsAddingAddress(false);
+      setAddrFirstName('');
+      setAddrLastName('');
+      setAddrStreet('');
+      setAddrCity('');
+      setAddrState('');
+      setAddrPhone('');
+      setAddrIsDefault(false);
+    },
+    onError: (err) => {
+      alert(err.message || 'Failed to add address');
+    }
+  });
+
+  const handleCreateAddress = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!addrFirstName || !addrLastName || !addrStreet || !addrCity || !addrState || !addrPhone) return;
+    addAddress.mutate({
+      firstName: addrFirstName,
+      lastName: addrLastName,
+      streetAddress: addrStreet,
+      city: addrCity,
+      state: addrState,
+      phone: addrPhone,
+      isDefault: addrIsDefault,
+    });
+  };
 
   React.useEffect(() => {
     if (status === 'unauthenticated') {
@@ -30,7 +78,7 @@ export default function AccountPage() {
     { label: 'Orders', icon: <Package size={24} />, href: '/orders', desc: 'Check your order status and history' },
     { label: 'Notifications', icon: <User size={24} />, href: '/notifications', desc: 'View your messages and alerts' },
     { label: 'Saved Items', icon: <Heart size={24} />, href: '/saved', desc: 'View items you saved for later' },
-    { label: 'Addresses', icon: <MapPin size={24} />, href: '/account/addresses', desc: 'Manage your delivery addresses' },
+    { label: 'Addresses', icon: '#', href: '#addresses', desc: 'Manage your delivery addresses' },
     { label: 'Account Settings', icon: <Settings size={24} />, href: '/account/settings', desc: 'Update your profile and password' },
   ];
 
@@ -65,6 +113,42 @@ export default function AccountPage() {
                  </div>
               </div>
             </div>
+
+            {/* Addresses Section */}
+            <div id="addresses" className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md p-6 mt-6 select-none">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-sm font-extrabold uppercase tracking-tight text-gray-900 flex items-center gap-2">
+                  <MapPin size={18} className="text-[#F68B1E]" />
+                  Saved Addresses
+                </h3>
+                <button 
+                  onClick={() => setIsAddingAddress(true)}
+                  className="text-xs font-black text-[#F68B1E] hover:underline uppercase select-none"
+                >
+                  + Add
+                </button>
+              </div>
+
+              {isAddressesLoading ? (
+                <div className="flex justify-center p-4">
+                  <Loader2 className="animate-spin text-[#F68B1E]" size={24} />
+                </div>
+              ) : addresses && addresses.length > 0 ? (
+                <div className="space-y-3">
+                  {addresses.map((addr: any) => (
+                    <div key={addr.id} className="p-3 border rounded-xl border-gray-100 hover:border-orange-200 transition-all relative">
+                      <p className="font-extrabold text-xs text-gray-800 mb-0.5">{addr.firstName} {addr.lastName}</p>
+                      <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
+                        {addr.streetAddress}, {addr.city}, {addr.state}
+                      </p>
+                      <p className="text-[10px] text-gray-400 font-medium mt-1">{addr.phone}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400 font-medium text-center py-2">No saved addresses</p>
+              )}
+            </div>
           </div>
 
           {/* Quick Links Grid */}
@@ -77,7 +161,7 @@ export default function AccountPage() {
                   className="bg-white p-6 rounded-xl border border-gray-100 hover:border-[#F68B1E] hover:shadow-lg transition-all duration-200 flex items-start gap-4 group cursor-pointer shadow-sm"
                 >
                   <div className="text-[#F68B1E] bg-orange-50 border border-orange-100 p-3.5 rounded-xl group-hover:bg-[#F68B1E] group-hover:text-white transition-colors flex items-center justify-center group-hover:scale-105 duration-200">
-                    {item.icon}
+                    {typeof item.icon === 'string' ? <MapPin size={24} /> : item.icon}
                   </div>
                   <div className="flex-1">
                     <h3 className="font-extrabold text-gray-800 mb-1 flex items-center justify-between group-hover:text-[#F68B1E] transition-colors">
@@ -92,6 +176,126 @@ export default function AccountPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal for adding a new address */}
+      {isAddingAddress && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 overflow-hidden animate-fade-in">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-extrabold uppercase tracking-tight text-gray-900">Add New Address</h3>
+              <button onClick={() => setIsAddingAddress(false)} className="text-gray-400 hover:text-gray-600 font-bold text-lg select-none">
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateAddress} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">First Name</label>
+                  <input
+                    type="text"
+                    value={addrFirstName}
+                    onChange={(e) => setAddrFirstName(e.target.value)}
+                    className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                    placeholder="John"
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">Last Name</label>
+                  <input
+                    type="text"
+                    value={addrLastName}
+                    onChange={(e) => setAddrLastName(e.target.value)}
+                    className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                    placeholder="Doe"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">Street Address</label>
+                <input
+                  type="text"
+                  value={addrStreet}
+                  onChange={(e) => setAddrStreet(e.target.value)}
+                  className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                  placeholder="123 Jumia Way"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">City</label>
+                  <input
+                    type="text"
+                    value={addrCity}
+                    onChange={(e) => setAddrCity(e.target.value)}
+                    className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                    placeholder="Ikeja"
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">State</label>
+                  <input
+                    type="text"
+                    value={addrState}
+                    onChange={(e) => setAddrState(e.target.value)}
+                    className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                    placeholder="Lagos"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold uppercase text-gray-400 tracking-wide">Phone Number</label>
+                <input
+                  type="tel"
+                  value={addrPhone}
+                  onChange={(e) => setAddrPhone(e.target.value)}
+                  className="w-full h-11 border border-gray-200 px-3 rounded-xl outline-none font-medium text-sm text-gray-800 bg-gray-50/40 focus:border-[#F68B1E] focus:bg-white transition-all duration-200"
+                  placeholder="08012345678"
+                  required
+                />
+              </div>
+
+              <div className="flex items-center gap-2 select-none">
+                <input 
+                  type="checkbox" 
+                  id="default-address"
+                  checked={addrIsDefault}
+                  onChange={(e) => setAddrIsDefault(e.target.checked)}
+                  className="accent-[#F68B1E]"
+                />
+                <label htmlFor="default-address" className="text-xs font-bold text-gray-600 select-none cursor-pointer">
+                  Set as Default Address
+                </label>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button 
+                  type="button" 
+                  onClick={() => setIsAddingAddress(false)}
+                  className="flex-1 h-11 border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 rounded-xl font-bold text-sm tracking-wide uppercase transition-all select-none"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={addAddress.isLoading}
+                  className="flex-1 h-11 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-xl font-extrabold text-sm tracking-wide uppercase flex items-center justify-center gap-2 transition-all hover:shadow-lg disabled:opacity-50 select-none"
+                >
+                  {addAddress.isLoading ? <Loader2 className="animate-spin" size={18} /> : 'Save Address'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .container {
@@ -151,3 +355,4 @@ export default function AccountPage() {
     </div>
   );
 }
+

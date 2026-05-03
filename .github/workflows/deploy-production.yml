@@ -52,37 +52,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Write all secrets to .env.prod — this file is never in the repo
-      - name: Write .env.prod
-        run: |
-          cat > /opt/jumia/.env.prod << 'ENVEOF'
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          DATABASE_URL=postgresql://ecom:${{ secrets.DB_PASSWORD }}@postgres:5432/ecom
-          REDIS_URL=redis://redis:6379
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-          NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
-          WEB_URL=${{ secrets.NEXTAUTH_URL }}
-          NEXT_PUBLIC_API_URL=${{ secrets.NEXTAUTH_URL }}/api
-          PAYSTACK_SECRET=${{ secrets.PAYSTACK_SECRET }}
-          PAYSTACK_WEBHOOK_SECRET=${{ secrets.PAYSTACK_WEBHOOK_SECRET }}
-          R2_ACCOUNT_ID=${{ secrets.R2_ACCOUNT_ID }}
-          R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_BUCKET=${{ secrets.R2_BUCKET }}
-          R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
-          R2_PUBLIC_URL=${{ secrets.R2_PUBLIC_URL }}
-          RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
-          TERMII_API_KEY=${{ secrets.TERMII_API_KEY }}
-          INTERNAL_API_TOKEN=${{ secrets.INTERNAL_API_TOKEN }}
-          NODE_ENV=production
-          RUST_LOG=info
-          LOG_LEVEL=info
-          PORT=4000
-          HOST=0.0.0.0
-          ENVEOF
-          chmod 600 /opt/jumia/.env.prod
-
       # Sync code from checkout to the deploy directory
       - name: Sync code to deploy dir
         run: |
@@ -99,7 +68,7 @@ jobs:
       - name: Run database migrations
         working-directory: /opt/jumia
         run: |
-          docker compose -f docker-compose.prod.yml --env-file .env.prod \
+          docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
             run --rm --no-deps api \
             sh -c "npx prisma migrate deploy"
 
@@ -107,7 +76,7 @@ jobs:
       - name: Deploy TypeScript services
         working-directory: /opt/jumia
         run: |
-          docker compose -f docker-compose.prod.yml --env-file .env.prod \
+          docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
             up -d --no-deps --build \
             web api workers event-consumer
 
@@ -130,7 +99,7 @@ jobs:
       - name: Deploy Rust services
         working-directory: /opt/jumia
         run: |
-          docker compose -f docker-compose.prod.yml --env-file .env.prod \
+          docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
             up -d --no-deps --build \
             search inventory fraud recommendations auction image-processor
 
@@ -193,7 +162,7 @@ jobs:
         run: |
           echo "Deploy failed — rolling back to previous image..."
           # Restart without --build: Docker Compose reuses the last successfully built image
-          docker compose -f docker-compose.prod.yml --env-file .env.prod \
+          docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
             up -d web api workers event-consumer
           echo "Rollback complete."
 

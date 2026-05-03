@@ -55,14 +55,16 @@ jobs:
       - name: Start database
         working-directory: /opt/runner-work/jumia-staging
         run: |
-          docker compose -f docker-compose.staging.yml --env-file .env.staging up -d postgres
+          docker compose -f docker-compose.staging.yml --env-file .env.staging up -d --force-recreate postgres
           echo "Waiting for database to be ready..."
           sleep 10
+          docker compose -f docker-compose.staging.yml --env-file .env.staging exec -T postgres sh -c "psql -U ecom -d ecom -c 'GRANT ALL ON SCHEMA public TO ecom;'"
+          docker compose -f docker-compose.staging.yml --env-file .env.staging exec -T postgres sh -c "psql -U ecom -d ecom -c \"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'ecom' AND pid <> pg_backend_pid();\"" || true
 
       - name: Migrate and seed staging database
         run: |
           DB_PASSWORD=$(grep '^DB_PASSWORD=' /opt/runner-work/jumia-staging/.env.staging | cut -d '=' -f2-)
-          DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db prisma migrate deploy || DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db npx prisma db push --accept-data-loss
+          DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db npx prisma db push --accept-data-loss --force-reset
           DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db pnpm run seed
 
 # Removed Prune Docker build cache step to preserve cargo chef cache for faster builds

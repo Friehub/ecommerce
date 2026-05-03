@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#eeeeef",
+                    "surface-bright": "#f9f9fa",
+                    "inverse-surface": "#2f3132",
+                    "secondary-fixed-dim": "#c3c6ce",
+                    "on-surface": "#1a1c1d",
+                    "secondary": "#5b5f65",
+                    "primary": "#914d00",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#003a7d",
+                    "surface-tint": "#914d00",
+                    "primary-container": "#f68b1e",
+                    "secondary-container": "#dfe2ea",
+                    "on-surface-variant": "#554335",
+                    "outline-variant": "#dcc2af",
+                    "on-background": "#1a1c1d",
+                    "on-tertiary-fixed-variant": "#004492",
+                    "primary-fixed": "#ffdcc3",
+                    "tertiary-fixed-dim": "#acc7ff",
+                    "tertiary-container": "#76a6ff",
+                    "on-tertiary-fixed": "#001a40",
+                    "on-secondary-fixed-variant": "#43474d",
+                    "secondary-fixed": "#dfe2ea",
+                    "tertiary-fixed": "#d7e2ff",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#e8e8e9",
+                    "surface-dim": "#dadadb",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary-container": "#61656b",
+                    "surface-container-highest": "#e2e2e3",
+                    "on-primary-container": "#5e3000",
+                    "primary-fixed-dim": "#ffb77e",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#6e3900",
+                    "surface": "#f9f9fa",
+                    "on-error-container": "#93000a",
+                    "background": "#f9f9fa",
+                    "on-secondary-fixed": "#181c21",
+                    "surface-variant": "#e2e2e3",
+                    "surface-container-low": "#f3f3f4",
+                    "outline": "#897363",
+                    "tertiary": "#005bbe",
+                    "on-primary-fixed": "#2f1500",
+                    "inverse-primary": "#ffb77e",
+                    "inverse-on-surface": "#f1f1f2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "xs": "4px",
+                    "base": "4px",
+                    "margin-desktop": "auto",
+                    "sm": "8px",
+                    "xl": "48px",
+                    "gutter": "12px",
+                    "md": "16px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "label-xs": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-xs": ["10px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["20px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-sm": ["12px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "title-sm": ["16px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .auth-card-shadow {
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col">
+<!-- Top Navigation (Shell suppressed due to Transactional nature, but identity preserved) -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-16 h-16 bg-white shadow-sm">
+<div class="text-2xl font-black text-[#f68b1e]">Vibrant Marketplace</div>
+<a class="text-gray-600 hover:text-[#f68b1e] transition-colors font-medium text-sm flex items-center gap-2" href="#">
+<span class="material-symbols-outlined">arrow_back</span>
+            Back to Home
+        </a>
+</header>
+<main class="flex-grow flex items-center justify-center pt-16 pb-8 md:p-0">
+<div class="w-full max-w-[1200px] grid md:grid-cols-2 min-h-[calc(100vh-64px)] overflow-hidden">
+<!-- Left Side: Dynamic Branding Image -->
+<div class="hidden md:block relative overflow-hidden bg-[#f68b1e]">
+<img alt="Lifestyle Branding" class="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-multiply" data-alt="A vibrant and energetic lifestyle photograph capturing a diverse group of young professionals engaged in a bustling modern marketplace environment. The lighting is bright and optimistic, reflecting a corporate modern aesthetic with warm orange undertones. The composition is dynamic, showing high-quality products and digital interfaces in use, emphasizing speed, trust, and connection within a global commerce ecosystem." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#914d00]/80 to-transparent flex flex-col justify-end p-12 text-white">
+<h1 class="font-display-lg text-display-lg mb-4">Empowering your global shopping journey.</h1>
+<p class="font-body-md text-body-md max-w-md opacity-90">Join millions of buyers who discover unique products and incredible deals every day on Vibrant Marketplace.</p>
+</div>
+</div>
+<!-- Right Side: Auth Forms Canvas -->
+<div class="flex items-center justify-center p-6 md:p-12 lg:p-24 bg-white">
+<div class="w-full max-w-md">
+<!-- Toggle Tabs -->
+<div class="flex border-b border-outline-variant mb-8">
+<button class="flex-1 pb-4 text-title-sm font-title-sm border-b-2 border-primary-container text-primary-container transition-all">Login</button>
+<button class="flex-1 pb-4 text-title-sm font-title-sm border-b-2 border-transparent text-secondary hover:text-primary-container transition-all">Create Account</button>
+</div>
+<div class="space-y-6">
+<header>
+<h2 class="text-display-lg font-display-lg text-on-surface">Welcome back</h2>
+<p class="text-body-md font-body-md text-secondary">Enter your details to access your account</p>
+</header>
+<!-- Social Logins -->
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 h-12 border border-outline rounded-lg hover:bg-surface-container transition-colors">
+<img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN9-_8TvhICiRRE0-ee6Iuh8nv8Jhdop3Q3_h8Zh6qjR1VXWSQGOg0B7BFPy8mMNZRUwaRhmRTo8e1YDLwio4aWfq7OehXUXUSE8PLJ488W_6-oZOBOP_8T0vvwAQJOYSeDMmEAHW31hww0oSIigimrQxCW-GOVcRW_T-qymyYpmaD5Dvg_tHApSHNm5K7nx3ZcXXq-aVTrig-IOaBNr9ivkNc3-5VZOEOModgaedXTxvzn9jHVeEpmyLvkOdZAeeNniPLnAePHO0w"/>
+<span class="text-body-sm font-body-sm text-on-surface">Google</span>
+</button>
+<button class="flex items-center justify-center gap-3 h-12 border border-outline rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-blue-600" style="font-variation-settings: 'FILL' 1;">social_leaderboard</span>
+<span class="text-body-sm font-body-sm text-on-surface">Facebook</span>
+</button>
+</div>
+<div class="relative flex items-center justify-center">
+<div class="w-full border-t border-outline-variant"></div>
+<span class="absolute px-4 bg-white text-label-xs font-label-xs text-secondary uppercase tracking-widest">or email login</span>
+</div>
+<!-- Email/Password Form -->
+<form class="space-y-4">
+<div class="space-y-1">
+<label class="text-label-xs font-label-xs text-secondary uppercase" for="email">Email Address</label>
+<input class="w-full h-12 px-4 rounded-lg border border-outline-variant focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all placeholder:text-gray-400" id="email" placeholder="name@company.com" type="email"/>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between items-center">
+<label class="text-label-xs font-label-xs text-secondary uppercase" for="password">Password</label>
+<a class="text-label-xs font-label-xs text-primary-container hover:underline" href="#">Forgot Password?</a>
+</div>
+<div class="relative">
+<input class="w-full h-12 px-4 rounded-lg border border-outline-variant focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all placeholder:text-gray-400" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-secondary" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-2 py-2">
+<input class="w-4 h-4 rounded border-outline-variant text-primary-container focus:ring-primary-container" id="remember" type="checkbox"/>
+<label class="text-body-sm font-body-sm text-secondary" for="remember">Keep me logged in</label>
+</div>
+<button class="w-full h-12 bg-primary-container text-white font-title-sm text-title-sm rounded-lg hover:brightness-110 active:scale-[0.98] transition-all shadow-md" type="submit">
+                                Sign In
+                            </button>
+</form>
+<footer class="text-center pt-4">
+<p class="text-body-sm font-body-sm text-secondary">
+                                By signing in, you agree to our 
+                                <a class="text-primary-container hover:underline" href="#">Terms of Service</a> 
+                                and 
+                                <a class="text-primary-container hover:underline" href="#">Privacy Policy</a>.
+                            </p>
+</footer>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Using JSON specification for links and style) -->
+<footer class="bg-gray-100 py-12 border-t border-[#e5e5e5] mt-auto">
+<div class="w-full px-4 md:px-16 grid grid-cols-1 md:grid-cols-4 gap-8 max-w-[1200px] mx-auto">
+<div class="col-span-1 md:col-span-2">
+<div class="text-xl font-black text-gray-900 mb-4">Vibrant Marketplace</div>
+<p class="text-xs font-['Inter'] leading-relaxed text-gray-500 max-w-xs">
+                    The world's fastest growing marketplace for quality goods, trusted by millions globally.
+                </p>
+</div>
+<div class="space-y-4">
+<h4 class="text-label-xs font-label-xs text-secondary uppercase font-bold">Quick Links</h4>
+<ul class="space-y-2">
+<li><a class="text-xs font-['Inter'] text-gray-500 hover:text-[#f68b1e] transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="text-xs font-['Inter'] text-gray-500 hover:text-[#f68b1e] transition-colors" href="#">Terms of Service</a></li>
+<li><a class="text-xs font-['Inter'] text-gray-500 hover:text-[#f68b1e] transition-colors" href="#">Contact Us</a></li>
+<li><a class="text-xs font-['Inter'] text-gray-500 hover:text-[#f68b1e] transition-colors" href="#">Track Order</a></li>
+</ul>
+</div>
+<div class="flex flex-col justify-between items-end">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-gray-400 cursor-pointer hover:text-[#f68b1e]">public</span>
+<span class="material-symbols-outlined text-gray-400 cursor-pointer hover:text-[#f68b1e]">share</span>
+</div>
+<div class="text-xs font-['Inter'] text-gray-500 mt-8 md:mt-0">
+                    © 2024 Vibrant Marketplace. All rights reserved.
+                </div>
+</div>
+</div>
+</footer>
+<!-- Mobile Bottom Nav (Suppressed for focused Transactional screen) -->
+</body></html>

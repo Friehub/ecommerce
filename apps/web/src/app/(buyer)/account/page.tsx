@@ -18,7 +18,7 @@ export default function AccountPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#F9F9FA]">
         <Loader2 className="animate-spin text-[#F68B1E]" size={40} />
       </div>
     );
@@ -35,54 +35,56 @@ export default function AccountPage() {
   ];
 
   return (
-    <div className="bg-gray-50 min-h-screen py-8">
+    <div className="bg-[#F9F9FA] min-h-screen py-8">
       <div className="container">
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">My Account</h1>
+        <h1 className="text-2xl font-extrabold text-gray-900 mb-8 tracking-tight select-none border-b-2 border-[#F68B1E] pb-1 w-fit">
+          My Account
+        </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* User Overview */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="lg:col-span-1 select-none">
+            <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md p-6">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-[#F68B1E]/10 text-[#F68B1E] rounded-full flex items-center justify-center text-2xl font-bold">
+                <div className="w-16 h-16 bg-orange-50 text-[#F68B1E] border border-orange-100 rounded-full flex items-center justify-center text-2xl font-black">
                   {session.user?.email?.[0].toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-bold text-lg text-gray-900">{session.user?.email?.split('@')[0]}</p>
-                  <p className="text-sm text-gray-500">{session.user?.email}</p>
+                  <p className="font-extrabold text-lg text-gray-900 leading-tight">{session.user?.email?.split('@')[0]}</p>
+                  <p className="text-xs font-medium text-gray-400 mt-0.5">{session.user?.email}</p>
                 </div>
               </div>
-              <div className="border-t pt-6 space-y-4">
+              <div className="border-t border-gray-100 pt-5 space-y-4">
                  <div className="flex justify-between text-sm">
-                   <span className="text-gray-500">Member Since</span>
-                   <span className="font-medium">April 2024</span>
+                   <span className="text-gray-500 font-medium">Member Since</span>
+                   <span className="font-bold text-gray-800">April 2024</span>
                  </div>
                  <div className="flex justify-between text-sm">
-                   <span className="text-gray-500">Account Type</span>
-                   <span className="font-medium capitalize">{(session.user as any)?.role || 'Buyer'}</span>
+                   <span className="text-gray-500 font-medium">Account Type</span>
+                   <span className="font-extrabold text-gray-800 capitalize">{(session.user as any)?.role || 'Buyer'}</span>
                  </div>
               </div>
             </div>
           </div>
 
           {/* Quick Links Grid */}
-          <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="lg:col-span-2 select-none">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {menuItems.map((item) => (
                 <Link 
                   key={item.label}
                   href={item.href}
-                  className="bg-white p-6 rounded-lg shadow-sm border hover:border-[#F68B1E] transition-all flex items-start gap-4 group"
+                  className="bg-white p-6 rounded-xl border border-gray-100 hover:border-[#F68B1E] hover:shadow-lg transition-all duration-200 flex items-start gap-4 group cursor-pointer shadow-sm"
                 >
-                  <div className="text-[#F68B1E] bg-[#F68B1E]/5 p-3 rounded-lg group-hover:bg-[#F68B1E] group-hover:text-white transition-colors flex items-center justify-center">
+                  <div className="text-[#F68B1E] bg-orange-50 border border-orange-100 p-3.5 rounded-xl group-hover:bg-[#F68B1E] group-hover:text-white transition-colors flex items-center justify-center group-hover:scale-105 duration-200">
                     {item.icon}
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-gray-900 mb-1 flex items-center justify-between">
+                    <h3 className="font-extrabold text-gray-800 mb-1 flex items-center justify-between group-hover:text-[#F68B1E] transition-colors">
                       {item.label}
-                      <ChevronRight size={18} className="text-gray-300 group-hover:text-[#F68B1E]" />
+                      <ChevronRight size={18} className="text-gray-300 group-hover:text-[#F68B1E] group-hover:translate-x-1 transition-all duration-200" />
                     </h3>
-                    <p className="text-sm text-gray-500">{item.desc}</p>
+                    <p className="text-xs font-medium text-gray-500 group-hover:text-gray-600 transition-colors leading-relaxed">{item.desc}</p>
                   </div>
                 </Link>
               ))}
@@ -107,6 +109,7 @@ export default function AccountPage() {
         .gap-1 { gap: 4px; }
         .gap-3 { gap: 12px; }
         .gap-4 { gap: 16px; }
+        .gap-5 { gap: 20px; }
         .gap-6 { gap: 24px; }
         .gap-8 { gap: 32px; }
         .grid { display: grid; }
@@ -120,19 +123,10 @@ export default function AccountPage() {
           .lg\:col-span-2 { grid-column: span 2 / span 2; }
         }
         .bg-white { background-color: #ffffff; }
-        .bg-gray-50 { background-color: #f9fafb; }
-        .bg-\[\#F68B1E\]\/10 { background-color: rgba(246, 139, 30, 0.1); }
-        .bg-\[\#F68B1E\]\/5 { background-color: rgba(246, 139, 30, 0.05); }
-        .text-\[\#F68B1E\] { color: #f68b1e; }
-        .text-white { color: #ffffff; }
-        .text-gray-900 { color: #111827; }
-        .text-gray-500 { color: #6b7280; }
-        .text-gray-300 { color: #d1d5db; }
-        .border { border: 1px solid #e5e7eb; }
-        .border-t { border-top: 1px solid #f3f4f6; }
-        .rounded-lg { border-radius: 8px; }
+        .rounded-xl { border-radius: 12px; }
         .rounded-full { border-radius: 9999px; }
         .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
         .p-3 { padding: 0.75rem; }
         .p-4 { padding: 1rem; }
         .p-6 { padding: 1.5rem; }
@@ -143,6 +137,7 @@ export default function AccountPage() {
         .text-2xl { font-size: 1.5rem; }
         .text-sm { font-size: 0.875rem; }
         .font-bold { font-weight: 700; }
+        .font-extrabold { font-weight: 800; }
         .font-medium { font-weight: 500; }
         .capitalize { text-transform: capitalize; }
         .transition-all { transition: all 0.2s ease; }

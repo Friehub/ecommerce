@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#914d00",
+                    "secondary": "#5b5f65",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#c3c6ce",
+                    "inverse-surface": "#2f3132",
+                    "surface-bright": "#f9f9fa",
+                    "surface-container": "#eeeeef",
+                    "on-surface": "#1a1c1d",
+                    "on-secondary-fixed-variant": "#43474d",
+                    "on-tertiary-fixed": "#001a40",
+                    "tertiary-container": "#76a6ff",
+                    "tertiary-fixed-dim": "#acc7ff",
+                    "on-surface-variant": "#554335",
+                    "secondary-container": "#dfe2ea",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#dfe2ea",
+                    "primary-container": "#f68b1e",
+                    "surface-tint": "#914d00",
+                    "on-tertiary-container": "#003a7d",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-dim": "#dadadb",
+                    "surface-container-high": "#e8e8e9",
+                    "on-primary-container": "#5e3000",
+                    "surface-container-highest": "#e2e2e3",
+                    "on-secondary-container": "#61656b",
+                    "primary-fixed": "#ffdcc3",
+                    "on-tertiary-fixed-variant": "#004492",
+                    "outline-variant": "#dcc2af",
+                    "on-background": "#1a1c1d",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#d7e2ff",
+                    "surface-variant": "#e2e2e3",
+                    "on-secondary-fixed": "#181c21",
+                    "inverse-on-surface": "#f1f1f2",
+                    "inverse-primary": "#ffb77e",
+                    "tertiary": "#005bbe",
+                    "on-primary-fixed": "#2f1500",
+                    "outline": "#897363",
+                    "surface-container-low": "#f3f3f4",
+                    "on-primary-fixed-variant": "#6e3900",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#ffb77e",
+                    "background": "#f9f9fa",
+                    "surface": "#f9f9fa",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "md": "16px",
+                    "gutter": "12px",
+                    "xl": "48px",
+                    "sm": "8px",
+                    "margin-desktop": "auto",
+                    "base": "4px",
+                    "xs": "4px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "label-xs": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-sm": ["12px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "label-xs": ["10px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["20px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "title-sm": ["16px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background">
+<!-- TopNavBar (JSON Execution) -->
+<header class="sticky top-0 z-50 flex items-center justify-between px-4 md:px-16 py-3 w-full bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center gap-8">
+<h1 class="text-2xl font-black text-orange-500 tracking-tighter">JumiaClone</h1>
+<div class="hidden md:flex items-center gap-6">
+<a class="font-sans text-sm font-medium text-orange-600 font-bold border-b-2 border-orange-600 pb-1" href="#">Categories</a>
+<a class="font-sans text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-orange-500 transition-colors" href="#">Orders</a>
+<a class="font-sans text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-orange-500 transition-colors" href="#">Help</a>
+</div>
+</div>
+<div class="flex-1 max-w-xl mx-8 hidden lg:block">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container rounded-lg border-none focus:ring-2 focus:ring-primary-container transition-all" placeholder="Search products, brands and categories" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 md:gap-6">
+<button class="p-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all rounded-full relative">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+<button class="p-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all rounded-full relative">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="absolute top-1 right-1 w-4 h-4 bg-primary-container text-white text-[10px] flex items-center justify-center rounded-full">2</span>
+</button>
+<button class="p-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all rounded-full relative">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="absolute top-1 right-1 w-4 h-4 bg-primary-container text-white text-[10px] flex items-center justify-center rounded-full">3</span>
+</button>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto px-4 md:px-gutter py-6">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 mb-6 text-body-sm font-body-sm text-secondary">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Electronics</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Computers</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface truncate max-w-[200px]">Ultra-Slim Pro Laptop 2024 Edition</span>
+</nav>
+<!-- Product Hero Section (Asymmetric Layout) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 items-start">
+<!-- Gallery (5/12) -->
+<div class="lg:col-span-5 space-y-4">
+<div class="relative aspect-square bg-white rounded-xl overflow-hidden border border-outline-variant shadow-sm group cursor-zoom-in">
+<img alt="Product Main Image" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A professional studio product shot of a sleek, ultra-slim titanium silver laptop set against a clean, minimalist background. The lighting is soft and cinematic, highlighting the refined metallic textures and sharp industrial design of the device. The composition is clean and modern, following a corporate high-tech aesthetic with balanced shadows and crisp highlights that emphasize luxury and performance." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+<div class="absolute top-4 right-4 flex flex-col gap-2">
+<button class="bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm hover:bg-white transition-all">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+<button class="bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm hover:bg-white transition-all text-error">
+<span class="material-symbols-outlined" data-icon="favorite" data-weight="fill" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+</div>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+<button class="flex-shrink-0 w-20 h-20 rounded-lg border-2 border-primary-container overflow-hidden ring-2 ring-primary-container ring-offset-2">
+<img class="w-full h-full object-cover" data-alt="Close up thumbnail of the laptop keyboard and trackpad in high resolution." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+</button>
+<button class="flex-shrink-0 w-20 h-20 rounded-lg border border-outline-variant overflow-hidden hover:border-primary-container transition-all">
+<img class="w-full h-full object-cover" data-alt="Side profile view of the slim laptop showing its thin ports and metallic finish." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+</button>
+<!-- Additional placeholder thumbnails -->
+<div class="flex-shrink-0 w-20 h-20 rounded-lg bg-surface-container-low flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-secondary">play_circle</span>
+</div>
+</div>
+</div>
+<!-- Main Details (4/12) -->
+<div class="lg:col-span-4 space-y-6">
+<div>
+<span class="inline-block px-3 py-1 bg-primary-container text-on-primary-container text-label-xs font-label-xs rounded-sm mb-3">OFFICIAL STORE</span>
+<h1 class="text-headline-md font-headline-md text-on-surface">Ultra-Slim Pro Laptop 2024 Edition - 14" OLED Display, 32GB RAM, 1TB SSD, Titanium Silver</h1>
+<div class="flex items-center gap-4 mt-3">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-orange-500 text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-body-md font-bold">4.8</span>
+<span class="text-body-sm text-secondary">(1,248 ratings)</span>
+</div>
+<span class="text-secondary">|</span>
+<a class="text-body-sm text-tertiary hover:underline" href="#">500+ Sold</a>
+</div>
+</div>
+<div class="border-y border-outline-variant py-6 space-y-2">
+<div class="flex items-baseline gap-3">
+<span class="text-display-lg font-display-lg text-on-surface">$1,299.00</span>
+<span class="text-body-md text-secondary line-through">$1,599.00</span>
+<span class="px-2 py-0.5 bg-error-container text-error text-label-xs font-bold rounded-sm">-18%</span>
+</div>
+<p class="text-body-sm text-secondary">In stock. Free shipping to your location.</p>
+<div class="flex items-center gap-2 text-error font-bold">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+<span class="text-body-sm">Only 5 left in stock - order soon!</span>
+</div>
+</div>
+<div class="space-y-4">
+<h3 class="text-title-sm font-title-sm">Color: Titanium Silver</h3>
+<div class="flex gap-3">
+<button class="w-10 h-10 rounded-full border-2 border-primary-container p-0.5"><div class="w-full h-full rounded-full bg-slate-300"></div></button>
+<button class="w-10 h-10 rounded-full border border-outline-variant p-0.5"><div class="w-full h-full rounded-full bg-slate-800"></div></button>
+<button class="w-10 h-10 rounded-full border border-outline-variant p-0.5"><div class="w-full h-full rounded-full bg-slate-100"></div></button>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-3">
+<button class="w-full h-[52px] bg-primary-container text-on-primary-container font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-primary transition-all shadow-md">
+<span class="material-symbols-outlined">shopping_cart</span>
+                        ADD TO CART
+                    </button>
+<button class="w-full h-[52px] bg-primary text-white font-bold rounded-lg hover:brightness-110 transition-all">
+                        BUY NOW
+                    </button>
+</div>
+</div>
+<!-- Sidebar Info (3/12) - Glassmorphism touch -->
+<div class="lg:col-span-3 space-y-4">
+<!-- Delivery Widget -->
+<div class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+<h3 class="text-body-md font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">local_shipping</span>
+                        Delivery &amp; Returns
+                    </h3>
+<div class="space-y-4">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-secondary">location_on</span>
+<div>
+<p class="text-body-sm font-bold">Lagos, Ikeja</p>
+<p class="text-[10px] text-secondary">Delivered within 2-4 business days</p>
+</div>
+</div>
+<div class="flex gap-3 pt-3 border-t border-outline-variant">
+<span class="material-symbols-outlined text-secondary">verified</span>
+<div>
+<p class="text-body-sm font-bold">7-Day Free Return</p>
+<p class="text-[10px] text-secondary">Full refund for eligible items</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Seller Profile Widget -->
+<div class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-body-md font-bold">Seller Information</h3>
+<a class="text-primary text-label-xs font-bold hover:underline" href="#">VISIT STORE</a>
+</div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-12 h-12 bg-secondary-container flex items-center justify-center rounded-lg text-primary font-black text-xl">GC</div>
+<div>
+<p class="text-body-sm font-bold">GlobalCompute Inc.</p>
+<p class="text-[10px] text-secondary uppercase">Platinum Seller</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 text-center">
+<div class="bg-surface-container-low p-2 rounded-lg">
+<p class="text-title-sm font-bold text-primary">98%</p>
+<p class="text-[10px] text-secondary uppercase">Score</p>
+</div>
+<div class="bg-surface-container-low p-2 rounded-lg">
+<p class="text-title-sm font-bold text-primary">15k</p>
+<p class="text-[10px] text-secondary uppercase">Followers</p>
+</div>
+</div>
+<button class="w-full mt-4 py-2 border border-primary-container text-primary text-label-xs font-bold rounded-lg hover:bg-orange-50 transition-colors">
+                        FOLLOW SELLER
+                    </button>
+</div>
+</div>
+</div>
+<!-- Specifications & Details (Bento Layout) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+<div class="lg:col-span-2 space-y-6">
+<div class="bg-white rounded-xl border border-outline-variant p-6">
+<h2 class="text-title-sm font-headline-md mb-6 border-b border-outline-variant pb-3">Product Description</h2>
+<div class="prose prose-sm max-w-none text-on-surface-variant">
+<p class="mb-4">Experience unparalleled performance with the 2024 Ultra-Slim Pro. Engineered for professionals, this powerhouse combines cutting-edge hardware with a stunning 14-inch OLED display that brings your creative vision to life with 100% DCI-P3 color accuracy.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary-container">rocket_launch</span>
+<div>
+<p class="font-bold text-body-sm">Next-Gen Performance</p>
+<p class="text-label-xs text-secondary">Latest Octa-Core Processor for seamless multitasking.</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary-container">battery_charging_full</span>
+<div>
+<p class="font-bold text-body-sm">All-Day Battery</p>
+<p class="text-label-xs text-secondary">Up to 18 hours of productivity on a single charge.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-xl border border-outline-variant p-6">
+<h2 class="text-title-sm font-headline-md mb-6 border-b border-outline-variant pb-3">Specifications</h2>
+<div class="grid grid-cols-1 gap-y-4">
+<div class="grid grid-cols-3 py-2 border-b border-gray-50">
+<span class="text-secondary text-body-sm">Display</span>
+<span class="col-span-2 text-on-surface font-medium text-body-sm">14" OLED 3K (2880 x 1800), 120Hz</span>
+</div>
+<div class="grid grid-cols-3 py-2 border-b border-gray-50">
+<span class="text-secondary text-body-sm">Processor</span>
+<span class="col-span-2 text-on-surface font-medium text-body-sm">Core i9 14th Gen, 16-Core (Max 5.2GHz)</span>
+</div>
+<div class="grid grid-cols-3 py-2 border-b border-gray-50">
+<span class="text-secondary text-body-sm">Memory</span>
+<span class="col-span-2 text-on-surface font-medium text-body-sm">32GB LPDDR5x 7467MHz</span>
+</div>
+<div class="grid grid-cols-3 py-2 border-b border-gray-50">
+<span class="text-secondary text-body-sm">Storage</span>
+<span class="col-span-2 text-on-surface font-medium text-body-sm">1TB PCIe 4.0 NVMe SSD</span>
+</div>
+<div class="grid grid-cols-3 py-2">
+<span class="text-secondary text-body-sm">Graphics</span>
+<span class="col-span-2 text-on-surface font-medium text-body-sm">Intel Arc Integrated Graphics</span>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-6">
+<div class="bg-white rounded-xl border border-outline-variant p-6">
+<h2 class="text-title-sm font-headline-md mb-6">Related Products</h2>
+<div class="space-y-4">
+<div class="flex gap-3 group cursor-pointer">
+<img class="w-16 h-16 object-cover rounded-lg" data-alt="A different electronic product, perhaps a high-end external monitor or tablet, styled with the same crisp lighting and metallic textures to maintain visual consistency across the e-commerce interface." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+<div>
+<p class="text-body-sm font-medium group-hover:text-primary transition-colors line-clamp-1">Ultra-Slim Hub Gen 2</p>
+<p class="text-primary font-bold">$129.00</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-orange-500 text-[12px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-xs text-secondary">4.5</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3 group cursor-pointer">
+<div class="w-16 h-16 bg-surface-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">devices</span>
+</div>
+<div>
+<p class="text-body-sm font-medium group-hover:text-primary transition-colors line-clamp-1">Pro Wireless Mouse</p>
+<p class="text-primary font-bold">$79.00</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-orange-500 text-[12px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-xs text-secondary">4.9</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Customer Reviews Section -->
+<div class="bg-white rounded-xl border border-outline-variant p-6 mb-12">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+<h2 class="text-headline-md font-headline-md">Verified Customer Reviews</h2>
+<button class="px-6 py-2 border-2 border-primary-container text-primary font-bold rounded-lg hover:bg-orange-50 transition-colors">
+                    WRITE A REVIEW
+                </button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<div class="lg:col-span-4 p-6 bg-surface-container-low rounded-xl text-center">
+<p class="text-[56px] font-black text-on-surface leading-tight">4.8</p>
+<div class="flex justify-center gap-1 mb-2">
+<span class="material-symbols-outlined text-orange-500 text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star_half</span>
+</div>
+<p class="text-body-sm text-secondary mb-6">1,248 Verified Ratings</p>
+<div class="space-y-2">
+<div class="flex items-center gap-3">
+<span class="text-label-xs w-4">5</span>
+<div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-orange-500 w-[85%]"></div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-label-xs w-4">4</span>
+<div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-orange-500 w-[10%]"></div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-label-xs w-4">3</span>
+<div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-orange-500 w-[3%]"></div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-label-xs w-4">2</span>
+<div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-orange-500 w-[1%]"></div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-label-xs w-4">1</span>
+<div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-orange-500 w-[1%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-8 space-y-6">
+<!-- Review Card -->
+<div class="border-b border-outline-variant pb-6">
+<div class="flex justify-between items-start mb-2">
+<div class="flex gap-1">
+<span class="material-symbols-outlined text-orange-500 text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-label-xs text-secondary">2 days ago</span>
+</div>
+<h4 class="text-body-sm font-bold mb-2">Incredible screen quality!</h4>
+<p class="text-body-sm text-on-surface-variant mb-4">The OLED display is a game changer for my photo editing work. The colors are incredibly accurate and the build quality feels premium. Worth every penny.</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-label-xs font-bold">JA</div>
+<span class="text-label-xs font-bold">John A.</span>
+<span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">check_circle</span> Verified Purchase
+                                </span>
+</div>
+<button class="flex items-center gap-1 text-label-xs text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span> Helpful (12)
+                            </button>
+</div>
+</div>
+<!-- Review Card -->
+<div class="border-b border-outline-variant pb-6">
+<div class="flex justify-between items-start mb-2">
+<div class="flex gap-1">
+<span class="material-symbols-outlined text-orange-500 text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-orange-500 text-[18px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-[18px]">star</span>
+</div>
+<span class="text-label-xs text-secondary">1 week ago</span>
+</div>
+<h4 class="text-body-sm font-bold mb-2">Great machine, shipping took a while</h4>
+<p class="text-body-sm text-on-surface-variant mb-4">The laptop itself is amazing. Super fast and slim. However, it took 5 days to arrive instead of the promised 3. Still highly recommend the product.</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-label-xs font-bold">SL</div>
+<span class="text-label-xs font-bold">Sarah L.</span>
+<span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">check_circle</span> Verified Purchase
+                                </span>
+</div>
+<button class="flex items-center gap-1 text-label-xs text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span> Helpful (4)
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (JSON Execution) -->
+<footer class="w-full py-12 px-4 md:px-16 grid grid-cols-2 md:grid-cols-4 gap-8 bg-gray-100 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+<div class="col-span-1">
+<h4 class="text-lg font-black text-gray-400 mb-6">JumiaClone</h4>
+<div class="space-y-2">
+<a class="block font-sans text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:underline transition-opacity" href="#">About Us</a>
+<a class="block font-sans text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:underline transition-opacity" href="#">Contact</a>
+<a class="block font-sans text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:underline transition-opacity" href="#">Terms &amp; Conditions</a>
+</div>
+</div>
+<div class="col-span-1">
+<h4 class="text-xs font-bold text-gray-900 dark:text-white uppercase mb-6">Support</h4>
+<div class="space-y-2">
+<a class="block font-sans text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:underline transition-opacity" href="#">Privacy Policy</a>
+<a class="block font-sans text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:underline transition-opacity" href="#">Report a Product</a>
+<a class="block font-sans text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:underline transition-opacity" href="#">Become a Seller</a>
+</div>
+</div>
+<div class="col-span-2 space-y-4">
+<h4 class="text-xs font-bold text-gray-900 dark:text-white uppercase">Subscribe to our newsletter</h4>
+<div class="flex gap-2">
+<input class="flex-1 bg-white border border-outline-variant px-4 py-2 rounded-lg text-body-sm" placeholder="Enter your email" type="email"/>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 font-bold rounded-lg hover:bg-primary transition-all">JOIN</button>
+</div>
+<p class="text-[10px] text-secondary">© 2024 JumiaClone. All rights reserved.</p>
+</div>
+</footer>
+<!-- Mobile Bottom Navigation (Platform & Layout Anchor Rule) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-outline-variant grid grid-cols-5 py-2 px-1 z-50">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-xs font-label-xs">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-secondary">
+<span class="material-symbols-outlined">category</span>
+<span class="text-label-xs font-label-xs">Categories</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-secondary">
+<span class="material-symbols-outlined">explore</span>
+<span class="text-label-xs font-label-xs">Explore</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-secondary relative">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="text-label-xs font-label-xs">Cart</span>
+<span class="absolute -top-1 right-2 w-4 h-4 bg-primary-container text-white text-[10px] flex items-center justify-center rounded-full">3</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-secondary">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-xs font-label-xs">Account</span>
+</button>
+</nav>
+</body></html>

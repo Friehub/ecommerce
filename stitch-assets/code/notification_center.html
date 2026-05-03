@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Jumia - Notification Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dadadb",
+                        "surface-variant": "#e2e2e3",
+                        "secondary-container": "#dfe2ea",
+                        "surface-container-high": "#e8e8e9",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#004492",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#001a40",
+                        "surface-tint": "#914d00",
+                        "tertiary-container": "#76a6ff",
+                        "surface-container-low": "#f3f3f4",
+                        "secondary": "#5b5f65",
+                        "on-primary": "#ffffff",
+                        "on-background": "#1a1c1d",
+                        "primary": "#914d00",
+                        "background": "#f9f9fa",
+                        "outline": "#897363",
+                        "surface-container-highest": "#e2e2e3",
+                        "on-primary-fixed-variant": "#6e3900",
+                        "on-secondary-fixed": "#181c21",
+                        "inverse-surface": "#2f3132",
+                        "primary-fixed-dim": "#ffb77e",
+                        "primary-container": "#f68b1e",
+                        "inverse-on-surface": "#f1f1f2",
+                        "tertiary-fixed": "#d7e2ff",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "surface-bright": "#f9f9fa",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#5e3000",
+                        "inverse-primary": "#ffb77e",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#2f1500",
+                        "tertiary": "#005bbe",
+                        "on-surface": "#1a1c1d",
+                        "on-secondary-container": "#61656b",
+                        "on-secondary-fixed-variant": "#43474d",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#eeeeef",
+                        "surface": "#f9f9fa",
+                        "secondary-fixed-dim": "#c3c6ce",
+                        "primary-fixed": "#ffdcc3",
+                        "on-tertiary-container": "#003a7d",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#dfe2ea",
+                        "on-surface-variant": "#554335",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#dcc2af"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "auto",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "gutter": "12px",
+                        "md": "16px",
+                        "xl": "48px",
+                        "base": "4px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-xs": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "title-sm": ["16px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "headline-md": ["20px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-sm": ["12px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-xs": ["10px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9fa;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- TopAppBar -->
+<header class="bg-white dark:bg-gray-900 docked full-width top-0 z-50 sticky border-b border-gray-200 dark:border-gray-800 shadow-sm">
+<div class="flex items-center justify-between px-4 py-2 w-full max-w-[1200px] mx-auto">
+<div class="flex items-center gap-md">
+<span class="text-2xl font-black text-[#f68b1e] tracking-tighter">Jumia</span>
+<div class="hidden md:flex items-center bg-surface-container-low rounded-lg px-4 py-2 w-[400px]">
+<span class="material-symbols-outlined text-outline mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-full outline-none" placeholder="Search products, brands and categories" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<button class="flex items-center gap-xs text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors p-2 rounded">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="hidden md:inline font-title-sm text-body-md">Account</span>
+</button>
+<button class="flex items-center gap-xs text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors p-2 rounded">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="hidden md:inline font-title-sm text-body-md">Help</span>
+</button>
+<button class="flex items-center gap-xs text-[#f68b1e] font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors p-2 rounded">
+<span class="material-symbols-outlined" data-icon="notifications" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="hidden md:inline font-title-sm text-body-md">Notifications</span>
+</button>
+<button class="flex items-center gap-xs text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors p-2 rounded">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="hidden md:inline font-title-sm text-body-md">Cart</span>
+</button>
+</div>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto flex gap-gutter mt-gutter px-4 md:px-margin-mobile lg:px-0 pb-24 md:pb-8">
+<!-- SideNavBar (Seller/User Nav) -->
+<aside class="hidden lg:flex flex-col sticky top-[72px] h-[calc(100vh-80px)] w-64 border-r border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 rounded-lg overflow-hidden">
+<div class="p-md border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-bold">JD</div>
+<div>
+<p class="font-title-sm text-body-md">John Doe</p>
+<p class="text-label-xs text-secondary">Premium Member</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 py-4">
+<a class="flex items-center gap-md px-md py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-body-md">My Account</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-body-md">Orders</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 bg-white dark:bg-gray-900 text-[#f68b1e] border-l-4 border-[#f68b1e]" href="#">
+<span class="material-symbols-outlined" data-icon="notifications" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="font-body-md">Inbox</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="font-body-md">Saved Items</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-body-md">Recently Viewed</span>
+</a>
+<div class="mt-8 border-t border-gray-200 dark:border-gray-800 pt-4">
+<a class="flex items-center gap-md px-md py-3 text-error hover:bg-error-container/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</nav>
+</aside>
+<!-- Notification Content -->
+<section class="flex-1 min-w-0">
+<div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden border border-gray-100 dark:border-gray-800">
+<!-- Header -->
+<div class="p-lg border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+<div>
+<h1 class="font-display-lg text-headline-md text-on-surface">Notifications</h1>
+<p class="text-body-sm text-secondary">Stay updated with your latest activities</p>
+</div>
+<button class="text-primary font-title-sm text-body-md hover:underline">Mark all as read</button>
+</div>
+<!-- Tabs -->
+<div class="flex border-b border-gray-100 dark:border-gray-800 px-lg gap-lg">
+<button class="py-4 border-b-2 border-primary text-primary font-title-sm text-body-md">All</button>
+<button class="py-4 text-secondary hover:text-on-surface font-title-sm text-body-md">Orders</button>
+<button class="py-4 text-secondary hover:text-on-surface font-title-sm text-body-md">Offers</button>
+<button class="py-4 text-secondary hover:text-on-surface font-title-sm text-body-md">Alerts</button>
+</div>
+<!-- Notification List -->
+<div class="divide-y divide-gray-50 dark:divide-gray-800">
+<!-- Today Group -->
+<div class="bg-surface-container-low px-lg py-2">
+<span class="text-label-xs font-bold text-secondary uppercase tracking-wider">Today</span>
+</div>
+<!-- Notification Item: Order Update (Unread) -->
+<div class="p-lg flex gap-md bg-primary-container/5 hover:bg-primary-container/10 transition-colors cursor-pointer relative">
+<div class="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary"></div>
+<div class="w-12 h-12 rounded bg-white border border-gray-100 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="package_2">package_2</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-title-sm text-body-md text-on-surface">Order #293848 Out for Delivery</h3>
+<span class="text-label-xs text-secondary">2h ago</span>
+</div>
+<p class="text-body-md text-on-surface-variant line-clamp-2">Your package containing 'Wireless Noise Cancelling Headphones' is with our delivery agent and will reach you today.</p>
+<div class="mt-2 flex gap-sm">
+<button class="px-3 py-1.5 bg-primary text-white text-label-xs font-bold rounded">Track Order</button>
+<button class="px-3 py-1.5 border border-outline text-on-surface text-label-xs font-bold rounded">Dismiss</button>
+</div>
+</div>
+</div>
+<!-- Notification Item: Promotional -->
+<div class="p-lg flex gap-md hover:bg-gray-50 transition-colors cursor-pointer">
+<div class="w-12 h-12 rounded overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A vibrant e-commerce promotional banner showcasing a variety of high-end electronics and fashion accessories against a crisp, clean orange and white background. The lighting is commercial-grade, bright and even, creating a professional and energetic retail atmosphere. The visual style is modern, minimalist, and focused on high conversion, reflecting a premium global marketplace aesthetic." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-title-sm text-body-md text-on-surface">Flash Sale: Up to 50% OFF!</h3>
+<span class="text-label-xs text-secondary">5h ago</span>
+</div>
+<p class="text-body-md text-on-surface-variant">Don't miss out on today's top deals in electronics and fashion. Limited stocks available!</p>
+</div>
+</div>
+<!-- Yesterday Group -->
+<div class="bg-surface-container-low px-lg py-2">
+<span class="text-label-xs font-bold text-secondary uppercase tracking-wider">Yesterday</span>
+</div>
+<!-- Notification Item: Account Alert -->
+<div class="p-lg flex gap-md hover:bg-gray-50 transition-colors cursor-pointer">
+<div class="w-12 h-12 rounded bg-tertiary-container/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary" data-icon="security" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-title-sm text-body-md text-on-surface">Security Alert: New Login</h3>
+<span class="text-label-xs text-secondary">1d ago</span>
+</div>
+<p class="text-body-md text-on-surface-variant">We noticed a new login to your account from a Chrome browser on Windows. If this wasn't you, please secure your account.</p>
+</div>
+</div>
+<!-- Notification Item: Review Request -->
+<div class="p-lg flex gap-md hover:bg-gray-50 transition-colors cursor-pointer">
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary" data-icon="rate_review">rate_review</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-title-sm text-body-md text-on-surface">How was your purchase?</h3>
+<span class="text-label-xs text-secondary">1d ago</span>
+</div>
+<p class="text-body-md text-on-surface-variant">Share your experience with 'Ergonomic Office Chair'. Your feedback helps other shoppers!</p>
+<div class="mt-2 flex gap-1">
+<span class="material-symbols-outlined text-gray-300 text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined text-gray-300 text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined text-gray-300 text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined text-gray-300 text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined text-gray-300 text-sm" data-icon="star">star</span>
+</div>
+</div>
+</div>
+<!-- Older Group -->
+<div class="bg-surface-container-low px-lg py-2">
+<span class="text-label-xs font-bold text-secondary uppercase tracking-wider">Older</span>
+</div>
+<!-- Notification Item: Promotion -->
+<div class="p-lg flex gap-md hover:bg-gray-50 transition-colors cursor-pointer">
+<div class="w-12 h-12 rounded overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A sophisticated lifestyle image featuring a contemporary home interior with soft, ambient lighting. The scene highlights premium furniture and decor items, characterized by neutral tones and high-quality textures. The mood is calm and aspirational, reflecting a corporate modern aesthetic that emphasizes comfort and quality in every detail. Soft daylight filters through sheer curtains, casting gentle shadows." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-title-sm text-body-md text-on-surface">Home Decor Essentials Under $50</h3>
+<span class="text-label-xs text-secondary">3d ago</span>
+</div>
+<p class="text-body-md text-on-surface-variant">Upgrade your living space with our new curated collection of minimalist home accessories.</p>
+</div>
+</div>
+</div>
+<!-- Footer / Load More -->
+<div class="p-lg text-center border-t border-gray-100 dark:border-gray-800">
+<button class="text-primary font-bold text-body-md py-2 px-6 rounded-full hover:bg-primary-container/10 transition-colors">Load older notifications</button>
+</div>
+</div>
+</section>
+<!-- Right Side: Secondary Actions / Promo -->
+<aside class="hidden xl:block w-72 shrink-0">
+<div class="bg-white dark:bg-gray-900 p-lg rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 mb-gutter">
+<h2 class="font-title-sm text-body-md mb-md">Preferences</h2>
+<div class="space-y-4">
+<label class="flex items-center justify-between cursor-pointer group">
+<span class="text-body-md text-on-surface-variant group-hover:text-on-surface">Order Updates</span>
+<div class="w-10 h-5 bg-primary rounded-full relative">
+<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</label>
+<label class="flex items-center justify-between cursor-pointer group">
+<span class="text-body-md text-on-surface-variant group-hover:text-on-surface">Promotions</span>
+<div class="w-10 h-5 bg-primary rounded-full relative">
+<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</label>
+<label class="flex items-center justify-between cursor-pointer group">
+<span class="text-body-md text-on-surface-variant group-hover:text-on-surface">Newsletter</span>
+<div class="w-10 h-5 bg-gray-300 rounded-full relative">
+<div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</label>
+</div>
+<button class="w-full mt-lg py-2 border border-primary text-primary font-bold text-body-md rounded">Update Preferences</button>
+</div>
+<div class="bg-primary-container p-lg rounded-lg shadow-sm text-white">
+<h2 class="font-display-lg text-headline-md mb-xs">Jumia Prime</h2>
+<p class="text-body-sm opacity-90 mb-lg">Get unlimited free delivery on all your orders.</p>
+<button class="w-full py-2 bg-white text-[#f68b1e] font-black text-body-md rounded uppercase tracking-tight">Join Now</button>
+</div>
+</aside>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center h-16 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-50 px-2">
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:bg-gray-100 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-[10px] font-medium font-['Inter']">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:bg-gray-100 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span class="text-[10px] font-medium font-['Inter']">Categories</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:bg-gray-100 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="rss_feed">rss_feed</span>
+<span class="text-[10px] font-medium font-['Inter']">Feed</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#f68b1e] active:bg-gray-100 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-[10px] font-medium font-['Inter']">Account</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:bg-gray-100 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="text-[10px] font-medium font-['Inter']">Help</span>
+</a>
+</nav>
+</body></html>

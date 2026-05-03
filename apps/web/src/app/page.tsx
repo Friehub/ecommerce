@@ -44,21 +44,30 @@ const TopCategoriesSection = () => {
 
   return (
     <section className="container mt-6">
-      <div className="bg-white rounded shadow-sm p-4">
-        <h2 className="text-lg font-bold mb-4 uppercase">Top Categories</h2>
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+      <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-extrabold uppercase tracking-tight text-gray-900 border-b-2 border-[#F68B1E] pb-1">
+            Top Categories
+          </h2>
+          <span className="text-xs font-bold text-[#F68B1E] bg-orange-50/60 rounded px-2.5 py-1 select-none">
+            Curated For You
+          </span>
+        </div>
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-6">
           {categories?.slice(0, 6).map((category: any) => {
             const Icon = categoryIcons[category.name] || MoreHorizontal;
             return (
               <Link 
                 key={category.id} 
                 href={`/category/${category.slug}`}
-                className="flex flex-col items-center gap-2 group cursor-pointer text-center"
+                className="flex flex-col items-center gap-3 group cursor-pointer text-center select-none"
               >
-                <div className="w-20 h-20 bg-gray-50 text-gray-700 rounded-full group-hover:scale-110 transition-all flex items-center justify-center border border-gray-100 shadow-sm group-hover:bg-[#F68B1E]/10 group-hover:text-[#F68B1E] group-hover:border-[#F68B1E]/20">
-                  <Icon size={32} />
+                <div className="w-20 h-20 bg-gray-50 text-gray-700 rounded-full group-hover:scale-110 transition-all duration-300 flex items-center justify-center border border-gray-100 shadow-sm group-hover:bg-orange-50 group-hover:text-[#F68B1E] group-hover:border-orange-100 group-hover:shadow-md">
+                  <Icon size={32} className="group-hover:rotate-6 transition-transform duration-300" />
                 </div>
-                <span className="text-xs font-medium text-gray-600 group-hover:text-[#F68B1E] transition-colors line-clamp-1">{category.name}</span>
+                <span className="text-xs font-bold text-gray-700 group-hover:text-[#F68B1E] transition-colors line-clamp-1">
+                  {category.name}
+                </span>
               </Link>
             );
           })}
@@ -70,7 +79,7 @@ const TopCategoriesSection = () => {
 
 export default function Home() {
   return (
-    <div className="bg-[#F5F5F5] min-h-screen pb-12">
+    <div className="bg-[#F9F9FA] min-h-screen pb-12">
       {/* Hero Section */}
       <section className="container mt-4 flex gap-4">
         <CategorySidebar />
@@ -78,40 +87,45 @@ export default function Home() {
         
         {/* Right Promo (Desktop) */}
         <div className="hidden xl:flex flex-col gap-4 w-[240px]">
-          <div className="bg-white rounded shadow-sm p-4 flex-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-[#F68B1E]/10 text-[#F68B1E] rounded-full flex items-center justify-center">
-                <Package size={20} />
+          <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md p-5 flex-1 flex flex-col justify-between">
+            <div className="flex items-center gap-3 mb-4 group cursor-pointer">
+              <div className="w-11 h-11 bg-orange-50 text-[#F68B1E] rounded-xl flex items-center justify-center transition-all duration-200 border border-orange-100 group-hover:scale-105">
+                <Package size={22} />
               </div>
               <div>
-                <h4 className="text-sm font-bold">Free Delivery</h4>
-                <p className="text-[10px] text-gray-500">For orders over ₦10k</p>
+                <h4 className="text-sm font-extrabold text-gray-800 leading-tight">Free Delivery</h4>
+                <p className="text-[11px] font-medium text-gray-400">For orders over ₦10k</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-[#48A44C]/10 text-[#48A44C] rounded-full flex items-center justify-center">
-                <ShieldCheck size={20} />
+            <div className="flex items-center gap-3 mb-4 group cursor-pointer">
+              <div className="w-11 h-11 bg-green-50 text-[#48A44C] rounded-xl flex items-center justify-center transition-all duration-200 border border-green-100 group-hover:scale-105">
+                <ShieldCheck size={22} />
               </div>
               <div>
-                <h4 className="text-sm font-bold">Secure Payment</h4>
-                <p className="text-[10px] text-gray-500">100% Secure Transaction</p>
+                <h4 className="text-sm font-extrabold text-gray-800 leading-tight">Secure Payment</h4>
+                <p className="text-[11px] font-medium text-gray-400">100% Safe Checkout</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#2196F3]/10 text-[#2196F3] rounded-full flex items-center justify-center">
-                <RotateCcw size={20} />
+            <div className="flex items-center gap-3 group cursor-pointer">
+              <div className="w-11 h-11 bg-blue-50 text-[#2196F3] rounded-xl flex items-center justify-center transition-all duration-200 border border-blue-100 group-hover:scale-105">
+                <RotateCcw size={22} />
               </div>
               <div>
-                <h4 className="text-sm font-bold">Easy Return</h4>
-                <p className="text-[10px] text-gray-500">7 Days Return Policy</p>
+                <h4 className="text-sm font-extrabold text-gray-800 leading-tight">Easy Return</h4>
+                <p className="text-[11px] font-medium text-gray-400">7 Days Return Policy</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#282828] rounded shadow-sm overflow-hidden h-[180px] relative p-4 text-white">
-            <h3 className="font-bold text-lg leading-tight mb-2">SELL ON JUMIA</h3>
-            <p className="text-xs text-gray-400">Join thousands of successful sellers</p>
-            <Link href="/seller/register" className="mt-4 border border-white text-white px-4 py-2 rounded text-xs font-bold hover:bg-white hover:text-black transition-all inline-block text-center">
-              REGISTER NOW
+          
+          <div className="bg-[#282828] hover:bg-[#1f1f1f] rounded-xl shadow-md overflow-hidden h-[180px] relative p-5 text-white border border-transparent transition-all duration-300 flex flex-col justify-between group cursor-pointer select-none">
+            <div>
+              <h3 className="font-extrabold text-lg leading-tight mb-1 tracking-wide group-hover:text-[#F68B1E] transition-colors">
+                SELL ON JUMIA
+              </h3>
+              <p className="text-xs font-medium text-gray-400">Join thousands of successful vendors</p>
+            </div>
+            <Link href="/seller/register" className="border border-white/30 text-white hover:bg-white hover:text-black px-4 py-2 rounded-lg text-xs font-extrabold transition-all text-center tracking-wide uppercase select-none hover:shadow-lg hover:scale-105 duration-200 active:scale-95">
+              Register Now
             </Link>
           </div>
         </div>
@@ -145,19 +159,18 @@ export default function Home() {
         .h-20 { height: 5rem; }
         .w-\[240px\] { width: 240px; }
         .h-\[180px\] { height: 180px; }
-        .bg-\[\#F5F5F5\] { background-color: #f5f5f5; }
-        .bg-white { background-color: #ffffff; }
-        .bg-\[\#282828\] { background-color: #282828; }
-        .bg-gray-100 { background-color: #f3f4f6; }
         .rounded { border-radius: 4px; }
         .rounded-full { border-radius: 9999px; }
+        .rounded-xl { border-radius: 12px; }
         .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
         .overflow-hidden { overflow: hidden; }
         .text-white { color: #ffffff; }
         .text-lg { font-size: 1.125rem; }
         .text-sm { font-size: 0.875rem; }
         .text-xs { font-size: 0.75rem; }
         .font-bold { font-weight: 700; }
+        .font-extrabold { font-weight: 800; }
         .font-medium { font-weight: 500; }
         .uppercase { text-transform: uppercase; }
         .text-gray-500 { color: #6b7280; }

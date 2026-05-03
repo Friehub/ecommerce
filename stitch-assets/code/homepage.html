@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JumiaClone - Online Shopping for Electronics, Phones &amp; More</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#914d00",
+                    "secondary": "#5b5f65",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#c3c6ce",
+                    "inverse-surface": "#2f3132",
+                    "surface-bright": "#f9f9fa",
+                    "surface-container": "#eeeeef",
+                    "on-surface": "#1a1c1d",
+                    "on-secondary-fixed-variant": "#43474d",
+                    "on-tertiary-fixed": "#001a40",
+                    "tertiary-container": "#76a6ff",
+                    "tertiary-fixed-dim": "#acc7ff",
+                    "on-surface-variant": "#554335",
+                    "secondary-container": "#dfe2ea",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#dfe2ea",
+                    "primary-container": "#f68b1e",
+                    "surface-tint": "#914d00",
+                    "on-tertiary-container": "#003a7d",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-dim": "#dadadb",
+                    "surface-container-high": "#e8e8e9",
+                    "on-primary-container": "#5e3000",
+                    "surface-container-highest": "#e2e2e3",
+                    "on-secondary-container": "#61656b",
+                    "primary-fixed": "#ffdcc3",
+                    "on-tertiary-fixed-variant": "#004492",
+                    "outline-variant": "#dcc2af",
+                    "on-background": "#1a1c1d",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#d7e2ff",
+                    "surface-variant": "#e2e2e3",
+                    "on-secondary-fixed": "#181c21",
+                    "inverse-on-surface": "#f1f1f2",
+                    "inverse-primary": "#ffb77e",
+                    "tertiary": "#005bbe",
+                    "on-primary-fixed": "#2f1500",
+                    "outline": "#897363",
+                    "surface-container-low": "#f3f3f4",
+                    "on-primary-fixed-variant": "#6e3900",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#ffb77e",
+                    "background": "#f9f9fa",
+                    "surface": "#f9f9fa",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "md": "16px",
+                    "gutter": "12px",
+                    "xl": "48px",
+                    "sm": "8px",
+                    "margin-desktop": "auto",
+                    "base": "4px",
+                    "xs": "4px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "label-xs": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-sm": ["12px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "label-xs": ["10px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["20px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "title-sm": ["16px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between px-4 md:px-16 py-3 w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
+<div class="flex items-center gap-8 w-full max-w-[1200px] mx-auto">
+<!-- Brand Logo -->
+<a class="text-2xl font-black text-orange-500 tracking-tighter" href="#">JumiaClone</a>
+<!-- Search Bar (on_left configuration) -->
+<div class="flex-1 max-w-2xl relative">
+<div class="flex items-center bg-surface-container rounded-lg border border-outline-variant overflow-hidden">
+<span class="material-symbols-outlined px-3 text-secondary">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 py-2 text-body-md placeholder-on-secondary-container" placeholder="Search products, categories and brands" type="text"/>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 font-bold uppercase text-body-sm transition-all hover:bg-primary-fixed-variant">Search</button>
+</div>
+</div>
+<!-- Navigation Links & Actions -->
+<nav class="hidden md:flex items-center gap-6 font-sans text-sm font-medium">
+<a class="text-gray-600 dark:text-gray-400 hover:text-orange-500 transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined">person</span>
+                    Account
+                </a>
+<a class="text-gray-600 dark:text-gray-400 hover:text-orange-500 transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined">help</span>
+                    Help
+                </a>
+<a class="text-gray-600 dark:text-gray-400 hover:text-orange-500 transition-colors flex items-center gap-1 relative" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+                    Cart
+                    <span class="absolute -top-2 -right-2 bg-primary-container text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+</a>
+</nav>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto px-4 md:px-0 py-gutter">
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Dynamic Categories Sidebar -->
+<aside class="hidden lg:block col-span-3 bg-white rounded-lg shadow-sm overflow-hidden h-fit border border-gray-100">
+<nav class="flex flex-col py-2">
+<a class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-gray-700 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400">restaurant</span>
+<span class="text-body-md">Supermarket</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-gray-700 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400">smartphone</span>
+<span class="text-body-md">Phones &amp; Tablets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-gray-700 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400">tv</span>
+<span class="text-body-md">Electronics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-gray-700 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400">home</span>
+<span class="text-body-md">Home &amp; Office</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-gray-700 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400">checkroom</span>
+<span class="text-body-md">Fashion</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-gray-700 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400">computer</span>
+<span class="text-body-md">Computing</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-gray-700 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400">child_care</span>
+<span class="text-body-md">Baby Products</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-gray-700 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400">fitness_center</span>
+<span class="text-body-md">Sporting Goods</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-gray-700 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400">more_horiz</span>
+<span class="text-body-md">Other categories</span>
+</a>
+</nav>
+</aside>
+<!-- Hero Section & Promotional Banner -->
+<div class="col-span-12 lg:col-span-9 grid grid-cols-12 gap-gutter">
+<div class="col-span-12 md:col-span-9 h-[380px] rounded-lg overflow-hidden relative shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A vibrant e-commerce promotional banner showcasing high-end smartphones and wireless earbuds arranged artistically on a warm orange background. The lighting is commercial-grade, soft and multi-directional, highlighting sleek glass and metallic surfaces. The composition follows a modern grid layout with bold sans-serif promotional text in white, creating a sense of urgency and premium quality. The overall aesthetic is clean, high-energy, and professional, perfectly aligning with a leading global marketplace's visual identity." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex flex-col justify-end p-8">
+<h1 class="text-white font-display-lg mb-2">Upgrade Your Tech</h1>
+<p class="text-white/90 text-title-sm mb-4">Up to 40% OFF on Top Brand Smartphones</p>
+<button class="bg-primary-container text-white w-fit px-8 py-3 font-bold rounded-lg shadow-lg hover:bg-primary transition-all">Shop Now</button>
+</div>
+</div>
+<div class="hidden md:flex col-span-3 flex-col gap-gutter">
+<div class="flex-1 bg-white rounded-lg p-4 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-2">sell</span>
+<span class="font-bold text-body-md">Sell on Jumia</span>
+<span class="text-body-sm text-secondary">Join millions of sellers</span>
+</div>
+<div class="flex-1 bg-white rounded-lg p-4 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-2">history</span>
+<span class="font-bold text-body-md">Return Policy</span>
+<span class="text-body-sm text-secondary">Easy 7-day returns</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Flash Sales Section -->
+<section class="mt-lg bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+<header class="bg-red-600 px-md py-3 flex items-center justify-between text-white">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<h2 class="font-headline-md uppercase tracking-tight">Flash Sales</h2>
+<div class="hidden md:flex items-center gap-2 text-title-sm">
+<span>Ends in:</span>
+<span class="bg-white text-red-600 px-2 py-0.5 rounded font-bold">12h : 45m : 30s</span>
+</div>
+</div>
+<a class="text-body-sm font-bold uppercase flex items-center gap-1 hover:underline" href="#">
+                    See All <span class="material-symbols-outlined">chevron_right</span>
+</a>
+</header>
+<div class="p-4 flex gap-4 overflow-x-auto hide-scrollbar snap-x">
+<!-- Flash Sale Product 1 -->
+<div class="min-w-[180px] snap-start group cursor-pointer">
+<div class="aspect-square bg-gray-50 rounded-lg overflow-hidden relative mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A professional studio product shot of a pair of premium noise-canceling headphones in matte black, positioned centrally in the frame. The lighting is crisp and sophisticated, using high-key studio lights to create subtle reflections on the metallic headband and soft leather ear cushions. The background is a clean, neutral gray that emphasizes the product's premium build. The aesthetic is modern and commercial, focusing on technical detail and luxury feel." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+<span class="absolute top-2 left-2 bg-red-100 text-red-600 text-label-xs font-bold px-2 py-1 rounded">-50%</span>
+</div>
+<h3 class="text-body-sm line-clamp-2 mb-1">Premium Wireless Over-Ear Headphones - Noise Cancelling</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 24,500</div>
+<div class="text-label-xs text-secondary line-through">₦ 49,000</div>
+<div class="mt-2 w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-orange-500 h-full w-3/4"></div>
+</div>
+<div class="text-[10px] text-secondary mt-1">15 items left</div>
+</div>
+<!-- Repeat products for slider appearance -->
+<div class="min-w-[180px] snap-start group cursor-pointer">
+<div class="aspect-square bg-gray-50 rounded-lg overflow-hidden relative mb-2">
+<img class="w-full h-full object-cover" data-alt="Close up product photography of a high-end smartwatch with a vibrant circular display showing fitness metrics. The watch features a brushed titanium casing and a breathable silicone strap. The scene is illuminated by dramatic side-lighting that highlights the texture of the materials and the crispness of the digital screen. The overall mood is active, sophisticated, and technologically forward-looking." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+<span class="absolute top-2 left-2 bg-red-100 text-red-600 text-label-xs font-bold px-2 py-1 rounded">-35%</span>
+</div>
+<h3 class="text-body-sm line-clamp-2 mb-1">Series 8 Smartwatch with GPS &amp; Blood Oxygen Sensor</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 85,000</div>
+<div class="text-label-xs text-secondary line-through">₦ 130,000</div>
+<div class="mt-2 w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-orange-500 h-full w-1/4"></div>
+</div>
+<div class="text-[10px] text-secondary mt-1">42 items left</div>
+</div>
+<!-- Card 3 -->
+<div class="min-w-[180px] snap-start group cursor-pointer">
+<div class="aspect-square bg-gray-50 rounded-lg overflow-hidden relative mb-2">
+<img class="w-full h-full object-cover" data-alt="High-resolution product image of a designer perfume bottle made of faceted crystal glass. The golden-hued liquid inside catches the soft, warm ambient light, creating beautiful caustic reflections on the pristine white surface below. The bottle has a heavy gold cap and elegant serif typography on the label. The style is opulent, clean, and high-fashion, suggesting luxury and sophistication." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+<span class="absolute top-2 left-2 bg-red-100 text-red-600 text-label-xs font-bold px-2 py-1 rounded">-20%</span>
+</div>
+<h3 class="text-body-sm line-clamp-2 mb-1">Luxury Eau de Parfum For Women - 100ml</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 12,000</div>
+<div class="text-label-xs text-secondary line-through">₦ 15,000</div>
+<div class="mt-2 w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-orange-500 h-full w-1/2"></div>
+</div>
+<div class="text-[10px] text-secondary mt-1">10 items left</div>
+</div>
+<!-- Card 4 -->
+<div class="min-w-[180px] snap-start group cursor-pointer">
+<div class="aspect-square bg-gray-50 rounded-lg overflow-hidden relative mb-2">
+<img class="w-full h-full object-cover" data-alt="Minimalist product shot of a sleek, white electric kettle with wood-texture accents on the handle and base. The kettle is set against a soft beige background with gentle morning sunlight streaming from a window, creating long, soft shadows. The overall aesthetic is peaceful, modern, and domestic, emphasizing clean lines and functional design for a contemporary kitchen." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+<span class="absolute top-2 left-2 bg-red-100 text-red-600 text-label-xs font-bold px-2 py-1 rounded">-60%</span>
+</div>
+<h3 class="text-body-sm line-clamp-2 mb-1">Modern Cordless Electric Kettle - 1.7L Fast Boil</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 8,900</div>
+<div class="text-label-xs text-secondary line-through">₦ 22,250</div>
+<div class="mt-2 w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-orange-500 h-full w-5/6"></div>
+</div>
+<div class="text-[10px] text-secondary mt-1">2 items left</div>
+</div>
+<!-- Card 5 -->
+<div class="min-w-[180px] snap-start group cursor-pointer">
+<div class="aspect-square bg-gray-50 rounded-lg overflow-hidden relative mb-2">
+<img class="w-full h-full object-cover" data-alt="A dynamic action shot of a professional DSLR camera body, shown in a three-quarter view to highlight its ergonomic controls and robust build quality. The camera is rendered with sharp focus on the lens mount and textured grip, set against a dark, atmospheric studio background with subtle blue rim lighting. The lighting emphasizes the professional durability and high-tech nature of the equipment." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+<span class="absolute top-2 left-2 bg-red-100 text-red-600 text-label-xs font-bold px-2 py-1 rounded">-15%</span>
+</div>
+<h3 class="text-body-sm line-clamp-2 mb-1">Professional Mirrorless Camera - 4K Video Body Only</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 450,000</div>
+<div class="text-label-xs text-secondary line-through">₦ 530,000</div>
+<div class="mt-2 w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-orange-500 h-full w-1/3"></div>
+</div>
+<div class="text-[10px] text-secondary mt-1">8 items left</div>
+</div>
+<!-- Card 6 -->
+<div class="min-w-[180px] snap-start group cursor-pointer">
+<div class="aspect-square bg-gray-50 rounded-lg overflow-hidden relative mb-2">
+<img class="w-full h-full object-cover" data-alt="Detailed close-up of a high-performance gaming mouse with customizable RGB lighting glowing in a pulse of purple and orange. The mouse features a complex ergonomic shape with textured side grips and multiple programmable buttons. The shot is taken in low-key lighting to make the LEDs pop against the dark workspace environment. The mood is high-energy, competitive, and gaming-focused." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+<span class="absolute top-2 left-2 bg-red-100 text-red-600 text-label-xs font-bold px-2 py-1 rounded">-40%</span>
+</div>
+<h3 class="text-body-sm line-clamp-2 mb-1">RGB Gaming Mouse - 12000 DPI Optical Sensor</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 15,600</div>
+<div class="text-label-xs text-secondary line-through">₦ 26,000</div>
+<div class="mt-2 w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-orange-500 h-full w-1/2"></div>
+</div>
+<div class="text-[10px] text-secondary mt-1">20 items left</div>
+</div>
+</div>
+</section>
+<!-- Daily Deals Grid Section -->
+<section class="mt-lg">
+<div class="bg-surface-container-low p-4 rounded-t-lg border-x border-t border-gray-200 flex items-center justify-between">
+<h2 class="font-headline-md text-on-surface">Daily Deals</h2>
+<a class="text-primary font-bold text-body-sm uppercase hover:underline" href="#">See More</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-gutter bg-white p-4 border border-gray-200 rounded-b-lg shadow-sm">
+<!-- Deal Item 1 -->
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-lg overflow-hidden bg-gray-50 mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A variety of colorful organic groceries, including fresh bell peppers, leafy greens, and exotic fruits, arranged in a woven basket on a rustic kitchen counter. The lighting is bright and natural, coming from a side window, highlighting the freshness and vibrant colors of the produce. The style is wholesome and high-quality, focusing on healthy living and grocery shopping." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+</div>
+<p class="text-body-sm text-gray-700 line-clamp-2">Fresh Grocery Box - Seasonal Fruits &amp; Veggies</p>
+<p class="font-bold text-on-surface">₦ 4,500</p>
+</div>
+<!-- Deal Item 2 -->
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-lg overflow-hidden bg-gray-50 mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A sleek modern smartphone displayed with its screen on, showing a beautiful abstract wallpaper. The phone is placed on a minimalist dark surface with sharp, clean reflections. The lighting is sophisticated, focusing on the slim bezels and high-quality glass finish of the device. The aesthetic is extremely modern and professional, typical of a high-end consumer electronics showcase." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+</div>
+<p class="text-body-sm text-gray-700 line-clamp-2">Latest Smartphone X - 128GB Charcoal Black</p>
+<p class="font-bold text-on-surface">₦ 195,000</p>
+</div>
+<!-- Deal Item 3 -->
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-lg overflow-hidden bg-gray-50 mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A pair of stylish white leather sneakers with minimalist design details, presented on a light gray architectural pedestal. The lighting is soft and diffuse, emphasizing the clean silhouette and premium leather texture. The scene conveys a sense of high-end street fashion and clean aesthetic, perfect for a modern footwear catalog." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+</div>
+<p class="text-body-sm text-gray-700 line-clamp-2">Men's Casual Urban Sneakers - Pure White</p>
+<p class="font-bold text-on-surface">₦ 18,200</p>
+</div>
+<!-- Deal Item 4 -->
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-lg overflow-hidden bg-gray-50 mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A high-performance blender with a stainless steel base and a clear glass jar, shown against a modern kitchen backdrop. The jar contains a vibrant green smoothie being blended, with droplets of water and fresh ingredients visible in sharp detail. The lighting is bright and energetic, highlighting the powerful motor and the freshness of the healthy lifestyle product." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+</div>
+<p class="text-body-sm text-gray-700 line-clamp-2">Pro-Series High Speed Blender - 1500W Motor</p>
+<p class="font-bold text-on-surface">₦ 32,000</p>
+</div>
+<!-- Deal Item 5 -->
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-lg overflow-hidden bg-gray-50 mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A professional-grade power drill kit with multiple attachments and a hard-shell carrying case, laid out on a workshop bench. The tools have a high-visibility yellow and black color scheme, with metallic accents catching the bright workshop lighting. The image emphasizes ruggedness, utility, and high-quality craftsmanship for home improvement and professional use." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+</div>
+<p class="text-body-sm text-gray-700 line-clamp-2">Cordless Impact Drill Kit - 2 Batteries Included</p>
+<p class="font-bold text-on-surface">₦ 45,900</p>
+</div>
+<!-- Deal Item 6 -->
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-lg overflow-hidden bg-gray-50 mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="An elegant, slim-profile LED television displaying a high-definition nature documentary scene of a lush jungle. The TV is mounted on a minimalist dark wood wall unit with subtle ambient lighting behind the screen. The focus is on the ultra-thin bezels and the vibrant, realistic color reproduction of the display. The mood is premium, cinematic, and sophisticated." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+</div>
+<p class="text-body-sm text-gray-700 line-clamp-2">55-Inch 4K UHD Smart LED TV with HDR</p>
+<p class="font-bold text-on-surface">₦ 285,000</p>
+</div>
+</div>
+</section>
+<!-- Recommended For You Section -->
+<section class="mt-lg">
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+<h2 class="font-headline-md text-on-surface mb-4">Recommended For You</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+<!-- Recommendation Card 1 -->
+<div class="bg-white border border-gray-100 rounded-lg p-2 hover:shadow-md transition-shadow cursor-pointer relative group">
+<div class="aspect-square bg-gray-50 rounded mb-2 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A sleek, modern laptop open on a clean wooden desk, surrounded by a minimalist workspace including a coffee cup and a small potted plant. The morning light is soft and creates a pleasant, productive atmosphere. The focus is on the high-resolution screen and the thin, premium aluminum chassis of the device, conveying a professional and high-tech feel." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+</div>
+<div class="px-1">
+<h3 class="text-body-sm text-gray-800 line-clamp-2 mb-1">Ultra-Slim Business Laptop 14" - Core i7, 16GB RAM</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 650,000</div>
+<div class="flex items-center gap-1 mt-1 text-label-xs text-secondary">
+<div class="flex text-orange-400">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]">star_half</span>
+</div>
+                                (124)
+                            </div>
+</div>
+<button class="w-full mt-3 py-2 bg-primary-container text-white text-label-xs font-bold uppercase rounded opacity-0 group-hover:opacity-100 transition-opacity">Add to Cart</button>
+</div>
+<!-- Recommendation Card 2 -->
+<div class="bg-white border border-gray-100 rounded-lg p-2 hover:shadow-md transition-shadow cursor-pointer relative group">
+<div class="aspect-square bg-gray-50 rounded mb-2 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A stylish, high-tech coffee espresso machine in brushed stainless steel, producing a perfect cup of espresso with rich crema. Steam is delicately rising from the cup, and the background is a blurred high-end kitchen. The lighting is warm and professional, highlighting the quality of the appliance and the artisanal quality of the coffee. The overall aesthetic is one of luxury and domestic perfection." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+</div>
+<div class="px-1">
+<h3 class="text-body-sm text-gray-800 line-clamp-2 mb-1">Automatic Espresso Machine with Milk Frother</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 145,000</div>
+<div class="flex items-center gap-1 mt-1 text-label-xs text-secondary">
+<div class="flex text-orange-400">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+                                (89)
+                            </div>
+</div>
+<button class="w-full mt-3 py-2 bg-primary-container text-white text-label-xs font-bold uppercase rounded opacity-0 group-hover:opacity-100 transition-opacity">Add to Cart</button>
+</div>
+<!-- Recommendation Card 3 -->
+<div class="bg-white border border-gray-100 rounded-lg p-2 hover:shadow-md transition-shadow cursor-pointer relative group">
+<div class="aspect-square bg-gray-50 rounded mb-2 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A set of professional-grade wireless security cameras mounted on the exterior of a modern house. The cameras have a sleek, weatherproof design in white and black. The lighting is clear daylight, showing the cameras integrated seamlessly into the architecture. The mood is secure, technologically advanced, and residential, focusing on home safety." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+</div>
+<div class="px-1">
+<h3 class="text-body-sm text-gray-800 line-clamp-2 mb-1">Wireless Security Camera System - 4 Cam Kit</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 120,000</div>
+<div class="flex items-center gap-1 mt-1 text-label-xs text-secondary">
+<div class="flex text-orange-400">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]">star</span>
+</div>
+                                (56)
+                            </div>
+</div>
+<button class="w-full mt-3 py-2 bg-primary-container text-white text-label-xs font-bold uppercase rounded opacity-0 group-hover:opacity-100 transition-opacity">Add to Cart</button>
+</div>
+<!-- Recommendation Card 4 -->
+<div class="bg-white border border-gray-100 rounded-lg p-2 hover:shadow-md transition-shadow cursor-pointer relative group">
+<div class="aspect-square bg-gray-50 rounded mb-2 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A high-performance gaming chair with ergonomic design, featuring black and orange synthetic leather accents. The chair is positioned in front of a multi-monitor gaming setup with ambient neon lighting. The professional studio lighting highlights the contours and stitching of the chair, conveying both comfort and aggressive gaming style. The mood is immersive, high-energy, and modern." src="https://lh3.googleusercontent.com/aida/ADBb0uhjno4eVxr-PBXJ13K3kMSQ-05o2ekUgU7ceo8RiiZqdXIadwvlDIWGMnoy7bu6PPq4D-rp0QcZoMagexiprjrk7OoU3TxBH5ueRzGjEMOHuP1vXJQeJqLpZp4hAryC6WVUl42dVIhQDX7zn8FSbsPh2AeExyDLpj0et9cVqy0CjdTlLD9MLBgBPCf_64rxM2ajr31MjCrqN5rDcwuphYbV07wy7WeWsi-0KV55g3j3wIUbgr9AjWcpjH1fapWYCbqF028vf4bI8UA"/>
+</div>
+<div class="px-1">
+<h3 class="text-body-sm text-gray-800 line-clamp-2 mb-1">Ergonomic Racing Style Gaming Chair - Orange</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 75,000</div>
+<div class="flex items-center gap-1 mt-1 text-label-xs text-secondary">
+<div class="flex text-orange-400">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]">star_outline</span>
+</div>
+                                (210)
+                            </div>
+</div>
+<button class="w-full mt-3 py-2 bg-primary-container text-white text-label-xs font-bold uppercase rounded opacity-0 group-hover:opacity-100 transition-opacity">Add to Cart</button>
+</div>
+<!-- Recommendation Card 5 -->
+<div class="bg-white border border-gray-100 rounded-lg p-2 hover:shadow-md transition-shadow cursor-pointer relative group">
+<div class="aspect-square bg-gray-50 rounded mb-2 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A group of sleek, minimalist kitchen appliances including a toaster, a blender, and a stand mixer, all in a uniform matte black finish. They are arranged on a white marble countertop against a dark backsplash. The lighting is sophisticated and directional, creating high-contrast highlights and deep shadows that emphasize their modern design. The overall aesthetic is clean, professional, and upscale." src="https://lh3.googleusercontent.com/aida/ADBb0uh8X3oUhwbVai9b0PJtDiRmBD-bUpCJzuzmrBmulFKvYAq6A5pXG27YppYmzWsafy2jd2PshQC662iaNezskD6R4br_fvX0J65M60jkVr4iqyfFhLfF9gXJbdfO_VvP7xjqbbiXQXdDCemAzrhM6u-qoii4UftMY410fuEbZdKMnRKyWoXNzlucMIr0VSdTu7R9_laq_FyKE_M3vPmEh67NWneNetZDsBygAASA0EcqiGAQF7dhjQqmteIz-hpHLCXey5NvlQp7LA"/>
+</div>
+<div class="px-1">
+<h3 class="text-body-sm text-gray-800 line-clamp-2 mb-1">Matte Black Kitchen Appliance Set - 3 Pieces</h3>
+<div class="font-bold text-title-sm text-on-surface">₦ 110,000</div>
+<div class="flex items-center gap-1 mt-1 text-label-xs text-secondary">
+<div class="flex text-orange-400">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+                                (45)
+                            </div>
+</div>
+<button class="w-full mt-3 py-2 bg-primary-container text-white text-label-xs font-bold uppercase rounded opacity-0 group-hover:opacity-100 transition-opacity">Add to Cart</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="mt-xl bg-gray-100 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+<div class="w-full py-12 px-4 md:px-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-[1200px] mx-auto">
+<div>
+<h4 class="font-sans text-xs uppercase tracking-wider text-gray-900 dark:text-white font-bold mb-4">About JumiaClone</h4>
+<nav class="flex flex-col gap-2">
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">About Us</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Contact</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Terms &amp; Conditions</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Privacy Policy</a>
+</nav>
+</div>
+<div>
+<h4 class="font-sans text-xs uppercase tracking-wider text-gray-900 dark:text-white font-bold mb-4">Payment</h4>
+<nav class="flex flex-col gap-2">
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Jumia Pay</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Mastercard</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Visa</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Cash on Delivery</a>
+</nav>
+</div>
+<div>
+<h4 class="font-sans text-xs uppercase tracking-wider text-gray-900 dark:text-white font-bold mb-4">Buying on JumiaClone</h4>
+<nav class="flex flex-col gap-2">
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Help Center</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Return Policy</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Report a Product</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Bulk Purchases</a>
+</nav>
+</div>
+<div>
+<h4 class="font-sans text-xs uppercase tracking-wider text-gray-900 dark:text-white font-bold mb-4">Make Money</h4>
+<nav class="flex flex-col gap-2">
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Become a Seller</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Sell on Global</a>
+<a class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-opacity text-body-sm" href="#">Join the Logistics</a>
+</nav>
+</div>
+</div>
+<div class="border-t border-gray-200 dark:border-gray-800 py-6 text-center">
+<span class="text-lg font-black text-gray-400 mb-2 block">JumiaClone</span>
+<p class="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">© 2024 JumiaClone. All rights reserved.</p>
+</div>
+</footer>
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center py-2 z-50">
+<a class="flex flex-col items-center gap-1 text-orange-600" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-label-xs">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-500" href="#">
+<span class="material-symbols-outlined">category</span>
+<span class="text-label-xs">Categories</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-500" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="text-label-xs">Feed</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-500" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-xs">Account</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-500 relative" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="text-label-xs">Cart</span>
+<span class="absolute top-0 right-1 bg-primary-container text-white text-[8px] w-3 h-3 rounded-full flex items-center justify-center">0</span>
+</a>
+</nav>
+</body></html>

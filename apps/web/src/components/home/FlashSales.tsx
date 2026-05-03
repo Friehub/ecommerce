@@ -4,7 +4,6 @@ import React from 'react';
 import { ProductCard } from '../ui/ProductCard';
 import { api } from '@/trpc/react';
 import { Zap } from 'lucide-react';
-
 import { useState, useEffect } from 'react';
 
 const CountdownTimer = ({ endTime }: { endTime: any }) => {
@@ -42,11 +41,11 @@ export const FlashSales = () => {
   if (isLoading) {
     return (
       <section className="container mt-6">
-        <div className="bg-white rounded shadow-sm overflow-hidden">
-          <div className="bg-[#DF3131] h-12 animate-pulse" />
+        <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+          <div className="bg-gradient-to-r from-red-600 to-red-500 h-12 animate-pulse" />
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 p-4">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="aspect-[3/4] bg-gray-100 rounded animate-pulse" />
+              <div key={i} className="aspect-[3/4] bg-gray-50 rounded-lg animate-pulse" />
             ))}
           </div>
         </div>
@@ -78,29 +77,35 @@ export const FlashSales = () => {
 
   return (
     <section className="container mt-6">
-      <div className="bg-white rounded shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300">
         {/* Header */}
-        <div className="bg-[#DF3131] h-12 flex items-center justify-between px-4 text-white">
-          <div className="flex items-center gap-2">
-            <Zap size={20} fill="white" />
-            <h2 className="font-bold uppercase tracking-tight">Flash Sales</h2>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-sm font-medium hidden sm:inline">
-              Time Left: <CountdownTimer endTime={earliestEnd} />
+        <div className="bg-gradient-to-r from-red-600 to-orange-500 h-14 flex items-center justify-between px-5 text-white select-none shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/20">
+              <Zap size={18} className="text-yellow-300 animate-pulse" style={{ fill: 'currentColor' }} />
             </div>
-            <a href="/flash-sales" className="text-xs font-bold hover:underline">SEE ALL &gt;</a>
+            <h2 className="font-extrabold uppercase tracking-tight text-white text-base md:text-lg">
+              Flash Sales
+            </h2>
+          </div>
+          <div className="flex items-center gap-5">
+            <div className="text-sm font-bold bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-1.5 rounded-lg hidden sm:inline-flex items-center gap-2">
+              <span className="text-white/80 font-medium">Ends in:</span>
+              <CountdownTimer endTime={earliestEnd} />
+            </div>
+            <a href="/flash-sales" className="text-xs font-extrabold hover:underline uppercase tracking-wide bg-white/20 hover:bg-white/30 transition-all px-3 py-1.5 rounded-lg border border-white/10">
+              See All
+            </a>
           </div>
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 p-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 p-5 bg-white">
           {flashProducts.map((product: any) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </div>
-
 
       <style jsx>{`
         .container {
@@ -110,25 +115,25 @@ export const FlashSales = () => {
         }
         .mt-6 { margin-top: 1.5rem; }
         .bg-white { background-color: #ffffff; }
-        .bg-\[#DF3131\] { background-color: #df3131; }
-        .bg-gray-100 { background-color: #f3f4f6; }
-        .rounded { border-radius: 4px; }
-        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .rounded-xl { border-radius: 12px; }
+        .rounded-lg { border-radius: 8px; }
+        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
         .overflow-hidden { overflow: hidden; }
-        .h-12 { height: 3rem; }
-        .p-4 { padding: 1rem; }
-        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .p-5 { padding: 1.25rem; }
         .flex { display: flex; }
         .items-center { align-items: center; }
         .justify-between { justify-content: space-between; }
-        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
         .gap-4 { gap: 16px; }
+        .gap-5 { gap: 20px; }
         .grid { display: grid; }
         .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .text-white { color: #ffffff; }
         .text-sm { font-size: 0.875rem; }
         .text-xs { font-size: 0.75rem; }
         .font-bold { font-weight: 700; }
+        .font-extrabold { font-weight: 800; }
         .font-medium { font-weight: 500; }
         .uppercase { text-transform: uppercase; }
         .tracking-tight { letter-spacing: -0.025em; }
@@ -145,7 +150,7 @@ export const FlashSales = () => {
         }
         .hidden { display: none; }
         @media (min-width: 640px) {
-          .sm\:inline { display: inline; }
+          .sm\:inline-flex { display: inline-flex; }
         }
       `}</style>
     </section>

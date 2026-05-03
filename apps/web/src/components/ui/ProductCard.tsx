@@ -14,70 +14,38 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const discount = comparePrice ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
 
   return (
-    <Link href={`/products/${product.slug}`} className="bg-white rounded overflow-hidden hover:shadow-lg transition-all flex flex-col group h-full">
-      <div className="relative aspect-square overflow-hidden bg-gray-50">
+    <Link 
+      href={`/products/${product.slug}`} 
+      className="bg-white rounded-xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group h-full border border-gray-100 hover:border-gray-200 select-none shadow-sm hover:shadow-orange-500/5"
+    >
+      <div className="relative aspect-square overflow-hidden bg-gray-50 flex items-center justify-center">
         <img 
           src={product.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'} 
           alt={product.title}
-          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-2"
         />
         {discount > 0 && (
-          <div className="absolute top-2 right-2 bg-[#FEE2E2] text-[#DF3131] text-[10px] font-bold px-2 py-1 rounded">
+          <div className="absolute top-3 right-3 bg-red-100 backdrop-blur-md border border-red-200/50 text-[#DF3131] text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg tracking-wide uppercase select-none shadow-sm">
             -{discount}%
           </div>
         )}
       </div>
       
-      <div className="p-3 flex flex-col flex-1">
-        <h3 className="text-sm text-gray-700 line-clamp-2 mb-2 group-hover:text-[#F68B1E] transition-colors">
+      <div className="p-4 flex flex-col flex-1 bg-white">
+        <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-[#F68B1E] transition-colors leading-normal">
           {product.title}
         </h3>
-        <div className="mt-auto">
-          <div className="text-lg font-bold">₦ {price.toLocaleString()}</div>
+        <div className="mt-auto pt-2 flex flex-col gap-0.5">
+          <div className="text-lg font-extrabold text-gray-900 group-hover:text-[#F68B1E] transition-colors">
+            ₦ {price.toLocaleString()}
+          </div>
           {comparePrice && (
-            <div className="text-xs text-gray-400 line-through">₦ {comparePrice.toLocaleString()}</div>
+            <div className="text-xs text-gray-400 line-through font-medium">
+              ₦ {comparePrice.toLocaleString()}
+            </div>
           )}
         </div>
       </div>
-
-      <style jsx>{`
-        .bg-white { background-color: #ffffff; }
-        .bg-gray-50 { background-color: #f9fafb; }
-        .rounded { border-radius: 4px; }
-        .overflow-hidden { overflow: hidden; }
-        .hover\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .transition-all { transition: all 0.2s ease; }
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .h-full { height: 100%; }
-        .relative { position: relative; }
-        .aspect-square { aspect-ratio: 1 / 1; }
-        .object-contain { object-fit: contain; }
-        .w-full { width: 100%; }
-        .p-3 { padding: 0.75rem; }
-        .flex-1 { flex: 1; }
-        .text-sm { font-size: 0.875rem; }
-        .text-xs { font-size: 0.75rem; }
-        .text-lg { font-size: 1.125rem; }
-        .text-gray-700 { color: #374151; }
-        .text-gray-400 { color: #9ca3af; }
-        .font-bold { font-weight: 700; }
-        .mb-2 { margin-bottom: 0.5rem; }
-        .mt-auto { margin-top: auto; }
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .absolute { position: absolute; }
-        .top-2 { top: 0.5rem; }
-        .right-2 { right: 0.5rem; }
-        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
-        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
-        .bg-\[#FEE2E2\] { background-color: #fee2e2; }
-        .text-\[#DF3131\] { color: #df3131; }
-      `}</style>
     </Link>
   );
 };

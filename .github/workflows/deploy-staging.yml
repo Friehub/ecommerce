@@ -59,10 +59,11 @@ jobs:
           echo "Waiting for database to be ready..."
           sleep 10
 
-      - name: Migrate staging database
-        working-directory: /opt/runner-work/jumia-staging
+      - name: Migrate and seed staging database
         run: |
-          DATABASE_URL="postgresql://ecom:${{ secrets.DB_PASSWORD }}@localhost:5433/ecom" pnpm --filter @ecom/db prisma migrate deploy
+          DB_PASSWORD=$(grep '^DB_PASSWORD=' /opt/runner-work/jumia-staging/.env.staging | cut -d '=' -f2-)
+          DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db prisma migrate deploy
+          DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db pnpm run seed
 
 # Removed Prune Docker build cache step to preserve cargo chef cache for faster builds
 

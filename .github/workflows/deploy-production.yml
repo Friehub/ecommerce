@@ -36,9 +36,13 @@ jobs:
       - name: Typecheck
         run: pnpm -r typecheck
 
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Rust check
         working-directory: services
         run: cargo check --workspace
+
 
   # ── Job 2: Deploy to production VPS ───────────────────────────────
   deploy:

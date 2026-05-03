@@ -1,6 +1,8 @@
 import { createTRPCRouter, protectedProcedure } from '../../../trpc';
 import { OpenDisputeSchema, RespondDisputeSchema, UploadEvidenceSchema, GetDisputeSchema } from '../schemas';
 import { disputeService } from '../services/dispute-service';
+import { prisma } from '@ecom/db';
+import { z } from 'zod';
 
 export const disputeRouter = createTRPCRouter({
   open: protectedProcedure
@@ -53,5 +55,48 @@ export const disputeRouter = createTRPCRouter({
     .input(GetDisputeSchema)
     .mutation(async ({ ctx, input }) => {
       return disputeService.escalateDispute(input.disputeId, ctx.session.user.id);
+    }),
+
+  listAllDisputes: protectedProcedure
+    .query(async ({ ctx }) => {
+      const user = await prisma.user.findUnique({ where: { id: ctx.session.user.id } });
+      if (user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') throw new Error('UNAUTHORIZED');
+      return prisma.dispute.findMany({
+        include: {
+          order: { select: { id: true, total: true } },
+          buyer: { select: { id: true, firstName: true, lastName: true, email: true } },
+          seller: { select: { id: true, businessName: true } }
+        },
+        orderBy: { updatedAt: 'desc' }
+      });
+    }),
+
+  resolveDispute: protectedProcedure
+    .input(z.object({
+      disputeId: z.string(),
+      resolution: z.string(),
+      status: z.enum(['RESOLVED', 'REJECTED']),
+      refundAmount: z.number().optional()
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const user = await prisma.user.findUnique({ where: { id: ctx.session.user.id } });
+      if (user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') throw new Error('UNAUTHORIZED');
+
+      const dispute = await prisma.dispute.findUnique({ where: { id: input.disputeId } });
+      if (!dispute) throw new Error('DISPUTE_NOT_FOUND');
+
+      await prisma.dispute.update({
+        where: { id: input.disputeId },
+        data: { status: input.status }
+      });
+
+      return prisma.disputeResolution.create({
+        data: {
+          disputeId: input.disputeId,
+          resolvedById: ctx.session.user.id,
+          resolution: input.resolution,
+          refundAmount: input.refundAmount || 0
+        }
+      });
     }),
 });

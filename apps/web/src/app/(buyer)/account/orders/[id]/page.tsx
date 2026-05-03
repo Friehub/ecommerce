@@ -102,7 +102,7 @@ export default function OrderDetailPage() {
                           <div key={line.id} className="flex gap-3 bg-gray-50/20 hover:bg-gray-50/40 duration-200 transition-all p-3 rounded-xl border border-transparent hover:border-gray-100/60 select-none">
                             <div className="w-16 h-16 bg-gray-50 border border-gray-100 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden p-1.5">
                               <img 
-                                src={line.variant?.product?.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'}
+                                src={(line.variant?.product as any)?.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'}
                                 alt={line.variant?.product?.title}
                                 className="w-full h-full object-contain"
                               />

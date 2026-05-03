@@ -10,6 +10,8 @@ model Category {
   parent   Category?  @relation("SubCategories", fields: [parentId], references: [id])
   children Category[] @relation("SubCategories")
   products Product[]
+
+  @@index([parentId])
 }
 
 model Brand {
@@ -77,6 +79,8 @@ model ProductVariant {
   wishlistItems WishlistItem[]
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
+
+  @@index([productId])
 }
 
 model ProductMedia {
@@ -89,4 +93,7 @@ model ProductMedia {
 
   product Product         @relation(fields: [productId], references: [id])
   variant ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([productId])
+  @@index([variantId])
 }

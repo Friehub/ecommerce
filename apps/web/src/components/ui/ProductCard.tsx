@@ -16,16 +16,16 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <Link 
       href={`/products/${product.slug}`} 
-      className="bg-white rounded-xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group h-full border border-gray-100 hover:border-gray-200 select-none shadow-sm hover:shadow-orange-500/5"
+      className="bg-white rounded-md overflow-hidden hover:shadow-md duration-150 transition-all flex flex-col group h-full border border-gray-200 shadow-sm"
     >
-      <div className="relative aspect-square overflow-hidden bg-gray-50 flex items-center justify-center">
+      <div className="relative aspect-square overflow-hidden bg-white flex items-center justify-center">
         <img 
           src={product.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'} 
           alt={product.title}
-          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-2"
+          className="w-full h-full object-contain duration-150 transition-all p-2"
         />
         {discount > 0 && (
-          <div className="absolute top-3 right-3 bg-red-100 backdrop-blur-md border border-red-200/50 text-[#DF3131] text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg tracking-wide uppercase select-none shadow-sm">
+          <div className="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded">
             -{discount}%
           </div>
         )}

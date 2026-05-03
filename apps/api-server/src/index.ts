@@ -73,8 +73,21 @@ async function start() {
     }
   });
 
+  const { prisma } = await import('@ecom/db');
+
+
   // ── Health check ──────────────────────────────────────────────────
   server.get('/health', async () => ({ status: 'ok', uptime: process.uptime() }));
+  server.get('/healthz', async (req, reply) => {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      return { status: 'ok', database: 'connected', uptime: process.uptime() };
+    } catch (error: any) {
+      server.log.error(error, 'Healthz check failed');
+      reply.code(503).send({ status: 'error', reason: 'database unreachable' });
+    }
+  });
+
 
   // ── tRPC ──────────────────────────────────────────────────────────
   await server.register(fastifyTRPCPlugin, {
@@ -86,8 +99,12 @@ async function start() {
       onError({ path, error }) {
         if (error.code === 'INTERNAL_SERVER_ERROR') {
           server.log.error({ path, error }, 'tRPC internal error');
+          import('@ecom/api').then(({ observability }) => {
+            observability.captureException(error, { path });
+          }).catch((e) => console.warn('Observability import failed', e.message));
         }
       },
+
     } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],
   });
 

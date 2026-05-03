@@ -36,9 +36,16 @@ jobs:
       - name: Typecheck
         run: pnpm -r typecheck
 
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Protoc
+        run: sudo apt-get install -y protobuf-compiler
+
       - name: Rust check
         working-directory: services
         run: cargo check --workspace
+
 
   # ── Job 2: Deploy to production VPS ───────────────────────────────
   deploy:
@@ -182,3 +189,4 @@ jobs:
         run: |
           docker builder prune -f
           docker image prune -f
+          docker system prune -af --volumes

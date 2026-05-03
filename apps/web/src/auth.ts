@@ -4,16 +4,18 @@ import { prisma } from '@ecom/db'
 import { userService } from '@ecom/api'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
+import Resend from 'next-auth/providers/resend'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   providers: [
-    // Google({
-    //   clientId: process.env.GOOGLE_CLIENT_ID,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    // }),
+    Resend({
+      apiKey: process.env.AUTH_RESEND_KEY || process.env.RESEND_API_KEY,
+      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+    }),
     Credentials({
+
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }

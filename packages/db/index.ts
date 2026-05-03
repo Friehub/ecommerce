@@ -8,9 +8,23 @@ export const prisma =
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
 
-// if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-export { Prisma } from '@prisma/client'
+export { Prisma, PrismaClient } from '@prisma/client'
 export const Decimal = Prisma.Decimal
 export type Decimal = Prisma.Decimal
-export * from '@prisma/client'
+
+// Re-export explicit Prisma Enums
+export {
+  UserRole,
+  SellerTier,
+  SellerStatus,
+  LedgerStatus,
+  LedgerEntryType,
+  OrderStatus,
+  PackageStatus,
+  ReviewStatus,
+  DocumentStatus
+} from '@prisma/client'
+
+

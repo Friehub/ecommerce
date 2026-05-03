@@ -59,8 +59,6 @@ jobs:
           echo "Waiting for database to be ready..."
           sleep 10
           docker compose -f docker-compose.staging.yml --env-file .env.staging exec -T postgres sh -c "psql -U ecom -d ecom -c 'GRANT ALL ON SCHEMA public TO ecom;'"
-          docker compose -f docker-compose.staging.yml --env-file .env.staging exec -T postgres sh -c "psql -U ecom -d ecom -c \"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'ecom' AND pid <> pg_backend_pid();\"" || true
-          docker compose -f docker-compose.staging.yml --env-file .env.staging stop api workers event-consumer || true
 
       - name: Migrate and seed staging database
         run: |
@@ -91,7 +89,7 @@ jobs:
       - name: Deploy staging
         working-directory: /opt/runner-work/jumia-staging
         run: |
-          docker compose -f docker-compose.staging.yml --env-file .env.staging up -d --force-recreate api workers event-consumer web
+          docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
 
       - name: Cleanup build artifacts
         if: always()

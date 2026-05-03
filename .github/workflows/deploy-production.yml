@@ -199,3 +199,4 @@ jobs:
         run: |
           docker builder prune -f
           docker image prune -f
+          docker system prune -af --volumes

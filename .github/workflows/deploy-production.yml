@@ -39,6 +39,12 @@ jobs:
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            services -> target
+
       - name: Install Protoc
         run: |
           mkdir -p $HOME/.local/bin

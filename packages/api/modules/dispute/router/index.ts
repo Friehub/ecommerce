@@ -59,7 +59,10 @@ export const disputeRouter = createTRPCRouter({
 
   listAllDisputes: protectedProcedure
     .query(async ({ ctx }) => {
-      const user = await prisma.user.findUnique({ where: { id: ctx.session.user.id } });
+      const user = await prisma.user.findUnique({
+        where: { id: ctx.session.user.id },
+        select: { role: true }
+      });
       if (user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') throw new Error('UNAUTHORIZED');
       return prisma.dispute.findMany({
         include: {
@@ -79,10 +82,16 @@ export const disputeRouter = createTRPCRouter({
       refundAmount: z.number().optional()
     }))
     .mutation(async ({ ctx, input }) => {
-      const user = await prisma.user.findUnique({ where: { id: ctx.session.user.id } });
+      const user = await prisma.user.findUnique({
+        where: { id: ctx.session.user.id },
+        select: { role: true }
+      });
       if (user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') throw new Error('UNAUTHORIZED');
 
-      const dispute = await prisma.dispute.findUnique({ where: { id: input.disputeId } });
+      const dispute = await prisma.dispute.findUnique({
+        where: { id: input.disputeId },
+        select: { id: true, status: true }
+      });
       if (!dispute) throw new Error('DISPUTE_NOT_FOUND');
 
       await prisma.dispute.update({

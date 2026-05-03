@@ -8,10 +8,11 @@ import { catalogImportService } from "../services/catalog-import-service";
 
 export const catalogRouter = createTRPCRouter({
   bulkImport: sellerProcedure
-    .input(z.object({ csvContent: z.string(), warehouseId: z.string().optional() }))
+    .input(z.object({ csvContent: z.string().max(1 * 1024 * 1024, "CSV file is too large. Maximum size allowed is 1MB."), warehouseId: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
       const seller = await prisma.seller.findUnique({
-        where: { userId: ctx.session.user.id }
+        where: { userId: ctx.session.user.id },
+        select: { id: true }
       });
       if (!seller) throw new Error('NOT_A_SELLER');
       return await catalogImportService.enqueueImport(seller.id, input.csvContent, input.warehouseId);
@@ -56,7 +57,8 @@ export const catalogRouter = createTRPCRouter({
     .input(productSchema)
     .mutation(async ({ ctx, input }) => {
       const seller = await prisma.seller.findUnique({
-        where: { userId: ctx.session.user.id }
+        where: { userId: ctx.session.user.id },
+        select: { id: true }
       });
       if (!seller) throw new Error('NOT_A_SELLER');
       return await catalogService.createProduct(seller.id, input);

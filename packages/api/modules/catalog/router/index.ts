@@ -26,6 +26,7 @@ export const catalogRouter = createTRPCRouter({
 
   getCategories: publicProcedure
     .meta({ openapi: { method: 'GET', path: '/catalog/categories' } })
+    .input(z.void())
     .query(async () => {
       return await catalogService.getCategoryTree();
     }),
@@ -81,6 +82,7 @@ export const catalogRouter = createTRPCRouter({
 
   getBrands: publicProcedure
     .meta({ openapi: { method: 'GET', path: '/catalog/brands' } })
+    .input(z.void())
     .query(async () => {
       return await prisma.brand.findMany({
         take: 100, // Safeguard against 10k brands OOM

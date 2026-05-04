@@ -64,18 +64,34 @@ export const cartService = {
     });
   },
 
-  async removeItem(cartItemId: string) {
+  async removeItem(cartItemId: string, sessionId: string, userId?: string) {
+    // Verify ownership
+    const item = await prisma.cartItem.findUnique({
+      where: { id: cartItemId },
+      include: { cart: true }
+    });
+
+    if (!item || (item.cart.sessionId !== sessionId && item.cart.userId !== userId)) {
+      throw new Error('UNAUTHORIZED_ACCESS');
+    }
+
     return prisma.cartItem.delete({
       where: { id: cartItemId }
     });
   },
 
-  async updateQuantity(cartItemId: string, quantity: number) {
+  async updateQuantity(cartItemId: string, quantity: number, sessionId: string, userId?: string) {
     const item = await prisma.cartItem.findUnique({
-      where: { id: cartItemId }
+      where: { id: cartItemId },
+      include: { cart: true }
     });
     
     if (!item) throw new Error('ITEM_NOT_FOUND');
+
+    // Verify ownership
+    if (item.cart.sessionId !== sessionId && item.cart.userId !== userId) {
+      throw new Error('UNAUTHORIZED_ACCESS');
+    }
 
     // Real-time stock validation
     const available = await inventoryService.syncStockFromDB(item.variantId);

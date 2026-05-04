@@ -27,15 +27,28 @@ export const cartRouter = createTRPCRouter({
   updateQuantity: publicProcedure
     .input(z.object({
       cartItemId: z.string(),
+      sessionId: z.string(),
       quantity: z.number().int().positive(),
     }))
-    .mutation(async ({ input }) => {
-      return await cartService.updateQuantity(input.cartItemId, input.quantity);
+    .mutation(async ({ ctx, input }) => {
+      return await cartService.updateQuantity(
+        input.cartItemId, 
+        input.quantity, 
+        input.sessionId,
+        ctx.session?.user?.id
+      );
     }),
 
   remove: publicProcedure
-    .input(z.object({ cartItemId: z.string() }))
-    .mutation(async ({ input }) => {
-      return await cartService.removeItem(input.cartItemId);
+    .input(z.object({ 
+      cartItemId: z.string(),
+      sessionId: z.string() 
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return await cartService.removeItem(
+        input.cartItemId, 
+        input.sessionId,
+        ctx.session?.user?.id
+      );
     }),
 });

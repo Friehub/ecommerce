@@ -8,7 +8,7 @@ import { appRouter, type AppRouter } from '@ecom/api';
 import { createContext } from './context';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
-import { createOpenApiFastifyHandler } from 'trpc-openapi';
+import { fastifyTRPCOpenApiPlugin } from 'trpc-openapi';
 import { openApiDocument } from '@ecom/api/openapi';
 
 import Redis from 'ioredis';
@@ -94,10 +94,10 @@ async function start() {
   });
 
   // REST endpoints for tRPC (via trpc-openapi)
-  await server.register(createOpenApiFastifyHandler, {
+  await server.register(fastifyTRPCOpenApiPlugin, {
     router: appRouter,
-    createContext: (opts) => createContext({ ...opts, redis }),
-    prefix: '/api',
+    createContext: (opts: any) => createContext({ ...opts, redis }),
+    basePath: '/api',
   });
 
   // ── Service-to-Service Auth ──────────────────────────────────────
@@ -122,7 +122,7 @@ async function start() {
     useWSS: false,
     trpcOptions: {
       router: appRouter,
-      createContext: (opts) => createContext({ ...opts, redis }),
+      createContext: (opts: any) => createContext({ ...opts, redis }),
       onError({ path, error }) {
         if (error.code === 'INTERNAL_SERVER_ERROR') {
           server.log.error({ path, error }, 'tRPC internal error');

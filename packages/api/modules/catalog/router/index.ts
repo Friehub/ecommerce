@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure, sellerProcedure, protectedProcedure } from "../../../trpc";
+import { createTRPCRouter, publicProcedure, sellerProcedure, protectedProcedure, rateLimitProcedure } from "../../../trpc";
 import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { productSchema, categorySchema } from "../schemas";

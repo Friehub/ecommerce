@@ -125,9 +125,7 @@ pub async fn upsert_handler(
     State(index): State<Arc<SearchIndex>>,
     Json(doc): Json<UpsertDoc>,
 ) -> Result<StatusCode, (StatusCode, Json<Value>)> {
-    let mut writer = index.get_writer(50_000_000).map_err(|e| {
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() })))
-    })?;
+    let writer = index.writer.lock().await;
 
     // Delete existing if any
     let term = Term::from_field_text(index.fields.variant_id, &doc.variant_id);
@@ -168,13 +166,58 @@ pub async fn upsert_handler(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() })))
     })?;
 
-    writer.commit().map_err(|e| {
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() })))
-    })?;
-
+    // No manual commit here! Background task handles it every 5s.
     Ok(StatusCode::OK)
 }
 
 pub async fn health_handler() -> &'static str {
     "OK"
+}
+
+pub async fn bulk_upsert_handler(
+    State(index): State<Arc<SearchIndex>>,
+    Json(docs): Json<Vec<UpsertDoc>>,
+) -> Result<StatusCode, (StatusCode, Json<Value>)> {
+    let writer = index.writer.lock().await;
+
+    for doc in docs {
+        let term = Term::from_field_text(index.fields.variant_id, &doc.variant_id);
+        writer.delete_term(term);
+
+        let json_doc_str = serde_json::json!({
+            "variant_id": doc.variant_id,
+            "product_id": doc.product_id,
+            "title": doc.title,
+            "description": doc.description,
+            "brand_name": doc.brand_name,
+            "category_id": doc.category_id,
+            "category_name": doc.category_name,
+            "seller_id": doc.seller_id,
+            "seller_name": doc.seller_name,
+            "price": doc.price,
+            "compare_price": doc.compare_price.unwrap_or(0.0),
+            "discount_pct": doc.discount_pct.unwrap_or(0.0),
+            "rating": doc.rating,
+            "review_count": doc.review_count,
+            "sales_velocity": doc.sales_velocity,
+            "is_active": if doc.is_active { 1 } else { 0 },
+            "is_in_stock": if doc.is_in_stock { 1 } else { 0 },
+            "is_flash_sale": if doc.is_flash_sale { 1 } else { 0 },
+            "is_official_store": if doc.is_official_store { 1 } else { 0 },
+            "shipping_days": doc.shipping_days,
+            "attributes": doc.attributes,
+            "image_url": doc.image_url,
+            "created_at": doc.created_at,
+        }).to_string();
+
+        let tantivy_doc = TantivyDocument::parse_json(&index.schema, &json_doc_str).map_err(|e| {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": format!("JSON parse error: {}", e) })))
+        })?;
+
+        writer.add_document(tantivy_doc).map_err(|e| {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() })))
+        })?;
+    }
+
+    Ok(StatusCode::OK)
 }

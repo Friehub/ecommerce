@@ -48,11 +48,18 @@ export const inventoryService = {
     // 1. Check/Set Redis cache if not exists (Lazy load from DB)
     let stock = await redis.get(key);
     if (stock === null) {
-      const dbStock = await db.stockLevel.aggregate({
-        where: { variantId },
-        _sum: { qtyOnHand: true, qtyReserved: true }
-      });
-      const available = (dbStock._sum.qtyOnHand || 0) - (dbStock._sum.qtyReserved || 0);
+      const [dbStock, activeReservations] = await Promise.all([
+        db.stockLevel.aggregate({
+          where: { variantId },
+          _sum: { qtyOnHand: true }
+        }),
+        db.stockReservation.aggregate({
+          where: { variantId, status: 'ACTIVE' },
+          _sum: { quantity: true }
+        })
+      ]);
+      
+      const available = (dbStock._sum.qtyOnHand || 0) - (activeReservations._sum.quantity || 0);
       await redis.set(key, available, 'EX', 3600);
       stock = available.toString();
     }
@@ -127,13 +134,19 @@ export const inventoryService = {
       });
 
       if (stockLevel) {
-        await prisma.stockLevel.update({
+        const updated = await prisma.stockLevel.update({
           where: { id: stockLevel.id },
           data: {
             qtyOnHand: { decrement: res.quantity },
-            qtyReserved: { decrement: 0 } // Reserved was already deducted from "available" in Redis
+            qtyReserved: { decrement: 0 }
           }
         });
+
+        // Trigger sold out event if stock is exhausted
+        if (updated.qtyOnHand <= 0) {
+          const { publishEvent } = await import('@ecom/shared');
+          await publishEvent('inventory.sold_out', { variantId: res.variantId });
+        }
       }
 
       await prisma.stockReservation.update({
@@ -144,13 +157,31 @@ export const inventoryService = {
   },
 
   async syncStockFromDB(variantId: string) {
-    const dbStock = await prisma.stockLevel.aggregate({
-      where: { variantId },
-      _sum: { qtyOnHand: true, qtyReserved: true }
-    });
-    const available = (dbStock._sum.qtyOnHand || 0) - (dbStock._sum.qtyReserved || 0);
-    await redis.set(`stock:${variantId}`, available);
-    return available;
+    const { lockManager } = await import('../../shared/services/managers/lock-manager');
+    
+    return await lockManager.withLock(`sync_stock:${variantId}`, async () => {
+      // Re-check cache after acquiring lock (Double-check pattern)
+      const cached = await redis.get(`stock:${variantId}`);
+      if (cached !== null) return parseInt(cached, 10);
+
+      const [dbStock, activeReservations] = await Promise.all([
+        prisma.stockLevel.aggregate({
+          where: { variantId },
+          _sum: { qtyOnHand: true }
+        }),
+        prisma.stockReservation.aggregate({
+          where: { variantId, status: 'ACTIVE' },
+          _sum: { quantity: true }
+        })
+      ]);
+
+      const qtyOnHand = dbStock._sum.qtyOnHand || 0;
+      const qtyReserved = activeReservations._sum.quantity || 0;
+      const available = qtyOnHand - qtyReserved;
+
+      await redis.set(`stock:${variantId}`, available, 'EX', 3600);
+      return available;
+    }, 2000); // 2s TTL is plenty for a simple aggregation
   },
 
   async getAvailableStock(variantId: string) {

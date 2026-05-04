@@ -9,6 +9,7 @@ model Order {
   total         Decimal     @db.Decimal(12, 2)
   paymentMethod String
   addressId     String?
+  idempotencyKey String?  @unique
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 

@@ -2,7 +2,13 @@ import { prisma, PackageStatus, OrderStatus } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
 
 export const packageService = {
-  async updateStatus(packageId: string, status: PackageStatus, trackingNumber?: string) {
+  async updateStatus(packageId: string, sellerId: string, status: PackageStatus, trackingNumber?: string) {
+    const existing = await prisma.orderPackage.findFirst({
+      where: { id: packageId, sellerId }
+    });
+
+    if (!existing) throw new Error('PACKAGE_NOT_FOUND_OR_ACCESS_DENIED');
+
     const pkg = await prisma.orderPackage.update({
       where: { id: packageId },
       data: { 

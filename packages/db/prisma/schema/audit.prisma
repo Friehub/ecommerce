@@ -6,3 +6,18 @@ model EventLog {
   status    String   @default("PUBLISHED") // PUBLISHED, FAILED, RETRIED
   createdAt DateTime @default(now())
 }
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorId     String   // User ID who performed action
+  action      String   // e.g. PRODUCT_APPROVE, PRICE_UPDATE
+  entityType  String   // e.g. PRODUCT, ORDER, SELLER
+  entityId    String
+  metadata    Json?    // Contextual data (oldValue, newValue, notes)
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([actorId])
+  @@index([entityId])
+  @@index([action])
+}

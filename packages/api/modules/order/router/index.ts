@@ -52,7 +52,11 @@ export const orderRouter = createTRPCRouter({
       status: z.nativeEnum(PackageStatus),
       trackingNumber: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      return await packageService.updateStatus(input.packageId, input.status, input.trackingNumber);
+    .mutation(async ({ ctx, input }) => {
+      // Find the seller record first to get the sellerId
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new Error('SELLER_NOT_FOUND');
+
+      return await packageService.updateStatus(input.packageId, seller.id, input.status, input.trackingNumber);
     }),
 });

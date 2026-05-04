@@ -44,6 +44,49 @@ export const ledgerService = {
     });
   },
 
+  async recordBulkSale(orderLineIds: string[]) {
+    const lines = await prisma.orderLine.findMany({
+      where: { id: { in: orderLineIds } },
+      include: { 
+        variant: { include: { product: { include: { category: true } } } },
+        package: { select: { sellerId: true } }
+      }
+    });
+
+    return await prisma.$transaction(async (tx) => {
+      const entries = [];
+      for (const line of lines) {
+        const sellerId = line.package.sellerId;
+        const grossAmount = line.unitPrice.mul(line.quantity);
+        const commissionRate = line.variant.product.category.commissionRate || new Decimal(10);
+        const commissionAmount = grossAmount.mul(commissionRate).div(100);
+
+        // 1. Record Gross Sale
+        entries.push(tx.sellerLedgerEntry.create({
+          data: {
+            sellerId,
+            orderLineId: line.id,
+            type: LedgerEntryType.SALE,
+            amount: grossAmount,
+            status: LedgerStatus.PENDING
+          }
+        }));
+
+        // 2. Record Platform Commission
+        entries.push(tx.sellerLedgerEntry.create({
+          data: {
+            sellerId,
+            orderLineId: line.id,
+            type: LedgerEntryType.COMMISSION,
+            amount: commissionAmount.negated(),
+            status: LedgerStatus.PENDING
+          }
+        }));
+      }
+      return await Promise.all(entries);
+    });
+  },
+
   async scheduleEscrowRelease(orderId: string) {
     const lines = await prisma.orderLine.findMany({
       where: { package: { orderId } }
@@ -127,6 +170,13 @@ export const ledgerService = {
     const decimalAmount = new Decimal(amount);
     
     return await prisma.$transaction(async (tx) => {
+      // 0. LOCK the seller record to prevent concurrent withdrawals
+      // This forces other transactions for the same sellerId to wait.
+      await tx.seller.update({
+        where: { id: sellerId },
+        data: { updatedAt: new Date() }
+      });
+
       // 1. Check available balance (using tx client for consistency)
       const availableBalance = await this.getSellerBalance(sellerId, LedgerStatus.AVAILABLE, tx as any);
       

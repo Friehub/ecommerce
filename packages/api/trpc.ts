@@ -42,10 +42,19 @@ export const loggerMiddleware = t.middleware(async ({ path, type, next }) => {
 export const createTRPCRouter = t.router
 export const publicProcedure = t.procedure.use(loggerMiddleware)
 export const rateLimitProcedure = publicProcedure.use(async ({ ctx, next, path }) => {
+  // ── 1. Internal Bypass ───────────────────────────────────────────
+  const internalToken = process.env.INTERNAL_API_TOKEN;
+  const clientToken = (ctx.req as any)?.headers?.get?.('x-internal-token');
+  
+  if (internalToken && clientToken === internalToken) {
+    return next();
+  }
+
+  // ── 2. Rate Limiting ─────────────────────────────────────────────
   if (ctx.redis && ctx.ip) {
     const key = `rl:${path}:${ctx.ip}`;
-    const limit = 5; // default 5 req
-    const window = 60; // per 60 seconds
+    const limit = Number(process.env.RATE_LIMIT_MAX ?? 100); // Higher default for production
+    const window = Number(process.env.RATE_LIMIT_WINDOW ?? 60);
 
     const current = await ctx.redis.incr(key);
     if (current === 1) {

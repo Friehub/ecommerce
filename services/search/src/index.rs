@@ -6,6 +6,7 @@ use anyhow::Result;
 pub struct SearchIndex {
     pub index: Index,
     pub reader: IndexReader,
+    pub writer: std::sync::Arc<tokio::sync::Mutex<IndexWriter>>,
     pub schema: Schema,
     pub fields: ProductFields,
 }
@@ -75,20 +76,28 @@ impl SearchIndex {
             Index::create_in_dir(index_path, schema.clone())?
         };
 
-        let reader = index
-            .reader_builder()
-            .reload_policy(ReloadPolicy::OnCommitWithDelay)
-            .try_into()?;
+        let writer = index.writer(50_000_000)?;
+        let writer = std::sync::Arc::new(tokio::sync::Mutex::new(writer));
+
+        // Start background commit task
+        let writer_clone = writer.clone();
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(5));
+            loop {
+                interval.tick().await;
+                let mut w = writer_clone.lock().await;
+                if let Err(e) = w.commit() {
+                    tracing::error!("Failed to commit search index: {}", e);
+                }
+            }
+        });
 
         Ok(Self {
             index,
             reader,
+            writer,
             schema,
             fields,
         })
-    }
-
-    pub fn get_writer(&self, memory_budget_bytes: usize) -> Result<IndexWriter> {
-        Ok(self.index.writer(memory_budget_bytes)?)
     }
 }

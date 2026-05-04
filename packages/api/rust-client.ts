@@ -44,6 +44,10 @@ export class RustClient {
             method: 'POST',
             body: JSON.stringify(doc),
         }),
+        bulkUpsert: (docs: any[]) => this.request(SERVICES.SEARCH, '/bulk_upsert', {
+            method: 'POST',
+            body: JSON.stringify(docs),
+        }),
         health: () => this.request(SERVICES.SEARCH, '/health'),
     };
 

@@ -1,157 +1,51 @@
 import 'dotenv/config';
-import Fastify from 'fastify';
-import cors from '@fastify/cors';
-import helmet from '@fastify/helmet';
-import rateLimit from '@fastify/rate-limit';
-import { fastifyTRPCPlugin, FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
-import { appRouter, type AppRouter } from '@ecom/api';
-import { createContext } from './context';
-import swagger from '@fastify/swagger';
-import swaggerUi from '@fastify/swagger-ui';
-import { fastifyTRPCOpenApiPlugin } from 'trpc-openapi';
-import { openApiDocument } from '@ecom/api/openapi';
-
+import { prisma } from '@ecom/db';
 import Redis from 'ioredis';
+import { createServer } from './app';
+import { secretManager } from '@ecom/api';
 
-const server = Fastify({
-  logger: {
-    level: process.env.LOG_LEVEL ?? 'info',
-    transport: process.env.NODE_ENV === 'development'
-      ? { target: 'pino-pretty' }
-      : undefined,
-    redact: [
-      'req.headers.authorization',
-      'req.headers["x-internal-token"]',
-      'req.body.password',
-      'req.body.email',
-      'req.body.phone',
-      'req.body.address',
-      'req.body.nin',
-      'req.body.cvv',
-      'res.body.email',
-      'res.body.phone',
-      'res.body.nin'
-    ],
-  },
-  trustProxy: true, // behind Nginx
-});
+async function bootstrap() {
+  // 1. Secret Validation (Centralized in SecretManager)
+  const redisUrl = secretManager.redisUrl;
+  const internalToken = secretManager.internalToken;
 
-// ── Security & middleware ─────────────────────────────────────────
-async function start() {
-  const criticalEnv = ['DATABASE_URL', 'REDIS_URL', 'INTERNAL_API_TOKEN'];
-  for (const env of criticalEnv) {
-    if (!process.env[env] || process.env[env].includes('placeholder')) {
-      server.log.error(`CRITICAL: Environment variable ${env} is missing or insecure!`);
-      if (process.env.NODE_ENV === 'production') {
-        console.error(`FATAL: ${env} must be set in production. exiting.`);
-        process.exit(1);
-      }
+  // 2. Create App instance
+  const server = await createServer();
+
+  // 3. Attach common infrastructure
+  const redis = new Redis(redisUrl);
+  (server as any).redis = redis;
+
+  // 4. Lifecycle Hooks
+  const shutdown = async (signal: string) => {
+    server.log.info({ signal }, 'Shutting down API server...');
+    try {
+      await server.close();
+      await redis.quit();
+      await prisma.$disconnect();
+      server.log.info('Infrastructure closed successfully');
+      process.exit(0);
+    } catch (err) {
+      server.log.error({ err }, 'Error during shutdown');
+      process.exit(1);
     }
-  }
+  };
 
-  const jwtSecret = process.env.JWT_SECRET || process.env.AUTH_SECRET;
-  if (!jwtSecret || jwtSecret.includes('placeholder')) {
-    server.log.warn(`Optional environment variable JWT_SECRET/AUTH_SECRET is missing or contains 'placeholder'. Using fallback.`);
-    process.env.JWT_SECRET = 'a8f3b6cb6433cc2576dbc72aec9cd166fc370dc995e1795c0a63c5e2b5d449aa';
-  } else {
-    process.env.JWT_SECRET = jwtSecret;
-  }
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 
-  const redis = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379');
-
-  await server.register(helmet, { contentSecurityPolicy: false });
-
-  const allowedOrigins = process.env.ALLOWED_ORIGINS 
-    ? process.env.ALLOWED_ORIGINS.split(',') 
-    : [process.env.WEB_URL || 'http://localhost:3000'];
-
-  await server.register(cors, {
-    origin: allowedOrigins,
-    credentials: true,
-  });
-
-  await server.register(rateLimit, {
-    max: 100,
-    timeWindow: '1 minute',
-    redis: redis,
-    keyGenerator: (req) => (req.headers['x-forwarded-for'] as string) || req.ip,
-  });
-  
-  // ── Swagger & OpenAPI ───────────────────────────────────────────
-  await server.register(swagger, {
-    mode: 'static',
-    specification: {
-      document: openApiDocument,
-    },
-  });
-
-  await server.register(swaggerUi, {
-    routePrefix: '/docs',
-    uiConfig: {
-      docExpansion: 'list',
-      deepLinking: false,
-    },
-  });
-
-  // REST endpoints for tRPC (via trpc-openapi)
-  await server.register(fastifyTRPCOpenApiPlugin, {
-    router: appRouter,
-    createContext: (opts: any) => createContext({ ...opts, redis }),
-    basePath: '/api',
-  });
-
-  // ── Service-to-Service Auth ──────────────────────────────────────
-  server.addHook('preHandler', async (req, reply) => {
-    if (req.url.startsWith('/api/internal/')) {
-      const internalToken = process.env.INTERNAL_API_TOKEN;
-      const clientToken = req.headers['x-internal-token'] || req.headers['authorization'];
-      
-      if (!internalToken || clientToken !== `Bearer ${internalToken}`) {
-        reply.code(401).send({ error: 'Unauthorized internal request' });
-        return;
-      }
-    }
-  });
-
-  // ── Health check ──────────────────────────────────────────────────
-  server.get('/health', async () => ({ status: 'ok', uptime: process.uptime() }));
-
-  // ── tRPC ──────────────────────────────────────────────────────────
-  await server.register(fastifyTRPCPlugin, {
-    prefix: '/trpc',
-    useWSS: false,
-    trpcOptions: {
-      router: appRouter,
-      createContext: (opts: any) => createContext({ ...opts, redis }),
-      onError({ path, error }) {
-        if (error.code === 'INTERNAL_SERVER_ERROR') {
-          server.log.error({ path, error }, 'tRPC internal error');
-        }
-      },
-    } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],
-  });
-
-  // ── Start ─────────────────────────────────────────────────────────
+  // 5. Start
   const PORT = Number(process.env.PORT ?? 4000);
   const HOST = process.env.HOST ?? '0.0.0.0';
 
   try {
+    await prisma.$connect();
     await server.listen({ port: PORT, host: HOST });
-    console.log(`API server running on ${HOST}:${PORT}`);
+    console.log(`🚀 Jumia Clone API running on ${HOST}:${PORT}`);
   } catch (err) {
     server.log.error(err);
     process.exit(1);
   }
 }
 
-// ── Graceful shutdown ─────────────────────────────────────────────
-const shutdown = async () => {
-  server.log.info('Shutting down API server...');
-  await server.close();
-  process.exit(0);
-};
-
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
-
-start();
+bootstrap();

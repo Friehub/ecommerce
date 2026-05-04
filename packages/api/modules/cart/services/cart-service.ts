@@ -113,29 +113,33 @@ export const cartService = {
 
     const userCart = await this.getCart(guestSessionId, userId);
 
-    for (const item of guestCart.items) {
-      await prisma.cartItem.upsert({
-        where: {
-          cartId_variantId: {
+    await prisma.$transaction(async (tx) => {
+      for (const item of guestCart.items) {
+        await tx.cartItem.upsert({
+          where: {
+            cartId_variantId: {
+              cartId: userCart.id,
+              variantId: item.variantId,
+            }
+          },
+          update: {
+            quantity: { increment: item.quantity },
+            priceSnapshot: item.priceSnapshot,
+          },
+          create: {
             cartId: userCart.id,
             variantId: item.variantId,
+            sellerId: item.sellerId,
+            quantity: item.quantity,
+            priceSnapshot: item.priceSnapshot,
           }
-        },
-        update: {
-          quantity: { increment: item.quantity },
-          priceSnapshot: item.priceSnapshot,
-        },
-        create: {
-          cartId: userCart.id,
-          variantId: item.variantId,
-          sellerId: item.sellerId,
-          quantity: item.quantity,
-          priceSnapshot: item.priceSnapshot,
-        }
-      });
-    }
+        });
+      }
 
-    // Clean up guest cart
-    await prisma.cart.delete({ where: { id: guestCart.id } });
+      // 4. Atomic Cleanup
+      await tx.cartItem.deleteMany({ where: { cartId: guestCart.id } });
+      await tx.cart.delete({ where: { id: guestCart.id } });
+    });
   }
+
 };

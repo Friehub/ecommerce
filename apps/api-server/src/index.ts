@@ -83,7 +83,7 @@ async function start() {
   // REST endpoints for tRPC (via trpc-openapi)
   await server.register(createOpenApiFastifyHandler, {
     router: appRouter,
-    createContext,
+    createContext: (opts) => createContext({ ...opts, redis }),
     prefix: '/api',
   });
 
@@ -109,7 +109,7 @@ async function start() {
     useWSS: false,
     trpcOptions: {
       router: appRouter,
-      createContext,
+      createContext: (opts) => createContext({ ...opts, redis }),
       onError({ path, error }) {
         if (error.code === 'INTERNAL_SERVER_ERROR') {
           server.log.error({ path, error }, 'tRPC internal error');

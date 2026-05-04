@@ -12,8 +12,10 @@ import jwt from 'jsonwebtoken';
  */
 export async function createContext(opts: {
   req: FastifyRequest;
+  redis: any;
 }): Promise<TRPCContext> {
-  const { req } = opts;
+  const { req, redis } = opts;
+  const ip = (req.headers['x-forwarded-for'] as string) || req.ip;
 
   // ── 1. Try Authorization header (mobile / external clients) ───
   const authHeader = req.headers.authorization;
@@ -29,6 +31,8 @@ export async function createContext(opts: {
         return {
           session: { user },
           req: req.raw as unknown as Request,
+          redis,
+          ip,
         };
       }
     } catch {
@@ -57,6 +61,8 @@ export async function createContext(opts: {
       return {
         session: { user: dbSession.user },
         req: req.raw as unknown as Request,
+        redis,
+        ip,
       };
     }
   }
@@ -65,5 +71,7 @@ export async function createContext(opts: {
   return {
     session: null,
     req: req.raw as unknown as Request,
+    redis,
+    ip,
   };
 }

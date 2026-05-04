@@ -28,13 +28,23 @@ export const orderRouter = createTRPCRouter({
       return await orderService.getOrder(input.orderId, ctx.session.user.id);
     }),
 
-  listMyOrders: protectedProcedure.query(async ({ ctx }) => {
-    return await orderService.listUserOrders(ctx.session.user.id);
-  }),
+  listMyOrders: protectedProcedure
+    .input(z.object({
+      limit: z.number().min(1).max(100).default(20),
+      offset: z.number().min(0).default(0),
+    }))
+    .query(async ({ ctx, input }) => {
+      return await orderService.listUserOrders(ctx.session.user.id, input.limit, input.offset);
+    }),
 
-  listSellerPackages: sellerProcedure.query(async ({ ctx }) => {
-    return await orderService.listSellerPackages(ctx.session.user.id);
-  }),
+  listSellerPackages: sellerProcedure
+    .input(z.object({
+      limit: z.number().min(1).max(100).default(20),
+      offset: z.number().min(0).default(0),
+    }))
+    .query(async ({ ctx, input }) => {
+      return await orderService.listSellerPackages(ctx.session.user.id, input.limit, input.offset);
+    }),
 
   updatePackageStatus: sellerProcedure
     .input(z.object({

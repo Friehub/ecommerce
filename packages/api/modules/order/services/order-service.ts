@@ -171,21 +171,25 @@ export const orderService = {
     });
   },
 
-  async listUserOrders(userId: string) {
+  async listUserOrders(userId: string, limit: number = 20, offset: number = 0) {
     return prisma.order.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
     });
   },
 
-  async listSellerPackages(sellerId: string) {
+  async listSellerPackages(sellerId: string, limit: number = 20, offset: number = 0) {
     return prisma.orderPackage.findMany({
       where: { sellerId },
       include: { 
         order: true,
         lines: { include: { variant: { include: { product: true } } } } 
       },
-      orderBy: { order: { createdAt: 'desc' } }
+      orderBy: { order: { createdAt: 'desc' } },
+      take: limit,
+      skip: offset,
     });
   }
 };

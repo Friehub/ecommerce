@@ -22,7 +22,7 @@ export async function createContext(opts: {
   if (authHeader?.startsWith('Bearer ')) {
     try {
       const token = authHeader.slice(7);
-      const payload = jwt.verify(token, process.env.JWT_SECRET!) as any;
+      const payload = jwt.verify(token, process.env.JWT_SECRET!, { algorithms: ['HS256'] }) as any;
       const user = await prisma.user.findUnique({
         where: { id: payload.sub },
         select: { id: true, email: true, role: true, firstName: true, lastName: true },

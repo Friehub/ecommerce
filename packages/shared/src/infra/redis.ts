@@ -28,7 +28,7 @@ export const redis =
   globalForRedis.redis ||
   (isBuild
     ? new MockRedis()
-    : new Redis(process.env.REDIS_URL || 'redis://localhost:6380', {
+    : new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
         lazyConnect: true,
         maxRetriesPerRequest: null,
         enableOfflineQueue: false,

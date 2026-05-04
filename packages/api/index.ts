@@ -9,5 +9,3 @@ export * from './modules/cart/services/cart-service'
 export * from './modules/promo/services/promo-service'
 export * from './modules/order/services/order-service'
 export * from './modules/payment/services/payment-service'
-export * from './observability'
-

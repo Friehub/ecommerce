@@ -1,9 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Package, Plus, Search, Edit2, Trash2, Tag, ChevronRight } from 'lucide-react';
+import { Package, Plus, Search, Edit2, Trash2, Tag, ChevronRight, UploadCloud } from 'lucide-react';
+import { api } from '@/trpc/react';
 
 export default function SellerProductsHubPage() {
+  const [csvContent, setCsvContent] = useState('');
+  const [uploadStatus, setUploadStatus] = useState('');
+
+  const bulkImportMutation = api.catalog.bulkImport.useMutation({
+    onSuccess: (data) => {
+      setUploadStatus(`Success! CSV file processed and products queued for background worker. Job ID: ${data.jobId}`);
+      setCsvContent('');
+    },
+    onError: (err) => {
+      setUploadStatus(`Error queueing job: ${err.message}`);
+    }
+  });
+
   const [products, setProducts] = useState([
     { id: '1', title: 'Corporate Premium Leather Briefcase', sku: 'CORP-LEA-BRF', category: 'Fashion', price: 45000, stock: 124, status: 'ACTIVE' },
     { id: '2', title: 'Tactical Utility Outdoor Backpack', sku: 'TACT-UTL-BPK', category: 'Fashion', price: 18500, stock: 89, status: 'ACTIVE' },
@@ -12,6 +26,12 @@ export default function SellerProductsHubPage() {
 
   const handleDelete = (id: string) => {
     setProducts(products.filter(p => p.id !== id));
+  };
+
+  const handleBulkImport = () => {
+    if (!csvContent) return;
+    setUploadStatus('Uploading CSV and submitting import job to task queue...');
+    bulkImportMutation.mutate({ csvContent });
   };
 
   return (
@@ -28,6 +48,41 @@ export default function SellerProductsHubPage() {
         <button className="bg-[#F68B1E] hover:bg-[#e07a1a] text-white px-5 py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2 cursor-pointer border border-transparent select-none w-full sm:w-auto justify-center">
           <Plus size={16} /> ADD NEW PRODUCT
         </button>
+      </div>
+
+      {/* Bulk Upload CSV Section */}
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 space-y-4">
+        <h2 className="text-sm font-black text-gray-900 tracking-tight uppercase flex items-center gap-2">
+          <UploadCloud className="text-[#F68B1E]" size={18} /> BULK CSV PRODUCT UPLOAD
+        </h2>
+        <p className="text-gray-500 text-xs font-medium tracking-wide">
+          Upload products via a comma-separated file (.csv). Expected format columns: <code className="bg-gray-100 text-[#F68B1E] px-1.5 py-0.5 rounded font-mono text-[10px] font-bold">title,sku,price,description,comparePrice,ean,stock,brandId,categoryId</code>
+        </p>
+
+        <div className="space-y-3">
+          <textarea
+            placeholder="Paste your CSV file contents here..."
+            rows={5}
+            value={csvContent}
+            onChange={(e) => setCsvContent(e.target.value)}
+            className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#F68B1E] text-xs font-mono text-gray-900 placeholder-gray-400 transition-all duration-200"
+          />
+
+          <div className="flex flex-col sm:flex-row gap-3 items-center">
+            <button
+              onClick={handleBulkImport}
+              disabled={!csvContent || bulkImportMutation.isPending}
+              className="bg-gray-900 hover:bg-black text-white px-5 py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md flex items-center gap-2 cursor-pointer border border-transparent select-none w-full sm:w-auto justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {bulkImportMutation.isPending ? 'Processing Import...' : 'Import Products CSV'}
+            </button>
+            {uploadStatus && (
+              <span className={`text-xs font-bold ${uploadStatus.startsWith('Success') ? 'text-green-600' : 'text-orange-600'}`}>
+                {uploadStatus}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">

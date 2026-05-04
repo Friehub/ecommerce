@@ -7,7 +7,6 @@ import { HeroCarousel } from '@/components/home/HeroCarousel';
 import { FlashSales } from '@/components/home/FlashSales';
 import { Package, ShieldCheck, RotateCcw, Smartphone, Home as HomeIcon, ChefHat, Tv, Laptop, Baby, ShoppingBag, Gamepad2, Dumbbell, Car, MoreHorizontal } from 'lucide-react';
 import { api } from '@/trpc/react';
-import { ProductCard } from '@/components/ui/ProductCard';
 
 const categoryIcons: Record<string, any> = {
   'Phones & Tablets': Smartphone,
@@ -30,10 +29,10 @@ const TopCategoriesSection = () => {
       <section className="container mt-6">
         <div className="bg-white rounded shadow-sm p-4">
           <h2 className="text-lg font-bold mb-4 uppercase">Top Categories</h2>
-          <div className="grid grid-cols-2 min-[400px]:grid-cols-3 md:grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="flex flex-col items-center gap-2 animate-pulse">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-100 rounded-full" />
+                <div className="w-20 h-20 bg-gray-100 rounded-full" />
                 <div className="h-3 bg-gray-100 rounded w-16" />
               </div>
             ))}
@@ -54,7 +53,7 @@ const TopCategoriesSection = () => {
             Curated For You
           </span>
         </div>
-        <div className="grid grid-cols-2 min-[400px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 md:gap-6">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-6">
           {categories?.slice(0, 6).map((category: any) => {
             const Icon = categoryIcons[category.name] || MoreHorizontal;
             return (
@@ -63,8 +62,8 @@ const TopCategoriesSection = () => {
                 href={`/category/${category.slug}`}
                 className="flex flex-col items-center gap-3 group cursor-pointer text-center select-none"
               >
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-50 text-gray-700 rounded-full group-hover:scale-110 transition-all duration-300 flex items-center justify-center border border-gray-100 shadow-sm group-hover:bg-orange-50 group-hover:text-[#F68B1E] group-hover:border-orange-100 group-hover:shadow-md">
-                  <Icon size={28} className="md:size-[32px] group-hover:rotate-6 transition-transform duration-300" />
+                <div className="w-20 h-20 bg-gray-50 text-gray-700 rounded-full group-hover:scale-110 transition-all duration-300 flex items-center justify-center border border-gray-100 shadow-sm group-hover:bg-orange-50 group-hover:text-[#F68B1E] group-hover:border-orange-100 group-hover:shadow-md">
+                  <Icon size={32} className="group-hover:rotate-6 transition-transform duration-300" />
                 </div>
                 <span className="text-xs font-bold text-gray-700 group-hover:text-[#F68B1E] transition-colors line-clamp-1">
                   {category.name}
@@ -75,72 +74,6 @@ const TopCategoriesSection = () => {
         </div>
       </div>
     </section>
-  );
-};
-
-const CategoryRow = ({ category }: { category: any }) => {
-  const { data: productsData } = api.catalog.listProducts.useQuery({
-    categoryId: category.id,
-    limit: 6
-  });
-
-  const products = productsData?.results || [];
-
-  if (products.length === 0) return null;
-
-  const headerColors: Record<string, string> = {
-    'Electronics': 'bg-[#2E9CCA]',
-    'Fashion': 'bg-[#E3355C]',
-    'Computing': 'bg-[#4B61D1]',
-    'Home & Office': 'bg-[#2D2D2D]',
-  };
-
-  const bgClass = headerColors[category.name] || 'bg-[#F68B1E]';
-
-  return (
-    <section className="container mt-6">
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
-        {/* Row Header Banner */}
-        <div className={`${bgClass} h-14 flex items-center justify-between px-5 text-white`}>
-          <div className="flex items-center gap-3">
-            <h2 className="font-bold uppercase tracking-tight text-white text-base md:text-lg">
-              {category.name}
-            </h2>
-          </div>
-          <Link 
-            href={`/category/${category.slug}`} 
-            className="text-xs font-bold hover:underline uppercase tracking-wide bg-black/10 hover:bg-black/20 transition-all px-3 py-1.5 rounded text-white border border-white/20 select-none"
-          >
-            See All
-          </Link>
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 p-5 bg-white">
-          {products.map((item: any) => {
-            const product = {
-              ...item.product,
-              variants: [{ price: Number(item.price), comparePrice: item.comparePrice ? Number(item.comparePrice) : undefined }]
-            };
-            return <ProductCard key={item.id} product={product} />;
-          })}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const CategoryProductsSection = () => {
-  const { data: categories } = api.catalog.getCategories.useQuery();
-
-  if (!categories || categories.length === 0) return null;
-
-  return (
-    <>
-      {categories.slice(0, 4).map((category: any) => (
-        <CategoryRow key={category.id} category={category} />
-      ))}
-    </>
   );
 };
 
@@ -203,9 +136,6 @@ export default function Home() {
 
       {/* Top Categories */}
       <TopCategoriesSection />
-
-      {/* Category Products */}
-      <CategoryProductsSection />
 
       <style jsx>{`
         .container {

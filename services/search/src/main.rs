@@ -11,15 +11,12 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Initialize tracing
-    let filter = std::env::var("RUST_LOG").unwrap_or_else(|_| "search=debug,tower_http=debug".into());
-    let format = std::env::var("LOG_FORMAT").unwrap_or_else(|_| "text".into());
-    let registry = tracing_subscriber::registry().with(tracing_subscriber::EnvFilter::new(filter));
-    if format == "json" {
-        registry.with(tracing_subscriber::fmt::layer().json()).init();
-    } else {
-        registry.with(tracing_subscriber::fmt::layer()).init();
-    }
-
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::EnvFilter::new(
+            std::env::var("RUST_LOG").unwrap_or_else(|_| "search=debug,tower_http=debug".into()),
+        ))
+        .with(tracing_subscriber::fmt::layer())
+        .init();
 
     // Initialize Search Index
     let index_path = std::env::var("INDEX_PATH").unwrap_or_else(|_| "./data/index".into());

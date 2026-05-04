@@ -4,8 +4,26 @@ import { z } from "zod";
 import { productSchema, categorySchema } from "../schemas";
 import { catalogService } from "../services/catalog-service";
 import { wishlistService } from "../services/wishlist-service";
+import { catalogImportService } from "../services/catalog-import-service";
 
 export const catalogRouter = createTRPCRouter({
+  bulkImport: sellerProcedure
+    .input(z.object({ csvContent: z.string().max(1 * 1024 * 1024, "CSV file is too large. Maximum size allowed is 1MB."), warehouseId: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({
+        where: { userId: ctx.session.user.id },
+        select: { id: true }
+      });
+      if (!seller) throw new Error('NOT_A_SELLER');
+      return await catalogImportService.enqueueImport(seller.id, input.csvContent, input.warehouseId);
+    }),
+
+  getImportStatus: sellerProcedure
+    .input(z.object({ jobId: z.string() }))
+    .query(async ({ input }) => {
+      return await catalogImportService.getJobStatus(input.jobId);
+    }),
+
   getCategories: publicProcedure.query(async () => {
     return await catalogService.getCategoryTree();
   }),
@@ -39,7 +57,8 @@ export const catalogRouter = createTRPCRouter({
     .input(productSchema)
     .mutation(async ({ ctx, input }) => {
       const seller = await prisma.seller.findUnique({
-        where: { userId: ctx.session.user.id }
+        where: { userId: ctx.session.user.id },
+        select: { id: true }
       });
       if (!seller) throw new Error('NOT_A_SELLER');
       return await catalogService.createProduct(seller.id, input);

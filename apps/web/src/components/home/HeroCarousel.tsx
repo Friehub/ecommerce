@@ -39,10 +39,10 @@ export const HeroCarousel = () => {
   }, []);
 
   return (
-    <div className="relative flex-1 h-[260px] sm:h-[380px] md:h-[480px] bg-white rounded-lg shadow-sm overflow-hidden group border border-gray-200 duration-150 transition-all">
+    <div className="relative flex-1 h-[480px] bg-white rounded-xl shadow-lg overflow-hidden group border border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all duration-300">
       {/* Slides */}
       <div 
-        className="flex h-full transition-transform duration-500 ease-out"
+        className="flex h-full transition-transform duration-700 ease-out"
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
         {banners.map((banner) => (
@@ -50,21 +50,22 @@ export const HeroCarousel = () => {
             <img 
               src={banner.image} 
               alt={banner.title}
-              className="w-full h-full object-cover select-none pointer-events-none"
+              className="w-full h-full object-cover select-none pointer-events-none scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
             />
             {/* Enhanced visual gradient for readable text */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent flex flex-col justify-center px-6 md:px-16">
-              <span className="text-[10px] md:text-xs tracking-widest font-bold uppercase py-0.5 px-2 md:py-1 md:px-3 bg-black/20 rounded text-white mb-2 md:mb-4">
+            <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent flex flex-col justify-center px-12 md:px-16">
+              <span className="text-xs tracking-widest font-extrabold uppercase py-1 px-3 bg-white/10 backdrop-blur-md rounded border border-white/20 w-fit text-white mb-4 animate-fadeIn">
                 Exclusive Deal
               </span>
-              <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-white mb-1 md:mb-2 leading-tight tracking-tight max-w-lg">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-2 leading-tight tracking-tight drop-shadow-md max-w-lg">
                 {banner.title}
               </h2>
-              <p className="text-xs sm:text-base md:text-xl font-medium mb-3 md:mb-6" style={{ color: banner.accentColor }}>
+              <p className="text-lg md:text-xl font-medium mb-6 drop-shadow" style={{ color: banner.accentColor }}>
                 {banner.subtitle}
               </p>
               <button 
-                className="bg-[#F68B1E] hover:bg-[#E07A1A] text-white font-bold px-4 py-2 md:px-8 md:py-3.5 rounded text-xs md:text-sm w-fit duration-150 transition-all tracking-wide uppercase flex items-center gap-2"
+                className="bg-primary-container hover:bg-orange-600 text-white font-extrabold px-8 py-4 rounded-lg text-sm w-fit transition-all hover:scale-105 hover:shadow-lg active:scale-95 duration-200 border border-white/10 tracking-wide uppercase select-none flex items-center gap-2"
+                style={{ backgroundColor: '#f68b1e' }}
               >
                 Shop Now
               </button>
@@ -76,24 +77,24 @@ export const HeroCarousel = () => {
       {/* Premium Controls */}
       <button 
         onClick={prev}
-        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-11 md:h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-md"
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-105 transition-all backdrop-blur-sm border border-white/10 cursor-pointer shadow-md"
       >
-        <ChevronLeft size={20} className="md:size-6" />
+        <ChevronLeft size={24} />
       </button>
       <button 
         onClick={next}
-        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-11 md:h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-md"
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-105 transition-all backdrop-blur-sm border border-white/10 cursor-pointer shadow-md"
       >
-        <ChevronRight size={20} className="md:size-6" />
+        <ChevronRight size={24} />
       </button>
 
-      {/* Visual Indicator Dots */}
-      <div className="absolute bottom-3 md:bottom-6 left-6 md:left-12 flex gap-2 md:gap-3 z-10 select-none">
+      {/* Visual Indicator Dots with glowing effect */}
+      <div className="absolute bottom-6 left-12 flex gap-3 z-10 select-none">
         {banners.map((banner, i) => (
           <button 
             key={banner.id}
             onClick={() => setCurrent(i)}
-            className={`h-2 md:h-2.5 rounded-full transition-all duration-300 ${i === current ? 'w-6 md:w-8 bg-[#F68B1E]' : 'w-2 md:w-2.5 bg-white/40 hover:bg-white/60'}`}
+            className={`h-2.5 rounded-full transition-all duration-300 ${i === current ? 'w-8 bg-[#F68B1E] shadow-lg shadow-orange-500/50' : 'w-2.5 bg-white/40 hover:bg-white/60'}`}
             style={i === current ? { backgroundColor: banner.accentColor } : {}}
           />
         ))}

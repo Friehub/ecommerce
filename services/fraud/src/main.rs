@@ -13,15 +13,12 @@ use sqlx::postgres::PgPoolOptions;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Initialize tracing
-    let filter = std::env::var("RUST_LOG").unwrap_or_else(|_| "fraud=debug,tower_http=debug".into());
-    let format = std::env::var("LOG_FORMAT").unwrap_or_else(|_| "text".into());
-    let registry = tracing_subscriber::registry().with(tracing_subscriber::EnvFilter::new(filter));
-    if format == "json" {
-        registry.with(tracing_subscriber::fmt::layer().json()).init();
-    } else {
-        registry.with(tracing_subscriber::fmt::layer()).init();
-    }
-
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::EnvFilter::new(
+            std::env::var("RUST_LOG").unwrap_or_else(|_| "fraud=debug,tower_http=debug".into()),
+        ))
+        .with(tracing_subscriber::fmt::layer())
+        .init();
 
     // Initialize Database
     let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "postgres://postgres:postgres@localhost/jumia".into());

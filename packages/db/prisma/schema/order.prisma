@@ -80,6 +80,9 @@ model OrderLine {
   reviews       Review[]
   conversions   AdConversion[]
   isReturned    Boolean             @default(false)
+
+  @@index([packageId])
+  @@index([variantId])
 }
 
 model Cart {
@@ -104,4 +107,5 @@ model CartItem {
   variant ProductVariant @relation(fields: [variantId], references: [id])
 
   @@unique([cartId, variantId])
+  @@index([variantId])
 }

@@ -47,6 +47,8 @@ model SellerDocument {
   reviewedBy      String?        // adminId who made the decision
 
   seller Seller @relation(fields: [sellerId], references: [id])
+
+  @@index([sellerId])
 }
 
 model SellerLedgerEntry {
@@ -61,6 +63,10 @@ model SellerLedgerEntry {
 
   seller    Seller     @relation(fields: [sellerId], references: [id])
   orderLine OrderLine? @relation(fields: [orderLineId], references: [id])
+
+  @@index([sellerId])
+  @@index([orderLineId])
+  @@index([status])
 }
 
 enum LedgerStatus {
@@ -92,6 +98,8 @@ model SellerStatement {
 
   seller  Seller   @relation(fields: [sellerId], references: [id])
   payouts Payout[]
+
+  @@index([sellerId])
 }
 
 model Payout {
@@ -105,4 +113,7 @@ model Payout {
 
   seller    Seller          @relation(fields: [sellerId], references: [id])
   statement    SellerStatement? @relation(fields: [statementId], references: [id])
+
+  @@index([sellerId])
+  @@index([statementId])
 }

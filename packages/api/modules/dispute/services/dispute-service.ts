@@ -138,7 +138,7 @@ export const disputeService = {
     return dispute;
   },
 
-  async getMyDisputes(userId: string) {
+  async getMyDisputes(userId: string, limit: number = 20, offset: number = 0) {
     const seller = await prisma.seller.findUnique({ where: { userId } });
     
     return prisma.dispute.findMany({
@@ -151,7 +151,9 @@ export const disputeService = {
       include: {
         order: { select: { id: true, total: true } }
       },
-      orderBy: { updatedAt: 'desc' }
+      orderBy: { updatedAt: 'desc' },
+      take: limit,
+      skip: offset
     });
   }
 };

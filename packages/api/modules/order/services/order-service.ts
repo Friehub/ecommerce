@@ -57,15 +57,26 @@ export const orderService = {
     await publishEvent('order.status_updated', { orderId, status });
 
     // Status-specific logic (Debloated if it gets larger)
+    // Status-specific logic (Debloated if it gets larger)
     if (status === 'PAID') {
       await inventoryService.confirmStock(orderId);
       
-      for (const pkg of order.packages) {
-        const lines = await db.orderLine.findMany({ where: { packageId: pkg.id }, select: { id: true } });
-        const lineIds = lines.map(l => l.id);
+      // Batch fetch all line IDs for this order to avoid N+1 in ledger recording
+      const allLines = await db.orderLine.findMany({
+        where: { package: { orderId } },
+        select: { id: true, packageId: true }
+      });
+
+      const lineIdsByPackage = allLines.reduce((acc, l) => {
+        acc[l.packageId] = (acc[l.packageId] || []).concat(l.id);
+        return acc;
+      }, {} as Record<string, string[]>);
+
+      await Promise.all(order.packages.map(async (pkg) => {
+        const lineIds = lineIdsByPackage[pkg.id] || [];
         if (lineIds.length > 0) await ledgerService.recordBulkSale(lineIds);
         await publishEvent('package.pending_confirmation', { packageId: pkg.id, sellerId: pkg.sellerId });
-      }
+      }));
     }
 
     if (status === 'CANCELLED') {

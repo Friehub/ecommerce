@@ -113,50 +113,60 @@ export const ledgerService = {
     return (aggregation._sum.amount as unknown as Decimal) || new Decimal(0);
   },
 
-  async releaseMatureEscrow() {
+  async releaseMatureEscrow(batchSize: number = 500) {
     const now = new Date();
+    let totalReleased = 0;
     
-    // Find all entries that are PENDING and mature
-    const matureEntries = await prisma.sellerLedgerEntry.findMany({
-      where: {
-        status: LedgerStatus.PENDING,
-        availableAt: { lte: now },
-        orderLineId: { not: null }
-      },
-      select: { id: true, orderLineId: true }
-    });
+    // Process in batches to avoid OOM
+    while (true) {
+      const matureEntries = await prisma.sellerLedgerEntry.findMany({
+        where: {
+          status: LedgerStatus.PENDING,
+          availableAt: { lte: now },
+          orderLineId: { not: null }
+        },
+        select: { id: true, orderLineId: true },
+        take: batchSize
+      });
 
-    if (matureEntries.length === 0) return { count: 0 };
+      if (matureEntries.length === 0) break;
 
-    const orderLineIds = matureEntries
-      .map(e => e.orderLineId)
-      .filter((id): id is string => id !== null);
-    
-    // Find order lines that have an active dispute
-    const activeDisputes = await prisma.dispute.findMany({
-      where: {
-        orderLineId: { in: orderLineIds },
-        status: { in: ['OPEN', 'UNDER_REVIEW'] }
-      },
-      select: { orderLineId: true }
-    });
+      const orderLineIds = matureEntries
+        .map(e => e.orderLineId)
+        .filter((id): id is string => id !== null);
+      
+      const activeDisputes = await prisma.dispute.findMany({
+        where: {
+          orderLineId: { in: orderLineIds },
+          status: { in: ['OPEN', 'UNDER_REVIEW'] }
+        },
+        select: { orderLineId: true }
+      });
 
-    const disputedOrderLineIds = new Set(activeDisputes.map(d => d.orderLineId));
+      const disputedOrderLineIds = new Set(activeDisputes.map(d => d.orderLineId));
 
-    const eligibleEntryIds = matureEntries
-      .filter(e => !disputedOrderLineIds.has(e.orderLineId))
-      .map(e => e.id);
+      const eligibleEntryIds = matureEntries
+        .filter(e => !disputedOrderLineIds.has(e.orderLineId))
+        .map(e => e.id);
 
-    if (eligibleEntryIds.length === 0) return { count: 0 };
-
-    return await prisma.sellerLedgerEntry.updateMany({
-      where: {
-        id: { in: eligibleEntryIds }
-      },
-      data: {
-        status: LedgerStatus.AVAILABLE
+      if (eligibleEntryIds.length > 0) {
+        const result = await prisma.sellerLedgerEntry.updateMany({
+          where: {
+            id: { in: eligibleEntryIds }
+          },
+          data: {
+            status: LedgerStatus.AVAILABLE
+          }
+        });
+        totalReleased += result.count;
       }
-    });
+
+      // If we processed fewer than batchSize, we've reached the end of the mature items
+      // (Actually, since we are updating the status, we can just check if any eligible entries were left)
+      if (matureEntries.length < batchSize) break;
+    }
+
+    return { count: totalReleased };
   },
 
   async withdrawFunds(sellerId: string, amount: Decimal | number, statementId?: string | null) {

@@ -101,7 +101,7 @@ export const logisticsService = {
     return shipment;
   },
 
-  async getAgentShipments(agentId: string) {
+  async getAgentShipments(agentId: string, limit: number = 20, offset: number = 0) {
     return prisma.shipment.findMany({
       where: { agentId },
       include: { 
@@ -116,7 +116,9 @@ export const logisticsService = {
           } 
         } 
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset
     });
   }
 };

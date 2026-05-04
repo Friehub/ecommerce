@@ -2,13 +2,16 @@ import { prisma } from '@ecom/db';
 
 export const revenueService = {
   async approvePayout(payoutId: string) {
-    const payout = await prisma.payout.findUnique({
-      where: { id: payoutId },
-      include: { seller: true }
-    });
+    const { lockManager } = await import('../../shared/services/managers/lock-manager');
+    
+    return await lockManager.withLock(`payout:${payoutId}`, async () => {
+      const payout = await prisma.payout.findUnique({
+        where: { id: payoutId },
+        include: { seller: true }
+      });
 
-    if (!payout) throw new Error('PAYOUT_NOT_FOUND');
-    if (payout.status !== 'PENDING') throw new Error('PAYOUT_ALREADY_PROCESSED');
+      if (!payout) throw new Error('PAYOUT_NOT_FOUND');
+      if (payout.status !== 'PENDING') throw new Error('PAYOUT_ALREADY_PROCESSED');
 
     const { secretManager } = await import('../../shared/services/managers/secret-manager');
     const paystackSecret = secretManager.paystackSecret;
@@ -63,13 +66,14 @@ export const revenueService = {
       throw new Error('PAYOUT_SIMULATION_BLOCKED_IN_PRODUCTION: Missing Paystack Secret');
     }
 
-    // Default simulation
-    return await prisma.payout.update({
-      where: { id: payoutId },
-      data: {
-        status: 'SUCCESS',
-        bankRef: `SIM-${Date.now()}`
-      }
+      // Default simulation
+      return await prisma.payout.update({
+        where: { id: payoutId },
+        data: {
+          status: 'SUCCESS',
+          bankRef: `SIM-${Date.now()}`
+        }
+      });
     });
   },
 

@@ -4,28 +4,30 @@ import { emailTemplates } from '../../notification/services/email-templates';
 
 export const wishlistService = {
   async addItem(userId: string, variantId: string) {
-    let wishlist = await prisma.wishlist.findUnique({
-      where: { userId }
-    });
-
-    if (!wishlist) {
-      wishlist = await prisma.wishlist.create({
-        data: { userId }
+    return await prisma.$transaction(async (tx) => {
+      let wishlist = await tx.wishlist.findUnique({
+        where: { userId }
       });
-    }
 
-    return prisma.wishlistItem.upsert({
-      where: {
-        wishlistId_variantId: {
+      if (!wishlist) {
+        wishlist = await tx.wishlist.create({
+          data: { userId }
+        });
+      }
+
+      return tx.wishlistItem.upsert({
+        where: {
+          wishlistId_variantId: {
+            wishlistId: wishlist.id,
+            variantId
+          }
+        },
+        update: {},
+        create: {
           wishlistId: wishlist.id,
           variantId
         }
-      },
-      update: {},
-      create: {
-        wishlistId: wishlist.id,
-        variantId
-      }
+      });
     });
   },
 
@@ -78,7 +80,8 @@ export const wishlistService = {
       }
     });
 
-    for (const item of items) {
+    // Parallelize notifications for better throughput
+    await Promise.allSettled(items.map(async (item) => {
       if (item.wishlist.userId) {
         const productTitle = item.variant.product.title;
         const template = emailTemplates.PRICE_DROP_ALERT({
@@ -94,6 +97,6 @@ export const wishlistService = {
           template.html
         );
       }
-    }
+    }));
   }
 };

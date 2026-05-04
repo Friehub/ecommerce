@@ -77,13 +77,15 @@ export const userService = {
   },
 
   async addAddress(userId: string, data: AddressInput) {
-    if (data.isDefault) {
-      await prisma.userAddress.updateMany({
-        where: { userId },
-        data: { isDefault: false },
-      })
-    }
-    return prisma.userAddress.create({ data: { ...data, userId } as any })
+    return await prisma.$transaction(async (tx) => {
+      if (data.isDefault) {
+        await tx.userAddress.updateMany({
+          where: { userId },
+          data: { isDefault: false },
+        });
+      }
+      return tx.userAddress.create({ data: { ...data, userId } as any });
+    });
   },
 
   async getAddresses(userId: string) {

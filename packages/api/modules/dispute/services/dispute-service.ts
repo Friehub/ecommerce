@@ -76,23 +76,25 @@ export const disputeService = {
       throw new Error('UNAUTHORIZED');
     }
 
-    const message = await prisma.disputeMessage.create({
-      data: {
-        disputeId,
-        senderId,
-        content
-      }
-    });
-
-    // Update dispute status to UNDER_REVIEW if it's the seller's first response
-    if (dispute.status === 'OPEN' && senderId === dispute.sellerId) {
-      await prisma.dispute.update({
-        where: { id: disputeId },
-        data: { status: 'UNDER_REVIEW' }
+    return await prisma.$transaction(async (tx) => {
+      const message = await tx.disputeMessage.create({
+        data: {
+          disputeId,
+          senderId,
+          content
+        }
       });
-    }
 
-    return message;
+      // Update dispute status to UNDER_REVIEW if it's the seller's first response
+      if (dispute.status === 'OPEN' && senderId === dispute.sellerId) {
+        await tx.dispute.update({
+          where: { id: disputeId },
+          data: { status: 'UNDER_REVIEW' }
+        });
+      }
+
+      return message;
+    });
   },
 
   async uploadEvidence(disputeId: string, uploaderId: string, url: string, type: string) {

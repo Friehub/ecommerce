@@ -98,47 +98,51 @@ export class ProductManager {
   async approveProduct(productId: string, adminNotes?: string) {
     const { auditManager } = await import('../../../shared/services/managers/audit-manager');
     
-    const product = await prisma.product.update({
-      where: { id: productId },
-      data: { 
-        status: 'ACTIVE',
-        adminNotes: adminNotes || 'Approved by admin'
-      },
-      include: { variants: true }
-    });
+    return await prisma.$transaction(async (tx) => {
+      const product = await tx.product.update({
+        where: { id: productId },
+        data: { 
+          status: 'ACTIVE',
+          adminNotes: adminNotes || 'Approved by admin'
+        },
+        include: { variants: true }
+      });
 
-    await auditManager.log({
-      actorId: 'admin',
-      action: 'PRODUCT_APPROVE',
-      entityType: 'PRODUCT',
-      entityId: productId,
-      metadata: { adminNotes }
-    });
+      await auditManager.log({
+        actorId: 'admin',
+        action: 'PRODUCT_APPROVE',
+        entityType: 'PRODUCT',
+        entityId: productId,
+        metadata: { adminNotes }
+      }, tx as any);
 
-    return product;
+      return product;
+    });
   }
 
   async rejectProduct(productId: string, reason: string) {
     const { auditManager } = await import('../../../shared/services/managers/audit-manager');
 
-    const product = await prisma.product.update({
-      where: { id: productId },
-      data: { 
-        status: 'REJECTED',
-        adminNotes: reason
-      },
-      include: { variants: true }
-    });
+    return await prisma.$transaction(async (tx) => {
+      const product = await tx.product.update({
+        where: { id: productId },
+        data: { 
+          status: 'REJECTED',
+          adminNotes: reason
+        },
+        include: { variants: true }
+      });
 
-    await auditManager.log({
-      actorId: 'admin',
-      action: 'PRODUCT_REJECT',
-      entityType: 'PRODUCT',
-      entityId: productId,
-      metadata: { reason }
-    });
+      await auditManager.log({
+        actorId: 'admin',
+        action: 'PRODUCT_REJECT',
+        entityType: 'PRODUCT',
+        entityId: productId,
+        metadata: { reason }
+      }, tx as any);
 
-    return product;
+      return product;
+    });
   }
 
   async deleteProduct(productId: string) {

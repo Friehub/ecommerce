@@ -12,19 +12,22 @@ export const catalogService = {
     const product = await productManager.createProduct(sellerId, data);
     await publishEvent('product.created', { productId: product.id, sellerId });
 
-    // Stock & Search Initialization
-    for (const variant of product.variants) {
-      await prisma.stockLevel.create({
-        data: {
+    // 2. Stock & Search Initialization
+    await prisma.$transaction([
+      prisma.stockLevel.createMany({
+        data: product.variants.map(variant => ({
           variantId: variant.id,
           sellerId,
           warehouseId: 'main-wh',
           qtyOnHand: data.variants.find(v => v.sku === variant.sku)?.stock || 0,
           qtyReserved: 0,
-        }
-      });
-      await searchManager.syncToSearch(variant.id);
-    }
+        }))
+      }),
+      // Trigger search syncs in parallel (non-blocking if possible, but let's await for reliability)
+    ]);
+    
+    await Promise.all(product.variants.map(v => searchManager.syncToSearch(v.id)));
+
     return product;
   },
 
@@ -32,26 +35,20 @@ export const catalogService = {
     const product = await productManager.updateProduct(sellerId, productId, data);
     await publishEvent('product.updated', { productId, sellerId });
 
-    for (const variant of product.variants) {
-      await searchManager.syncToSearch(variant.id);
-    }
+    await Promise.all(product.variants.map(v => searchManager.syncToSearch(v.id)));
     return product;
   },
 
   async approveProduct(productId: string, adminNotes?: string) {
     const product = await productManager.approveProduct(productId, adminNotes);
-    for (const variant of product.variants) {
-      await searchManager.syncToSearch(variant.id);
-    }
+    await Promise.all(product.variants.map(v => searchManager.syncToSearch(v.id)));
     await publishEvent('product.approved', { productId });
     return product;
   },
 
   async rejectProduct(productId: string, reason: string) {
     const product = await productManager.rejectProduct(productId, reason);
-    for (const variant of product.variants) {
-      await searchManager.syncToSearch(variant.id);
-    }
+    await Promise.all(product.variants.map(v => searchManager.syncToSearch(v.id)));
     await publishEvent('product.rejected', { productId, reason });
     return product;
   },

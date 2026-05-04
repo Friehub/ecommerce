@@ -67,8 +67,9 @@ export const affiliateService = {
     return commission;
   },
 
-  async confirmCommission(commissionId: string) {
-    const commission = await prisma.commission.findUnique({
+  async confirmCommission(commissionId: string, tx?: any) {
+    const db = tx || prisma;
+    const commission = await db.commission.findUnique({
       where: { id: commissionId },
       include: { agent: true }
     });
@@ -76,14 +77,17 @@ export const affiliateService = {
     if (!commission) throw new Error('COMMISSION_NOT_FOUND');
     if (commission.status !== 'PENDING') throw new Error('ALREADY_PROCESSED');
 
-    const updated = await prisma.commission.update({
-      where: { id: commissionId },
-      data: { status: 'CONFIRMED' }
-    });
+    const updateLogic = async (innerTx: any) => {
+      const updated = await innerTx.commission.update({
+        where: { id: commissionId },
+        data: { status: 'CONFIRMED' }
+      });
 
-    await paymentService.fundWallet(commission.agent.userId, commission.amount.toNumber());
+      await paymentService.fundWallet(commission.agent.userId, commission.amount.toNumber());
+      return updated;
+    };
 
-    return updated;
+    return tx ? await updateLogic(tx) : await prisma.$transaction(updateLogic);
   },
 
   async confirmMatureCommissions() {
@@ -98,16 +102,22 @@ export const affiliateService = {
           updatedAt: { lte: yesterday }
         }
       },
-      select: { id: true }
+      include: { agent: true }
     });
 
-    let count = 0;
-    for (const comm of pending) {
-      await this.confirmCommission(comm.id);
-      count++;
-    }
+    if (pending.length === 0) return { count: 0 };
 
-    return { count };
+    await prisma.$transaction(async (tx) => {
+      for (const comm of pending) {
+        await tx.commission.update({
+          where: { id: comm.id },
+          data: { status: 'CONFIRMED' }
+        });
+        await paymentService.fundWallet(comm.agent.userId, comm.amount.toNumber());
+      }
+    });
+
+    return { count: pending.length };
   },
 
   async getMyProfile(userId: string) {

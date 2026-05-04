@@ -59,47 +59,49 @@ export const bulkImportWorker = new Worker('bulk-import', async (job: Job) => {
     }
 
     try {
-      // Create product + variant using catalogService logic
-      const slug = `${title.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
-      const product = await prisma.product.create({
-        data: {
-          title,
-          slug,
-          description,
-          brandId,
-          categoryId,
-          sellerId,
-          status: 'ACTIVE',
-          variants: {
-            create: [{
-              sku,
-              ean: ean || null,
-              price,
-              comparePrice: comparePrice || null,
-              attributes: {},
-              weightGrams: 0
-            }]
-          }
-        },
-        include: { variants: true }
-      });
-
-      // Add inventory level
-      const variant = product.variants[0];
-      if (variant) {
-        await prisma.stockLevel.create({
+      await prisma.$transaction(async (tx) => {
+        // Create product + variant using catalogService logic
+        const slug = `${title.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+        const product = await tx.product.create({
           data: {
-            variantId: variant.id,
+            title,
+            slug,
+            description,
+            brandId,
+            categoryId,
             sellerId,
-            warehouseId: warehouseId || 'main-wh',
-            qtyOnHand: stock,
-            qtyReserved: 0
-          }
+            status: 'ACTIVE',
+            variants: {
+              create: [{
+                sku,
+                ean: ean || null,
+                price,
+                comparePrice: comparePrice || null,
+                attributes: {},
+                weightGrams: 0
+              }]
+            }
+          },
+          include: { variants: true }
         });
 
-        // Sync to search index
-        await catalogService.syncToSearch(variant.id);
-      }
+        // Add inventory level
+        const variant = product.variants[0];
+        if (variant) {
+          await tx.stockLevel.create({
+            data: {
+              variantId: variant.id,
+              sellerId,
+              warehouseId: warehouseId || 'main-wh',
+              qtyOnHand: stock,
+              qtyReserved: 0
+            }
+          });
+
+          // Sync to search index (keeping it inside for consistency, though it's external)
+          await catalogService.syncToSearch(variant.id);
+        }
+      });
     } catch (err: any) {
       console.error(`[BulkImportWorker] Row ${i + 1} (${sku}) failed:`, err.message);
     }

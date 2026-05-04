@@ -19,7 +19,7 @@ export const paymentService = {
 
     // 2. Delegate to Adapter (DIP)
     const adapter = getPaymentAdapter(provider);
-    const callbackUrl = `${process.env.NEXTAUTH_URL}/checkout/success?orderId=${orderId}`;
+    const callbackUrl = `${secretManager.nextAuthUrl}/checkout/success?orderId=${orderId}`;
 
     const initResult = await adapter.initializeTransaction({
       orderId,

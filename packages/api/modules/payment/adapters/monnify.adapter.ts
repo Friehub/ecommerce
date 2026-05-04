@@ -11,15 +11,15 @@ import type {
   PayoutResult,
 } from './types';
 
-const MONNIFY_API_KEY = process.env.MONNIFY_API_KEY || 'MK_TEST_placeholder';
-const MONNIFY_SECRET_KEY = process.env.MONNIFY_SECRET_KEY || 'test_secret_placeholder';
+import { secretManager } from '../../shared/services/managers/secret-manager';
+
 const MONNIFY_BASE = 'https://api.monnify.com/api/v1';
 
 export class MonnifyAdapter implements PaymentAdapter {
   readonly name = 'monnify';
 
   private async getAuthToken(): Promise<string> {
-    const authHeader = Buffer.from(`${MONNIFY_API_KEY}:${MONNIFY_SECRET_KEY}`).toString('base64');
+    const authHeader = Buffer.from(`${secretManager.monnifyApiKey}:${secretManager.monnifySecret}`).toString('base64');
     try {
       const res = await fetch(`${MONNIFY_BASE}/auth/login`, {
         method: 'POST',
@@ -54,7 +54,7 @@ export class MonnifyAdapter implements PaymentAdapter {
         paymentReference: reference,
         paymentDescription: `Order ${params.orderId}`,
         currencyCode: params.currency || 'NGN',
-        contractCode: process.env.MONNIFY_CONTRACT_CODE || 'contract_code',
+        contractCode: secretManager.get('MONNIFY_CONTRACT_CODE', 'contract_code'),
         redirectUrl: params.callbackUrl,
         metadata: {
           orderId: params.orderId,
@@ -77,7 +77,7 @@ export class MonnifyAdapter implements PaymentAdapter {
 
   verifyWebhookSignature(rawBody: string, signature: string): boolean {
     const hash = crypto
-      .createHmac('sha512', MONNIFY_SECRET_KEY)
+      .createHmac('sha512', secretManager.monnifySecret)
       .update(rawBody)
       .digest('hex');
     return hash === signature;

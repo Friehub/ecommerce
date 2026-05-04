@@ -37,7 +37,8 @@ export class UploadManager {
 
     // 4. Simulate Storage Upload (e.g. to S3)
     // In a real S3 implementation, we would use the AWS SDK here.
-    const storageUrl = process.env.STORAGE_BASE_URL || 'https://storage.jumia-clone.com';
+    const { secretManager } = require('./secret-manager');
+    const storageUrl = secretManager.storageBaseUrl;
     const finalUrl = `${storageUrl}/${key}`;
 
     console.log(`[UploadManager] File processed: ${key} (${file.size} bytes)`);

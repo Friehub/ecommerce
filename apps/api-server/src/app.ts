@@ -11,7 +11,7 @@ import swaggerUi from '@fastify/swagger-ui';
 export async function createServer(): Promise<FastifyInstance> {
   const server = fastify({
     logger: {
-      level: process.env.LOG_LEVEL || 'info',
+      level: secretManager.logLevel,
       redact: ['req.headers.authorization', 'password', 'token']
     }
   });
@@ -29,7 +29,7 @@ export async function createServer(): Promise<FastifyInstance> {
   });
 
   // 2. Swagger / Documentation
-  if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_PUBLIC_SWAGGER === 'true') {
+  if (secretManager.isDevelopment || secretManager.enablePublicSwagger) {
     await server.register(swagger, {
       mode: 'static',
       specification: { document: openApiDocument as any }

@@ -11,13 +11,13 @@ import type {
   PayoutResult,
 } from './types';
 
-const FLW_SECRET_KEY = process.env.FLW_SECRET_KEY || 'FLWSECK_test_placeholder';
-const FLW_WEBHOOK_SECRET = process.env.FLW_WEBHOOK_SECRET || 'flw_whsec_placeholder';
+import { secretManager } from '../../shared/services/managers/secret-manager';
+
 const FLW_BASE = 'https://api.flutterwave.com/v3';
 
-function headers() {
+function getHeaders() {
   return {
-    Authorization: `Bearer ${FLW_SECRET_KEY}`,
+    Authorization: `Bearer ${secretManager.flutterwaveSecret}`,
     'Content-Type': 'application/json',
   };
 }
@@ -30,7 +30,7 @@ export class FlutterwaveAdapter implements PaymentAdapter {
 
     const res = await fetch(`${FLW_BASE}/payments`, {
       method: 'POST',
-      headers: headers(),
+      headers: getHeaders(),
       body: JSON.stringify({
         tx_ref: reference,
         amount: params.amountInSubunit / 100, // Flutterwave takes normal amount in major unit
@@ -63,8 +63,9 @@ export class FlutterwaveAdapter implements PaymentAdapter {
   }
 
   verifyWebhookSignature(rawBody: string, signature: string): boolean {
-    // Flutterwave signature is often passed in the 'verif-hash' header
-    return signature === FLW_WEBHOOK_SECRET;
+    const { secretManager } = require('../../shared/services/managers/secret-manager');
+    const secret = secretManager.get('FLW_WEBHOOK_SECRET', 'flw_whsec_placeholder');
+    return signature === secret;
   }
 
   parseWebhookEvent(payload: Record<string, unknown>): WebhookResult | null {
@@ -89,7 +90,7 @@ export class FlutterwaveAdapter implements PaymentAdapter {
     // Flutterwave refund endpoint
     const res = await fetch(`${FLW_BASE}/transactions/${params.providerRef}/refund`, {
       method: 'POST',
-      headers: headers(),
+      headers: getHeaders(),
       body: JSON.stringify({
         amount: params.amount ? params.amount / 100 : undefined,
       }),

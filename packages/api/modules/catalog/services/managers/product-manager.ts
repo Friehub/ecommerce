@@ -1,5 +1,6 @@
 import { prisma, Prisma } from '@ecom/db';
 import { publishEvent, cacheService } from '@ecom/shared';
+import { secretManager } from '../../../shared/services/managers/secret-manager';
 import type { ProductInput } from '../../schemas';
 
 const slugify = (text: string) => 
@@ -26,7 +27,7 @@ export class ProductManager {
         brandId: data.brandId,
         categoryId: data.categoryId,
         sellerId,
-        status: process.env.AUTO_APPROVE_PRODUCTS === 'true' ? 'ACTIVE' : 'PENDING_APPROVAL',
+        status: secretManager.get('AUTO_APPROVE_PRODUCTS', 'false') === 'true' ? 'ACTIVE' : 'PENDING_APPROVAL',
         variants: {
           create: data.variants.map(v => ({
             sku: v.sku,

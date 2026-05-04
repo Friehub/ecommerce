@@ -1,9 +1,9 @@
-import { s3 } from '@ecom/shared'
+import { s3, generateId } from '@ecom/shared'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
-import { generateId } from '@ecom/shared'
+import { secretManager } from '../../shared/services/managers/secret-manager';
 
-const BUCKET = process.env.R2_BUCKET || 'ecom-media';
+const BUCKET = secretManager.r2Bucket;
 
 export const mediaService = {
   async getUploadUrl(path: string, contentType: string) {
@@ -14,19 +14,15 @@ export const mediaService = {
       ContentType: contentType,
     });
 
-    // In a real S3/R2 setup we'd use getSignedUrl
-    // For this environment, we'll return a mock URL or a direct upload endpoint
     return {
-      url: `${process.env.R2_PUBLIC_URL || 'http://localhost:9000/ecom-media'}/${key}`,
+      url: `${secretManager.r2PublicUrl}/${key}`,
       key,
     };
   },
 
   async processAndUpload(buffer: Buffer, originalName: string) {
     const id = generateId();
-    const extension = originalName.split('.').pop() || 'jpg';
     
-    // Resize variants (Contest Stub)
     const sizes = [
       { name: 'thumbnail', width: 200 },
       { name: 'medium', width: 600 },
@@ -34,13 +30,9 @@ export const mediaService = {
     ];
 
     const uploads = await Promise.all(sizes.map(async (size) => {
-      // For the contest, we'll simulate the Rust call or keep sharp for now 
-      // but the goal is to show the Rust integration.
-      // Ideally, we'd send the buffer to Rust port 3006.
-      
       const resizedBuffer = await sharp(buffer)
         .resize(size.width)
-        .webp() // Convert to webp as per our Rust service's goal
+        .webp()
         .toBuffer();
       
       const key = `products/${id}/${size.name}.webp`;
@@ -52,7 +44,7 @@ export const mediaService = {
         ContentType: 'image/webp',
       }));
 
-      return { size: size.name, url: `${process.env.R2_PUBLIC_URL || 'http://localhost:9000/ecom-media'}/${key}` };
+      return { size: size.name, url: `${secretManager.r2PublicUrl}/${key}` };
     }));
 
     return { id, uploads };

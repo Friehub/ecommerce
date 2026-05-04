@@ -11,15 +11,13 @@ import type {
   PayoutResult,
 } from './types';
 
-const PAYSTACK_SECRET_KEY =
-  process.env.PAYSTACK_SECRET || process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
-const PAYSTACK_WEBHOOK_SECRET =
-  process.env.PAYSTACK_WEBHOOK_SECRET || 'whsec_test_placeholder';
+import { secretManager } from '../../shared/services/managers/secret-manager';
+
 const PAYSTACK_BASE = 'https://api.paystack.co';
 
-function headers() {
+function getHeaders() {
   return {
-    Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+    Authorization: `Bearer ${secretManager.paystackSecret}`,
     'Content-Type': 'application/json',
   };
 }
@@ -32,7 +30,7 @@ export class PaystackAdapter implements PaymentAdapter {
 
     const res = await fetch(`${PAYSTACK_BASE}/transaction/initialize`, {
       method: 'POST',
-      headers: headers(),
+      headers: getHeaders(),
       body: JSON.stringify({
         email: params.email,
         amount: params.amountInSubunit,
@@ -59,7 +57,7 @@ export class PaystackAdapter implements PaymentAdapter {
 
   verifyWebhookSignature(rawBody: string, signature: string): boolean {
     const hash = crypto
-      .createHmac('sha512', PAYSTACK_WEBHOOK_SECRET)
+      .createHmac('sha512', secretManager.paystackWebhookSecret)
       .update(rawBody)
       .digest('hex');
     return hash === signature;
@@ -100,7 +98,7 @@ export class PaystackAdapter implements PaymentAdapter {
 
     const res = await fetch(`${PAYSTACK_BASE}/refund`, {
       method: 'POST',
-      headers: headers(),
+      headers: getHeaders(),
       body: JSON.stringify(body),
     });
 
@@ -118,7 +116,7 @@ export class PaystackAdapter implements PaymentAdapter {
   async initiatePayout(params: PayoutParams): Promise<PayoutResult> {
     const res = await fetch(`${PAYSTACK_BASE}/transfer`, {
       method: 'POST',
-      headers: headers(),
+      headers: getHeaders(),
       body: JSON.stringify({
         source: 'balance',
         reason: params.reason,

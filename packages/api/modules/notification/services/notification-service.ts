@@ -24,23 +24,24 @@ export const notificationService = {
       });
     }
 
-    // 3. Dispatch external via Resend API using standard Fetch
+    // 3. Dispatch external via Resend API
     if (sendEmail) {
-      const RESEND_API_KEY = process.env.RESEND_API_KEY || 're_placeholder';
-      const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'help@friehub.cloud';
+      const { secretManager } = await import('../../shared/services/managers/secret-manager');
+      const apiKey = secretManager.resendApiKey;
+      const fromEmail = secretManager.resendFromEmail;
 
-      if (RESEND_API_KEY !== 're_placeholder') {
+      if (apiKey !== 're_placeholder') {
         try {
           const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
           if (user?.email) {
             await fetch('https://api.resend.com/emails', {
               method: 'POST',
               headers: {
-                Authorization: `Bearer ${RESEND_API_KEY}`,
+                Authorization: `Bearer ${apiKey}`,
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                from: `Friehub Jumia <${RESEND_FROM_EMAIL}>`,
+                from: `Friehub Jumia <${fromEmail}>`,
                 to: [user.email],
                 subject: title,
                 html: message

@@ -68,6 +68,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
+      - ./logs/nginx:/var/log/nginx
     networks: [edge-net]
     depends_on:
       web:
@@ -87,6 +88,7 @@ services:
       AUTH_SECRET: ${NEXTAUTH_SECRET}
       AUTH_TRUST_HOST: "true"
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
+      REDIS_URL: redis://redis:6379
     networks: [edge-net, app-net, db-net]
     healthcheck:
       test: ["CMD-SHELL", "nc -z 127.0.0.1 3000 || exit 1"]

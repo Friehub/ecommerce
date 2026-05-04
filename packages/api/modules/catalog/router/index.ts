@@ -24,9 +24,11 @@ export const catalogRouter = createTRPCRouter({
       return await catalogImportService.getJobStatus(input.jobId);
     }),
 
-  getCategories: publicProcedure.query(async () => {
-    return await catalogService.getCategoryTree();
-  }),
+  getCategories: publicProcedure
+    .meta({ openapi: { method: 'GET', path: '/catalog/categories' } })
+    .query(async () => {
+      return await catalogService.getCategoryTree();
+    }),
 
   listProducts: publicProcedure
     .meta({ openapi: { method: 'GET', path: '/catalog/products' } })
@@ -71,16 +73,20 @@ export const catalogRouter = createTRPCRouter({
     }),
 
   getCategoryBySlug: publicProcedure
+    .meta({ openapi: { method: 'GET', path: '/catalog/category/{slug}' } })
     .input(z.object({ slug: z.string() }))
     .query(async ({ input }) => {
       return await catalogService.getCategoryBySlug(input.slug);
     }),
 
-  getBrands: publicProcedure.query(async () => {
-    return await prisma.brand.findMany({
-      orderBy: { name: 'asc' }
-    });
-  }),
+  getBrands: publicProcedure
+    .meta({ openapi: { method: 'GET', path: '/catalog/brands' } })
+    .query(async () => {
+      return await prisma.brand.findMany({
+        take: 100, // Safeguard against 10k brands OOM
+        orderBy: { name: 'asc' }
+      });
+    }),
 
   addToWishlist: protectedProcedure
     .input(z.object({ variantId: z.string() }))

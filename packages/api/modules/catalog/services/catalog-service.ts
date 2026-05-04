@@ -293,6 +293,7 @@ export const catalogService = {
   async getCategoryTree() {
     return prisma.category.findMany({
       where: { parentId: null },
+      take: 50, // Limit root categories
       include: { children: { include: { children: true } } }
     });
   },

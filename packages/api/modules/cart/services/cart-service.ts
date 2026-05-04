@@ -127,29 +127,53 @@ export const cartService = {
     const userCart = await this.getCart(guestSessionId, userId);
 
     await prisma.$transaction(async (tx) => {
-      for (const item of guestCart.items) {
-        await tx.cartItem.upsert({
-          where: {
-            cartId_variantId: {
-              cartId: userCart.id,
-              variantId: item.variantId,
-            }
-          },
-          update: {
-            quantity: { increment: item.quantity },
-            priceSnapshot: item.priceSnapshot,
-          },
-          create: {
-            cartId: userCart.id,
-            variantId: item.variantId,
-            sellerId: item.sellerId,
-            quantity: item.quantity,
-            priceSnapshot: item.priceSnapshot,
-          }
-        });
-      }
+      // 1. Get existing user cart items for merging
+      const existingUserItems = await tx.cartItem.findMany({
+        where: { cartId: userCart.id }
+      });
 
-      // 4. Atomic Cleanup
+      // 2. Map for quick lookup
+      const userItemMap = new Map(existingUserItems.map(item => [item.variantId, item]));
+
+      // 3. Prepare merged data
+      const itemsToUpsert = guestCart.items.map(guestItem => {
+        const existing = userItemMap.get(guestItem.variantId);
+        if (existing) {
+          return {
+            variantId: guestItem.variantId,
+            quantity: Math.min(existing.quantity + guestItem.quantity, 100),
+            priceSnapshot: guestItem.priceSnapshot, // Take latest price
+            sellerId: guestItem.sellerId
+          };
+        }
+        return {
+          variantId: guestItem.variantId,
+          quantity: guestItem.quantity,
+          priceSnapshot: guestItem.priceSnapshot,
+          sellerId: guestItem.sellerId
+        };
+      });
+
+      // 4. Batch Operations
+      // Delete existing to replace with merged (Cleanest way to "bulk upsert" logic in Prisma)
+      await tx.cartItem.deleteMany({
+        where: { 
+          cartId: userCart.id,
+          variantId: { in: itemsToUpsert.map(i => i.variantId) }
+        }
+      });
+
+      await tx.cartItem.createMany({
+        data: itemsToUpsert.map(item => ({
+          cartId: userCart.id,
+          variantId: item.variantId,
+          quantity: item.quantity,
+          priceSnapshot: item.priceSnapshot,
+          sellerId: item.sellerId
+        }))
+      });
+
+      // 5. Cleanup guest cart
       await tx.cartItem.deleteMany({ where: { cartId: guestCart.id } });
       await tx.cart.delete({ where: { id: guestCart.id } });
     });

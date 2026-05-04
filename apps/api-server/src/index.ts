@@ -6,6 +6,10 @@ import rateLimit from '@fastify/rate-limit';
 import { fastifyTRPCPlugin, FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
 import { appRouter, type AppRouter } from '@ecom/api';
 import { createContext } from './context';
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
+import { createOpenApiFastifyHandler } from 'trpc-openapi';
+import { openApiDocument } from '@ecom/api/openapi';
 
 import Redis from 'ioredis';
 
@@ -58,6 +62,29 @@ async function start() {
     timeWindow: '1 minute',
     redis: redis,
     keyGenerator: (req) => (req.headers['x-forwarded-for'] as string) || req.ip,
+  });
+  
+  // ── Swagger & OpenAPI ───────────────────────────────────────────
+  await server.register(swagger, {
+    mode: 'static',
+    specification: {
+      document: openApiDocument,
+    },
+  });
+
+  await server.register(swaggerUi, {
+    routePrefix: '/docs',
+    uiConfig: {
+      docExpansion: 'list',
+      deepLinking: false,
+    },
+  });
+
+  // REST endpoints for tRPC (via trpc-openapi)
+  await server.register(createOpenApiFastifyHandler, {
+    router: appRouter,
+    createContext,
+    prefix: '/api',
   });
 
   // ── Service-to-Service Auth ──────────────────────────────────────

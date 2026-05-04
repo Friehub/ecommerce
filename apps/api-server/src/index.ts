@@ -23,8 +23,13 @@ const server = Fastify({
       'req.headers.authorization',
       'req.headers["x-internal-token"]',
       'req.body.password',
+      'req.body.email',
+      'req.body.phone',
+      'req.body.address',
       'req.body.nin',
       'req.body.cvv',
+      'res.body.email',
+      'res.body.phone',
       'res.body.nin'
     ],
   },
@@ -33,10 +38,14 @@ const server = Fastify({
 
 // ── Security & middleware ─────────────────────────────────────────
 async function start() {
-  const criticalEnv = ['DATABASE_URL', 'REDIS_URL'];
+  const criticalEnv = ['DATABASE_URL', 'REDIS_URL', 'INTERNAL_API_TOKEN'];
   for (const env of criticalEnv) {
     if (!process.env[env] || process.env[env].includes('placeholder')) {
-      server.log.error(`Critical environment variable ${env} is missing or contains 'placeholder'!`);
+      server.log.error(`CRITICAL: Environment variable ${env} is missing or insecure!`);
+      if (process.env.NODE_ENV === 'production') {
+        console.error(`FATAL: ${env} must be set in production. exiting.`);
+        process.exit(1);
+      }
     }
   }
 
@@ -52,8 +61,12 @@ async function start() {
 
   await server.register(helmet, { contentSecurityPolicy: false });
 
+  const allowedOrigins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(',') 
+    : [process.env.WEB_URL || 'http://localhost:3000'];
+
   await server.register(cors, {
-    origin: process.env.WEB_URL ?? 'http://localhost:3000',
+    origin: allowedOrigins,
     credentials: true,
   });
 

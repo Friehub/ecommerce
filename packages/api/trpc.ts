@@ -5,6 +5,8 @@ import { ZodError } from 'zod'
 export interface TRPCContext {
   session: any | null;
   req?: Request;
+  redis?: any;
+  ip?: string;
 }
 
 export const t = initTRPC.context<TRPCContext>().meta<OpenApiMeta>().create({
@@ -40,7 +42,23 @@ export const loggerMiddleware = t.middleware(async ({ path, type, next }) => {
 export const createTRPCRouter = t.router
 export const publicProcedure = t.procedure.use(loggerMiddleware)
 export const rateLimitProcedure = publicProcedure.use(async ({ ctx, next, path }) => {
-  // Foundation for procedure-specific rate limiting
+  if (ctx.redis && ctx.ip) {
+    const key = `rl:${path}:${ctx.ip}`;
+    const limit = 5; // default 5 req
+    const window = 60; // per 60 seconds
+
+    const current = await ctx.redis.incr(key);
+    if (current === 1) {
+      await ctx.redis.expire(key, window);
+    }
+
+    if (current > limit) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Rate limit exceeded. Please try again later.",
+      });
+    }
+  }
   return next();
 });
 

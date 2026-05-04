@@ -33,7 +33,13 @@ export const iamRouter = createTRPCRouter({
     return await userService.getAddresses(ctx.session.user.id);
   }),
 
-  onboardSeller: protectedProcedure
+  onboardSeller: rateLimitProcedure
+    .use(({ ctx, next }) => {
+      if (!ctx.session || !ctx.session.user) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+      return next();
+    })
     .input(sellerOnboardingSchema)
     .mutation(async ({ ctx, input }) => {
       try {

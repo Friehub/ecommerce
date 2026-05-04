@@ -2,52 +2,55 @@ import { prisma, Decimal } from '@ecom/db'
 
 export const sellerDashboardService = {
   async getMetrics(sellerId: string) {
-    const packages = await prisma.orderPackage.findMany({
-      where: { sellerId },
-      include: { lines: true }
+    const [pendingOrders, deliveredOrders] = await Promise.all([
+      prisma.orderPackage.count({ where: { sellerId, status: 'PENDING' } }),
+      prisma.orderPackage.count({ where: { sellerId, status: 'DELIVERED' } })
+    ]);
+
+    // Calculate GMV (Database level)
+    const gmvAggregate = await prisma.orderLine.aggregate({
+      where: { package: { sellerId, status: { not: 'CANCELLED' } } },
+      _sum: { unitPrice: true, quantity: true } // Note: UnitPrice * Quantity cannot be summed directly in one aggregate easily with Prisma
     });
-
-    const pendingOrders = packages.filter(p => p.status === 'PENDING').length;
-    const deliveredOrders = packages.filter(p => p.status === 'DELIVERED').length;
-
-    // Calculate GMV
-    const gmv = packages
-      .filter(p => p.status !== 'CANCELLED')
-      .reduce((acc, p) => {
-        const packageTotal = p.lines.reduce((lAcc, l) => lAcc.add(l.unitPrice.mul(l.quantity)), new Decimal(0));
-        return acc.add(packageTotal);
-      }, new Decimal(0));
-
-    // Get actual revenue from ledger
-    const ledgerEntries = await prisma.sellerLedgerEntry.findMany({
-      where: { sellerId, type: { in: ['SALE', 'COMMISSION'] } }
+    
+    // Better way for GMV: Simple query then sum in memory if records are many, OR better, a specialized view/table.
+    // For now, I'll use a better findMany that only selects what's needed.
+    const lines = await prisma.orderLine.findMany({
+      where: { package: { sellerId, status: { not: 'CANCELLED' } } },
+      select: { unitPrice: true, quantity: true }
     });
-    const revenue = ledgerEntries.reduce((acc, entry) => acc.add(entry.amount), new Decimal(0));
+    const gmv = lines.reduce((acc, l) => acc.add(l.unitPrice.mul(l.quantity)), new Decimal(0));
+
+    // Get actual revenue (Database level)
+    const revenueAggregate = await prisma.sellerLedgerEntry.aggregate({
+      where: { sellerId, type: { in: ['SALE', 'COMMISSION'] } },
+      _sum: { amount: true }
+    });
+    const revenue = revenueAggregate._sum.amount || new Decimal(0);
 
     // Low stock alerts
     const lowStockCount = await prisma.stockLevel.count({
       where: { sellerId, qtyOnHand: { lte: 10 } }
     });
 
+    // ... (rest of performance score logic is fine for now)
     // Dynamic Performance Score Calculation
     const seller = await prisma.seller.findUnique({
       where: { id: sellerId },
       select: { rating: true }
     });
     
-    // Penalize score based on unresolved or rejected disputes
     const recentDisputes = await prisma.dispute.count({
       where: { 
         sellerId, 
-        status: { in: ['OPEN', 'UNDER_REVIEW', 'RESOLVED'] }, // RESOLVED means resolved in buyer's favor usually
+        status: { in: ['OPEN', 'UNDER_REVIEW', 'RESOLVED'] },
         createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
       }
     });
 
     let baseRating = seller?.rating ? seller.rating.toNumber() : 5.0;
-    if (baseRating === 0) baseRating = 5.0; // new sellers start at 5.0
+    if (baseRating === 0) baseRating = 5.0;
 
-    // Deduct 0.1 per dispute
     let performanceScore = Math.max(0, baseRating - (recentDisputes * 0.1));
     performanceScore = Math.round(performanceScore * 10) / 10;
 
@@ -62,7 +65,8 @@ export const sellerDashboardService = {
   },
 
   async setupPayoutAccount(sellerId: string, bankCode: string, bankAccountNumber: string, bankAccountName: string) {
-    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET || process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
+    const { secretManager } = await import('../../shared/services/managers/secret-manager');
+    const PAYSTACK_SECRET_KEY = secretManager.get('PAYSTACK_SECRET_KEY', 'sk_test_placeholder');
     let transferRecipientCode = `RCP_${Math.random().toString(36).substring(7).toUpperCase()}`;
 
     if (PAYSTACK_SECRET_KEY !== 'sk_test_placeholder') {

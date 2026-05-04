@@ -71,25 +71,31 @@ export const logisticsService = {
     await publishEvent('shipment.status_updated', { shipmentId, status });
     
     if (status === 'DELIVERED') {
+      if (!proofUrl) throw new Error('DELIVERY_PROOF_REQUIRED');
+
       await publishEvent('shipment.delivered', { 
         shipmentId, 
         packageId: shipment.packageId,
         proofUrl 
       });
       
-      // Check if all packages in the order are delivered
-      const otherPackages = await prisma.orderPackage.findMany({
-        where: { 
-          orderId: shipment.package.orderId,
-          id: { not: shipment.packageId }
-        },
-        select: { status: true }
-      });
+      const { lockManager } = await import('../../shared/services/managers/lock-manager');
       
-      const allDelivered = otherPackages.every(p => p.status === 'DELIVERED');
-      if (allDelivered) {
-        await publishEvent('order.delivered', { orderId: shipment.package.orderId });
-      }
+      // Atomic check for all packages delivered using a distributed lock on the order
+      await lockManager.withLock(`order_delivery:${shipment.package.orderId}`, async () => {
+        const otherPackages = await prisma.orderPackage.findMany({
+          where: { 
+            orderId: shipment.package.orderId,
+            id: { not: shipment.packageId }
+          },
+          select: { status: true }
+        });
+        
+        const allDelivered = otherPackages.every(p => p.status === 'DELIVERED');
+        if (allDelivered) {
+          await publishEvent('order.delivered', { orderId: shipment.package.orderId });
+        }
+      });
     }
 
     return shipment;

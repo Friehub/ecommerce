@@ -53,38 +53,31 @@ export const ledgerService = {
       }
     });
 
-    return await prisma.$transaction(async (tx) => {
-      const entries = [];
-      for (const line of lines) {
-        const sellerId = line.package.sellerId;
-        const grossAmount = line.unitPrice.mul(line.quantity);
-        const commissionRate = line.variant.product.category.commissionRate || new Decimal(10);
-        const commissionAmount = grossAmount.mul(commissionRate).div(100);
+    const data = lines.flatMap(line => {
+      const sellerId = line.package.sellerId;
+      const grossAmount = line.unitPrice.mul(line.quantity);
+      const commissionRate = line.variant.product.category.commissionRate || new Decimal(10);
+      const commissionAmount = grossAmount.mul(commissionRate).div(100);
 
-        // 1. Record Gross Sale
-        entries.push(tx.sellerLedgerEntry.create({
-          data: {
-            sellerId,
-            orderLineId: line.id,
-            type: LedgerEntryType.SALE,
-            amount: grossAmount,
-            status: LedgerStatus.PENDING
-          }
-        }));
-
-        // 2. Record Platform Commission
-        entries.push(tx.sellerLedgerEntry.create({
-          data: {
-            sellerId,
-            orderLineId: line.id,
-            type: LedgerEntryType.COMMISSION,
-            amount: commissionAmount.negated(),
-            status: LedgerStatus.PENDING
-          }
-        }));
-      }
-      return await Promise.all(entries);
+      return [
+        {
+          sellerId,
+          orderLineId: line.id,
+          type: LedgerEntryType.SALE,
+          amount: grossAmount,
+          status: LedgerStatus.PENDING
+        },
+        {
+          sellerId,
+          orderLineId: line.id,
+          type: LedgerEntryType.COMMISSION,
+          amount: commissionAmount.negated(),
+          status: LedgerStatus.PENDING
+        }
+      ];
     });
+
+    return prisma.sellerLedgerEntry.createMany({ data });
   },
 
   async scheduleEscrowRelease(orderId: string) {
@@ -107,7 +100,7 @@ export const ledgerService = {
   },
 
   async getSellerBalance(sellerId: string, status?: LedgerStatus, client = prisma) {
-    const aggregation = await client.sellerLedgerEntry.aggregate({
+    const aggregation = await (client as any).sellerLedgerEntry.aggregate({
       where: { 
         sellerId,
         ...(status ? { status } : {})
@@ -167,44 +160,38 @@ export const ledgerService = {
   },
 
   async withdrawFunds(sellerId: string, amount: Decimal | number, statementId?: string | null) {
+    const { lockManager } = await import('../../../shared/services/managers/lock-manager');
     const decimalAmount = new Decimal(amount);
     
-    return await prisma.$transaction(async (tx) => {
-      // 0. LOCK the seller record to prevent concurrent withdrawals
-      // This forces other transactions for the same sellerId to wait.
-      await tx.seller.update({
-        where: { id: sellerId },
-        data: { updatedAt: new Date() }
-      });
-
-      // 1. Check available balance (using tx client for consistency)
-      const availableBalance = await this.getSellerBalance(sellerId, LedgerStatus.AVAILABLE, tx as any);
-      
-      if (availableBalance.lessThan(decimalAmount)) {
-        throw new Error('INSUFFICIENT_FUNDS');
-      }
-
-      // 2. Create Payout record
-      const payout = await tx.payout.create({
-        data: {
-          sellerId,
-          statementId: statementId || null,
-          amount: decimalAmount,
-          status: 'PENDING'
+    return await lockManager.withLock(`withdraw:${sellerId}`, async () => {
+      return await prisma.$transaction(async (tx) => {
+        // 1. Check available balance
+        const availableBalance = await this.getSellerBalance(sellerId, LedgerStatus.AVAILABLE, tx as any);
+        
+        if (availableBalance.lessThan(decimalAmount)) {
+          throw new Error('INSUFFICIENT_FUNDS');
         }
-      });
 
-      // 3. Create Ledger Entry for the withdrawal
-      const ledgerEntry = await tx.sellerLedgerEntry.create({
-        data: {
-          sellerId,
-          type: LedgerEntryType.WITHDRAWAL,
-          amount: decimalAmount.negated(),
-          status: LedgerStatus.AVAILABLE // Withdrawals are immediate deductions from available balance
-        }
-      });
+        const payout = await tx.payout.create({
+          data: {
+            sellerId,
+            statementId: statementId || null,
+            amount: decimalAmount,
+            status: 'PENDING'
+          }
+        });
 
-      return { payout, ledgerEntry };
+        const ledgerEntry = await tx.sellerLedgerEntry.create({
+          data: {
+            sellerId,
+            type: LedgerEntryType.WITHDRAWAL,
+            amount: decimalAmount.negated(),
+            status: LedgerStatus.AVAILABLE
+          }
+        });
+
+        return { payout, ledgerEntry };
+      });
     });
   },
 
@@ -214,52 +201,35 @@ export const ledgerService = {
         sellerId,
         type: LedgerEntryType.PENALTY,
         amount: new Decimal(amount).negated(),
-        status: LedgerStatus.AVAILABLE // Penalties usually hit the available balance immediately
+        status: LedgerStatus.AVAILABLE
       }
     });
   },
 
   async generateStatement(sellerId: string, periodStart: Date, periodEnd: Date) {
     const existing = await prisma.sellerStatement.findFirst({
-      where: {
-        sellerId,
-        periodStart,
-        periodEnd
-      }
+      where: { sellerId, periodStart, periodEnd }
     });
 
-    if (existing) {
-      console.log(`Statement already exists for seller ${sellerId} from ${periodStart} to ${periodEnd}. Returning existing statement.`);
-      return existing;
-    }
+    if (existing) return existing;
 
-    const entries = await prisma.sellerLedgerEntry.findMany({
+    const aggregates = await prisma.sellerLedgerEntry.groupBy({
+      by: ['type'],
       where: {
         sellerId,
-        createdAt: {
-          gte: periodStart,
-          lte: periodEnd
-        }
-      }
+        createdAt: { gte: periodStart, lte: periodEnd }
+      },
+      _sum: { amount: true }
     });
 
-    const gross = entries
-      .filter(e => e.type === LedgerEntryType.SALE)
-      .reduce((acc, e) => acc.add(e.amount), new Decimal(0));
+    const getSum = (type: LedgerEntryType) => 
+      aggregates.find(a => a.type === type)?._sum.amount || new Decimal(0);
 
-    const commission = entries
-      .filter(e => e.type === LedgerEntryType.COMMISSION)
-      .reduce((acc, e) => acc.add(e.amount), new Decimal(0));
-
-    const adSpend = entries
-      .filter(e => e.type === LedgerEntryType.AD_SPEND)
-      .reduce((acc, e) => acc.add(e.amount), new Decimal(0));
-
-    const penalties = entries
-      .filter(e => e.type === LedgerEntryType.PENALTY)
-      .reduce((acc, e) => acc.add(e.amount), new Decimal(0));
-
-    const net = entries.reduce((acc, e) => acc.add(e.amount), new Decimal(0));
+    const gross = getSum(LedgerEntryType.SALE);
+    const commission = getSum(LedgerEntryType.COMMISSION);
+    const adSpend = getSum(LedgerEntryType.AD_SPEND);
+    const penalties = getSum(LedgerEntryType.PENALTY);
+    const net = aggregates.reduce((acc, a) => acc.add(a._sum.amount || 0), new Decimal(0));
 
     return await prisma.sellerStatement.create({
       data: {

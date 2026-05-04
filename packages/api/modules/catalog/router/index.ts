@@ -30,7 +30,7 @@ export const catalogRouter = createTRPCRouter({
       return await catalogService.getCategoryTree();
     }),
 
-  listProducts: publicProcedure
+  listProducts: rateLimitProcedure
     .meta({ openapi: { method: 'GET', path: '/catalog/products' } })
     .input(z.object({
       categoryId: z.string().optional(),

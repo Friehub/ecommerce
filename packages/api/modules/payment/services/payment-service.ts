@@ -59,7 +59,7 @@ export const paymentService = {
       where: { providerRef: reference }
     });
 
-    if (!payment) return;
+    if (!payment || payment.status === 'SUCCESS') return; // Idempotency check
 
     if (status === 'success' || status === 'SUCCESS') {
       await prisma.$transaction(async (tx) => {
@@ -99,7 +99,8 @@ export const paymentService = {
     // Critical Section: Use Distributed Lock to prevent double-spending
     return await lockManager.withLock(`wallet:${userId}`, async () => {
       const wallet = await prisma.wallet.findUnique({ where: { userId } });
-      if (!wallet || wallet.balance.lt(amount)) throw new Error('INSUFFICIENT_FUNDS');
+      const decimalAmount = new Decimal(amount);
+      if (!wallet || wallet.balance.lt(decimalAmount)) throw new Error('INSUFFICIENT_FUNDS');
 
       return prisma.$transaction(async (tx) => {
         await tx.wallet.update({

@@ -23,20 +23,36 @@ export class AuthManager {
   }
 
   private async resolveFromToken(token: string) {
+    const { secretManager } = await import('../../../shared/services/managers/secret-manager');
+    const { redis } = await import('@ecom/shared');
+    
+    const cacheKey = `auth:token:${token.substring(token.length - 10)}`; // Cache by partial token for safety
+    const cached = await redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
     try {
-      const secret = process.env.JWT_SECRET!;
+      const secret = secretManager.jwtSecret;
       const payload = jwt.verify(token, secret, { algorithms: ['HS256'] }) as any;
       
-      return prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: { id: payload.sub },
         select: { id: true, email: true, role: true, firstName: true, lastName: true }
       });
+
+      if (user) await redis.set(cacheKey, JSON.stringify(user), 'EX', 300);
+      return user;
     } catch {
       return null;
     }
   }
 
   private async resolveFromCookie(tokenHash: string) {
+    const { redis } = await import('@ecom/shared');
+    const cacheKey = `auth:session:${tokenHash}`;
+    
+    const cached = await redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
     const dbSession = await prisma.session.findUnique({
       where: { tokenHash },
       include: {
@@ -47,6 +63,7 @@ export class AuthManager {
     });
 
     if (dbSession && dbSession.expiresAt > new Date()) {
+      await redis.set(cacheKey, JSON.stringify(dbSession.user), 'EX', 300);
       return dbSession.user;
     }
     return null;

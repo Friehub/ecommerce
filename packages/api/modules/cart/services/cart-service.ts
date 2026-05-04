@@ -26,6 +26,10 @@ export const cartService = {
   async addItem(sessionId: string, variantId: string, quantity: number, userId?: string) {
     const cart = await this.getCart(sessionId, userId);
     
+    // 0. Enforce Cart Limits
+    if (cart.items.length >= 50) throw new Error('CART_LIMIT_REACHED');
+    if (quantity > 100) throw new Error('MAX_QTY_EXCEEDED');
+
     // 1. Get current price (Price Snapshot requirement)
     const variant = await prisma.productVariant.findUnique({
       where: { id: variantId },
@@ -51,7 +55,7 @@ export const cartService = {
         }
       },
       update: {
-        quantity: { increment: quantity },
+        quantity: { increment: Math.min(quantity, 100) },
         priceSnapshot: finalPrice, // Refresh snapshot
       },
       create: {
@@ -81,9 +85,11 @@ export const cartService = {
   },
 
   async updateQuantity(cartItemId: string, quantity: number, sessionId: string, userId?: string) {
+    if (quantity > 100) throw new Error('MAX_QTY_EXCEEDED');
+
     const item = await prisma.cartItem.findUnique({
       where: { id: cartItemId },
-      include: { cart: true }
+      include: { cart: true, variant: true }
     });
     
     if (!item) throw new Error('ITEM_NOT_FOUND');
@@ -97,9 +103,16 @@ export const cartService = {
     const available = await inventoryService.syncStockFromDB(item.variantId);
     if (available < quantity) throw new Error('INSUFFICIENT_STOCK');
 
+    // Refresh Price Snapshot (Logic improvement for production)
+    const flashSale = await promoService.getFlashSaleForVariant(item.variantId);
+    const finalPrice = flashSale ? flashSale.salePrice : item.variant.price;
+
     return prisma.cartItem.update({
       where: { id: cartItemId },
-      data: { quantity }
+      data: { 
+        quantity,
+        priceSnapshot: finalPrice
+      }
     });
   },
 

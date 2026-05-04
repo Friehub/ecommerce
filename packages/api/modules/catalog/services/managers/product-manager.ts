@@ -10,9 +10,15 @@ const slugify = (text: string) =>
 
 export class ProductManager {
   async createProduct(sellerId: string, data: ProductInput) {
-    const slug = `${slugify(data.title)}-${Date.now()}`;
+    let slug = slugify(data.title);
     
-    return prisma.product.create({
+    // Simple collision check
+    const existing = await prisma.product.findFirst({ where: { slug } });
+    if (existing) {
+      slug = `${slug}-${Math.random().toString(36).substring(2, 7)}`;
+    }
+    
+    const product = await prisma.product.create({
       data: {
         title: data.title,
         slug,
@@ -39,6 +45,9 @@ export class ProductManager {
       },
       include: { variants: true }
     });
+
+    await cacheService.delete(`catalog:category:${data.categoryId}`);
+    return product;
   }
 
   async updateProduct(sellerId: string, productId: string, data: Partial<ProductInput> & { status?: string }) {
@@ -98,7 +107,7 @@ export class ProductManager {
     });
 
     await auditManager.log({
-      actorId: 'admin', // In production, pass the actual admin ID
+      actorId: 'admin',
       action: 'PRODUCT_APPROVE',
       entityType: 'PRODUCT',
       entityId: productId,
@@ -132,12 +141,15 @@ export class ProductManager {
   }
 
   async deleteProduct(productId: string) {
-    const product = await prisma.product.delete({
+    const product = await prisma.product.update({
       where: { id: productId },
+      data: { status: 'DELETED' },
       include: { variants: true }
     });
 
     await cacheService.delete(`catalog:product:${product.slug}`);
+    await cacheService.delete(`catalog:category:${product.categoryId}`);
+    
     return product;
   }
 }

@@ -8,9 +8,12 @@ export class OrderOrchestrator {
    * Enforces atomicity across order creation, stock reservation, and cart clearing.
    */
   async createFromCart(userId: string, cartId: string, paymentMethod: string, addressId: string, referralLinkId?: string, idempotencyKey?: string) {
-    // 1. Idempotency Check
+    // 1. Idempotency Check (Include relations)
     if (idempotencyKey) {
-      const existing = await prisma.order.findUnique({ where: { idempotencyKey } });
+      const existing = await prisma.order.findUnique({ 
+        where: { idempotencyKey },
+        include: { packages: { include: { lines: true } } }
+      });
       if (existing) return existing;
     }
 

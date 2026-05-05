@@ -2,7 +2,7 @@ mod index;
 mod handlers;
 
 use std::sync::Arc;
-use axum::{routing::get, Router};
+use axum::{routing::get, Router, http::{HeaderValue, Method}};
 use std::net::SocketAddr;
 use crate::index::SearchIndex;
 use crate::handlers::{search_handler, health_handler};
@@ -27,7 +27,11 @@ async fn main() -> anyhow::Result<()> {
         .route("/health", get(health_handler))
         .route("/search", get(search_handler))
         .route("/upsert", axum::routing::post(crate::handlers::upsert_handler))
-        .layer(tower_http::cors::CorsLayer::permissive())
+        .layer(
+            tower_http::cors::CorsLayer::new()
+                .allow_origin("http://localhost:4000".parse::<HeaderValue>().unwrap())
+                .allow_methods([Method::GET, Method::POST])
+        )
         .with_state(search_index);
 
     // Start server

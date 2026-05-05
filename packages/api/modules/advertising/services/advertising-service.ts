@@ -60,7 +60,23 @@ export const advertisingService = {
     const bidCost = adGroup.bid;
 
     return prisma.$transaction(async (tx) => {
-      // 1. Create the click record
+      // 1. Check budget exhaustion BEFORE recording click (B08)
+      const totalSpend = await tx.adClick.aggregate({
+        where: { adGroup: { campaignId: adGroup.campaignId } },
+        _sum: { cost: true }
+      });
+
+      const priorSpend = totalSpend._sum.cost || new Decimal(0);
+
+      if (priorSpend.greaterThanOrEqualTo(adGroup.campaign.budget)) {
+        await tx.adCampaign.update({
+          where: { id: adGroup.campaignId },
+          data: { status: 'OUT_OF_BUDGET' }
+        });
+        return null; // Discard click, campaign already exhausted
+      }
+
+      // 2. Create the click record
       const click = await tx.adClick.create({
         data: {
           adGroupId,
@@ -69,7 +85,7 @@ export const advertisingService = {
         }
       });
 
-      // 2. Deduct from seller's ledger (AD_SPEND)
+      // 3. Deduct from seller's ledger (AD_SPEND)
       await tx.sellerLedgerEntry.create({
         data: {
           sellerId: adGroup.campaign.sellerId,
@@ -78,21 +94,6 @@ export const advertisingService = {
           status: 'AVAILABLE' // Deducted from available balance immediately
         }
       });
-
-      // 3. Check budget exhaustion
-      const totalSpend = await tx.adClick.aggregate({
-        where: { adGroup: { campaignId: adGroup.campaignId } },
-        _sum: { cost: true }
-      });
-
-      const currentSpend = totalSpend._sum.cost || new Decimal(0);
-
-      if (currentSpend.greaterThanOrEqualTo(adGroup.campaign.budget)) {
-        await tx.adCampaign.update({
-          where: { id: adGroup.campaignId },
-          data: { status: 'OUT_OF_BUDGET' }
-        });
-      }
 
       await publishEvent('ad.click', { adGroupId, userId, cost: bidCost.toNumber() });
 

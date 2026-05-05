@@ -75,6 +75,12 @@ services:
         condition: service_healthy
       api:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nginx -t && wget --no-verbose --tries=1 --spider http://localhost/health 2>/dev/null || exit 0"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   web:
     build:
@@ -114,6 +120,11 @@ services:
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
       PORT: 4000
       HOST: 0.0.0.0
+      SEARCH_SERVICE_URL: http://search:3001
+      INVENTORY_SERVICE_URL: http://inventory:3002
+      FRAUD_SERVICE_URL: http://fraud:3004
+      RECOMMENDATIONS_SERVICE_URL: http://recommendations:3005
+      IMAGE_PROCESSOR_SERVICE_URL: http://image-processor:3006
     networks: [edge-net, app-net, db-net]
     depends_on:
       postgres:
@@ -134,7 +145,8 @@ services:
   search:
     build:
       context: ./services
-      dockerfile: search/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: search-runner
     restart: always
     environment:
       RUST_LOG: info
@@ -149,7 +161,8 @@ services:
   inventory:
     build:
       context: ./services
-      dockerfile: inventory/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: inventory-runner
     restart: always
     environment:
       REDIS_URL: redis://redis:6379
@@ -163,7 +176,8 @@ services:
   fraud:
     build:
       context: ./services
-      dockerfile: fraud/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: fraud-runner
     restart: always
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
@@ -179,7 +193,8 @@ services:
   recommendations:
     build:
       context: ./services
-      dockerfile: recommendations/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: recommendations-runner
     restart: always
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
@@ -195,7 +210,8 @@ services:
   auction:
     build:
       context: ./services
-      dockerfile: auction/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: auction-runner
     restart: always
     networks: [app-net]
     deploy:
@@ -206,7 +222,8 @@ services:
   image-processor:
     build:
       context: ./services
-      dockerfile: image-processor/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: image-processor-runner
     restart: always
     environment:
       R2_ACCOUNT_ID: ${R2_ACCOUNT_ID}
@@ -227,6 +244,11 @@ services:
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
       REDIS_URL: redis://redis:6379
+      SEARCH_SERVICE_URL: http://search:3001
+      INVENTORY_SERVICE_URL: http://inventory:3002
+      FRAUD_SERVICE_URL: http://fraud:3004
+      RECOMMENDATIONS_SERVICE_URL: http://recommendations:3005
+      IMAGE_PROCESSOR_SERVICE_URL: http://image-processor:3006
     networks: [app-net, db-net]
     depends_on:
       postgres:

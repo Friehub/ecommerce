@@ -87,11 +87,13 @@ export const bulkImportWorker = new Worker('bulk-import', async (job: Job) => {
       // Add inventory level
       const variant = product.variants[0];
       if (variant) {
+        if (!warehouseId) throw new Error('MISSING_WAREHOUSE_ID');
+        
         await prisma.stockLevel.create({
           data: {
             variantId: variant.id,
             sellerId,
-            warehouseId: warehouseId || 'main-wh',
+            warehouseId,
             qtyOnHand: stock,
             qtyReserved: 0
           }

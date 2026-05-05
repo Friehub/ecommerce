@@ -10,9 +10,26 @@ export const inventoryRouter = createTRPCRouter({
     }),
 
   reserve: publicProcedure // Internal use or during checkout
-    .input(z.object({ variantId: z.string(), quantity: z.number().int().positive() }))
+    .input(z.object({ 
+      variantId: z.string(), 
+      quantity: z.number().int().positive(),
+      sellerId: z.string().optional(),
+      warehouseId: z.string().optional(),
+    }))
     .mutation(async ({ input }) => {
-      return await inventoryService.reserveStock(input.variantId, input.quantity);
+      let { sellerId, warehouseId } = input;
+      
+      if (!sellerId || !warehouseId) {
+        const { prisma } = await import('@ecom/db');
+        const stockLevel = await prisma.stockLevel.findFirst({
+          where: { variantId: input.variantId, qtyOnHand: { gte: input.quantity } }
+        });
+        if (!stockLevel) throw new Error('STOCK_EXHAUSTED');
+        sellerId = stockLevel.sellerId;
+        warehouseId = stockLevel.warehouseId;
+      }
+
+      return await inventoryService.reserveStock(input.variantId, input.quantity, sellerId, warehouseId);
     }),
 
   syncAll: adminProcedure.mutation(async () => {

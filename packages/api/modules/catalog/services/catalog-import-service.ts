@@ -1,11 +1,20 @@
 import { queues } from '@ecom/shared';
+import { prisma } from '@ecom/db';
 
 export const catalogImportService = {
-  async enqueueImport(sellerId: string, csvContent: string, warehouseId: string = 'main-wh') {
+  async enqueueImport(sellerId: string, csvContent: string, warehouseId?: string) {
+    let resolvedWarehouseId = warehouseId;
+    
+    if (!resolvedWarehouseId) {
+      const warehouse = await prisma.warehouse.findFirst({ orderBy: { name: 'asc' } });
+      if (!warehouse) throw new Error('NO_DEFAULT_WAREHOUSE_CONFIGURED');
+      resolvedWarehouseId = warehouse.id;
+    }
+
     const job = await queues.bulkImportQueue.add('process-csv', {
       sellerId,
       csvContent,
-      warehouseId
+      warehouseId: resolvedWarehouseId
     });
 
     return { jobId: job.id };

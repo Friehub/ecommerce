@@ -25,7 +25,7 @@ jobs:
           cache: 'pnpm'
           
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
         
       - name: Generate Prisma Client
         run: pnpm db:generate
@@ -35,6 +35,9 @@ jobs:
         
       - name: Lint
         run: pnpm lint
+        
+      - name: Security Audit
+        run: pnpm audit --audit-level high || true # Warn but don't block yet until clean
 
   rust:
     name: Rust Check
@@ -58,3 +61,9 @@ jobs:
         
       - name: Cargo Clippy
         run: cargo clippy --manifest-path services/Cargo.toml -- -D warnings
+        
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+        
+      - name: Cargo Audit
+        run: cargo audit --manifest-path services/Cargo.toml --deny warnings || true

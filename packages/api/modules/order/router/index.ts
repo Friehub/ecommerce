@@ -1,4 +1,5 @@
 import { createTRPCRouter, protectedProcedure, sellerProcedure } from "../../../trpc";
+import { TRPCError } from "@trpc/server";
 import { prisma, PackageStatus } from "@ecom/db";
 import { z } from "zod";
 import { orderService } from "../services/order-service";
@@ -11,6 +12,7 @@ export const orderRouter = createTRPCRouter({
       paymentMethod: z.string(), // Loosen for different providers
       addressId: z.string(),
       referralLinkId: z.string().optional(),
+      couponCode: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       return await orderService.createFromCart(
@@ -18,7 +20,8 @@ export const orderRouter = createTRPCRouter({
         input.cartId, 
         input.paymentMethod, 
         input.addressId,
-        input.referralLinkId
+        input.referralLinkId,
+        input.couponCode
       );
     }),
 
@@ -43,7 +46,10 @@ export const orderRouter = createTRPCRouter({
       offset: z.number().min(0).default(0),
     }))
     .query(async ({ ctx, input }) => {
-      return await orderService.listSellerPackages(ctx.session.user.id, input.limit, input.offset);
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new TRPCError({ code: "UNAUTHORIZED", message: "Seller account not found" });
+      
+      return await orderService.listSellerPackages(seller.id, input.limit, input.offset);
     }),
 
   updatePackageStatus: sellerProcedure
@@ -52,7 +58,16 @@ export const orderRouter = createTRPCRouter({
       status: z.nativeEnum(PackageStatus),
       trackingNumber: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new TRPCError({ code: "UNAUTHORIZED", message: "Seller account not found" });
+
+      // Ownership check (C05)
+      const pkg = await prisma.orderPackage.findFirst({
+        where: { id: input.packageId, sellerId: seller.id }
+      });
+      if (!pkg) throw new TRPCError({ code: "FORBIDDEN", message: "You do not own this package" });
+
       return await packageService.updateStatus(input.packageId, input.status, input.trackingNumber);
     }),
 });

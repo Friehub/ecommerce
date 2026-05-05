@@ -2,7 +2,7 @@ mod redis_client;
 mod handlers;
 
 use std::sync::Arc;
-use axum::{routing::{get, post}, Router};
+use axum::{routing::{get, post}, Router, http::{HeaderValue, Method}};
 use std::net::SocketAddr;
 use crate::redis_client::InventoryRedis;
 use crate::handlers::{reserve_handler, confirm_handler, health_handler};
@@ -26,8 +26,12 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/health", get(health_handler))
         .route("/reserve", post(reserve_handler))
-        .route("/confirm/:id", post(confirm_handler))
-        .layer(tower_http::cors::CorsLayer::permissive())
+        .route("/confirm", post(confirm_handler))
+        .layer(
+            tower_http::cors::CorsLayer::new()
+                .allow_origin("http://localhost:4000".parse::<HeaderValue>().unwrap())
+                .allow_methods([Method::GET, Method::POST])
+        )
         .with_state(redis);
 
     // Start server

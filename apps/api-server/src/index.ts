@@ -51,11 +51,10 @@ async function start() {
 
   const jwtSecret = process.env.JWT_SECRET || process.env.AUTH_SECRET;
   if (!jwtSecret || jwtSecret.includes('placeholder')) {
-    server.log.warn(`Optional environment variable JWT_SECRET/AUTH_SECRET is missing or contains 'placeholder'. Using fallback.`);
-    process.env.JWT_SECRET = 'a8f3b6cb6433cc2576dbc72aec9cd166fc370dc995e1795c0a63c5e2b5d449aa';
-  } else {
-    process.env.JWT_SECRET = jwtSecret;
+    server.log.error('FATAL: JWT_SECRET must be set to a secure random value. Exiting.');
+    process.exit(1);
   }
+  process.env.JWT_SECRET = jwtSecret;
 
   const redis = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379');
 
@@ -78,20 +77,22 @@ async function start() {
   });
   
   // ── Swagger & OpenAPI ───────────────────────────────────────────
-  await server.register(swagger, {
-    mode: 'static',
-    specification: {
-      document: openApiDocument,
-    },
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    await server.register(swagger, {
+      mode: 'static',
+      specification: {
+        document: openApiDocument,
+      },
+    });
 
-  await server.register(swaggerUi, {
-    routePrefix: '/docs',
-    uiConfig: {
-      docExpansion: 'list',
-      deepLinking: false,
-    },
-  });
+    await server.register(swaggerUi, {
+      routePrefix: '/docs',
+      uiConfig: {
+        docExpansion: 'list',
+        deepLinking: false,
+      },
+    });
+  }
 
   // REST endpoints for tRPC (via trpc-openapi)
   await server.register(fastifyTRPCOpenApiPlugin, {

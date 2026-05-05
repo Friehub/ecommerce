@@ -29,16 +29,14 @@ impl FraudRules {
         }
 
         // Rule 3: Velocity (many transactions for a new user)
-        if history_count < 5 && data.amount > dec!(1000) {
-            score += 20;
+        // R14: Correct logic - check if this is one of the first few orders
+        if history_count < 5 && data.amount > dec!(2000) {
+            score += 25;
         }
 
-        // Rule 4: Potential Geo-mismatch (simplified IP-to-Country check placeholder)
-        // In reality, use a GeoIP database here
-        if data.shipping_country == "NG" && !data.ip_address.starts_with("102.") {
-             // Mock condition for Nigeria IPs
-             score += 10;
-        }
+        // Rule 4: Potential Geo-mismatch
+        // R10: Removed fake "102." IP placeholder as it is purely noise.
+        // In production, integrate with a real GeoIP database.
 
         score.min(100)
     }

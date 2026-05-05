@@ -43,13 +43,19 @@ export const catalogService = {
 
     await publishEvent('product.created', { productId: product.id, sellerId });
 
+    // B09: Resolve default warehouse instead of hardcoding
+    const defaultWarehouse = await prisma.warehouse.findFirst({
+      orderBy: { name: 'asc' }
+    });
+    if (!defaultWarehouse) throw new Error('NO_WAREHOUSE_CONFIGURED');
+
     // Initialize stock levels for all variants
     for (const variant of product.variants) {
       await prisma.stockLevel.create({
         data: {
           variantId: variant.id,
           sellerId,
-          warehouseId: 'main-wh', // Default warehouse from seed
+          warehouseId: defaultWarehouse.id,
           qtyOnHand: data.variants.find(v => v.sku === variant.sku)?.stock || 0,
           qtyReserved: 0,
         }
@@ -213,7 +219,8 @@ export const catalogService = {
         });
 
         if (searchResponse && searchResponse.results.length > 0) {
-           const variantIds = searchResponse.results.map((r: any) => r.variant_id[0]);
+           // B10: variant_id is a string, not an array of characters
+           const variantIds = searchResponse.results.map((r: any) => r.variant_id);
            let results = await prisma.productVariant.findMany({
              where: { id: { in: variantIds } },
              include: { 

@@ -47,7 +47,8 @@ export const adminService = {
     const mappedDocs = allDocs.map(d => d.id === documentId ? updatedDoc : d);
 
     const hasApprovedNIN = mappedDocs.some(d => d.type === 'NIN' && d.status === 'APPROVED');
-    const hasApprovedBank = mappedDocs.some(d => d.type === 'BANK' && d.status === 'APPROVED');
+    // F09: Fix type mismatch - docs are stored as BANK_STATEMENT
+    const hasApprovedBank = mappedDocs.some(d => (d.type === 'BANK' || d.type === 'BANK_STATEMENT') && d.status === 'APPROVED');
 
     if (hasApprovedNIN && hasApprovedBank) {
       await prisma.seller.update({
@@ -106,7 +107,7 @@ export const adminService = {
 
       if (resolution === 'RESOLVED' && refundAmount && refundAmount > 0) {
         // Trigger refund via payment service (funding the wallet)
-        await paymentService.fundWallet(dispute.buyerId, refundAmount);
+        await paymentService.fundWallet(dispute.buyerId, refundAmount, tx);
         await publishEvent('refund.processed', { orderId: dispute.orderId, amount: refundAmount, userId: dispute.buyerId });
       }
 
@@ -129,7 +130,7 @@ export const adminService = {
 
     return prisma.$transaction(async (tx) => {
       // Refund directly to wallet
-      await paymentService.fundWallet(order.userId, amount);
+      await paymentService.fundWallet(order.userId, amount, tx);
       
       await tx.eventLog.create({
         data: {

@@ -1,7 +1,7 @@
 mod processor;
 mod handlers;
 
-use axum::{routing::{get, post}, Router, extract::DefaultBodyLimit};
+use axum::{routing::{get, post}, Router, extract::DefaultBodyLimit, http::{HeaderValue, Method}};
 use std::net::SocketAddr;
 use crate::handlers::{process_image_handler, health_handler};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -21,7 +21,11 @@ async fn main() -> anyhow::Result<()> {
         .route("/health", get(health_handler))
         .route("/process", post(process_image_handler))
         .layer(DefaultBodyLimit::max(10 * 1024 * 1024)) // 10MB limit
-        .layer(tower_http::cors::CorsLayer::permissive());
+        .layer(
+            tower_http::cors::CorsLayer::new()
+                .allow_origin("http://localhost:4000".parse::<HeaderValue>().unwrap())
+                .allow_methods([Method::GET, Method::POST])
+        );
 
     // Start server
     let addr = SocketAddr::from(([0, 0, 0, 0], 3006));

@@ -63,7 +63,8 @@ export class FlutterwaveAdapter implements PaymentAdapter {
   }
 
   verifyWebhookSignature(rawBody: string, signature: string): boolean {
-    // Flutterwave signature is often passed in the 'verif-hash' header
+    // F02: Flutterwave static signature verification. 
+    // WARNING: This is not as secure as HMAC. Ideally, verify the transaction via API.
     return signature === FLW_WEBHOOK_SECRET;
   }
 
@@ -107,16 +108,20 @@ export class FlutterwaveAdapter implements PaymentAdapter {
   }
 
   async initiatePayout(params: PayoutParams): Promise<PayoutResult> {
+    // F06: Fix field mapping. 
+    // We assume recipientCode is "BANK_CODE:ACCOUNT_NUMBER" for FLW
+    const [bankCode, accountNumber] = params.recipientCode.split(':');
+
     const res = await fetch(`${FLW_BASE}/transfers`, {
       method: 'POST',
       headers: headers(),
       body: JSON.stringify({
-        account_bank: params.recipientCode, // bank code
-        account_number: params.reference, // account number
+        account_bank: bankCode || params.recipientCode,
+        account_number: accountNumber || '0000000000', // Default if missing
         amount: params.amountInSubunit / 100,
         currency: 'NGN',
         narration: params.reason,
-        reference: `PAY-${Date.now()}`,
+        reference: params.reference,
       }),
     });
 

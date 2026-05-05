@@ -17,6 +17,12 @@ pub async fn process_image_handler(
     mut multipart: Multipart,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     if let Some(field) = multipart.next_field().await.map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))? {
+        // R12: Validate MIME type
+        let content_type = field.content_type().unwrap_or("application/octet-stream");
+        if !content_type.starts_with("image/") {
+            return Err((StatusCode::UNSUPPORTED_MEDIA_TYPE, format!("Invalid file type: {}", content_type)));
+        }
+
         let data = field.bytes().await.map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
         
         let width = params.w.unwrap_or(800);

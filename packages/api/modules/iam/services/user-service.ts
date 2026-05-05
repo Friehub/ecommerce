@@ -33,10 +33,12 @@ export const userService = {
     const user = await prisma.user.findUnique({ where: { email } })
     if (!user || !user.passwordHash) return null
 
+    // E07: Check isActive BEFORE expensive bcrypt to prevent timing oracle
+    // Return null instead of throwing to avoid leaking account status
+    if (!user.isActive) return null
+
     const valid = await bcrypt.compare(password, user.passwordHash)
     if (!valid) return null
-
-    if (!user.isActive) throw new Error('ACCOUNT_SUSPENDED')
 
     return user
   },

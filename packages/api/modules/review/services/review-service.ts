@@ -26,42 +26,40 @@ export const reviewService = {
       }
     });
 
-    // 3. Recalculate ratings
+    // 3. Recalculate ratings (B12: Optimized & Separate handlers)
     try {
-      // Aggregate for Product
       const productStats = await prisma.review.aggregate({
         where: { productId },
         _avg: { rating: true },
         _count: { _all: true }
       });
 
-      await prisma.product.update({
+      const updatedProduct = await prisma.product.update({
         where: { id: productId },
         data: {
           averageRating: productStats._avg.rating || 0,
           reviewCount: productStats._count._all
-        }
+        },
+        select: { sellerId: true } // B12: Get sellerId without extra query
       });
 
-      // Aggregate for Seller
-      const product = await prisma.product.findUnique({
-        where: { id: productId },
-        select: { sellerId: true }
-      });
-
-      if (product) {
+      // Aggregate for Seller in a separate block to avoid masking failures
+      try {
         const sellerStats = await prisma.review.aggregate({
-          where: { product: { sellerId: product.sellerId } },
+          where: { product: { sellerId: updatedProduct.sellerId } },
           _avg: { rating: true }
         });
 
         await prisma.seller.update({
-          where: { id: product.sellerId },
+          where: { id: updatedProduct.sellerId },
           data: { rating: sellerStats._avg.rating || 0 }
         });
+      } catch (sellerErr: any) {
+        console.error(`Failed to update seller rating for ${updatedProduct.sellerId}:`, sellerErr.message);
       }
-    } catch (err: any) {
-      console.warn('Failed to update ratings:', err.message);
+
+    } catch (productErr: any) {
+      console.error(`Failed to update product rating for ${productId}:`, productErr.message);
     }
 
     return review;

@@ -49,4 +49,6 @@ model Commission {
 
   agent AffiliateAgent @relation(fields: [agentId], references: [id])
   order Order          @relation(fields: [orderId], references: [id])
+
+  @@unique([agentId, orderId])
 }

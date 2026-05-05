@@ -90,36 +90,13 @@ jobs:
             run --rm --no-deps api \
             sh -c "npx prisma migrate deploy"
 
-      # Build and roll TypeScript services
-      - name: Deploy TypeScript services
+      # Build and roll all services together to avoid version mismatch
+      - name: Deploy services
         working-directory: /opt/jumia
         run: |
           docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
-            up -d --no-deps --build \
-            web api workers event-consumer
-
-      # API must pass health check before we proceed
-      - name: Health check — API server
-        run: |
-          echo "Waiting for API health check..."
-          for i in $(seq 1 12); do
-            if curl -sf http://localhost:4000/health > /dev/null 2>&1; then
-              echo "API is healthy on attempt $i"
-              exit 0
-            fi
-            echo "Attempt $i/12 — retrying in 5s..."
-            sleep 5
-          done
-          echo "API health check failed after 60s"
-          exit 1
-
-      # Rust services — only rebuild if their source changed
-      - name: Deploy Rust services
-        working-directory: /opt/jumia
-        run: |
-          docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
-            up -d --no-deps --build \
-            search inventory fraud recommendations auction image-processor
+            up -d --build --no-deps \
+            web api workers event-consumer search inventory fraud recommendations auction image-processor
 
       # Hot-reload Nginx config without dropping connections
       - name: Reload Nginx
@@ -163,7 +140,8 @@ jobs:
       - name: Cleanup build artifacts
         if: always()
         run: |
-          docker builder prune -f
+          # Keep 15GB of build cache to ensure fast subsequent builds
+          docker builder prune --keep-storage 15GB -f
           docker image prune -f
 
   # ── Job 3: Auto-rollback if deploy failed ─────────────────────────
@@ -198,6 +176,5 @@ jobs:
       - name: Cleanup rollback artifacts
         if: always()
         run: |
-          docker builder prune -f
+          docker builder prune --keep-storage 15GB -f
           docker image prune -f
-          docker system prune -af --volumes

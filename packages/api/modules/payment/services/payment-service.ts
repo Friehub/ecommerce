@@ -137,11 +137,20 @@ export const paymentService = {
   },
 
   async handleWebhook(reference: string, status: string) {
-    const payment = await prisma.payment.findFirst({
+    const payment = await prisma.payment.findUnique({
       where: { providerRef: reference }
     });
 
-    if (!payment) return;
+    if (!payment) {
+      console.warn(`[PaymentService] Webhook received for unknown reference: ${reference}`);
+      return;
+    }
+
+    // Idempotency check: Skip if already success
+    if (payment.status === 'SUCCESS') {
+      console.log(`[PaymentService] Payment ${reference} already marked as SUCCESS, skipping.`);
+      return;
+    }
 
     if (status === 'success') {
       await prisma.$transaction(async (tx) => {
@@ -155,11 +164,17 @@ export const paymentService = {
       });
 
       await publishEvent('payment.confirmed', { orderId: payment.orderId, amount: payment.amount });
+    } else {
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: { status: 'FAILED' }
+      });
     }
   },
 
-  async fundWallet(userId: string, amount: number) {
-    return prisma.wallet.upsert({
+  async fundWallet(userId: string, amount: number, tx?: any) {
+    const db = tx || prisma;
+    return db.wallet.upsert({
       where: { userId },
       update: {
         balance: { increment: amount },
@@ -186,14 +201,19 @@ export const paymentService = {
   },
 
   async payWithWallet(userId: string, orderId: string, amount: number) {
-    const wallet = await prisma.wallet.findUnique({ where: { userId } });
-    if (!wallet || wallet.balance.lt(amount)) throw new Error('INSUFFICIENT_FUNDS');
-
     return prisma.$transaction(async (tx) => {
-      await tx.wallet.update({
+      const wallet = await tx.wallet.findUnique({ where: { userId } });
+      if (!wallet || wallet.balance.lt(amount)) throw new Error('INSUFFICIENT_FUNDS');
+
+      // E06: Atomic balance decrement and re-verify
+      const updated = await tx.wallet.update({
         where: { id: wallet.id },
         data: { balance: { decrement: amount } }
       });
+
+      if (updated.balance.lt(0)) {
+        throw new Error('INSUFFICIENT_FUNDS'); // Rollback if concurrent spend caused overdraft
+      }
 
       await tx.walletTransaction.create({
         data: {

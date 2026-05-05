@@ -80,61 +80,73 @@ export const ledgerService = {
   async releaseMatureEscrow() {
     const now = new Date();
     
-    // Find all entries that are PENDING and mature
-    const matureEntries = await prisma.sellerLedgerEntry.findMany({
+    // B05: Use atomic updateMany with inline dispute filtering
+    const result = await prisma.sellerLedgerEntry.updateMany({
       where: {
         status: LedgerStatus.PENDING,
         availableAt: { lte: now },
-        orderLineId: { not: null }
-      },
-      select: { id: true, orderLineId: true }
-    });
-
-    if (matureEntries.length === 0) return { count: 0 };
-
-    const orderLineIds = matureEntries
-      .map(e => e.orderLineId)
-      .filter((id): id is string => id !== null);
-    
-    // Find order lines that have an active dispute
-    const activeDisputes = await prisma.dispute.findMany({
-      where: {
-        orderLineId: { in: orderLineIds },
-        status: { in: ['OPEN', 'UNDER_REVIEW'] }
-      },
-      select: { orderLineId: true }
-    });
-
-    const disputedOrderLineIds = new Set(activeDisputes.map(d => d.orderLineId));
-
-    const eligibleEntryIds = matureEntries
-      .filter(e => !disputedOrderLineIds.has(e.orderLineId))
-      .map(e => e.id);
-
-    if (eligibleEntryIds.length === 0) return { count: 0 };
-
-    return await prisma.sellerLedgerEntry.updateMany({
-      where: {
-        id: { in: eligibleEntryIds }
+        orderLineId: { not: null },
+        orderLine: {
+          disputes: { 
+            none: { status: { in: ['OPEN', 'UNDER_REVIEW'] } } 
+          }
+        }
       },
       data: {
         status: LedgerStatus.AVAILABLE
       }
     });
+
+    return { count: result.count };
+  },
+
+  async releaseEscrowByOrder(orderId: string) {
+    const now = new Date();
+    
+    // B05: Atomic update for specific order
+    const result = await prisma.sellerLedgerEntry.updateMany({
+      where: {
+        orderLine: { package: { orderId } },
+        status: LedgerStatus.PENDING,
+        availableAt: { lte: now },
+        orderLine: {
+          disputes: { 
+            none: { status: { in: ['OPEN', 'UNDER_REVIEW'] } } 
+          }
+        }
+      },
+      data: {
+        status: LedgerStatus.AVAILABLE
+      }
+    });
+
+    return { count: result.count };
   },
 
   async withdrawFunds(sellerId: string, amount: Decimal | number, statementId?: string | null) {
     const decimalAmount = new Decimal(amount);
     
     return await prisma.$transaction(async (tx) => {
-      // 1. Check available balance (using tx client for consistency)
+      // B06: Debit first, then verify (prevents TOCTOU)
+      
+      // 1. Create Ledger Entry for the withdrawal (Debit)
+      await tx.sellerLedgerEntry.create({
+        data: {
+          sellerId,
+          type: LedgerEntryType.WITHDRAWAL,
+          amount: decimalAmount.negated(),
+          status: LedgerStatus.AVAILABLE 
+        }
+      });
+
+      // 2. Recompute balance — if now negative, roll back
       const availableBalance = await this.getSellerBalance(sellerId, LedgerStatus.AVAILABLE, tx as any);
       
-      if (availableBalance.lessThan(decimalAmount)) {
+      if (availableBalance.lessThan(0)) {
         throw new Error('INSUFFICIENT_FUNDS');
       }
 
-      // 2. Create Payout record
+      // 3. Create Payout record
       const payout = await tx.payout.create({
         data: {
           sellerId,
@@ -144,17 +156,7 @@ export const ledgerService = {
         }
       });
 
-      // 3. Create Ledger Entry for the withdrawal
-      const ledgerEntry = await tx.sellerLedgerEntry.create({
-        data: {
-          sellerId,
-          type: LedgerEntryType.WITHDRAWAL,
-          amount: decimalAmount.negated(),
-          status: LedgerStatus.AVAILABLE // Withdrawals are immediate deductions from available balance
-        }
-      });
-
-      return { payout, ledgerEntry };
+      return { payout };
     });
   },
 

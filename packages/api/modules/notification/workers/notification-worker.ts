@@ -4,7 +4,7 @@ import { prisma } from '@ecom/db';
 import { notificationService } from '../services/notification-service';
 import { emailTemplates } from '../services/email-templates';
 
-export const notificationWorker = new Worker('system-events', async (job: Job) => {
+export const notificationWorker = new Worker('notification-events', async (job: Job) => {
   console.log(`[NotificationWorker] Received system event job ${job.id} of type ${job.name}`);
 
   const eventType = job.name;

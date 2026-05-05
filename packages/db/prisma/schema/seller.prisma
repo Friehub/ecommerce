@@ -16,6 +16,7 @@ model Seller {
   user        User                @relation(fields: [userId], references: [id])
   documents   SellerDocument[]
   products    Product[]
+  packages    OrderPackage[]
   ledger      SellerLedgerEntry[]
   statements  SellerStatement[]
   payouts     Payout[]

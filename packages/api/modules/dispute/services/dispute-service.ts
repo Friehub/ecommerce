@@ -69,10 +69,12 @@ export const disputeService = {
     const dispute = await prisma.dispute.findUnique({ where: { id: disputeId } });
     if (!dispute) throw new Error('DISPUTE_NOT_FOUND');
     
-    // Authorization check
-    if (dispute.buyerId !== senderId && dispute.sellerId !== senderId) {
-      // In a real scenario, an admin might also be able to respond. 
-      // This simple check works for buyer/seller.
+    // E05: senderId is a User.id, but dispute.sellerId is a Seller.id.
+    // We must resolve the seller to check authorization.
+    const seller = await prisma.seller.findUnique({ where: { userId: senderId } });
+    const isParticipant = dispute.buyerId === senderId || (seller && dispute.sellerId === seller.id);
+
+    if (!isParticipant) {
       throw new Error('UNAUTHORIZED');
     }
 
@@ -84,8 +86,8 @@ export const disputeService = {
       }
     });
 
-    // Update dispute status to UNDER_REVIEW if it's the seller's first response
-    if (dispute.status === 'OPEN' && senderId === dispute.sellerId) {
+    // Update dispute status to UNDER_REVIEW if it's the seller's response
+    if (dispute.status === 'OPEN' && seller && senderId === seller.userId && dispute.sellerId === seller.id) {
       await prisma.dispute.update({
         where: { id: disputeId },
         data: { status: 'UNDER_REVIEW' }
@@ -99,7 +101,11 @@ export const disputeService = {
     const dispute = await prisma.dispute.findUnique({ where: { id: disputeId } });
     if (!dispute) throw new Error('DISPUTE_NOT_FOUND');
     
-    if (dispute.buyerId !== uploaderId && dispute.sellerId !== uploaderId) {
+    // E05: Fix auth check for sellers (uploaderId is a User.id)
+    const seller = await prisma.seller.findUnique({ where: { userId: uploaderId } });
+    const isParticipant = dispute.buyerId === uploaderId || (seller && dispute.sellerId === seller.id);
+
+    if (!isParticipant) {
       throw new Error('UNAUTHORIZED');
     }
 
@@ -113,6 +119,10 @@ export const disputeService = {
   },
 
   async getDisputeThread(disputeId: string, userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error('USER_NOT_FOUND');
+    const isAdmin = user.role === 'ADMIN';
+
     const dispute = await prisma.dispute.findUnique({
       where: { id: disputeId },
       include: {
@@ -125,11 +135,11 @@ export const disputeService = {
 
     if (!dispute) throw new Error('DISPUTE_NOT_FOUND');
     
-    // Ensure the caller is either the buyer, the seller, or an admin
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    const isAdmin = user?.role === 'ADMIN';
+    // E05: Fix auth check for sellers (userId is a User.id)
+    const seller = await prisma.seller.findUnique({ where: { userId } });
+    const isParticipant = dispute.buyerId === userId || (seller && dispute.sellerId === seller.id);
 
-    if (dispute.buyerId !== userId && dispute.sellerId !== userId && !isAdmin) {
+    if (!isParticipant && !isAdmin) {
       throw new Error('UNAUTHORIZED');
     }
 
@@ -139,12 +149,15 @@ export const disputeService = {
   async getMyDisputes(userId: string) {
     const seller = await prisma.seller.findUnique({ where: { userId } });
     
+    // B13: Dynamically build OR clauses to avoid nonsense fallbacks
+    const orClauses: any[] = [{ buyerId: userId }];
+    if (seller) {
+      orClauses.push({ sellerId: seller.id });
+    }
+
     return prisma.dispute.findMany({
       where: {
-        OR: [
-          { buyerId: userId },
-          { sellerId: seller?.id || 'NON_EXISTENT' }
-        ]
+        OR: orClauses
       },
       include: {
         order: { select: { id: true, total: true } }

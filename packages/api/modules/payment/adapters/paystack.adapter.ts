@@ -53,7 +53,9 @@ export class PaystackAdapter implements PaymentAdapter {
     return {
       authorizationUrl: data.data.authorization_url,
       reference,
-      providerRef: data.data.reference,
+      // F12: providerRef must match the reference WE sent, 
+      // because that's what Paystack returns in the webhook.
+      providerRef: reference,
     };
   }
 

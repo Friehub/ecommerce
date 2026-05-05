@@ -2,6 +2,7 @@ import { Worker } from 'bullmq';
 import { redis } from '@ecom/shared/src/infra/redis';
 import { catalogService } from '@ecom/api/modules/catalog/services/catalog-service';
 import { ledgerService } from '@ecom/api/modules/revenue/services/ledger-service';
+import { orderService } from '@ecom/api/modules/order/services/order-service';
 import { prisma } from '@ecom/db';
 import * as dotenv from 'dotenv';
 import { startMetricsServer, orderProcessingLatency } from './metrics';
@@ -53,22 +54,78 @@ const eventWorker = new Worker('system-events', async job => {
 
 const orderWorker = new Worker('orders', async job => {
   const end = orderProcessingLatency.startTimer({ job_name: job.name });
-  console.log(`[OrderWorker] Processing: ${job.name} for order ${job.data.orderId}`);
+  console.log(`[OrderWorker] Processing: ${job.name} (${job.id})`);
 
   try {
-    if (job.name === 'escrow-release') {
-      const { orderId } = job.data;
-      const order = await prisma.order.findUnique({
-        where: { id: orderId }
-      });
-
-      if (!order) return;
-
-      // Only release if still delivered (not returned/cancelled)
-      if (order.status === 'DELIVERED' || order.status === 'COMPLETED') {
-        console.log(`[Settlement] Releasing escrow for order ${orderId}`);
-        await ledgerService.releaseMatureEscrow();
+    switch (job.name) {
+      case 'sla-payment-timeout': {
+        const orderId = job.data.orderId;
+        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        if (order && order.status === 'PENDING_PAYMENT') {
+          console.log(`[Timeout] Order ${orderId} timed out for payment. Cancelling.`);
+          await orderService.updateStatus(orderId, 'CANCELLED');
+        }
+        break;
       }
+
+      case 'escrow-release': {
+        const orderId = job.data.orderId;
+        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        if (order && (order.status === 'DELIVERED' || order.status === 'COMPLETED')) {
+          console.log(`[Settlement] Releasing escrow for order ${orderId}`);
+          await ledgerService.releaseEscrowByOrder(orderId);
+          if (order.status === 'DELIVERED') {
+            await orderService.updateStatus(orderId, 'COMPLETED');
+          }
+        }
+        break;
+      }
+
+      case 'sla-shipment-timeout': {
+        const orderId = job.data.orderId;
+        const order = await prisma.order.findUnique({ 
+          where: { id: orderId },
+          include: { packages: true }
+        });
+
+        if (order && (order.status === 'PAID' || order.status === 'PROCESSING')) {
+          const overduePackages = order.packages.filter(p => p.status === 'PENDING');
+          if (overduePackages.length > 0) {
+            console.log(`[SLA] Order ${orderId} has overdue packages. Penalizing.`);
+            for (const pkg of overduePackages) {
+              await ledgerService.recordPenalty(pkg.sellerId, 500, 'SLA_BREACH_PROCESSING_TIMEOUT');
+            }
+          }
+        }
+        break;
+      }
+
+      case 'fraud-review': {
+        const { orderId, verdict } = job.data;
+        if (verdict === 'FAIL') {
+          console.log(`[Fraud] Order ${orderId} failed fraud review. Cancelling.`);
+          await orderService.updateStatus(orderId, 'CANCELLED');
+        }
+        break;
+      }
+
+      case 'dispute-auto-escalate': {
+        const { disputeId } = job.data;
+        const dispute = await prisma.dispute.findUnique({ where: { id: disputeId } });
+        if (dispute && dispute.status === 'OPEN') {
+          console.log(`[Dispute] Dispute ${disputeId} timed out. Escalating.`);
+          await prisma.dispute.update({
+            where: { id: disputeId },
+            data: { status: 'ESCALATED' }
+          });
+          const { publishEvent } = await import('@ecom/shared/src/events/bus');
+          await publishEvent('dispute.escalated', { disputeId, reason: 'AUTO_ESCALATION_TIMEOUT' });
+        }
+        break;
+      }
+
+      default:
+        console.log(`[OrderWorker] Unhandled job name: ${job.name}`);
     }
   } catch (error) {
     console.error(`[OrderWorker] Error processing job ${job.id}:`, error);

@@ -2,10 +2,13 @@ use tantivy::schema::*;
 use tantivy::{Index, IndexReader, IndexWriter, ReloadPolicy};
 use std::path::Path;
 use anyhow::Result;
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 pub struct SearchIndex {
     pub index: Index,
     pub reader: IndexReader,
+    pub writer: Arc<Mutex<IndexWriter>>,
     pub schema: Schema,
     pub fields: ProductFields,
 }
@@ -80,15 +83,16 @@ impl SearchIndex {
             .reload_policy(ReloadPolicy::OnCommitWithDelay)
             .try_into()?;
 
+        // R06: Create a long-lived writer with 50MB budget
+        let writer = Arc::new(Mutex::new(index.writer(50_000_000)?));
+
         Ok(Self {
             index,
             reader,
+            writer,
             schema,
             fields,
         })
     }
 
-    pub fn get_writer(&self, memory_budget_bytes: usize) -> Result<IndexWriter> {
-        Ok(self.index.writer(memory_budget_bytes)?)
-    }
 }

@@ -46,6 +46,7 @@ model OrderPackage {
   estimatedDelivery DateTime?
 
   order     Order       @relation(fields: [orderId], references: [id])
+  seller    Seller      @relation(fields: [sellerId], references: [id])
   lines     OrderLine[]
   shipments Shipment[]
 

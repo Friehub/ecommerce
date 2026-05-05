@@ -14,8 +14,9 @@ export async function POST(req: Request) {
     }
 
     // Verify signature
+    const secret = process.env.PAYSTACK_WEBHOOK_SECRET || PAYSTACK_SECRET_KEY; // Fallback to secret key if webhook secret not set
     const hash = crypto
-      .createHmac('sha512', PAYSTACK_SECRET_KEY)
+      .createHmac('sha512', secret)
       .update(body)
       .digest('hex');
 

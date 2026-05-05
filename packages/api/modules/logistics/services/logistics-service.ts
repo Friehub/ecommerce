@@ -60,13 +60,9 @@ export const logisticsService = {
       include: { package: true }
     });
 
-    // Sync package status
-    // Map shipment status to OrderPackage status if necessary
-    // For now they are 1:1 in the modular schema
-    await prisma.orderPackage.update({
-      where: { id: shipment.packageId },
-      data: { status: status as any }
-    });
+    // B11: Authoritative sync via packageService
+    const { packageService } = await import('../../order/services/package-service');
+    await packageService.updateStatus(shipment.packageId, status as any);
 
     await publishEvent('shipment.status_updated', { shipmentId, status });
     
@@ -76,20 +72,6 @@ export const logisticsService = {
         packageId: shipment.packageId,
         proofUrl 
       });
-      
-      // Check if all packages in the order are delivered
-      const otherPackages = await prisma.orderPackage.findMany({
-        where: { 
-          orderId: shipment.package.orderId,
-          id: { not: shipment.packageId }
-        },
-        select: { status: true }
-      });
-      
-      const allDelivered = otherPackages.every(p => p.status === 'DELIVERED');
-      if (allDelivered) {
-        await publishEvent('order.delivered', { orderId: shipment.package.orderId });
-      }
     }
 
     return shipment;

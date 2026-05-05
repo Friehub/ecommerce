@@ -13,19 +13,13 @@ impl FraudDb {
     }
 
     pub async fn get_user_history(&self, user_id: &str) -> Result<(i64, Decimal)> {
-        // Mock query - in reality, select count(*) and avg(amount) from transactions
-        // where user_id = $1 and status = 'completed'
-        
-        /*
         let row: (i64, Option<Decimal>) = sqlx::query_as(
             "SELECT COUNT(*), AVG(amount) FROM orders WHERE user_id = $1 AND status = 'COMPLETED'"
         )
         .bind(user_id)
         .fetch_one(&self.pool)
         .await?;
-        */
 
-        // Returning mock values for now
-        Ok((10, dec!(150.00)))
+        Ok((row.0, row.1.unwrap_or(dec!(0))))
     }
 }

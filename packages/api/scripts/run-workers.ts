@@ -4,6 +4,7 @@ import { bulkImportWorker } from '../modules/catalog/workers/bulk-import-worker'
 import { ledgerService } from '../modules/revenue/services/ledger-service';
 import { prisma } from '@ecom/db';
 import { affiliateService } from '../modules/affiliate/services/affiliate-service';
+import { orderService } from '../modules/order/services/order-service';
 import * as cron from 'node-cron';
 
 console.log('🚀 Starting System Workers...');
@@ -42,8 +43,8 @@ cron.schedule('0 1 * * 1', async () => {
   try {
     const activeSellers = await prisma.seller.findMany({ where: { status: 'ACTIVE' } });
     const now = new Date();
-    // Period: past 7 days
-    const periodEnd = new Date(now.setUTCHours(0,0,0,0));
+    // E08: Use immutable date creation to avoid mutating 'now' in-place
+    const periodEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
     const periodStart = new Date(periodEnd.getTime() - 7 * 24 * 60 * 60 * 1000);
     
     for (const seller of activeSellers) {
@@ -80,22 +81,28 @@ cron.schedule('0 2 * * *', async () => {
     });
 
     let count = 0;
+    const pipeline = redis.pipeline();
+
     for (const variant of variants) {
       // 1. Sync to Rust Search Service
       await catalogService.syncToSearch(variant.id);
       
       // 2. Build Autocomplete Trie in Redis (Prefix indexing)
+      // E09: Use pipeline to batch writes and prevent event loop blocking
       const title = variant.product.title.toLowerCase();
-      // Generate prefixes: "a", "ap", "app", "appl", "apple"
       for (let i = 1; i <= title.length; i++) {
         const prefix = title.substring(0, i);
-        // Using ZADD with score 0 enables lexicographical sorting in Redis
-        await redis.zadd('autocomplete_trie', 0, prefix);
+        pipeline.zadd('autocomplete_trie', 0, prefix);
       }
-      // Add a terminal character '*' to denote a complete word
-      await redis.zadd('autocomplete_trie', 0, `${title}*`);
+      pipeline.zadd('autocomplete_trie', 0, `${title}*`);
+      
+      // Flush pipeline every 1000 commands to avoid memory pressure
+      if (pipeline.length >= 1000) {
+        await pipeline.exec();
+      }
       count++;
     }
+    await pipeline.exec();
     console.log(`✅ Search sync complete. Processed ${count} active variants.`);
   } catch (error) {
     console.error('❌ Search sync failed:', error);
@@ -109,16 +116,19 @@ cron.schedule('0 3 * * *', async () => {
     const fortyEightHoursAgo = new Date();
     fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
 
-    const cancelled = await prisma.order.updateMany({
+    // E10: Use orderService.updateStatus to ensure stock is released correctly
+    const fraudOrders = await prisma.order.findMany({
       where: {
         status: 'FRAUD_REVIEW',
         createdAt: { lte: fortyEightHoursAgo }
       },
-      data: {
-        status: 'CANCELLED'
-      }
+      select: { id: true }
     });
-    console.log(`✅ Fraud queue cleanup complete. Auto-cancelled ${cancelled.count} suspicious orders.`);
+
+    for (const order of fraudOrders) {
+      await orderService.updateStatus(order.id, 'CANCELLED');
+    }
+    console.log(`✅ Fraud queue cleanup complete. Auto-cancelled ${fraudOrders.length} suspicious orders.`);
   } catch (error) {
     console.error('❌ Fraud queue cleanup failed:', error);
   }

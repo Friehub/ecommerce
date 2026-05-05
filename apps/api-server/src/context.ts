@@ -2,6 +2,7 @@ import { prisma } from '@ecom/db';
 import { type TRPCContext } from '@ecom/api';
 import { type FastifyRequest } from 'fastify';
 import jwt from 'jsonwebtoken';
+import { decode } from 'next-auth/jwt';
 
 /**
  * Extracts the session from the Authorization header (Bearer JWT)
@@ -16,6 +17,8 @@ export async function createContext(opts: {
 }): Promise<TRPCContext> {
   const { req, redis } = opts;
   const ip = (req.headers['x-forwarded-for'] as string) || req.ip;
+  const cookies = (req as any).cookies;
+  const cartSessionId = cookies?.['cart-session-id'] || 'anonymous';
 
   // ── 1. Try Authorization header (mobile / external clients) ───
   const authHeader = req.headers.authorization;
@@ -25,14 +28,15 @@ export async function createContext(opts: {
       const payload = jwt.verify(token, process.env.JWT_SECRET!, { algorithms: ['HS256'] }) as any;
       const user = await prisma.user.findUnique({
         where: { id: payload.sub },
-        select: { id: true, email: true, role: true, firstName: true, lastName: true },
+        select: { id: true, email: true, role: true, firstName: true, lastName: true, isActive: true },
       });
-      if (user) {
+      if (user && user.isActive) {
         return {
           session: { user },
           req: req.raw as unknown as Request,
           redis,
           ip,
+          sessionId: cartSessionId,
         };
       }
     } catch {
@@ -41,37 +45,46 @@ export async function createContext(opts: {
   }
 
   // ── 2. Try NextAuth session cookie (web browser) ───────────────
-  // NextAuth session token is validated via the DB session table
-  const cookies = (req as any).cookies;
-  const sessionToken =
-    cookies?.['__Secure-authjs.session-token'] ??
-    cookies?.['authjs.session-token'];
+  const cookieNames = ['__Secure-authjs.session-token', 'authjs.session-token'];
+  
+  for (const cookieName of cookieNames) {
+    const sessionToken = cookies?.[cookieName];
+    if (sessionToken) {
+      try {
+        const decoded = await decode({
+          token: sessionToken,
+          secret: process.env.NEXTAUTH_SECRET!,
+          salt: cookieName,
+        });
 
-  if (sessionToken) {
-    const dbSession = await prisma.session.findUnique({
-      where: { tokenHash: sessionToken },
-      include: {
-        user: {
-          select: { id: true, email: true, role: true, firstName: true, lastName: true },
-        },
-      },
-    });
+        if (decoded?.sub) {
+          const user = await prisma.user.findUnique({
+            where: { id: decoded.sub as string },
+            select: { id: true, email: true, role: true, firstName: true, lastName: true, isActive: true },
+          });
 
-    if (dbSession && dbSession.expiresAt > new Date()) {
-      return {
-        session: { user: dbSession.user },
-        req: req.raw as unknown as Request,
-        redis,
-        ip,
-      };
+          if (user && user.isActive) {
+            return {
+              session: { user },
+              req: req.raw as unknown as Request,
+              redis,
+              ip,
+              sessionId: cartSessionId,
+            };
+          }
+        }
+      } catch (err) {
+        console.warn(`[Context] Failed to decode NextAuth JWT from ${cookieName}:`, err);
+      }
     }
   }
 
-  // ── 3. Unauthenticated ─────────────────────────────────────────
+  // ── 3. Final Context (Unauthenticated) ─────────────────────────
   return {
     session: null,
     req: req.raw as unknown as Request,
     redis,
     ip,
+    sessionId: cartSessionId,
   };
 }

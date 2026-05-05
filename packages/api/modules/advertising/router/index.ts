@@ -2,13 +2,20 @@ import { createTRPCRouter, sellerProcedure, publicProcedure } from '../../../trp
 import { z } from 'zod';
 import { CreateCampaignSchema, AddAdGroupSchema, RecordActionSchema } from '../schemas';
 import { advertisingService } from '../services/advertising-service';
+import { prisma } from '@ecom/db';
+import { redis } from '@ecom/shared';
+import { TRPCError } from '@trpc/server';
 
 export const advertisingRouter = createTRPCRouter({
   createCampaign: sellerProcedure
     .input(CreateCampaignSchema)
     .mutation(async ({ ctx, input }) => {
+      // F03: Look up seller from DB since sellerProfile is not in session type
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new TRPCError({ code: 'NOT_FOUND', message: 'Seller profile not found' });
+
       return advertisingService.createCampaign(
-        ctx.session.user.sellerProfile!.id,
+        seller.id,
         input.name,
         input.budget,
         input.startDate,
@@ -18,7 +25,18 @@ export const advertisingRouter = createTRPCRouter({
 
   addAdGroup: sellerProcedure
     .input(AddAdGroupSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new TRPCError({ code: 'FORBIDDEN' });
+
+      // F07: Add campaign ownership check
+      const campaign = await prisma.adCampaign.findUnique({
+        where: { id: input.campaignId }
+      });
+      if (!campaign || campaign.sellerId !== seller.id) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Campaign does not belong to this seller' });
+      }
+
       return advertisingService.addAdGroup(
         input.campaignId,
         input.productId,
@@ -31,6 +49,13 @@ export const advertisingRouter = createTRPCRouter({
     .input(RecordActionSchema)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
+      const ip = ctx.req?.ip || 'unknown';
+
+      // F08: Deduplication and rate limiting
+      const dedupeKey = `ad:imp:${input.adGroupId}:${userId ?? ip}`;
+      const isNew = await redis.set(dedupeKey, '1', 'EX', 3600, 'NX');
+      if (!isNew) return null;
+
       return advertisingService.recordImpression(input.adGroupId, userId);
     }),
 
@@ -38,12 +63,21 @@ export const advertisingRouter = createTRPCRouter({
     .input(RecordActionSchema)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
+      const ip = ctx.req?.ip || 'unknown';
+
+      // F08: Deduplication and rate limiting to prevent click fraud
+      const dedupeKey = `ad:clk:${input.adGroupId}:${userId ?? ip}`;
+      const isNew = await redis.set(dedupeKey, '1', 'EX', 3600, 'NX');
+      if (!isNew) return null;
+
       return advertisingService.recordClick(input.adGroupId, userId);
     }),
 
   getCampaigns: sellerProcedure
     .query(async ({ ctx }) => {
-      return advertisingService.getSellerCampaigns(ctx.session.user.sellerProfile!.id);
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new TRPCError({ code: 'NOT_FOUND' });
+      return advertisingService.getSellerCampaigns(seller.id);
     }),
 
   updateStatus: sellerProcedure
@@ -52,8 +86,11 @@ export const advertisingRouter = createTRPCRouter({
       status: z.enum(['ACTIVE', 'PAUSED', 'ENDED'])
     }))
     .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new TRPCError({ code: 'NOT_FOUND' });
+
       return advertisingService.updateCampaignStatus(
-        ctx.session.user.sellerProfile!.id,
+        seller.id,
         input.campaignId,
         input.status
       );

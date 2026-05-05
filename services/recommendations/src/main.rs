@@ -3,7 +3,7 @@ mod service;
 mod handlers;
 
 use std::sync::Arc;
-use axum::{routing::get, Router};
+use axum::{routing::get, Router, http::{HeaderValue, Method}};
 use std::net::SocketAddr;
 use crate::service::RecommendationService;
 use crate::handlers::{product_recommendations_handler, user_recommendations_handler, health_handler};
@@ -33,7 +33,11 @@ async fn main() -> anyhow::Result<()> {
         .route("/health", get(health_handler))
         .route("/product/:id", get(product_recommendations_handler))
         .route("/user/:id", get(user_recommendations_handler))
-        .layer(tower_http::cors::CorsLayer::permissive())
+        .layer(
+            tower_http::cors::CorsLayer::new()
+                .allow_origin("http://localhost:4000".parse::<HeaderValue>().unwrap())
+                .allow_methods([Method::GET, Method::POST])
+        )
         .with_state(service);
 
     // Start server

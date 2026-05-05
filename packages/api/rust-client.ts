@@ -15,20 +15,37 @@ const SERVICES = {
 export class RustClient {
     private static async request<T>(baseUrl: string, path: string, options: RequestInit = {}): Promise<T> {
         const url = `${baseUrl}${path}`;
-        const response = await fetch(url, {
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers,
-            },
-        });
+        
+        // E05: Implement a hard timeout for all inter-service calls
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
 
-        if (!response.ok) {
-            const error = await response.text();
-            throw new Error(`Rust Service Error (${url}): ${response.status} - ${error}`);
+        try {
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal,
+                headers: {
+                    'Content-Type': 'application/json',
+                    // E04: Add internal auth header to all requests
+                    'X-Internal-Token': process.env.INTERNAL_API_TOKEN || '',
+                    ...options.headers,
+                },
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(`Rust Service Error (${url}): ${response.status} - ${error}`);
+            }
+
+            return response.json() as Promise<T>;
+        } catch (error: any) {
+            if (error.name === 'AbortError') {
+                throw new Error(`Rust Service Timeout (${url}): Request took longer than 5 seconds`);
+            }
+            throw error;
+        } finally {
+            clearTimeout(timeout);
         }
-
-        return response.json() as Promise<T>;
     }
 
     // Search Service

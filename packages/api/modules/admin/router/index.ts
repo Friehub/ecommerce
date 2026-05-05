@@ -2,6 +2,7 @@ import { prisma, SellerStatus, OrderStatus } from '@ecom/db';
 import { createTRPCRouter, adminProcedure } from '../../../trpc';
 import { ApproveSellerSchema, ResolveDisputeSchema, ManualRefundSchema } from '../schemas';
 import { adminService } from '../services/admin-service';
+import { orderService } from '../../order/services/order-service';
 import { z } from 'zod';
 
 export const adminRouter = createTRPCRouter({
@@ -46,11 +47,8 @@ export const adminRouter = createTRPCRouter({
       action: z.enum(['ALLOW', 'BLOCK'])
     }))
     .mutation(async ({ input }) => {
-      const status = input.action === 'ALLOW' ? 'PAID' : 'CANCELLED';
-      return prisma.order.update({
-        where: { id: input.orderId },
-        data: { status }
-      });
+      const targetStatus: OrderStatus = input.action === 'ALLOW' ? 'PAID' : 'CANCELLED';
+      return await orderService.updateStatus(input.orderId, targetStatus);
     }),
 
   getDisputeQueue: adminProcedure

@@ -35,8 +35,8 @@ export const redis =
       }))
 
 if (!isBuild && typeof (redis as any).on === 'function') {
-  (redis as any).on('error', () => {
-    // Swallow connection errors to prevent unhandled crashing
+  (redis as any).on('error', (err: Error) => {
+    console.error('[Redis] Connection error:', err.message);
   })
 }
 

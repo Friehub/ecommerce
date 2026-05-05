@@ -3,10 +3,10 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use crate::index::SearchIndex;
 use tantivy::collector::{TopDocs, Count};
-use tantivy::query::{QueryParser, TermQuery, RangeQuery};
-use tantivy::schema::{Term, Facet, Document};
-use tantivy::{TantivyDocument, Order};
-use serde_json::Value;
+use tantivy::query::{QueryParser, TermQuery, RangeQuery, BooleanQuery, Occur, Query as TantivyQuery};
+use tantivy::schema::{Term, IndexRecordOption, Schema};
+use tantivy::{TantivyDocument, Order, Document};
+use serde_json::{Value, json};
 
 #[derive(Deserialize)]
 pub struct SearchParams {
@@ -48,31 +48,85 @@ pub async fn search_handler(
         (StatusCode::BAD_REQUEST, Json(serde_json::json!({ "error": e.to_string() })))
     })?;
 
+    // R04/R05: Build Boolean Query for filters and mandatory active status
+    let mut subqueries: Vec<(Occur, Box<dyn TantivyQuery>)> = vec![
+        (Occur::Must, base_query),
+    ];
+
+    // Mandatory: Only show active and in-stock products
+    subqueries.push((Occur::Must, Box::new(TermQuery::new(
+        Term::from_field_u64(index.fields.is_active, 1),
+        IndexRecordOption::Basic,
+    ))));
+    subqueries.push((Occur::Must, Box::new(TermQuery::new(
+        Term::from_field_u64(index.fields.is_in_stock, 1),
+        IndexRecordOption::Basic,
+    ))));
+
+    // Optional filters
+    if let (Some(min), Some(max)) = (params.min_price, params.max_price) {
+        let field_name = index.schema.get_field_name(index.fields.price).to_string();
+        subqueries.push((Occur::Must, Box::new(RangeQuery::new_f64(
+            field_name, min..max,
+        ))));
+    }
+    if let Some(cat_id) = params.category_id {
+        subqueries.push((Occur::Must, Box::new(TermQuery::new(
+            Term::from_field_text(index.fields.category_id, &cat_id),
+            IndexRecordOption::Basic,
+        ))));
+    }
+    if let Some(brand) = params.brand {
+        subqueries.push((Occur::Must, Box::new(TermQuery::new(
+            Term::from_field_text(index.fields.brand_name, &brand),
+            IndexRecordOption::Basic,
+        ))));
+    }
+
+    let final_query = BooleanQuery::new(subqueries);
+
     // 2. Search and Sort
     let limit = params.limit.unwrap_or(20);
     let offset = params.offset.unwrap_or(0);
 
     let top_docs_collector = TopDocs::with_limit(limit).and_offset(offset);
     
-    let top_docs: Vec<tantivy::DocAddress> = if let Some(sort) = params.sort_by {
+    // R11: Use Count collector for actual total
+    let (total, top_docs_raw) = if let Some(sort) = params.sort_by {
         match sort.as_str() {
-            "price_asc" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<f64>("price", Order::Asc))
-                .map(|res| res.into_iter().map(|(_, doc)| doc).collect()),
-            "price_desc" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<f64>("price", Order::Desc))
-                .map(|res| res.into_iter().map(|(_, doc)| doc).collect()),
-            "rating" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<f64>("rating", Order::Desc))
-                .map(|res| res.into_iter().map(|(_, doc)| doc).collect()),
-            "newest" => searcher.search(&base_query, &top_docs_collector.order_by_fast_field::<i64>("created_at", Order::Desc))
-                .map(|res| res.into_iter().map(|(_, doc)| doc).collect()),
-            _ => searcher.search(&base_query, &top_docs_collector)
-                .map(|res| res.into_iter().map(|(_, doc)| doc).collect()),
+            "price_asc" => {
+                let (total, docs) = searcher.search(&final_query, &(Count, top_docs_collector.order_by_fast_field::<f64>("price", Order::Asc)))
+                    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": e.to_string() }))))?;
+                (total, docs.into_iter().map(|(_, doc)| doc).collect())
+            },
+            "price_desc" => {
+                let (total, docs) = searcher.search(&final_query, &(Count, top_docs_collector.order_by_fast_field::<f64>("price", Order::Desc)))
+                    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": e.to_string() }))))?;
+                (total, docs.into_iter().map(|(_, doc)| doc).collect())
+            },
+            "rating" => {
+                let (total, docs) = searcher.search(&final_query, &(Count, top_docs_collector.order_by_fast_field::<f64>("rating", Order::Desc)))
+                    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": e.to_string() }))))?;
+                (total, docs.into_iter().map(|(_, doc)| doc).collect())
+            },
+            "newest" => {
+                let (total, docs) = searcher.search(&final_query, &(Count, top_docs_collector.order_by_fast_field::<i64>("created_at", Order::Desc)))
+                    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": e.to_string() }))))?;
+                (total, docs.into_iter().map(|(_, doc)| doc).collect())
+            },
+            _ => {
+                let (total, docs) = searcher.search(&final_query, &(Count, top_docs_collector))
+                    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": e.to_string() }))))?;
+                (total, docs.into_iter().map(|(_, doc)| doc).collect())
+            },
         }
     } else {
-        searcher.search(&base_query, &top_docs_collector)
-            .map(|res| res.into_iter().map(|(_, doc)| doc).collect())
-    }.map_err(|e| {
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() })))
-    })?;
+        let (total, docs) = searcher.search(&final_query, &(Count, top_docs_collector))
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": e.to_string() }))))?;
+        (total, docs.into_iter().map(|(_, doc)| doc).collect())
+    };
+
+    let top_docs: Vec<tantivy::DocAddress> = top_docs_raw;
 
     // 3. Process Results
     let mut results = Vec::new();
@@ -89,8 +143,8 @@ pub async fn search_handler(
 
     Ok(Json(SearchResponse { 
         results, 
-        total: 0, 
-        facets: serde_json::json!({}), 
+        total, 
+        facets: json!({}), 
     }))
 }
 
@@ -125,9 +179,8 @@ pub async fn upsert_handler(
     State(index): State<Arc<SearchIndex>>,
     Json(doc): Json<UpsertDoc>,
 ) -> Result<StatusCode, (StatusCode, Json<Value>)> {
-    let mut writer = index.get_writer(50_000_000).map_err(|e| {
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() })))
-    })?;
+    // R06: Use shared writer to prevent lock contention
+    let mut writer = index.writer.lock().await;
 
     // Delete existing if any
     let term = Term::from_field_text(index.fields.variant_id, &doc.variant_id);

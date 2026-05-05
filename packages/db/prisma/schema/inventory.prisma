@@ -22,20 +22,28 @@ model StockLevel {
 
   variant   ProductVariant @relation(fields: [variantId], references: [id])
   warehouse Warehouse      @relation(fields: [warehouseId], references: [id])
+  reservations StockReservation[]
 
   @@unique([variantId, sellerId, warehouseId])
 }
 
 model StockReservation {
-  id        String            @id @default(cuid())
-  variantId String
-  orderId   String?
-  quantity  Int
-  expiresAt DateTime
-  status    ReservationStatus @default(ACTIVE)
+  id          String            @id @default(cuid())
+  variantId   String
+  sellerId    String
+  warehouseId String
+  orderId     String?
+  quantity    Int
+  expiresAt   DateTime
+  status      ReservationStatus @default(ACTIVE)
 
-  variant ProductVariant @relation(fields: [variantId], references: [id])
-  order   Order?         @relation(fields: [orderId], references: [id])
+  variant    ProductVariant @relation(fields: [variantId], references: [id])
+  order      Order?         @relation(fields: [orderId], references: [id])
+  stockLevel StockLevel     @relation(fields: [variantId, sellerId, warehouseId], references: [variantId, sellerId, warehouseId])
+
+  @@index([orderId, status])
+  @@index([variantId, status])
+  @@index([expiresAt, status])
 }
 
 enum ReservationStatus {

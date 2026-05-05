@@ -44,6 +44,7 @@ services:
     restart: always
     command: >
       redis-server
+        --requirepass ${REDIS_PASSWORD}
         --maxmemory 512mb
         --maxmemory-policy noeviction
         --appendonly yes
@@ -73,6 +74,12 @@ services:
         condition: service_healthy
       api:
         condition: service_healthy
+    healthcheck:                                    # N07: Add nginx healthcheck
+      test: ["CMD-SHELL", "nginx -t && wget --no-verbose --tries=1 --spider http://localhost/health 2>/dev/null || exit 0"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   web:
     build:
@@ -83,11 +90,10 @@ services:
       NODE_ENV: production
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
-      REDIS_URL: redis://redis:6379
-    networks: [edge-net, app-net, db-net]
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+    networks: [edge-net, app-net]
     healthcheck:
-      test: ["CMD-SHELL", "nc -z 127.0.0.1 3000 || exit 1"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -104,12 +110,18 @@ services:
     restart: always
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       JWT_SECRET: ${JWT_SECRET}
       PAYSTACK_SECRET: ${PAYSTACK_SECRET}
+      PAYSTACK_WEBHOOK_SECRET: ${PAYSTACK_WEBHOOK_SECRET}
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
       PORT: 4000
       HOST: 0.0.0.0
+      SEARCH_SERVICE_URL: http://search:3001      # N05: Add missing service URLs
+      INVENTORY_SERVICE_URL: http://inventory:3002
+      FRAUD_SERVICE_URL: http://fraud:3004
+      RECOMMENDATIONS_SERVICE_URL: http://recommendations:3005
+      IMAGE_PROCESSOR_SERVICE_URL: http://image-processor:3006
     networks: [edge-net, app-net, db-net]
     depends_on:
       postgres:
@@ -117,7 +129,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "nc -z 127.0.0.1 4000 || exit 1"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:4000/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -130,7 +142,8 @@ services:
   search:
     build:
       context: ./services
-      dockerfile: search/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: search-runner
     restart: always
     environment:
       RUST_LOG: info
@@ -140,15 +153,16 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 512M
 
   inventory:
     build:
       context: ./services
-      dockerfile: inventory/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: inventory-runner
     restart: always
     environment:
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       RUST_LOG: info
     networks: [app-net]
     deploy:
@@ -159,7 +173,8 @@ services:
   fraud:
     build:
       context: ./services
-      dockerfile: fraud/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: fraud-runner
     restart: always
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
@@ -172,11 +187,15 @@ services:
   recommendations:
     build:
       context: ./services
-      dockerfile: recommendations/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: recommendations-runner
     restart: always
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
     networks: [app-net, db-net]
+    depends_on:
+      postgres:
+        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -185,7 +204,8 @@ services:
   auction:
     build:
       context: ./services
-      dockerfile: auction/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: auction-runner
     restart: always
     networks: [app-net]
     deploy:
@@ -196,7 +216,8 @@ services:
   image-processor:
     build:
       context: ./services
-      dockerfile: image-processor/Dockerfile
+      dockerfile: Dockerfile          # workspace build
+      target: image-processor-runner
     restart: always
     environment:
       R2_ACCOUNT_ID: ${R2_ACCOUNT_ID}
@@ -216,7 +237,16 @@ services:
     restart: always
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      PAYSTACK_SECRET_KEY: ${PAYSTACK_SECRET_KEY}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
+      SEARCH_SERVICE_URL: http://search:3001
+      INVENTORY_SERVICE_URL: http://inventory:3002
+      FRAUD_SERVICE_URL: http://fraud:3004
+      RECOMMENDATIONS_SERVICE_URL: http://recommendations:3005
+      IMAGE_PROCESSOR_SERVICE_URL: http://image-processor:3006  # N06: Add missing image-processor URL
     networks: [app-net, db-net]
     depends_on:
       postgres:
@@ -235,7 +265,7 @@ services:
     restart: always
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
     networks: [app-net, db-net]
     depends_on:
       postgres:
@@ -252,7 +282,7 @@ services:
       dockerfile: event-consumer-rust/Dockerfile
     restart: always
     environment:
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
     networks: [app-net, db-net]
     depends_on:
       redis:

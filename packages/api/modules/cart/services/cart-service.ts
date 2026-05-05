@@ -113,6 +113,11 @@ export const cartService = {
 
     const userCart = await this.getCart(guestSessionId, userId);
 
+    if (guestCart.id === userCart.id) {
+      console.log(`[CartMerge] Guest cart ${guestCart.id} is already the user cart, skipping merge.`);
+      return;
+    }
+
     for (const item of guestCart.items) {
       await prisma.cartItem.upsert({
         where: {
@@ -135,7 +140,7 @@ export const cartService = {
       });
     }
 
-    // Clean up guest cart
+    // Clean up guest cart only if it's different from user cart
     await prisma.cart.delete({ where: { id: guestCart.id } });
   }
 };

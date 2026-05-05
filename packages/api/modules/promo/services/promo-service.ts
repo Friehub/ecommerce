@@ -30,6 +30,14 @@ export const promoService = {
     return promo;
   },
 
+  async markCouponUsed(code: string, tx?: any) {
+    const db = tx || prisma;
+    await db.coupon.update({
+      where: { code },
+      data: { usedCount: { increment: 1 } }
+    });
+  },
+
   async getActiveFlashSales() {
     const now = new Date();
     return prisma.flashSale.findMany({

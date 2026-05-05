@@ -3,7 +3,7 @@ mod db;
 mod handlers;
 
 use std::sync::Arc;
-use axum::{routing::{get, post}, Router};
+use axum::{routing::{get, post}, Router, http::{HeaderValue, Method}};
 use std::net::SocketAddr;
 use crate::db::FraudDb;
 use crate::handlers::{check_transaction_handler, health_handler};
@@ -32,7 +32,11 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/health", get(health_handler))
         .route("/check", post(check_transaction_handler))
-        .layer(tower_http::cors::CorsLayer::permissive())
+        .layer(
+            tower_http::cors::CorsLayer::new()
+                .allow_origin("http://localhost:4000".parse::<HeaderValue>().unwrap())
+                .allow_methods([Method::GET, Method::POST])
+        )
         .with_state(db);
 
     // Start server

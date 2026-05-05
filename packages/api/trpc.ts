@@ -7,6 +7,7 @@ export interface TRPCContext {
   req?: Request;
   redis?: any;
   ip?: string;
+  sessionId?: string;
 }
 
 export const t = initTRPC.context<TRPCContext>().meta<OpenApiMeta>().create({
@@ -43,19 +44,31 @@ export const createTRPCRouter = t.router
 export const publicProcedure = t.procedure.use(loggerMiddleware)
 export const rateLimitProcedure = publicProcedure.use(async ({ ctx, next, path }) => {
   if (ctx.redis && ctx.ip) {
-    const key = `rl:${path}:${ctx.ip}`;
-    const limit = 5; // default 5 req
-    const window = 60; // per 60 seconds
+    try {
+      const key = `rl:${path}:${ctx.ip}`;
+      const limit = 5; // 5 req/min
+      const window = 60; // 60 seconds
 
-    const current = await ctx.redis.incr(key);
-    if (current === 1) {
-      await ctx.redis.expire(key, window);
-    }
+      const pipeline = ctx.redis.multi();
+      pipeline.incr(key);
+      pipeline.expire(key, window, 'NX'); // Only set expire if not already set
+      
+      const results = await pipeline.exec();
+      const current = results[0][1] as number;
 
-    if (current > limit) {
+      if (current > limit) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Rate limit exceeded. Please try again later.",
+        });
+      }
+    } catch (err) {
+      if (err instanceof TRPCError) throw err;
+      console.error(`[RateLimit] Redis error for ${path}:`, err);
+      // Fail closed for rate limiting
       throw new TRPCError({
-        code: "TOO_MANY_REQUESTS",
-        message: "Rate limit exceeded. Please try again later.",
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Service temporarily unavailable",
       });
     }
   }

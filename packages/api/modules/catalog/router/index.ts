@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure, sellerProcedure, protectedProcedure, rateLimitProcedure } from "../../../trpc";
+import { createTRPCRouter, publicProcedure, sellerProcedure, protectedProcedure, rateLimitProcedure, adminProcedure } from "../../../trpc";
 import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { productSchema, categorySchema } from "../schemas";
@@ -67,7 +67,7 @@ export const catalogRouter = createTRPCRouter({
       return await catalogService.createProduct(seller.id, input);
     }),
 
-  createCategory: publicProcedure // In reality, this should be adminProcedure
+  createCategory: adminProcedure
     .input(categorySchema)
     .mutation(async ({ input }) => {
       return await catalogService.createCategory(input);

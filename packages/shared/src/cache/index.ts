@@ -19,8 +19,24 @@ export const cacheService = {
     const cached = await cacheService.get<T>(key);
     if (cached) return cached;
 
-    const fresh = await fn();
-    await cacheService.set(key, fresh, ttlSeconds);
-    return fresh;
+    // Stampede protection: only one caller recomputes
+    const lockKey = `lock:${key}`;
+    const lockAcquired = await redis.set(lockKey, '1', 'EX', 10, 'NX');
+
+    if (!lockAcquired) {
+      // Another process is recomputing — wait briefly and return stale/newly-cached
+      await new Promise(r => setTimeout(r, 100));
+      const retryCached = await cacheService.get<T>(key);
+      if (retryCached) return retryCached;
+      // If still not there, fall through to recompute anyway as a safeguard
+    }
+
+    try {
+      const fresh = await fn();
+      await cacheService.set(key, fresh, ttlSeconds);
+      return fresh;
+    } finally {
+      await redis.del(lockKey);
+    }
   }
 };

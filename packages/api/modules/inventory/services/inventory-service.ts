@@ -20,7 +20,7 @@ export const inventoryService = {
    * Stub for the Rust Inventory Service.
    * Uses Redis DECR for high-concurrency safety during the contest.
    */
-  async reserveStock(variantId: string, quantity: number, orderId?: string, userId: string = 'system', tx?: any) {
+  async reserveStock(variantId: string, quantity: number, sellerId: string, warehouseId: string, orderId?: string, userId: string = 'system', tx?: any) {
     const db = tx || prisma;
     // Attempt to use Rust Inventory Service for high-performance atomic reservation
     try {
@@ -31,12 +31,21 @@ export const inventoryService = {
           data: {
             id: response.reservation_id,
             variantId,
+            sellerId,
+            warehouseId,
             orderId,
             quantity,
             expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 mins
             status: 'ACTIVE'
           }
         });
+
+        // Increment qtyReserved in DB
+        await db.stockLevel.update({
+          where: { variantId_sellerId_warehouseId: { variantId, sellerId, warehouseId } },
+          data: { qtyReserved: { increment: quantity } }
+        });
+
         return true;
       }
     } catch (e) {
@@ -65,20 +74,30 @@ export const inventoryService = {
       await db.stockReservation.create({
         data: {
           variantId,
+          sellerId,
+          warehouseId,
           orderId,
           quantity,
           expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 mins
           status: 'ACTIVE'
         }
       });
+
+      // Increment qtyReserved in DB
+      await db.stockLevel.update({
+        where: { variantId_sellerId_warehouseId: { variantId, sellerId, warehouseId } },
+        data: { qtyReserved: { increment: quantity } }
+      });
+
       return true;
     }
 
     return false;
   },
 
-  async releaseStock(reservationId: string) {
-    const reservation = await prisma.stockReservation.findUnique({
+  async releaseStock(reservationId: string, tx?: any) {
+    const db = tx || prisma;
+    const reservation = await db.stockReservation.findUnique({
       where: { id: reservationId }
     });
     
@@ -89,54 +108,61 @@ export const inventoryService = {
     await redis.incrby(key, reservation.quantity);
 
     // Mark in DB
-    await prisma.stockReservation.update({
+    await db.stockReservation.update({
       where: { id: reservationId },
       data: { status: 'RELEASED' }
+    });
+
+    // Decrement qtyReserved in DB
+    await db.stockLevel.update({
+      where: { 
+        variantId_sellerId_warehouseId: { 
+          variantId: reservation.variantId, 
+          sellerId: reservation.sellerId, 
+          warehouseId: reservation.warehouseId 
+        } 
+      },
+      data: { qtyReserved: { decrement: reservation.quantity } }
     });
   },
 
   async releaseStockByOrderId(orderId: string, tx?: any) {
     const db = tx || prisma;
     const reservations = await db.stockReservation.findMany({
-      where: { orderId, status: 'ACTIVE' }
+      where: { 
+        orderId, 
+        status: { in: ['ACTIVE', 'CONFIRMED'] } 
+      }
     });
 
     for (const res of reservations) {
-      // Return to Redis
-      const key = `stock:${res.variantId}`;
-      await redis.incrby(key, res.quantity);
-
-      // Mark in DB
-      await db.stockReservation.update({
-        where: { id: res.id },
-        data: { status: 'RELEASED' }
-      });
+      await this.releaseStock(res.id, db);
     }
   },
 
-  async confirmStock(orderId: string) {
-    const reservations = await prisma.stockReservation.findMany({
+  async confirmStock(orderId: string, tx?: any) {
+    const db = tx || prisma;
+    const reservations = await db.stockReservation.findMany({
       where: { orderId, status: 'ACTIVE' }
     });
 
     for (const res of reservations) {
       // Update persistent qtyOnHand and qtyReserved
-      // For the contest, we assume a single warehouse for simplicity
-      const stockLevel = await prisma.stockLevel.findFirst({
-        where: { variantId: res.variantId }
+      await db.stockLevel.update({
+        where: { 
+          variantId_sellerId_warehouseId: { 
+            variantId: res.variantId, 
+            sellerId: res.sellerId, 
+            warehouseId: res.warehouseId 
+          } 
+        },
+        data: {
+          qtyOnHand: { decrement: res.quantity },
+          qtyReserved: { decrement: res.quantity }
+        }
       });
 
-      if (stockLevel) {
-        await prisma.stockLevel.update({
-          where: { id: stockLevel.id },
-          data: {
-            qtyOnHand: { decrement: res.quantity },
-            qtyReserved: { decrement: 0 } // Reserved was already deducted from "available" in Redis
-          }
-        });
-      }
-
-      await prisma.stockReservation.update({
+      await db.stockReservation.update({
         where: { id: res.id },
         data: { status: 'CONFIRMED' }
       });

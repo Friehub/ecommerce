@@ -85,8 +85,8 @@ export const ledgerService = {
       where: {
         status: LedgerStatus.PENDING,
         availableAt: { lte: now },
-        orderLineId: { not: null },
-        orderLine: {
+        orderLine: { 
+          package: { orderId: { not: undefined } },
           disputes: { 
             none: { status: { in: ['OPEN', 'UNDER_REVIEW'] } } 
           }
@@ -106,10 +106,8 @@ export const ledgerService = {
     // B05: Atomic update for specific order
     const result = await prisma.sellerLedgerEntry.updateMany({
       where: {
-        orderLine: { package: { orderId } },
-        status: LedgerStatus.PENDING,
-        availableAt: { lte: now },
-        orderLine: {
+        orderLine: { 
+          package: { orderId },
           disputes: { 
             none: { status: { in: ['OPEN', 'UNDER_REVIEW'] } } 
           }

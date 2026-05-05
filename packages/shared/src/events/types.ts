@@ -31,6 +31,7 @@ export type EventType =
   | 'ad.conversion'
   | 'user.registered'
   | 'seller.approved'
+  | 'seller.document_rejected'
   | 'payout.triggered'
   | 'dispute.escalated';
 

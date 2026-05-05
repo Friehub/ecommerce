@@ -9,19 +9,19 @@ import * as cron from 'node-cron';
 
 console.log('🚀 Starting System Workers...');
 
-orderWorker.on('completed', (job) => {
+orderWorker.on('completed', (job: any) => {
   console.log(`✅ Job ${job.id} completed`);
 });
 
-orderWorker.on('failed', (job, err) => {
+orderWorker.on('failed', (job: any, err: any) => {
   console.error(`❌ Job ${job?.id} failed:`, err);
 });
 
-notificationWorker.on('completed', (job) => {
+notificationWorker.on('completed', (job: any) => {
   console.log(`✅ Notification Job ${job.id} completed`);
 });
 
-notificationWorker.on('failed', (job, err) => {
+notificationWorker.on('failed', (job: any, err: any) => {
   console.error(`❌ Notification Job ${job?.id} failed:`, err);
 });
 

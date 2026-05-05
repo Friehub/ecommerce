@@ -137,7 +137,7 @@ export const paymentService = {
   },
 
   async handleWebhook(reference: string, status: string) {
-    const payment = await prisma.payment.findUnique({
+    const payment = await prisma.payment.findFirst({
       where: { providerRef: reference }
     });
 

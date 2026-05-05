@@ -49,7 +49,7 @@ export const advertisingRouter = createTRPCRouter({
     .input(RecordActionSchema)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
-      const ip = ctx.req?.ip || 'unknown';
+      const ip = (ctx.req as any)?.ip || 'unknown';
 
       // F08: Deduplication and rate limiting
       const dedupeKey = `ad:imp:${input.adGroupId}:${userId ?? ip}`;
@@ -63,7 +63,7 @@ export const advertisingRouter = createTRPCRouter({
     .input(RecordActionSchema)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session?.user?.id;
-      const ip = ctx.req?.ip || 'unknown';
+      const ip = (ctx.req as any)?.ip || 'unknown';
 
       // F08: Deduplication and rate limiting to prevent click fraud
       const dedupeKey = `ad:clk:${input.adGroupId}:${userId ?? ip}`;

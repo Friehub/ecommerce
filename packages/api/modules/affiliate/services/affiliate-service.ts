@@ -53,13 +53,15 @@ export const affiliateService = {
 
     const amount = new Decimal(orderTotal).mul(agent.commissionRate).div(100);
 
-    // E11: Use upsert to prevent duplicates if recordCommission is called twice
-    const commission = await prisma.commission.upsert({
-      where: {
-        agentId_orderId: { agentId, orderId }
-      },
-      update: {}, // Already exists, don't double-count
-      create: {
+    // E11: Use findFirst to prevent duplicates if recordCommission is called twice
+    const existing = await prisma.commission.findFirst({
+      where: { agentId, orderId }
+    });
+
+    if (existing) return existing;
+
+    const commission = await prisma.commission.create({
+      data: {
         agentId,
         orderId,
         amount,

@@ -2,11 +2,11 @@
   "name": "@ecom/db",
   "version": "0.1.0",
   "private": true,
-  "main": "./dist/db/index.js",
-  "types": "./dist/db/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/db/index.js",
-    "./*": "./dist/db/*.js"
+    ".": "./dist/index.js",
+    "./*": "./dist/*.js"
   },
   "scripts": {
     "generate": "prisma generate",

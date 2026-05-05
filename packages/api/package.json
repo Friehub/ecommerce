@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -b",
     "workers": "tsx scripts/run-workers.ts"
   },
   "dependencies": {

@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit --rootDir ../../",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "workers": "tsx scripts/run-workers.ts"
   },
   "dependencies": {

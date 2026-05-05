@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { openApiDocument } from '@ecom/api/openapi';
 
+export const dynamic = 'force-dynamic';
+
 export const GET = () => {
   try {
     return NextResponse.json(openApiDocument);

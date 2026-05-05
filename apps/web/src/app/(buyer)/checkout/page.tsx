@@ -58,7 +58,6 @@ export default function CheckoutPage() {
       if (paymentMethod === 'CARD') {
         initializePaystack.mutate({
           orderId: order.id,
-          amount: (order as any).total,
         });
       } else {
         router.push(`/checkout/success?orderId=${order.id}`);

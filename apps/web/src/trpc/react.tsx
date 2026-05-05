@@ -21,6 +21,10 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
         }),
         httpBatchLink({
           url: getUrl(),
+          headers() {
+            const sessionId = typeof window !== 'undefined' ? localStorage.getItem('cart_session_id') : null;
+            return sessionId ? { 'x-cart-session-id': sessionId } : {};
+          },
         }),
       ],
     })

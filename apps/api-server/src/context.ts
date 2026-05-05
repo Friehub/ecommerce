@@ -18,7 +18,7 @@ export async function createContext(opts: {
   const { req, redis } = opts;
   const ip = (req.headers['x-forwarded-for'] as string) || req.ip;
   const cookies = (req as any).cookies;
-  const cartSessionId = cookies?.['cart-session-id'] || 'anonymous';
+  const cartSessionId = req.headers['x-cart-session-id'] as string || cookies?.['cart-session-id'] || 'anonymous';
 
   // ── 1. Try Authorization header (mobile / external clients) ───
   const authHeader = req.headers.authorization;

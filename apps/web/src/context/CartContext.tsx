@@ -34,7 +34,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const utils = api.useContext();
 
   const { data: cart, isLoading, refetch } = api.cart.get.useQuery(
-    { sessionId: sessionId! },
+    {},
     { enabled: !!sessionId }
   );
 
@@ -59,7 +59,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const addToCart = async (variantId: string, quantity: number) => {
     if (!sessionId) return;
-    await addMutation.mutateAsync({ sessionId, variantId, quantity });
+    await addMutation.mutateAsync({ variantId, quantity });
   };
 
   const updateQuantity = async (cartItemId: string, quantity: number) => {

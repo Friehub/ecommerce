@@ -6,7 +6,7 @@ import 'swagger-ui-dist/swagger-ui.css';
 export default function ApiDocsPage() {
   useEffect(() => {
     const initSwagger = async () => {
-      // @ts-ignore
+      // @ts-expect-error - swagger-ui-dist has no type definitions in some environments
       const { SwaggerUIBundle, SwaggerUIStandalonePreset } = await import('swagger-ui-dist');
       SwaggerUIBundle({
         url: '/api/openapi.json',

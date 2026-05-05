@@ -34,7 +34,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return {
             id: user.id,
             email: user.email,
-            // @ts-ignore
+            // @ts-expect-error - user role is present in DB but not in base type
             role: user.role,
           };
         } catch (error) {
@@ -48,7 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        // @ts-ignore
+        // @ts-expect-error - role is added to token
         token.role = user.role;
       }
       return token;
@@ -56,7 +56,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id as string;
-        // @ts-ignore
+        // @ts-expect-error - role is added to session user
         session.user.role = token.role;
       }
       return session;

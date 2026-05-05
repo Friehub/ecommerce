@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
-  // @ts-ignore
+  // @ts-expect-error - user role is added in session callback but not in base type
   const role = req.auth?.user?.role;
 
   // Protected Routes

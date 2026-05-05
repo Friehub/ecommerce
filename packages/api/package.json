@@ -2,8 +2,14 @@
   "name": "@ecom/api",
   "version": "0.1.0",
   "private": true,
-  "main": "./index.js",
-  "types": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./openapi": "./dist/openapi.js",
+    "./modules/*": "./dist/modules/*.js",
+    "./*": "./dist/*.js"
+  },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",

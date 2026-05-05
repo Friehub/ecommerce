@@ -37,11 +37,6 @@ jobs:
       - name: Typecheck
         run: pnpm -r typecheck
 
-      - name: Write staging .env
-        run: |
-          mkdir -p /opt/runner-work/jumia-staging
-          echo "${{ secrets.STAGING_ENV }}" > /opt/runner-work/jumia-staging/.env.staging
-          chmod 600 /opt/runner-work/jumia-staging/.env.staging
 
       - name: Sync code
         run: |
@@ -127,6 +122,3 @@ jobs:
           docker builder prune --keep-storage 15GB -f
           docker image prune -f
 
-      - name: Cleanup secrets
-        if: always()
-        run: rm -f /opt/runner-work/jumia-staging/.env.staging

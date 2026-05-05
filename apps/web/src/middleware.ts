@@ -8,30 +8,31 @@ export default auth((req) => {
   const role = req.auth?.user?.role;
 
   // Protected Routes
-  const isSellerRoute = nextUrl.pathname.startsWith("/seller");
+  const isSellerRoute = nextUrl.pathname.startsWith("/seller") && nextUrl.pathname !== "/seller/register";
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
   const isAuthRoute = nextUrl.pathname.startsWith("/login") || nextUrl.pathname.startsWith("/register");
 
   if (isSellerRoute) {
     if (!isLoggedIn) {
-      return NextResponse.redirect(new URL("/login", nextUrl));
+      const loginUrl = new URL("/login", nextUrl.origin);
+      return NextResponse.redirect(loginUrl);
     }
     if (role !== "SELLER" && role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/", nextUrl));
+      return NextResponse.redirect(new URL("/", nextUrl.origin));
     }
   }
 
   if (isAdminRoute) {
     if (!isLoggedIn) {
-      return NextResponse.redirect(new URL("/login", nextUrl));
+      return NextResponse.redirect(new URL("/login", nextUrl.origin));
     }
     if (role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/", nextUrl));
+      return NextResponse.redirect(new URL("/", nextUrl.origin));
     }
   }
 
   if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/", nextUrl));
+    return NextResponse.redirect(new URL("/", nextUrl.origin));
   }
 
   return NextResponse.next();

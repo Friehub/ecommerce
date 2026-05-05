@@ -11,7 +11,7 @@
     "./*": "./dist/*.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "typecheck": "tsc -b",
     "workers": "tsx scripts/run-workers.ts"
   },

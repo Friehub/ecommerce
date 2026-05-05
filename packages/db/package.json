@@ -10,7 +10,7 @@
   },
   "scripts": {
     "generate": "prisma generate",
-    "build": "tsc",
+    "build": "tsc -b",
     "typecheck": "tsc -b",
     "migrate": "prisma migrate dev",
     "seed": "ts-node seed.ts",

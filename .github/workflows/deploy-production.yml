@@ -73,6 +73,10 @@ jobs:
       # Sync code from checkout to the deploy directory
       - name: Sync code to deploy dir
         run: |
+          # Ensure directory exists and is writable by the runner user
+          sudo mkdir -p /opt/jumia
+          sudo chown -R $USER:$USER /opt/jumia
+          
           rsync -av --delete \
             --exclude='.git' \
             --exclude='node_modules' \

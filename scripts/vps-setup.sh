@@ -45,6 +45,7 @@ echo "Skipped — run manually after Cloudflare DNS is propagated."
 
 echo "── Step 6: Clone repo ──────────────────────────────────────"
 mkdir -p /opt/jumia
+chown -R $USER:$USER /opt/jumia
 git clone https://github.com/Friehub/ecommerce.git /opt/jumia
 echo "Edit /opt/jumia/.env.prod before deploying."
 

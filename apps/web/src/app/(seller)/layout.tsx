@@ -1,4 +1,4 @@
-import { SellerSidebar } from '@/components/seller/SellerSidebar';
+import { SellerSidebar } from '../../components/seller/SellerSidebar';
 
 export default function SellerLayout({
   children,

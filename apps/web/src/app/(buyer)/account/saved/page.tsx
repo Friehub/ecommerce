@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { api } from '@/trpc/react';
-import { ProductCard } from '@/components/ui/ProductCard';
+import { api } from '../../../../trpc/react';
+import { ProductCard } from '../../../../components/ui/ProductCard';
 import { Heart, ChevronRight } from 'lucide-react';
 
 export default function SavedItemsPage() {

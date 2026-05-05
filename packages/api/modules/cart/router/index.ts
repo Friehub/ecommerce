@@ -2,7 +2,7 @@ import { createTRPCRouter, publicProcedure, protectedProcedure } from "../../../
 import { z } from "zod";
 import { cartService } from "../services/cart-service";
 
-export const cartRouter = createTRPCRouter({
+const _cartRouter = createTRPCRouter({
   get: publicProcedure
     .input(z.object({})) // No input needed, uses context
     .query(async ({ ctx }) => {
@@ -49,3 +49,6 @@ export const cartRouter = createTRPCRouter({
       );
     }),
 });
+
+export const cartRouter = _cartRouter as any;
+export type CartRouter = typeof _cartRouter;

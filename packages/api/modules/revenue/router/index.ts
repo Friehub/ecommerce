@@ -3,7 +3,7 @@ import { z } from "zod";
 import { revenueService } from "../services/revenue-service";
 import { prisma } from "@ecom/db";
 
-export const revenueRouter = createTRPCRouter({
+const _revenueRouter = createTRPCRouter({
   requestPayout: sellerProcedure
     .input(z.object({ amount: z.number().positive() }))
     .mutation(async ({ ctx, input }) => {
@@ -48,3 +48,6 @@ export const revenueRouter = createTRPCRouter({
     });
   }),
 });
+
+export const revenueRouter = _revenueRouter as any;
+export type RevenueRouter = typeof _revenueRouter;

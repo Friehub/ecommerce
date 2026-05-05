@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { api } from '@/trpc/react';
+import { api } from '../../../../trpc/react';
 import { AlertCircle, ChevronRight, MessageSquare, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';

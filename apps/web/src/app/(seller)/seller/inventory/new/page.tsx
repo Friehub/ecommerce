@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/trpc/react';
+import { api } from '../../../../../trpc/react';
 import { 
   ArrowLeft, 
   Plus, 
@@ -18,7 +18,7 @@ import Link from 'next/link';
 
 export default function NewProduct() {
   const router = useRouter();
-  const utils = api.useContext();
+  const utils = api.useUtils();
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({

@@ -4,7 +4,7 @@ import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { paymentService } from "../services/payment-service";
 
-export const paymentRouter = createTRPCRouter({
+const _paymentRouter = createTRPCRouter({
   initializePaystack: protectedProcedure
     .input(z.object({
       orderId: z.string(),
@@ -47,3 +47,6 @@ export const paymentRouter = createTRPCRouter({
     });
   }),
 });
+
+export const paymentRouter = _paymentRouter as any;
+export type PaymentRouter = typeof _paymentRouter;

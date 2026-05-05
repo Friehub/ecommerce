@@ -1,7 +1,8 @@
 import { prisma } from '@ecom/db';
 import { publishEvent, queues } from '@ecom/shared';
+import type { Service } from '../../../types'
 
-export const disputeService = {
+export const disputeService: Service = {
   async openDispute(buyerId: string, orderId: string, reason: string, orderLineId?: string) {
     // 1. Verify the order belongs to the buyer
     const order = await prisma.order.findUnique({

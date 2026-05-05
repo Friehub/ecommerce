@@ -2,11 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { CategorySidebar } from '@/components/home/CategorySidebar';
-import { HeroCarousel } from '@/components/home/HeroCarousel';
-import { FlashSales } from '@/components/home/FlashSales';
+import { CategorySidebar } from '../components/home/CategorySidebar';
+import { HeroCarousel } from '../components/home/HeroCarousel';
+import { FlashSales } from '../components/home/FlashSales';
 import { Package, ShieldCheck, RotateCcw, Smartphone, Home as HomeIcon, ChefHat, Tv, Laptop, Baby, ShoppingBag, Gamepad2, Dumbbell, Car, MoreHorizontal } from 'lucide-react';
-import { api } from '@/trpc/react';
+import { api } from '../trpc/react';
 
 const categoryIcons: Record<string, any> = {
   'Phones & Tablets': Smartphone,

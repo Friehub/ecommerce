@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.catalogService = void 0;
 const db_1 = require("@ecom/db");
@@ -39,13 +72,19 @@ exports.catalogService = {
             include: { variants: true }
         });
         await (0, shared_1.publishEvent)('product.created', { productId: product.id, sellerId });
+        // B09: Resolve default warehouse instead of hardcoding
+        const defaultWarehouse = await db_1.prisma.warehouse.findFirst({
+            orderBy: { name: 'asc' }
+        });
+        if (!defaultWarehouse)
+            throw new Error('NO_WAREHOUSE_CONFIGURED');
         // Initialize stock levels for all variants
         for (const variant of product.variants) {
             await db_1.prisma.stockLevel.create({
                 data: {
                     variantId: variant.id,
                     sellerId,
-                    warehouseId: 'main-wh', // Default warehouse from seed
+                    warehouseId: defaultWarehouse.id,
                     qtyOnHand: data.variants.find(v => v.sku === variant.sku)?.stock || 0,
                     qtyReserved: 0,
                 }
@@ -54,6 +93,43 @@ exports.catalogService = {
             await this.syncToSearch(variant.id);
         }
         return product;
+    },
+    async updateProduct(sellerId, productId, data) {
+        const product = await db_1.prisma.product.update({
+            where: { id: productId, sellerId }, // ensure seller owns it
+            data: {
+                title: data.title,
+                description: data.description,
+                status: data.status
+            },
+            include: { variants: true }
+        });
+        await (0, shared_1.publishEvent)('product.updated', { productId, sellerId });
+        // Sync to search index for all variants
+        for (const variant of product.variants) {
+            await this.syncToSearch(variant.id);
+        }
+        return product;
+    },
+    async updateVariantPrice(variantId, newPrice) {
+        const variant = await db_1.prisma.productVariant.findUnique({
+            where: { id: variantId }
+        });
+        if (!variant)
+            throw new Error('VARIANT_NOT_FOUND');
+        const oldPrice = variant.price.toNumber();
+        const updated = await db_1.prisma.productVariant.update({
+            where: { id: variantId },
+            data: { price: newPrice }
+        });
+        // Fire price drop alert if new price is lower
+        if (newPrice < oldPrice) {
+            const { wishlistService } = await Promise.resolve().then(() => __importStar(require('./wishlist-service')));
+            await wishlistService.notifyPriceDrops(variantId, oldPrice, newPrice);
+        }
+        // Sync to search index
+        await this.syncToSearch(variantId);
+        return updated;
     },
     async syncToSearch(variantId) {
         const variant = await db_1.prisma.productVariant.findUnique({
@@ -89,8 +165,8 @@ exports.catalogService = {
             price: variant.price.toNumber(),
             compare_price: variant.comparePrice?.toNumber() || 0,
             discount_pct: variant.comparePrice ? Math.round(((variant.comparePrice.toNumber() - variant.price.toNumber()) / variant.comparePrice.toNumber()) * 100) : 0,
-            rating: 4.5, // Mock rating for now
-            review_count: 10,
+            rating: variant.product.averageRating ? variant.product.averageRating.toNumber() : 0,
+            review_count: variant.product.reviewCount || 0,
             sales_velocity: 0.1,
             is_active: variant.product.status === 'ACTIVE',
             is_in_stock: qty > 0,
@@ -130,6 +206,8 @@ exports.catalogService = {
     async listProducts(filters) {
         if (filters.search) {
             try {
+                const { advertisingService } = await Promise.resolve().then(() => __importStar(require('../../advertising/services/advertising-service')));
+                const sponsoredProduct = await advertisingService.selectSponsoredResult(filters.search);
                 const searchResponse = await rust_client_1.RustClient.search.query({
                     q: filters.search,
                     category_id: filters.categoryId,
@@ -140,17 +218,31 @@ exports.catalogService = {
                     offset: filters.offset,
                 });
                 if (searchResponse && searchResponse.results.length > 0) {
-                    const variantIds = searchResponse.results.map((r) => r.variant_id[0]);
-                    const results = await db_1.prisma.productVariant.findMany({
+                    // B10: variant_id is a string, not an array of characters
+                    const variantIds = searchResponse.results.map((r) => r.variant_id);
+                    let results = await db_1.prisma.productVariant.findMany({
                         where: { id: { in: variantIds } },
                         include: {
                             product: { include: { media: true, brand: true, category: true } }
                         }
                     });
                     // Re-sort to match search relevance or requested sort
+                    let sortedResults = variantIds.map((id) => results.find(r => r.id === id)).filter(Boolean);
+                    if (sponsoredProduct) {
+                        // Fetch the first variant for the sponsored product to match return type
+                        const sponsoredVariant = await db_1.prisma.productVariant.findFirst({
+                            where: { productId: sponsoredProduct.id },
+                            include: { product: { include: { media: true, brand: true, category: true } } }
+                        });
+                        if (sponsoredVariant) {
+                            sponsoredVariant.isSponsored = true;
+                            sponsoredVariant.adGroupId = sponsoredProduct.adGroupId;
+                            sortedResults = [sponsoredVariant, ...sortedResults];
+                        }
+                    }
                     return {
-                        results: variantIds.map(id => results.find(r => r.id === id)).filter(Boolean),
-                        total: searchResponse.total || results.length,
+                        results: sortedResults,
+                        total: (searchResponse.total || results.length) + (sponsoredProduct ? 1 : 0),
                         facets: searchResponse.facets
                     };
                 }
@@ -198,6 +290,7 @@ exports.catalogService = {
     async getCategoryTree() {
         return db_1.prisma.category.findMany({
             where: { parentId: null },
+            take: 50, // Limit root categories
             include: { children: { include: { children: true } } }
         });
     },

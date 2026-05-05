@@ -1,8 +1,9 @@
 import { prisma, Decimal } from '@ecom/db';
 import { publishEvent } from '@ecom/shared';
 import { paymentService } from '../../payment/services/payment-service';
+import type { Service } from '../../../types'
 
-export const affiliateService = {
+export const affiliateService: Service = {
   async registerAgent(userId: string) {
     const existing = await prisma.affiliateAgent.findUnique({ where: { userId } });
     if (existing) return existing;

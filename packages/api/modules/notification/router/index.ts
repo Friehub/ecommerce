@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from '../../../trpc';
 import { UpdatePreferenceSchema, MarkAsReadSchema } from '../schemas';
 import { notificationService } from '../services/notification-service';
 
-export const notificationRouter = createTRPCRouter({
+const _notificationRouter = createTRPCRouter({
   getUnread: protectedProcedure
     .query(async ({ ctx }) => {
       return notificationService.getUnreadNotifications(ctx.session.user.id);
@@ -36,3 +36,6 @@ export const notificationRouter = createTRPCRouter({
       );
     }),
 });
+
+export const notificationRouter = _notificationRouter as any;
+export type NotificationRouter = typeof _notificationRouter;

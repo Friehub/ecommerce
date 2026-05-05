@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from '../../../trpc';
 import { z } from 'zod';
 import { mediaService } from '../services/media-service';
 
-export const mediaRouter = createTRPCRouter({
+const _mediaRouter = createTRPCRouter({
   getPresignedUrl: protectedProcedure
     .input(z.object({
       filename: z.string(),
@@ -12,3 +12,6 @@ export const mediaRouter = createTRPCRouter({
       return mediaService.getUploadUrl(input.filename, input.contentType);
     }),
 });
+
+export const mediaRouter = _mediaRouter as any;
+export type MediaRouter = typeof _mediaRouter;

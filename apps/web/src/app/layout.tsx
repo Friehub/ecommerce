@@ -12,10 +12,10 @@ export const metadata: Metadata = {
   description: "Shop at Jumia, Nigeria's #1 online store. Fast delivery, best prices, and secure payment.",
 };
 
-import { Providers } from "@/components/Providers";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { CartDrawer } from "@/components/cart/CartDrawer";
+import { Providers } from "../components/Providers";
+import { Navbar } from "../components/layout/Navbar";
+import { Footer } from "../components/layout/Footer";
+import { CartDrawer } from "../components/cart/CartDrawer";
 
 export default function RootLayout({
   children,

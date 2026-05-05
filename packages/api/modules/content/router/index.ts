@@ -3,7 +3,7 @@ import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { contentService } from "../services/content-service";
 
-export const contentRouter = createTRPCRouter({
+const _contentRouter = createTRPCRouter({
   getHeroBanners: publicProcedure.query(async () => {
     return await contentService.getBanners();
   }),
@@ -19,3 +19,6 @@ export const contentRouter = createTRPCRouter({
     });
   }),
 });
+
+export const contentRouter = _contentRouter as any;
+export type ContentRouter = typeof _contentRouter;

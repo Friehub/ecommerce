@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
-import { api } from '@/trpc/react';
+import { api } from '../trpc/react';
 
 interface CartContextType {
   cart: any;
@@ -19,19 +19,18 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
+  const [sessionId] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
     let id = localStorage.getItem('cart_session_id');
     if (!id) {
       id = nanoid();
       localStorage.setItem('cart_session_id', id);
     }
-    setSessionId(id);
-  }, []);
+    return id;
+  });
+  const [isOpen, setIsOpen] = useState(false);
 
-  const utils = api.useContext();
+  const utils = api.useUtils();
 
   const { data: cart, isLoading, refetch } = api.cart.get.useQuery(
     {},

@@ -1,6 +1,6 @@
 'use client';
 
-import { api } from '@/trpc/react';
+import { api } from '../../../trpc/react';
 import { ShieldCheck, Users, AlertTriangle, ArrowRight, CheckCircle, Activity, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 

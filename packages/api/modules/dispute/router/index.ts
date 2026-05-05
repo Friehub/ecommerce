@@ -4,7 +4,7 @@ import { disputeService } from '../services/dispute-service';
 import { prisma } from '@ecom/db';
 import { z } from 'zod';
 
-export const disputeRouter = createTRPCRouter({
+const _disputeRouter = createTRPCRouter({
   open: protectedProcedure
     .input(OpenDisputeSchema)
     .mutation(async ({ ctx, input }) => {
@@ -109,3 +109,6 @@ export const disputeRouter = createTRPCRouter({
       });
     }),
 });
+
+export const disputeRouter = _disputeRouter as any;
+export type DisputeRouter = typeof _disputeRouter;

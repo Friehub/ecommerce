@@ -1,8 +1,9 @@
 import { prisma } from '@ecom/db'
 import { paymentService } from '../../payment/services/payment-service'
 import { publishEvent } from '@ecom/shared'
+import type { Service } from '../../../types'
 
-export const returnService = {
+export const returnService: Service = {
   async initiateReturn(userId: string, orderLineId: string, reason: string) {
     const line = await prisma.orderLine.findUnique({
       where: { id: orderLineId },

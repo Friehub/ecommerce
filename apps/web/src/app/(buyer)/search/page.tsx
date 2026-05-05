@@ -2,8 +2,8 @@
 
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { api } from '@/trpc/react';
-import { ProductCard } from '@/components/ui/ProductCard';
+import { api } from '../../../trpc/react';
+import { ProductCard } from '../../../components/ui/ProductCard';
 import { Filter, SortAsc, Search as SearchIcon } from 'lucide-react';
 
 function SearchResults() {

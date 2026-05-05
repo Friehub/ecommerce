@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Package, Plus, Search, Edit2, Trash2, Tag, ChevronRight, UploadCloud } from 'lucide-react';
-import { api } from '@/trpc/react';
+import { api } from '../../../../trpc/react';
 
 export default function SellerProductsHubPage() {
   const [csvContent, setCsvContent] = useState('');

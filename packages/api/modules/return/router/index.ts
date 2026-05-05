@@ -3,7 +3,7 @@ import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { returnService } from "../services/return-service";
 
-export const returnRouter = createTRPCRouter({
+const _returnRouter = createTRPCRouter({
   initiate: protectedProcedure
     .input(z.object({
       orderLineId: z.string(),
@@ -31,3 +31,6 @@ export const returnRouter = createTRPCRouter({
     });
   }),
 });
+
+export const returnRouter = _returnRouter as any;
+export type ReturnRouter = typeof _returnRouter;

@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from '../../../
 import { GenerateLinkSchema, RecordClickSchema } from '../schemas';
 import { affiliateService } from '../services/affiliate-service';
 
-export const affiliateRouter = createTRPCRouter({
+const _affiliateRouter = createTRPCRouter({
   register: protectedProcedure
     .mutation(async ({ ctx }) => {
       return affiliateService.registerAgent(ctx.session.user.id);
@@ -28,3 +28,6 @@ export const affiliateRouter = createTRPCRouter({
       return affiliateService.getMyProfile(ctx.session.user.id);
     }),
 });
+
+export const affiliateRouter = _affiliateRouter as any;
+export type AffiliateRouter = typeof _affiliateRouter;

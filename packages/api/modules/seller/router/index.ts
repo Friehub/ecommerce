@@ -4,7 +4,7 @@ import { z } from "zod";
 import { adminService } from "../../admin/services/admin-service";
 import { sellerDashboardService } from "../services/seller-dashboard-service";
 
-export const sellerRouter = createTRPCRouter({
+const _sellerRouter = createTRPCRouter({
   getDashboardMetrics: sellerProcedure.query(async ({ ctx }) => {
     // We need to get the seller ID for the user
     const seller = await prisma.seller.findUnique({
@@ -88,3 +88,6 @@ export const sellerRouter = createTRPCRouter({
       });
     }),
 });
+
+export const sellerRouter = _sellerRouter as any;
+export type SellerRouter = typeof _sellerRouter;

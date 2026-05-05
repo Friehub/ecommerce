@@ -4,7 +4,7 @@ import { logisticsService } from "../services/logistics-service";
 import { mediaService } from "../../media/services/media-service";
 import { prisma } from "@ecom/db";
 
-export const logisticsRouter = createTRPCRouter({
+const _logisticsRouter = createTRPCRouter({
   getMyShipments: agentProcedure.query(async ({ ctx }) => {
     // We need to get the agent ID for the user
     const agent = await prisma.deliveryAgent.findUnique({
@@ -55,3 +55,6 @@ export const logisticsRouter = createTRPCRouter({
     return await prisma.deliveryAgent.findMany({});
   }),
 });
+
+export const logisticsRouter = _logisticsRouter as any;
+export type LogisticsRouter = typeof _logisticsRouter;

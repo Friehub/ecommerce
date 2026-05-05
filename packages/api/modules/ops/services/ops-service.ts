@@ -1,6 +1,7 @@
 import { prisma } from '@ecom/db'
+import type { Service } from '../../../types'
 
-export const opsService = {
+export const opsService: Service = {
   async getGlobalMetrics() {
     const totalOrders = await prisma.order.count();
     const totalSellers = await prisma.seller.count({ where: { status: 'ACTIVE' } });

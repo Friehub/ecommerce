@@ -2,6 +2,7 @@ import { prisma, Prisma } from '@ecom/db'
 import { publishEvent, cacheService } from '@ecom/shared'
 import type { ProductInput, CategoryInput } from '../schemas'
 import { RustClient } from '../../../rust-client'
+import type { Service } from '../../../types'
 
 const slugify = (text: string) => 
   text.toString().toLowerCase().trim()
@@ -9,7 +10,7 @@ const slugify = (text: string) =>
     .replace(/[^\w-]+/g, '')
     .replace(/--+/g, '-');
 
-export const catalogService = {
+export const catalogService: Service = {
   async createProduct(sellerId: string, data: ProductInput) {
     const slug = `${slugify(data.title)}-${Date.now()}`;
     

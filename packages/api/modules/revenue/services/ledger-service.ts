@@ -1,7 +1,10 @@
 import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
+import type { Service } from '../../../types'
 
-export const ledgerService = {
-  async recordSale(orderLineId: string) {
+export const ledgerService: Service = {
+  // Explicit return types to avoid TS2742 inference errors
+  async recordSale(orderLineId: string): Promise<any> {
+
     const line = await prisma.orderLine.findUnique({
       where: { id: orderLineId },
       include: { 

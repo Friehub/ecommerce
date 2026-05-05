@@ -2,8 +2,9 @@ import { prisma } from '@ecom/db'
 import bcrypt from 'bcryptjs'
 import { publishEvent } from '@ecom/shared'
 import type { RegisterInput, AddressInput, SellerOnboardingInput } from '../schemas'
+import type { Service } from '../../../types'
 
-export const userService = {
+export const userService: Service = {
   async findByEmail(email: string) {
     return prisma.user.findUnique({ where: { email } })
   },

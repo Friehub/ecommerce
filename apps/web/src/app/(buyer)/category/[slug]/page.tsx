@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { api } from '@/trpc/react';
-import { ProductCard } from '@/components/ui/ProductCard';
+import { api } from '../../../../trpc/react';
+import { ProductCard } from '../../../../components/ui/ProductCard';
 import { ChevronRight, Filter, SortAsc } from 'lucide-react';
 
 export default function CategoryPage() {

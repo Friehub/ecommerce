@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { api } from '@/trpc/react';
+import { api } from '../../../trpc/react';
 import { Bell, Check, Trash2, MailOpen, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';

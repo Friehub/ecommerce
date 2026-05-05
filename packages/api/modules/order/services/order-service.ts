@@ -1,3 +1,4 @@
+import type { Service } from '../../../types';
 import { prisma, Decimal, OrderStatus } from '@ecom/db'
 import { publishEvent, queues } from '@ecom/shared'
 import { inventoryService } from '../../inventory/services/inventory-service'
@@ -18,7 +19,7 @@ const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 
 import { promoService } from '../../promo/services/promo-service';
 
-export const orderService = {
+export const orderService: Service = {
   async createFromCart(userId: string, cartId: string, paymentMethod: string, addressId: string, referralLinkId?: string, couponCode?: string) {
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },

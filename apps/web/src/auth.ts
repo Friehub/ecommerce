@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@ecom/db'
-import { userService } from '@ecom/api'
+import { userService } from '@ecom/api/modules/iam/services/user-service'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
 
@@ -34,7 +34,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return {
             id: user.id,
             email: user.email,
-            // @ts-expect-error - user role is present in DB but not in base type
             role: user.role,
           };
         } catch (error) {

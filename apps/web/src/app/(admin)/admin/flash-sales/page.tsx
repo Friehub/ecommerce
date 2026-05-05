@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { api } from '@/trpc/react';
+import { api } from '../../../../trpc/react';
 import { ShieldCheck, Calendar, DollarSign, Trash, Plus } from 'lucide-react';
 
 export default function AdminFlashSalesPage() {

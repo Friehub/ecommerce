@@ -1,6 +1,6 @@
 'use client';
 
-import { api } from '@/trpc/react';
+import { api } from '../../trpc/react';
 import { useState } from 'react';
 import { Share2, Link as LinkIcon, DollarSign, Activity, CheckCircle, Clock } from 'lucide-react';
 import { useSession } from 'next-auth/react';

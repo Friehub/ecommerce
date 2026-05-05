@@ -1,7 +1,7 @@
-import { api } from "@/trpc/server";
+import { api } from "../../../../trpc/server";
 import { notFound } from "next/navigation";
-import { ProductGallery } from "@/components/products/ProductGallery";
-import { ProductActions } from "@/components/products/ProductActions";
+import { ProductGallery } from "../../../../components/products/ProductGallery";
+import { ProductActions } from "../../../../components/products/ProductActions";
 import { ChevronRight, Star, Share2 } from "lucide-react";
 
 export default async function ProductDetailPage({

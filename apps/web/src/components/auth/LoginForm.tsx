@@ -4,6 +4,7 @@ import React from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 export const LoginForm = () => {
   const [email, setEmail] = React.useState('');
@@ -89,8 +90,8 @@ export const LoginForm = () => {
       </form>
 
       <div className="mt-6 text-center text-sm font-medium">
-        <span className="text-gray-400">Don't have an account? </span>
-        <a href="/register" className="text-[#F68B1E] font-black hover:underline tracking-tight">Register</a>
+        <span className="text-gray-400">Don&apos;t have an account? </span>
+        <Link href="/register" className="text-[#F68B1E] font-black hover:underline tracking-tight">Register</Link>
       </div>
     </div>
   );

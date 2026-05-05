@@ -2,7 +2,7 @@ import { createTRPCRouter, publicProcedure, adminProcedure } from "../../../trpc
 import { z } from "zod";
 import { inventoryService } from "../services/inventory-service";
 
-export const inventoryRouter = createTRPCRouter({
+const _inventoryRouter = createTRPCRouter({
   getAvailableStock: publicProcedure
     .input(z.object({ variantId: z.string() }))
     .query(async ({ input }) => {
@@ -37,3 +37,6 @@ export const inventoryRouter = createTRPCRouter({
     return { success: true };
   }),
 });
+
+export const inventoryRouter = _inventoryRouter as any;
+export type InventoryRouter = typeof _inventoryRouter;

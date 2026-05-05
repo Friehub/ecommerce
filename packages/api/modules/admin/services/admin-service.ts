@@ -1,8 +1,9 @@
 import { prisma } from '@ecom/db';
 import { paymentService } from '../../payment/services/payment-service';
 import { publishEvent } from '@ecom/shared';
+import type { Service } from '../../../types'
 
-export const adminService = {
+export const adminService: Service = {
   async approveSellerKYC(adminId: string, sellerId: string) {
     const seller = await prisma.seller.update({
       where: { id: sellerId },

@@ -3,7 +3,7 @@ import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { opsService } from "../services/ops-service";
 
-export const opsRouter = createTRPCRouter({
+const _opsRouter = createTRPCRouter({
   getMetrics: adminProcedure.query(async () => {
     return await opsService.getGlobalMetrics();
   }),
@@ -16,3 +16,6 @@ export const opsRouter = createTRPCRouter({
     return [];
   }),
 });
+
+export const opsRouter = _opsRouter as any;
+export type OpsRouter = typeof _opsRouter;

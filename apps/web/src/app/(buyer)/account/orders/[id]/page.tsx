@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { api } from '@/trpc/react';
+import { api } from '../../../../../trpc/react';
 import { 
   ChevronLeft, 
   Package, 

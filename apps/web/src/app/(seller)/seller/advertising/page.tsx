@@ -1,6 +1,6 @@
 'use client';
 
-import { api } from '@/trpc/react';
+import { api } from '../../../../trpc/react';
 import Link from 'next/link';
 import { Megaphone, Plus, MousePointerClick, Eye, TrendingUp, AlertCircle } from 'lucide-react';
 

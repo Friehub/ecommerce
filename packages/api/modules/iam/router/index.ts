@@ -5,7 +5,7 @@ import { userService } from "../services/user-service";
 import { sellerService } from "../services/seller-service";
 import { TRPCError } from "@trpc/server";
 
-export const iamRouter = createTRPCRouter({
+const _iamRouter = createTRPCRouter({
   register: rateLimitProcedure
     .input(registerSchema)
     .mutation(async ({ input }) => {
@@ -52,3 +52,6 @@ export const iamRouter = createTRPCRouter({
       }
     }),
 });
+
+export const iamRouter = _iamRouter as any;
+export type IamRouter = typeof _iamRouter;

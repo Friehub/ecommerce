@@ -5,7 +5,7 @@ import { adminService } from '../services/admin-service';
 import { orderService } from '../../order/services/order-service';
 import { z } from 'zod';
 
-export const adminRouter = createTRPCRouter({
+const _adminRouter = createTRPCRouter({
   approveSeller: adminProcedure
     .input(ApproveSellerSchema)
     .mutation(async ({ ctx, input }) => {
@@ -159,4 +159,7 @@ export const adminRouter = createTRPCRouter({
       });
     }),
 });
+
+export const adminRouter = _adminRouter as any;
+export type AdminRouter = typeof _adminRouter;
 

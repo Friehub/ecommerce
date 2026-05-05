@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure, publicProcedure, adminProcedure }
 import { z } from "zod";
 import { reviewService } from "../services/review-service";
 
-export const reviewRouter = createTRPCRouter({
+const _reviewRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({
       productId: z.string(),
@@ -41,3 +41,6 @@ export const reviewRouter = createTRPCRouter({
       return await reviewService.getProductRatingStats(input.productId);
     }),
 });
+
+export const reviewRouter = _reviewRouter as any;
+export type ReviewRouter = typeof _reviewRouter;

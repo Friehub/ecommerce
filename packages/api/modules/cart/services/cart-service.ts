@@ -1,8 +1,9 @@
 import { prisma } from '@ecom/db'
+import type { Service } from '../../../types'
 import { inventoryService } from '../../inventory/services/inventory-service'
 import { promoService } from '../../promo/services/promo-service'
 
-export const cartService = {
+export const cartService: Service = {
   async getCart(sessionId: string, userId?: string) {
     // 1. If userId is provided, prioritize finding the user's primary cart
     if (userId) {

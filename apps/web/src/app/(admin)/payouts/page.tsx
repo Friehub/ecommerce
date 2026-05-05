@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { api } from '@/trpc/react';
+import { api } from '../../../trpc/react';
 import { Banknote, CheckCircle, Clock, AlertTriangle, ExternalLink, Search } from 'lucide-react';
 import { format } from 'date-fns';
 

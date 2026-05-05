@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { api } from '@/trpc/react';
+import { api } from '../../trpc/react';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, User, Loader2, Phone } from 'lucide-react';
+import Link from 'next/link';
 
 export const RegisterForm = () => {
   const [email, setEmail] = React.useState('');
@@ -134,7 +135,7 @@ export const RegisterForm = () => {
 
       <div className="mt-6 text-center text-sm font-medium">
         <span className="text-gray-400">Already have an account? </span>
-        <a href="/login" className="text-[#F68B1E] font-black hover:underline tracking-tight">Login</a>
+        <Link href="/login" className="text-[#F68B1E] font-black hover:underline tracking-tight">Login</Link>
       </div>
     </div>
   );

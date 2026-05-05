@@ -2,10 +2,11 @@ import { s3 } from '@ecom/shared'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
 import { generateId } from '@ecom/shared'
+import type { Service } from '../../../types'
 
 const BUCKET = process.env.R2_BUCKET || 'ecom-media';
 
-export const mediaService = {
+export const mediaService: Service = {
   async getUploadUrl(path: string, contentType: string) {
     const key = `uploads/${generateId()}-${path}`;
     const command = new PutObjectCommand({

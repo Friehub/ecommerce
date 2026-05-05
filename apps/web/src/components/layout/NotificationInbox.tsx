@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { api } from '@/trpc/react';
+import { api } from '../../trpc/react';
 import { Bell, CheckCircle, Info, AlertTriangle, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 

@@ -6,7 +6,7 @@ import { prisma } from '@ecom/db';
 import { redis } from '@ecom/shared';
 import { TRPCError } from '@trpc/server';
 
-export const advertisingRouter = createTRPCRouter({
+const _advertisingRouter = createTRPCRouter({
   createCampaign: sellerProcedure
     .input(CreateCampaignSchema)
     .mutation(async ({ ctx, input }) => {
@@ -96,3 +96,6 @@ export const advertisingRouter = createTRPCRouter({
       );
     }),
 });
+
+export const advertisingRouter = _advertisingRouter as any;
+export type AdvertisingRouter = typeof _advertisingRouter;

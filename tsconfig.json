@@ -1,19 +1,24 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": false,
-    "baseUrl": ".",
+    "noImplicitAny": false,
+    "noImplicitThis": false,
     "paths": {
-      "@ecom/db": ["packages/db/index.ts"],
-      "@ecom/shared": ["packages/shared/src/index.ts"],
-      "@ecom/shared/*": ["packages/shared/src/*"],
-      "@ecom/api": ["packages/api/index.ts"],
-      "@ecom/api/*": ["packages/api/*"]
+      "@ecom/db": ["packages/db/dist"],
+      "@ecom/shared": ["packages/shared/dist"],
+      "@ecom/shared/*": ["packages/shared/dist/*"],
+      "@ecom/api": ["packages/api/dist"],
+      "@ecom/api/*": ["packages/api/dist/*"]
     }
+
+
+
   },
   "exclude": ["node_modules", "dist"]
 }

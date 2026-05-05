@@ -5,7 +5,7 @@ import { z } from "zod";
 import { orderService } from "../services/order-service";
 import { packageService } from "../services/package-service";
 
-export const orderRouter = createTRPCRouter({
+const _orderRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({
       cartId: z.string(),
@@ -71,3 +71,6 @@ export const orderRouter = createTRPCRouter({
       return await packageService.updateStatus(input.packageId, input.status, input.trackingNumber);
     }),
 });
+
+export const orderRouter = _orderRouter as any;
+export type OrderRouter = typeof _orderRouter;

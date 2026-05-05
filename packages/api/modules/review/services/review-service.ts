@@ -1,6 +1,7 @@
 import { prisma } from '@ecom/db'
+import type { Service } from '../../../types'
 
-export const reviewService = {
+export const reviewService: Service = {
   async createReview(userId: string, productId: string, rating: number, comment: string, images: string[] = []) {
     // 1. Verify user bought and received the product
     const delivered = await prisma.orderPackage.findFirst({

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.categorySchema = exports.productSchema = exports.productVariantSchema = void 0;
+exports.updateProductSchema = exports.categorySchema = exports.productSchema = exports.productVariantSchema = void 0;
 const zod_1 = require("zod");
 exports.productVariantSchema = zod_1.z.object({
     sku: zod_1.z.string().min(1),
@@ -24,4 +24,9 @@ exports.categorySchema = zod_1.z.object({
     parentId: zod_1.z.string().optional(),
     commissionRate: zod_1.z.number().min(0).max(100),
     attributeSchema: zod_1.z.record(zod_1.z.any()).optional(),
+});
+exports.updateProductSchema = zod_1.z.object({
+    title: zod_1.z.string().min(3).optional(),
+    description: zod_1.z.string().min(10).optional(),
+    status: zod_1.z.enum(['DRAFT', 'PENDING_APPROVAL', 'ACTIVE', 'INACTIVE', 'DELETED']).optional()
 });

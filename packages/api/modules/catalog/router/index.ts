@@ -6,7 +6,7 @@ import { catalogService } from "../services/catalog-service";
 import { wishlistService } from "../services/wishlist-service";
 import { catalogImportService } from "../services/catalog-import-service";
 
-export const catalogRouter = createTRPCRouter({
+const _catalogRouter = createTRPCRouter({
   bulkImport: sellerProcedure
     .input(z.object({ csvContent: z.string().max(1 * 1024 * 1024, "CSV file is too large. Maximum size allowed is 1MB."), warehouseId: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
@@ -110,3 +110,6 @@ export const catalogRouter = createTRPCRouter({
       return await wishlistService.getWishlist(ctx.session.user.id);
     }),
 });
+
+export const catalogRouter = _catalogRouter as any;
+export type CatalogRouter = typeof _catalogRouter;

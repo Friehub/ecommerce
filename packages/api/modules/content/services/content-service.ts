@@ -1,6 +1,7 @@
 import { prisma } from '@ecom/db'
+import type { Service } from '../../../types'
 
-export const contentService = {
+export const contentService: Service = {
   async getBanners() {
     // In a real app, this would come from a Banner model
     // For the contest, we'll return a curated list

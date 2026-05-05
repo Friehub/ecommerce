@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "../auth";
 import { type TRPCContext } from "@ecom/api";
 
 export const createTRPCContext = async (opts: { req?: Request }): Promise<TRPCContext> => {

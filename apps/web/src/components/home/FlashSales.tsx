@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { ProductCard } from '../ui/ProductCard';
-import { api } from '@/trpc/react';
+import { api } from '../../trpc/react';
 import { Zap } from 'lucide-react';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 const CountdownTimer = ({ endTime }: { endTime: any }) => {
@@ -93,9 +94,9 @@ export const FlashSales = () => {
               <span className="text-white/80 font-medium">Ends in:</span>
               <CountdownTimer endTime={earliestEnd} />
             </div>
-            <a href="/flash-sales" className="text-xs font-extrabold hover:underline uppercase tracking-wide bg-white/20 hover:bg-white/30 transition-all px-3 py-1.5 rounded-lg border border-white/10">
+            <Link href="/flash-sales" className="text-xs font-extrabold hover:underline uppercase tracking-wide bg-white/20 hover:bg-white/30 transition-all px-3 py-1.5 rounded-lg border border-white/10">
               See All
-            </a>
+            </Link>
           </div>
         </div>
 

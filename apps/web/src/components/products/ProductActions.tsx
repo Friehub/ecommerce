@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import { api } from '@/trpc/react';
+import { useCart } from '../../context/CartContext';
+import { api } from '../../trpc/react';
 
 interface ProductActionsProps {
   product: any;

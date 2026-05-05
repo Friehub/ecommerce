@@ -2,7 +2,7 @@ import { createTRPCRouter, publicProcedure } from "../../../trpc";
 import { z } from "zod";
 import { promoService } from "../services/promo-service";
 
-export const promoRouter = createTRPCRouter({
+const _promoRouter = createTRPCRouter({
   validateCoupon: publicProcedure
     .input(z.object({
       code: z.string(),
@@ -20,3 +20,6 @@ export const promoRouter = createTRPCRouter({
     return await promoService.getActiveFlashSales();
   }),
 });
+
+export const promoRouter = _promoRouter as any;
+export type PromoRouter = typeof _promoRouter;

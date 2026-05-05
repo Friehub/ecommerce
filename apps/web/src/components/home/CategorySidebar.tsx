@@ -15,7 +15,7 @@ import {
   Car,
   MoreHorizontal
 } from 'lucide-react';
-import { api } from '@/trpc/react';
+import { api } from '../../trpc/react';
 
 const categoryIcons: Record<string, any> = {
   'Phones & Tablets': Smartphone,

@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { ShoppingCart, User, Search, HelpCircle, LogOut, Package, Heart, ChevronDown } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import { NotificationInbox } from '@/components/layout/NotificationInbox';
+import { useCart } from '../../context/CartContext';
+import { NotificationInbox } from '../../components/layout/NotificationInbox';
 
 export const Navbar = () => {
   const { totalItems, setIsOpen } = useCart();

@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { api } from '@/trpc/react';
+import { api } from '../../../trpc/react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useCart } from '@/context/CartContext';
+import { useCart } from '../../../context/CartContext';
 import { ChevronLeft, MapPin, CreditCard, ShoppingBag, Loader2, Plus, CheckCircle2 } from 'lucide-react';
 
 export default function CheckoutPage() {
@@ -276,7 +276,7 @@ export default function CheckoutPage() {
                   {isPlacingOrder ? <Loader2 className="animate-spin" size={20} /> : 'Confirm Order'}
                 </button>
                 <p className="text-[10px] text-center font-medium text-gray-400 mt-4 leading-relaxed">
-                  By placing your order, you agree to Jumia's <span className="underline">Terms of Service</span> and <span className="underline">Privacy Policy</span>.
+                  By placing your order, you agree to Jumia&apos;s <span className="underline">Terms of Service</span> and <span className="underline">Privacy Policy</span>.
                 </p>
               </div>
             </div>

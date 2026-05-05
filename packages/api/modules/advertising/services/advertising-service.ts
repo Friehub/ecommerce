@@ -1,7 +1,8 @@
 import { prisma, Decimal } from '@ecom/db';
 import { publishEvent } from '@ecom/shared';
+import type { Service } from '../../../types'
 
-export const advertisingService = {
+export const advertisingService: Service = {
   async createCampaign(sellerId: string, name: string, budget: number, startDate: Date, endDate?: Date) {
     return prisma.adCampaign.create({
       data: {

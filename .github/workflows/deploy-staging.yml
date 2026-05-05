@@ -40,9 +40,6 @@ jobs:
 
       - name: Sync code
         run: |
-          sudo mkdir -p /opt/runner-work/jumia-staging
-          sudo chown -R $USER:$USER /opt/runner-work/jumia-staging
-          
           rsync -av --delete \
             --exclude='.git' \
             --exclude='node_modules' \

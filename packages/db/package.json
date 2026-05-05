@@ -11,6 +11,7 @@
   "scripts": {
     "generate": "prisma generate",
     "build": "tsc",
+    "typecheck": "tsc --noEmit --rootDir ../../",
     "migrate": "prisma migrate dev",
     "seed": "ts-node seed.ts",
     "studio": "prisma studio"

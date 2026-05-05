@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
+    "typecheck": "tsc --noEmit --rootDir ../../",
     "start": "tsx src/index.ts",
     "reindex": "ts-node src/scripts/reindex.ts"
   },

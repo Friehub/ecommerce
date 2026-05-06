@@ -19,15 +19,12 @@ WORKDIR /app
 
 ENV NODE_ENV production
 
-RUN npm install -g pm2
-
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 apiuser
 
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/packages /app/packages
-COPY --from=builder /app/apps/api-server /app/apps/api-server
-COPY --from=builder /app/ecosystem.config.js /app/ecosystem.config.js
+COPY --from=builder /app/apps /app/apps
 
 WORKDIR /app
 
@@ -35,4 +32,5 @@ USER apiuser
 
 EXPOSE 4000
 
-CMD ["pm2-runtime", "start", "ecosystem.config.js", "--only", "fastify-api"]
+# No PM2, run directly to avoid env var caching
+CMD ["npx", "tsx", "apps/api-server/src/index.ts"]

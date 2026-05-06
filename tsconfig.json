@@ -4,13 +4,18 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "baseUrl": ".",
-
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noImplicitAny": false,
     "noImplicitThis": false,
     "paths": {
-      "bullmq": ["node_modules/bullmq"]
+      "bullmq": ["node_modules/bullmq"],
+      "@ecom/db": ["./packages/db/index.ts"],
+      "@ecom/db/*": ["./packages/db/*"],
+      "@ecom/shared": ["./packages/shared/src"],
+      "@ecom/shared/*": ["./packages/shared/src/*"],
+      "@ecom/api": ["./packages/api/index.ts"],
+      "@ecom/api/*": ["./packages/api/*"]
     }
 
 

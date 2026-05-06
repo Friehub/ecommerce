@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "baseUrl": ".",
 
     "esModuleInterop": true,
@@ -13,7 +13,8 @@
       "@ecom/db": ["packages/db"],
       "@ecom/shared": ["packages/shared"],
       "@ecom/shared/*": ["packages/shared/*"],
-      "@ecom/api": ["packages/api"]
+      "@ecom/api": ["packages/api"],
+      "bullmq": ["node_modules/bullmq"]
     }
 
 

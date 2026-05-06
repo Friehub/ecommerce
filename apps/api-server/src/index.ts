@@ -99,7 +99,7 @@ async function start() {
     router: appRouter,
     createContext: (opts: any) => createContext({ ...opts, redis }),
     basePath: '/api',
-  });
+  } as any);
 
   // ── Service-to-Service Auth ──────────────────────────────────────
   server.addHook('preHandler', async (req, reply) => {

@@ -7,7 +7,7 @@ COPY . .
 
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @ecom/db generate
-RUN pnpm exec tsc -b packages/api
+RUN pnpm exec tsc -b
 
 FROM node:20-alpine AS runner
 WORKDIR /app

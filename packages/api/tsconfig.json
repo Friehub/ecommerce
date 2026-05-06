@@ -5,7 +5,8 @@
     "skipLibCheck": true,
     "strict": true,
     "composite": true,
-    "declaration": true
+    "declaration": true,
+    "rootDir": "."
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"],

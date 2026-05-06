@@ -1,7 +1,7 @@
-import { createTRPCRouter, protectedProcedure, adminProcedure } from "../../../trpc";
+import { createTRPCRouter, protectedProcedure, adminProcedure } from "../../../trpc.js";
 import { prisma } from "@ecom/db";
 import { z } from "zod";
-import { returnService } from "../services/return-service";
+import { returnService } from "../services/return-service.js";
 
 const _returnRouter = createTRPCRouter({
   initiate: protectedProcedure

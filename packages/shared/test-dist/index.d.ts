@@ -6,4 +6,4 @@ export * from './events/types.js';
 export * from './events/bus.js';
 export * from './utils/id.js';
 export * from './utils/crypto.js';
-export * from './cache.js';
+export * from './cache/index.js';

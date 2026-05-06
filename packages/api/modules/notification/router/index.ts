@@ -1,5 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from '../../../trpc.js';
-import { UpdatePreferenceSchema, MarkAsReadSchema } from '../schemas.js';
+import { UpdatePreferenceSchema, MarkAsReadSchema } from '../schemas/index.js';
 import { notificationService } from '../services/notification-service.js';
 
 const _notificationRouter = createTRPCRouter({

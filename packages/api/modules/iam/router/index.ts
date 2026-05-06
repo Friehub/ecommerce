@@ -1,8 +1,8 @@
-import { createTRPCRouter, publicProcedure, protectedProcedure, rateLimitProcedure } from "../../../trpc";
+import { createTRPCRouter, publicProcedure, protectedProcedure, rateLimitProcedure } from "../../../trpc.js";
 import { z } from "zod";
-import { registerSchema, addressSchema, sellerOnboardingSchema } from "../schemas";
-import { userService } from "../services/user-service";
-import { sellerService } from "../services/seller-service";
+import { registerSchema, addressSchema, sellerOnboardingSchema } from "../schemas/index.js";
+import { userService } from "../services/user-service.js";
+import { sellerService } from "../services/seller-service.js";
 import { TRPCError } from "@trpc/server";
 
 const _iamRouter = createTRPCRouter({

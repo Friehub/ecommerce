@@ -1,8 +1,8 @@
-import { createTRPCRouter, sellerProcedure, adminProcedure } from "../../../trpc";
+import { createTRPCRouter, sellerProcedure, adminProcedure } from "../../../trpc.js";
 import { prisma } from "@ecom/db";
 import { z } from "zod";
-import { adminService } from "../../admin/services/admin-service";
-import { sellerDashboardService } from "../services/seller-dashboard-service";
+import { adminService } from "../../admin/services/admin-service.js";
+import { sellerDashboardService } from "../services/seller-dashboard-service.js";
 
 const _sellerRouter = createTRPCRouter({
   getDashboardMetrics: sellerProcedure.query(async ({ ctx }) => {

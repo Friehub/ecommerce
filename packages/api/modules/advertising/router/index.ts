@@ -1,6 +1,6 @@
 import { createTRPCRouter, sellerProcedure, publicProcedure } from '../../../trpc.js';
 import { z } from 'zod';
-import { CreateCampaignSchema, AddAdGroupSchema, RecordActionSchema } from '../schemas.js';
+import { CreateCampaignSchema, AddAdGroupSchema, RecordActionSchema } from '../schemas/index.js';
 import { advertisingService } from '../services/advertising-service.js';
 import { prisma } from '@ecom/db';
 import { redis } from '@ecom/shared';

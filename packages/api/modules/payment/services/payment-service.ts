@@ -8,7 +8,7 @@ import { orderService } from '../../order/services/order-service.js'
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
 const PAYSTACK_WEBHOOK_SECRET = process.env.PAYSTACK_WEBHOOK_SECRET || 'whsec_test_placeholder';
 
-import { getPaymentAdapter } from '../adapters.js'
+import { getPaymentAdapter } from '../adapters/index.js'
 
 export const paymentService: Service = {
   async initializeTransaction(provider: string, orderId: string, userId: string, email: string, amount: number, ipAddress: string = 'unknown') {

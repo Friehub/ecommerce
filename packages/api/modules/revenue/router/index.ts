@@ -1,6 +1,6 @@
-import { createTRPCRouter, sellerProcedure, adminProcedure } from "../../../trpc";
+import { createTRPCRouter, sellerProcedure, adminProcedure } from "../../../trpc.js";
 import { z } from "zod";
-import { revenueService } from "../services/revenue-service";
+import { revenueService } from "../services/revenue-service.js";
 import { prisma } from "@ecom/db";
 
 const _revenueRouter = createTRPCRouter({

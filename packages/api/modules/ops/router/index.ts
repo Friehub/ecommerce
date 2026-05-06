@@ -1,7 +1,7 @@
-import { createTRPCRouter, adminProcedure } from "../../../trpc";
+import { createTRPCRouter, adminProcedure } from "../../../trpc.js";
 import { prisma } from "@ecom/db";
 import { z } from "zod";
-import { opsService } from "../services/ops-service";
+import { opsService } from "../services/ops-service.js";
 
 const _opsRouter = createTRPCRouter({
   getMetrics: adminProcedure.query(async () => {

@@ -1,6 +1,6 @@
-import { createTRPCRouter, publicProcedure, adminProcedure } from "../../../trpc";
+import { createTRPCRouter, publicProcedure, adminProcedure } from "../../../trpc.js";
 import { z } from "zod";
-import { inventoryService } from "../services/inventory-service";
+import { inventoryService } from "../services/inventory-service.js";
 
 const _inventoryRouter = createTRPCRouter({
   getAvailableStock: publicProcedure

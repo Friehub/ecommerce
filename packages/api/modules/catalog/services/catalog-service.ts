@@ -1,6 +1,6 @@
 import { prisma, Prisma } from '@ecom/db'
 import { publishEvent, cacheService } from '@ecom/shared'
-import type { ProductInput, CategoryInput } from '../schemas.js'
+import type { ProductInput, CategoryInput } from '../schemas/index.js'
 import { RustClient } from '../../../rust-client.js'
 import type { Service } from '../../../types.js'
 

@@ -1,7 +1,7 @@
 import { prisma } from '@ecom/db'
 import bcrypt from 'bcryptjs'
 import { publishEvent } from '@ecom/shared'
-import type { RegisterInput, AddressInput, SellerOnboardingInput } from '../schemas.js'
+import type { RegisterInput, AddressInput, SellerOnboardingInput } from '../schemas/index.js'
 import type { Service } from '../../../types.js'
 
 export const userService: Service = {

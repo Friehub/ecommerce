@@ -1,10 +1,10 @@
-import { createTRPCRouter, publicProcedure, sellerProcedure, protectedProcedure, rateLimitProcedure, adminProcedure } from "../../../trpc";
+import { createTRPCRouter, publicProcedure, sellerProcedure, protectedProcedure, rateLimitProcedure, adminProcedure } from "../../../trpc.js";
 import { prisma } from "@ecom/db";
 import { z } from "zod";
-import { productSchema, categorySchema } from "../schemas";
-import { catalogService } from "../services/catalog-service";
-import { wishlistService } from "../services/wishlist-service";
-import { catalogImportService } from "../services/catalog-import-service";
+import { productSchema, categorySchema } from "../schemas/index.js";
+import { catalogService } from "../services/catalog-service.js";
+import { wishlistService } from "../services/wishlist-service.js";
+import { catalogImportService } from "../services/catalog-import-service.js";
 
 const _catalogRouter = createTRPCRouter({
   bulkImport: sellerProcedure

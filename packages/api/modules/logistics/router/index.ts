@@ -1,7 +1,7 @@
-import { createTRPCRouter, agentProcedure, adminProcedure } from "../../../trpc";
+import { createTRPCRouter, agentProcedure, adminProcedure } from "../../../trpc.js";
 import { z } from "zod";
-import { logisticsService } from "../services/logistics-service";
-import { mediaService } from "../../media/services/media-service";
+import { logisticsService } from "../services/logistics-service.js";
+import { mediaService } from "../../media/services/media-service.js";
 import { prisma } from "@ecom/db";
 
 const _logisticsRouter = createTRPCRouter({

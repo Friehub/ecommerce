@@ -1,8 +1,8 @@
-import { createTRPCRouter, protectedProcedure } from "../../../trpc";
+import { createTRPCRouter, protectedProcedure } from "../../../trpc.js";
 import { TRPCError } from "@trpc/server";
 import { prisma } from "@ecom/db";
 import { z } from "zod";
-import { paymentService } from "../services/payment-service";
+import { paymentService } from "../services/payment-service.js";
 
 const _paymentRouter = createTRPCRouter({
   initializePaystack: protectedProcedure

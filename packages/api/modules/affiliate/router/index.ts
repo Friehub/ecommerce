@@ -1,5 +1,5 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '../../../trpc.js';
-import { GenerateLinkSchema, RecordClickSchema } from '../schemas.js';
+import { GenerateLinkSchema, RecordClickSchema } from '../schemas/index.js';
 import { affiliateService } from '../services/affiliate-service.js';
 
 const _affiliateRouter = createTRPCRouter({

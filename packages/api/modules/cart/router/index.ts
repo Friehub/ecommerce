@@ -1,6 +1,6 @@
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "../../../trpc";
+import { createTRPCRouter, publicProcedure, protectedProcedure } from "../../../trpc.js";
 import { z } from "zod";
-import { cartService } from "../services/cart-service";
+import { cartService } from "../services/cart-service.js";
 
 const _cartRouter = createTRPCRouter({
   get: publicProcedure

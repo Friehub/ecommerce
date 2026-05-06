@@ -11,7 +11,7 @@ import swaggerUi from '@fastify/swagger-ui';
 import { fastifyTRPCOpenApiPlugin } from 'trpc-openapi';
 import { openApiDocument } from '@ecom/api';
 
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 
 const server = Fastify({
   logger: {

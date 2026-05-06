@@ -1,9 +1,9 @@
-import { createTRPCRouter, protectedProcedure, sellerProcedure } from "../../../trpc";
+import { createTRPCRouter, protectedProcedure, sellerProcedure } from "../../../trpc.js";
 import { TRPCError } from "@trpc/server";
 import { prisma, PackageStatus } from "@ecom/db";
 import { z } from "zod";
-import { orderService } from "../services/order-service";
-import { packageService } from "../services/package-service";
+import { orderService } from "../services/order-service.js";
+import { packageService } from "../services/package-service.js";
 
 const _orderRouter = createTRPCRouter({
   create: protectedProcedure

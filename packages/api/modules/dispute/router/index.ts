@@ -1,5 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from '../../../trpc.js';
-import { OpenDisputeSchema, RespondDisputeSchema, UploadEvidenceSchema, GetDisputeSchema } from '../schemas.js';
+import { OpenDisputeSchema, RespondDisputeSchema, UploadEvidenceSchema, GetDisputeSchema } from '../schemas/index.js';
 import { disputeService } from '../services/dispute-service.js';
 import { prisma } from '@ecom/db';
 import { z } from 'zod';

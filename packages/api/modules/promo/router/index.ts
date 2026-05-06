@@ -1,6 +1,6 @@
-import { createTRPCRouter, publicProcedure } from "../../../trpc";
+import { createTRPCRouter, publicProcedure } from "../../../trpc.js";
 import { z } from "zod";
-import { promoService } from "../services/promo-service";
+import { promoService } from "../services/promo-service.js";
 
 const _promoRouter = createTRPCRouter({
   validateCoupon: publicProcedure

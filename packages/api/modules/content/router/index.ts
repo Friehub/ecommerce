@@ -1,7 +1,7 @@
-import { createTRPCRouter, publicProcedure } from "../../../trpc";
+import { createTRPCRouter, publicProcedure } from "../../../trpc.js";
 import { prisma } from "@ecom/db";
 import { z } from "zod";
-import { contentService } from "../services/content-service";
+import { contentService } from "../services/content-service.js";
 
 const _contentRouter = createTRPCRouter({
   getHeroBanners: publicProcedure.query(async () => {

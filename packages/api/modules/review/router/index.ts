@@ -1,6 +1,6 @@
-import { createTRPCRouter, protectedProcedure, publicProcedure, adminProcedure } from "../../../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure, adminProcedure } from "../../../trpc.js";
 import { z } from "zod";
-import { reviewService } from "../services/review-service";
+import { reviewService } from "../services/review-service.js";
 
 const _reviewRouter = createTRPCRouter({
   create: protectedProcedure

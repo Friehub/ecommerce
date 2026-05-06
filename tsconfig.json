@@ -10,11 +10,10 @@
     "noImplicitAny": false,
     "noImplicitThis": false,
     "paths": {
-      "@ecom/db": ["packages/db/dist"],
-      "@ecom/shared": ["packages/shared/dist"],
-      "@ecom/shared/*": ["packages/shared/dist/*"],
-      "@ecom/api": ["packages/api/dist"],
-      "@ecom/api/*": ["packages/api/dist/*"]
+      "@ecom/db": ["packages/db"],
+      "@ecom/shared": ["packages/shared/src"],
+      "@ecom/shared/*": ["packages/shared/src/*"],
+      "@ecom/api": ["packages/api"]
     }
 
 

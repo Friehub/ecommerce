@@ -6,7 +6,11 @@
     "strict": true,
     "composite": true,
     "declaration": true,
-    "rootDir": "."
+    "rootDir": ".",
+    "paths": {
+      "@ecom/db": ["../../packages/db"],
+      "@ecom/shared": ["../../packages/shared"]
+    }
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"],

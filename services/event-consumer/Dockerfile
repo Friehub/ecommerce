@@ -28,5 +28,4 @@ WORKDIR /app/services/event-consumer
 
 USER consumer
 
-# Run using tsx to avoid dist mapping issues
-CMD ["node", "node_modules/.bin/tsx", "src/index.ts"]
+CMD ["npx", "tsx", "src/index.ts"]

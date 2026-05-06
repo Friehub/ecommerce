@@ -24,4 +24,4 @@ COPY --from=builder /app/packages ./packages
 
 USER worker
 
-CMD ["node", "node_modules/.bin/tsx", "packages/api/scripts/run-workers.ts"]
+CMD ["npx", "tsx", "packages/api/scripts/run-workers.ts"]

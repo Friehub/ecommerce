@@ -25,4 +25,4 @@ COPY --from=builder /app/packages ./packages
 USER worker
 
 # run-workers.ts compiles to dist/api/scripts/run-workers.js
-CMD ["node", "packages/api/dist/api/scripts/run-workers.js"]
+CMD ["node", "packages/api/dist/scripts/run-workers.js"]

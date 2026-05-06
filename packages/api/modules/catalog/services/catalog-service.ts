@@ -1,8 +1,8 @@
 import { prisma, Prisma } from '@ecom/db'
 import { publishEvent, cacheService } from '@ecom/shared'
-import type { ProductInput, CategoryInput } from '../schemas'
-import { RustClient } from '../../../rust-client'
-import type { Service } from '../../../types'
+import type { ProductInput, CategoryInput } from '../schemas.js'
+import { RustClient } from '../../../rust-client.js'
+import type { Service } from '../../../types.js'
 
 const slugify = (text: string) => 
   text.toString().toLowerCase().trim()
@@ -106,7 +106,7 @@ export const catalogService: Service = {
 
     // Fire price drop alert if new price is lower
     if (newPrice < oldPrice) {
-      const { wishlistService } = await import('./wishlist-service');
+      const { wishlistService } = await import('./wishlist-service.js');
       await wishlistService.notifyPriceDrops(variantId, oldPrice, newPrice);
     }
 
@@ -206,7 +206,7 @@ export const catalogService: Service = {
   }) {
     if (filters.search) {
       try {
-        const { advertisingService } = await import('../../advertising/services/advertising-service');
+        const { advertisingService } = await import('../../advertising/services/advertising-service.js');
         const sponsoredProduct = await advertisingService.selectSponsoredResult(filters.search);
 
         const searchResponse = await RustClient.search.query({

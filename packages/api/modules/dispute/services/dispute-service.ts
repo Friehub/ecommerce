@@ -1,6 +1,6 @@
 import { prisma } from '@ecom/db';
 import { publishEvent, queues } from '@ecom/shared';
-import type { Service } from '../../../types'
+import type { Service } from '../../../types.js'
 
 export const disputeService: Service = {
   async openDispute(buyerId: string, orderId: string, reason: string, orderLineId?: string) {

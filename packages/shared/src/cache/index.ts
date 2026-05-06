@@ -1,4 +1,4 @@
-import { redis } from '../infra/redis'
+import { redis } from '../infra/redis.js'
 
 export const cacheService = {
   async get<T>(key: string): Promise<T | null> {

@@ -1,8 +1,8 @@
-import type { Service } from '../../../types';
+import type { Service } from '../../../types.js';
 import { prisma, Decimal, OrderStatus } from '@ecom/db'
 import { publishEvent, queues } from '@ecom/shared'
-import { inventoryService } from '../../inventory/services/inventory-service'
-import { ledgerService } from '../../revenue/services/ledger-service'
+import { inventoryService } from '../../inventory/services/inventory-service.js'
+import { ledgerService } from '../../revenue/services/ledger-service.js'
 
 const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   PENDING_PAYMENT: ['PAID', 'CANCELLED', 'PROCESSING'],
@@ -17,7 +17,7 @@ const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   FRAUD_REVIEW: ['PAID', 'CANCELLED']
 };
 
-import { promoService } from '../../promo/services/promo-service';
+import { promoService } from '../../promo/services/promo-service.js';
 
 export const orderService: Service = {
   async createFromCart(userId: string, cartId: string, paymentMethod: string, addressId: string, referralLinkId?: string, couponCode?: string) {
@@ -127,7 +127,7 @@ export const orderService: Service = {
 
       // 5. Record Affiliate Commission if referral exists
       if (referralLinkId) {
-        const { affiliateService } = await import('../../affiliate/services/affiliate-service');
+        const { affiliateService } = await import('../../affiliate/services/affiliate-service.js');
         const link = await tx.referralLink.findUnique({
           where: { id: referralLinkId }
         });

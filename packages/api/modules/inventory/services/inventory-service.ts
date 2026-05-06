@@ -1,7 +1,7 @@
 import { prisma } from '@ecom/db'
 import { redis } from '@ecom/shared'
-import { RustClient } from '../../../rust-client'
-import type { Service } from '../../../types'
+import { RustClient } from '../../../rust-client.js'
+import type { Service } from '../../../types.js'
 
 const RESERVE_STOCK_LUA = `
 local key = KEYS[1]

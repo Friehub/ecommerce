@@ -1,7 +1,7 @@
 import { Worker, Job } from 'bullmq';
 import { redis } from '@ecom/shared';
 import { prisma } from '@ecom/db';
-import { catalogService } from '../services/catalog-service';
+import { catalogService } from '../services/catalog-service.js';
 
 export const bulkImportWorker = new Worker('bulk-import', async (job: Job) => {
   console.log(`[BulkImportWorker] Starting job ${job.id}`);

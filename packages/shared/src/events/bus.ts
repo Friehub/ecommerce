@@ -1,6 +1,6 @@
 import { Queue } from 'bullmq'
-import { redis } from '../infra/redis'
-import { EventType, BaseEvent } from './types'
+import { redis } from '../infra/redis.js'
+import { EventType, BaseEvent } from './types.js'
 import { nanoid } from 'nanoid'
 
 // Domain-specific queues to prevent worker competition

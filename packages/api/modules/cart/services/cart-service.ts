@@ -1,7 +1,7 @@
 import { prisma } from '@ecom/db'
-import type { Service } from '../../../types'
-import { inventoryService } from '../../inventory/services/inventory-service'
-import { promoService } from '../../promo/services/promo-service'
+import type { Service } from '../../../types.js'
+import { inventoryService } from '../../inventory/services/inventory-service.js'
+import { promoService } from '../../promo/services/promo-service.js'
 
 export const cartService: Service = {
   async getCart(sessionId: string, userId?: string) {

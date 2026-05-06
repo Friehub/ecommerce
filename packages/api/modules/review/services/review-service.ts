@@ -1,5 +1,5 @@
 import { prisma } from '@ecom/db'
-import type { Service } from '../../../types'
+import type { Service } from '../../../types.js'
 
 export const reviewService: Service = {
   async createReview(userId: string, productId: string, rating: number, comment: string, images: string[] = []) {

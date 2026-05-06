@@ -1,5 +1,5 @@
 import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
-import type { Service } from '../../../types'
+import type { Service } from '../../../types.js'
 
 export const ledgerService: Service = {
   // Explicit return types to avoid TS2742 inference errors

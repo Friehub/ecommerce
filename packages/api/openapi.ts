@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 import { generateOpenApiDocument } from 'trpc-openapi';
-import { appRouter } from './root';
+import { appRouter } from './root.js';
 
 export const openApiDocument: OpenAPIV3.Document = generateOpenApiDocument(appRouter, {
   title: 'Jumia Clone API',

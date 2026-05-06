@@ -1,8 +1,8 @@
 import { Worker, Job } from 'bullmq';
 import { redis } from '@ecom/shared';
 import { prisma } from '@ecom/db';
-import { notificationService } from '../services/notification-service';
-import { emailTemplates } from '../services/email-templates';
+import { notificationService } from '../services/notification-service.js';
+import { emailTemplates } from '../services/email-templates.js';
 
 export const notificationWorker = new Worker('notification-events', async (job: Job) => {
   console.log(`[NotificationWorker] Received system event job ${job.id} of type ${job.name}`);

@@ -1,7 +1,7 @@
 import { prisma, PackageStatus, OrderStatus } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
-import type { Service } from '../../../types'
-import { orderService } from './order-service'
+import type { Service } from '../../../types.js'
+import { orderService } from './order-service.js'
 
 export const packageService: Service = {
   async updateStatus(packageId: string, status: PackageStatus, trackingNumber?: string) {

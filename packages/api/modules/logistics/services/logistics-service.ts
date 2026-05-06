@@ -1,6 +1,6 @@
 import { prisma } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
-import type { Service } from '../../../types'
+import type { Service } from '../../../types.js'
 
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   'PENDING': ['PICKED_UP', 'FAILED'],
@@ -62,7 +62,7 @@ export const logisticsService: Service = {
     });
 
     // B11: Authoritative sync via packageService
-    const { packageService } = await import('../../order/services/package-service');
+    const { packageService } = await import('../../order/services/package-service.js');
     await packageService.updateStatus(shipment.packageId, status as any);
 
     await publishEvent('shipment.status_updated', { shipmentId, status });

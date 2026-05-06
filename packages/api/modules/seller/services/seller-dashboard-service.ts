@@ -1,5 +1,5 @@
 import { prisma, Decimal } from '@ecom/db'
-import type { Service } from '../../../types'
+import type { Service } from '../../../types.js'
 
 export const sellerDashboardService: Service = {
   async getMetrics(sellerId: string) {

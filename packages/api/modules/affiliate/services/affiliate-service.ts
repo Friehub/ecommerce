@@ -1,7 +1,7 @@
 import { prisma, Decimal } from '@ecom/db';
 import { publishEvent } from '@ecom/shared';
-import { paymentService } from '../../payment/services/payment-service';
-import type { Service } from '../../../types'
+import { paymentService } from '../../payment/services/payment-service.js';
+import type { Service } from '../../../types.js'
 
 export const affiliateService: Service = {
   async registerAgent(userId: string) {

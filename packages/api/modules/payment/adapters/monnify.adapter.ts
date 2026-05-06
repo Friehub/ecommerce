@@ -9,7 +9,7 @@ import type {
   RefundResult,
   PayoutParams,
   PayoutResult,
-} from './types';
+} from './types.js';
 
 const MONNIFY_API_KEY = process.env.MONNIFY_API_KEY || 'MK_TEST_placeholder';
 const MONNIFY_SECRET_KEY = process.env.MONNIFY_SECRET_KEY || 'test_secret_placeholder';

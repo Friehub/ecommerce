@@ -1,7 +1,7 @@
 import { prisma } from '@ecom/db'
-import { paymentService } from '../../payment/services/payment-service'
+import { paymentService } from '../../payment/services/payment-service.js'
 import { publishEvent } from '@ecom/shared'
-import type { Service } from '../../../types'
+import type { Service } from '../../../types.js'
 
 export const returnService: Service = {
   async initiateReturn(userId: string, orderLineId: string, reason: string) {

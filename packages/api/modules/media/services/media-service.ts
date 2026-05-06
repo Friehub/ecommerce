@@ -2,7 +2,7 @@ import { s3 } from '@ecom/shared'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
 import { generateId } from '@ecom/shared'
-import type { Service } from '../../../types'
+import type { Service } from '../../../types.js'
 
 const BUCKET = process.env.R2_BUCKET || 'ecom-media';
 

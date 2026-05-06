@@ -1,3 +1,3 @@
 // IAM Module Public API
-export * from './services/user-service';
-export * from './router';
+export * from './services/user-service.js';
+export * from './router.js';

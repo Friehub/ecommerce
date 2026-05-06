@@ -1,5 +1,5 @@
-import { orderService } from './services/order-service';
-import { packageService } from './services/package-service';
+import { orderService } from './services/order-service.js';
+import { packageService } from './services/package-service.js';
 import { prisma } from '@ecom/db';
 
 async function verifyOMS() {

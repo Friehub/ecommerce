@@ -9,7 +9,7 @@ import type {
   RefundResult,
   PayoutParams,
   PayoutResult,
-} from './types';
+} from './types.js';
 
 const FLW_SECRET_KEY = process.env.FLW_SECRET_KEY || 'FLWSECK_test_placeholder';
 const FLW_WEBHOOK_SECRET = process.env.FLW_WEBHOOK_SECRET || 'flw_whsec_placeholder';

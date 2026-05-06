@@ -1,8 +1,8 @@
 import { prisma, SellerStatus, OrderStatus } from '@ecom/db';
-import { createTRPCRouter, adminProcedure } from '../../../trpc';
-import { ApproveSellerSchema, ResolveDisputeSchema, ManualRefundSchema } from '../schemas';
-import { adminService } from '../services/admin-service';
-import { orderService } from '../../order/services/order-service';
+import { createTRPCRouter, adminProcedure } from '../../../trpc.js';
+import { ApproveSellerSchema, ResolveDisputeSchema, ManualRefundSchema } from '../schemas.js';
+import { adminService } from '../services/admin-service.js';
+import { orderService } from '../../order/services/order-service.js';
 import { z } from 'zod';
 
 const _adminRouter = createTRPCRouter({

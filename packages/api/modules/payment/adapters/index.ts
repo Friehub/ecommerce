@@ -1,10 +1,10 @@
 // packages/api/modules/payment/adapters/index.ts
-import type { PaymentAdapter } from './types';
-import { PaystackAdapter } from './paystack.adapter';
-import { FlutterwaveAdapter } from './flutterwave.adapter';
-import { MonnifyAdapter } from './monnify.adapter';
+import type { PaymentAdapter } from './types.js';
+import { PaystackAdapter } from './paystack.adapter.js';
+import { FlutterwaveAdapter } from './flutterwave.adapter.js';
+import { MonnifyAdapter } from './monnify.adapter.js';
 
-export * from './types';
+export * from './types.js';
 
 const adapters: Record<string, PaymentAdapter> = {
   paystack: new PaystackAdapter(),

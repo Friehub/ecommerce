@@ -9,7 +9,7 @@ import type {
   RefundResult,
   PayoutParams,
   PayoutResult,
-} from './types';
+} from './types.js';
 
 const PAYSTACK_SECRET_KEY =
   process.env.PAYSTACK_SECRET || process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';

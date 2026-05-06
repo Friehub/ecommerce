@@ -1,6 +1,6 @@
 import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
-import type { Service } from '../../../types'
-import { ledgerService } from './ledger-service'
+import type { Service } from '../../../types.js'
+import { ledgerService } from './ledger-service.js'
 
 export const revenueService: Service = {
   async calculateCommission(packageId: string) {

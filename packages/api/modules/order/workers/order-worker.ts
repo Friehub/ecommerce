@@ -1,8 +1,8 @@
 import { Worker, Job } from 'bullmq'
 import { redis } from '@ecom/shared'
 import { prisma } from '@ecom/db'
-import { orderService } from '../services/order-service'
-import { ledgerService } from '../../revenue/services/ledger-service'
+import { orderService } from '../services/order-service.js'
+import { ledgerService } from '../../revenue/services/ledger-service.js'
 
 /* 
   DUPLICATE WORKER DISABLED (C03)

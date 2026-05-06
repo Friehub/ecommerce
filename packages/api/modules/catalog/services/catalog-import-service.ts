@@ -1,6 +1,6 @@
 import { queues } from '@ecom/shared';
 import { prisma } from '@ecom/db';
-import type { Service } from '../../../types'
+import type { Service } from '../../../types.js'
 
 export const catalogImportService: Service = {
   async enqueueImport(sellerId: string, csvContent: string, warehouseId?: string) {

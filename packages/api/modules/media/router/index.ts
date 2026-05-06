@@ -1,6 +1,6 @@
-import { createTRPCRouter, protectedProcedure } from '../../../trpc';
+import { createTRPCRouter, protectedProcedure } from '../../../trpc.js';
 import { z } from 'zod';
-import { mediaService } from '../services/media-service';
+import { mediaService } from '../services/media-service.js';
 
 const _mediaRouter = createTRPCRouter({
   getPresignedUrl: protectedProcedure

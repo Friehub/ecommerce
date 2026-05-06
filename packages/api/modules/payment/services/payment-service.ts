@@ -1,14 +1,14 @@
 import { prisma, Decimal } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
-import { RustClient } from '../../../rust-client'
-import type { Service } from '../../../types'
+import { RustClient } from '../../../rust-client.js'
+import type { Service } from '../../../types.js'
 import * as crypto from 'crypto'
-import { orderService } from '../../order/services/order-service'
+import { orderService } from '../../order/services/order-service.js'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
 const PAYSTACK_WEBHOOK_SECRET = process.env.PAYSTACK_WEBHOOK_SECRET || 'whsec_test_placeholder';
 
-import { getPaymentAdapter } from '../adapters'
+import { getPaymentAdapter } from '../adapters.js'
 
 export const paymentService: Service = {
   async initializeTransaction(provider: string, orderId: string, userId: string, email: string, amount: number, ipAddress: string = 'unknown') {

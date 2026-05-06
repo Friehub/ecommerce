@@ -1,5 +1,5 @@
 import { prisma, Decimal } from '@ecom/db'
-import type { Service } from '../../../types'
+import type { Service } from '../../../types.js'
 
 export const promoService: Service = {
   async validateCoupon(code: string, userId?: string, orderTotal?: number) {

@@ -1,5 +1,5 @@
 import { prisma } from '@ecom/db'
-import type { Service } from '../../../types'
+import type { Service } from '../../../types.js'
 
 export const opsService: Service = {
   async getGlobalMetrics() {

@@ -10,15 +10,18 @@
     "noImplicitAny": false,
     "noImplicitThis": false,
     "paths": {
-      "@ecom/db": ["packages/db"],
-      "@ecom/shared": ["packages/shared"],
-      "@ecom/shared/*": ["packages/shared/*"],
-      "@ecom/api": ["packages/api"],
       "bullmq": ["node_modules/bullmq"]
     }
 
 
 
   },
+  "files": [],
+  "references": [
+    { "path": "./packages/db" },
+    { "path": "./packages/shared" },
+    { "path": "./packages/api" },
+    { "path": "./apps/api-server" }
+  ],
   "exclude": ["node_modules", "dist"]
 }

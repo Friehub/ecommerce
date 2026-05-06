@@ -5,9 +5,7 @@
     "skipLibCheck": true,
     "strict": true,
     "composite": true,
-    "declaration": true,
-    "module": "ESNext",
-    "moduleResolution": "Node"
+    "declaration": true
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"],

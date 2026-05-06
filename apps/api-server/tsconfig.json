@@ -5,7 +5,12 @@
     "rootDir": "./src",
     "skipLibCheck": true,
     "strict": true,
+    "composite": true,
+    "declaration": true
   },
+  "references": [
+    { "path": "../../packages/api" }
+  ],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

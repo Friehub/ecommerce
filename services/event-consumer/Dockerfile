@@ -28,4 +28,4 @@ WORKDIR /app/services/event-consumer
 
 USER consumer
 
-CMD ["node", "dist/src/index.js"]
+CMD ["node", "dist/index.js"]

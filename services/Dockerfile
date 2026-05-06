@@ -39,7 +39,7 @@ RUN cargo build --release \
 
 # ── Runtime base (reused by all service stages) ───────────────────────────────
 FROM alpine:3.19 AS base-runner
-RUN apk add --no-cache ca-certificates tzdata libpq
+RUN apk add --no-cache ca-certificates tzdata libpq libgcc libstdc++
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 

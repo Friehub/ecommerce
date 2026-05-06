@@ -92,7 +92,7 @@ services:
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       AUTH_SECRET: ${NEXTAUTH_SECRET}
       AUTH_TRUST_HOST: "true"
-      DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
+      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
     networks: [edge-net, app-net, db-net]
     healthcheck:
@@ -112,7 +112,7 @@ services:
       dockerfile: apps/api-server/Dockerfile.prod
     restart: always
     environment:
-      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom"
+      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       JWT_SECRET: ${JWT_SECRET}
       PAYSTACK_SECRET: ${PAYSTACK_SECRET}
@@ -179,7 +179,7 @@ services:
       target: fraud-runner
     restart: always
     environment:
-      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom"
+      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
     networks: [app-net, db-net]
     depends_on:
       postgres:
@@ -196,7 +196,7 @@ services:
       target: recommendations-runner
     restart: always
     environment:
-      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom"
+      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
     networks: [app-net, db-net]
     depends_on:
       postgres:
@@ -241,7 +241,7 @@ services:
       dockerfile: packages/api/Dockerfile.workers
     restart: always
     environment:
-      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom"
+      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       SEARCH_SERVICE_URL: http://search:3001
       INVENTORY_SERVICE_URL: http://inventory:3002
@@ -265,7 +265,7 @@ services:
       dockerfile: services/event-consumer/Dockerfile
     restart: always
     environment:
-      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom"
+      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
     networks: [app-net, db-net]
     depends_on:

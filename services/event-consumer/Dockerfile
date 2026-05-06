@@ -7,10 +7,10 @@ COPY . .
 
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @ecom/db generate
-RUN pnpm --filter @ecom/db build
-RUN pnpm --filter @ecom/shared build
-RUN pnpm --filter @ecom/api build
-RUN pnpm --filter @ecom/event-consumer build
+RUN pnpm --filter @ecom/db exec tsc -b --force
+RUN pnpm --filter @ecom/shared exec tsc -b --force
+RUN pnpm --filter @ecom/api exec tsc -b --force
+RUN pnpm --filter @ecom/event-consumer exec tsc -b --force
 
 FROM node:20-alpine AS runner
 WORKDIR /app

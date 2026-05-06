@@ -90,6 +90,9 @@ jobs:
             run --rm --no-deps api \
             sh -c "npx prisma migrate deploy"
 
+      - name: Clear stale Docker build cache
+        run: docker builder prune -f --keep-storage 1GB
+
       # Build and roll all services together to avoid version mismatch
       - name: Deploy services
         working-directory: /opt/jumia
@@ -141,7 +144,7 @@ jobs:
         if: always()
         run: |
           # Keep 15GB of build cache to ensure fast subsequent builds
-          docker builder prune --keep-storage 15GB -f
+          docker builder prune --keep-storage 5GB -f
           docker image prune -f
 
   # ── Job 3: Auto-rollback if deploy failed ─────────────────────────
@@ -176,5 +179,5 @@ jobs:
       - name: Cleanup rollback artifacts
         if: always()
         run: |
-          docker builder prune --keep-storage 15GB -f
+          docker builder prune --keep-storage 5GB -f
           docker image prune -f

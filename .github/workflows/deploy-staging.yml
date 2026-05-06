@@ -96,6 +96,10 @@ jobs:
             search inventory fraud recommendations auction image-processor
 
       # ── Build TypeScript services ──────────────────────────────────────────
+      - name: Clear stale Docker build cache
+        if: steps.changes.outputs.ts == 'true'
+        run: docker builder prune -f --keep-storage 1GB
+
       - name: Build TypeScript services
         if: steps.changes.outputs.ts == 'true'
         working-directory: /opt/runner-work/jumia-staging
@@ -119,6 +123,6 @@ jobs:
       - name: Prune build cache (bounded)
         if: always()
         run: |
-          docker builder prune --keep-storage 15GB -f
+          docker builder prune --keep-storage 5GB -f
           docker image prune -f
 

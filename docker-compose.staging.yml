@@ -178,7 +178,8 @@ services:
       target: fraud-runner
     restart: always
     environment:
-      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
+      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom"
+      PGSSLMODE: disable
       RUST_LOG: info
     networks: [app-net, db-net]
     depends_on:
@@ -196,7 +197,8 @@ services:
       target: recommendations-runner
     restart: always
     environment:
-      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
+      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom"
+      PGSSLMODE: disable
       RUST_LOG: info
     networks: [app-net, db-net]
     depends_on:

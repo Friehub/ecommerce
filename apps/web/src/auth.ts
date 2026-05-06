@@ -3,16 +3,12 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@ecom/db'
 import { userService } from '@ecom/api/modules/iam/services/user-service'
 import Credentials from 'next-auth/providers/credentials'
-import Google from 'next-auth/providers/google'
+import authConfig from "./auth.config"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // adapter: PrismaAdapter(prisma),
+  ...authConfig,
   session: { strategy: 'jwt' },
   providers: [
-    // Google({
-    //   clientId: process.env.GOOGLE_CLIENT_ID,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    // }),
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
@@ -62,3 +58,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }
   },
 })
+

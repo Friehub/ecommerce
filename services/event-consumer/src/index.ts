@@ -1,11 +1,9 @@
 import { Worker } from 'bullmq';
-import { redis } from '@ecom/shared/src/infra/redis';
-import { catalogService } from '@ecom/api/modules/catalog/services/catalog-service';
-import { ledgerService } from '@ecom/api/modules/revenue/services/ledger-service';
-import { orderService } from '@ecom/api/modules/order/services/order-service';
+import { redis } from '@ecom/shared';
+import { catalogService, ledgerService, orderService } from '@ecom/api';
 import { prisma } from '@ecom/db';
 import * as dotenv from 'dotenv';
-import { startMetricsServer, orderProcessingLatency } from './metrics';
+import { startMetricsServer, orderProcessingLatency } from './metrics.js';
 
 dotenv.config();
 
@@ -118,7 +116,7 @@ const orderWorker = new Worker('orders', async job => {
             where: { id: disputeId },
             data: { status: 'ESCALATED' }
           });
-          const { publishEvent } = await import('@ecom/shared/src/events/bus');
+          const { publishEvent } = await import('@ecom/shared');
           await publishEvent('dispute.escalated', { disputeId, reason: 'AUTO_ESCALATION_TIMEOUT' });
         }
         break;

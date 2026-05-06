@@ -5,7 +5,7 @@ import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import { fastifyTRPCPlugin, FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
 import { appRouter, type AppRouter } from '@ecom/api';
-import { createContext } from './context';
+import { createContext } from './context.js';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import { fastifyTRPCOpenApiPlugin } from 'trpc-openapi';

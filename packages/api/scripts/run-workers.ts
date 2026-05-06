@@ -1,10 +1,10 @@
-import { orderWorker } from '../modules/order/workers/order-worker';
-import { notificationWorker } from '../modules/notification/workers/notification-worker';
-import { bulkImportWorker } from '../modules/catalog/workers/bulk-import-worker';
-import { ledgerService } from '../modules/revenue/services/ledger-service';
+import { orderWorker } from '../modules/order/workers/order-worker.js';
+import { notificationWorker } from '../modules/notification/workers/notification-worker.js';
+import { bulkImportWorker } from '../modules/catalog/workers/bulk-import-worker.js';
+import { ledgerService } from '../modules/revenue/services/ledger-service.js';
 import { prisma } from '@ecom/db';
-import { affiliateService } from '../modules/affiliate/services/affiliate-service';
-import { orderService } from '../modules/order/services/order-service';
+import { affiliateService } from '../modules/affiliate/services/affiliate-service.js';
+import { orderService } from '../modules/order/services/order-service.js';
 import * as cron from 'node-cron';
 
 console.log('🚀 Starting System Workers...');
@@ -68,7 +68,7 @@ cron.schedule('0 * * * *', async () => {
 });
 
 // Nightly Search Sync & Autocomplete Builder (runs at 02:00 UTC every day)
-import { catalogService } from '../modules/catalog/services/catalog-service';
+import { catalogService } from '../modules/catalog/services/catalog-service.js';
 import { redis } from '@ecom/shared';
 
 cron.schedule('0 2 * * *', async () => {

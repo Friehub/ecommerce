@@ -11,8 +11,8 @@
     "noImplicitThis": false,
     "paths": {
       "@ecom/db": ["packages/db"],
-      "@ecom/shared": ["packages/shared/src"],
-      "@ecom/shared/*": ["packages/shared/src/*"],
+      "@ecom/shared": ["packages/shared"],
+      "@ecom/shared/*": ["packages/shared/*"],
       "@ecom/api": ["packages/api"]
     }
 

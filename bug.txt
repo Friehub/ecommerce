@@ -1,0 +1,441 @@
+[5/5/26 12:21 AM] Israel: Great! Now let me get the actual module implementations:Now let me look at the actual service implementations:# Core Module Error Analysis: DB, OMS, Payments & Inventory
+
+Based on my comprehensive audit of the Friehub ecommerce repository, I've identified critical errors and logic gaps across the database schema, Order Management System, Payments, and Inventory modules.
+
+---
+
+## 🔴 CRITICAL ERRORS
+
+### E1: Payment State Machine Bypass (B7 & B8) — CRITICAL
+Location: packages/api/modules/payment/services/payment-service.ts:129 & 166
+
+Problem:
+// ❌ WRONG — Direct update bypasses state machine
+tx.order.update({ data: { status: 'PAID' } })
+Both `handleWebhook() and payWithWallet() directly update the order status without triggering the state machine. This means:
+- ❌ Inventory reservations are **NEVER confirmed** (stock stays in limbo)
+- ❌ Seller ledger entries are **NEVER created**
+- ❌ Events like payment.confirmed, order.paid are **NEVER published**
+- ❌ Seller-finance module never receives notification
+- ❌ Notifications are never sent
+
+**Expected Flow:**
+``typescript
+// ✅ CORRECT — Use state machine
+await orderService.updateStatus(payment.orderId, 'PAID')
+
+This would trigger:
+1. State validation (PENDING_PAYMENT → PAID allowed?)
+2. Inventory confirmation: `reservationStatus: CONFIRMED`
+3. Ledger entry creation for seller
+4. Event publishing (`payment.confirmed`)
+5. Package status advancement
+
+**Impact:** Orders paid via webhook or wallet will never transition to PROCESSING. Sellers won't be paid. Inventory won't clear reservations.
+
+---
+
+### **E2: Stock Reservation Release with Wrong ID (B6) — CRITICAL**
+**Location:** `packages/api/modules/order/services/order-service.ts:143`
+
+**Problem:**
+typescript
+// ❌ WRONG — orderId is not a reservationId
+await inventorDatabase Reality:(orderId)
+
+**Database Reality:**
+prisma
+model StockReservation {
+  id        String  @id  // This is what releaseStock() expects
+  orderId   String? // This is what's being passed
+}
+
+When an order is cancelled:
+- Code queries `StockReservation` with `id = orderId`
+- Since `StockReservation.id` is a CUID and `Order.id` is also a CUID, they won't match
+- Query returns `null`
+- Stock is **NEVER released**
+- Inventory becomes permanently reserved
+
+**Correct Logic:**
+typescript
+// ✅ CORRECT — Find reservations by orderId, release each
+const reservations = await db.stockReservation.findMany({
+  where: { orderId, status: 'ACTIVE' }
+})
+for (const res of reservations) {
+  await iImpact:vice.releaseStock(res.id)
+}
+
+**Impact:** Cancelled orders permanently lock inventory. Stock counts become inaccurate. Flash sales fail.
+
+---
+
+### **E3: Payment Webhook Missing HMAC Verification — CRITICAL SECURITY**
+**Location:** `packages/api/modules/payment/services/payment-service.ts` → `handleWebhook()`
+
+**Problem:**
+typescript
+// ❌ NO VERIFICATION — Anyone can call this endpoint with fake webhook
+async handleWebhook(req) {
+  const event = JSON.parse(req.body)
+  // Directly processes without signature cVulnerability:der.update({ status: 'PAID' })
+}
+
+**Vulnerability:**
+- Attacker calls `POST /api/trpc/payment.handleWebhook` with any orderId and `status: 'PAID'`
+- Order immediately transitions to PAID without payment
+- No funds actually received from buyer
+- Seller can be paid for non-existent transactions
+
+**Required Fix:**
+typescript
+async handleWebhook(req) {
+  const signature = req.headers['x-paystack-signature']
+  const hash = crypto
+    .createHmac('sha512', process.env.PAYSTACK_WEBHOOK_SECRET)
+    .update(req.rawBody)  // Raw body, not parsed JSON
+    .digest('hex')
+  
+  if (hash !== signature) {
+    throw new Error('InImpact:ok signature')
+  }
+  // Safe to process
+}
+`
+
+**Impact:** Unverified paymentE4: Payment Record Stores Email Instead of userId — BUG4Location:ord Stores Email Instead of userId — BUG**
+**Location:** `packages/api/modules/payment/services/payment-service.ts:65`
+[5/5/26 12:21 AM] Israel: Problem:
+model Payment {
+  userId  String  // Expected: User.id (CUID)
+}
+Actual Code:
+// ❌ WRONG — Stores email in userId field
+await db.payment.create({
+  data: {
+    userId: email,  // "user@example.com" instead of "clx1a2b3c"
+    orderId,
+    amount
+  }
+})
+Consequences:
+- Refund lookups fail: db.payment.findMany({ where: { userId: actualUserId } })
+- Settlement calculations broken
+- Event publishing uses wrong userId
+- Notifications go to wrong user
+
+Impact: Refunds cannot be attributed. Ledger entries are orphaned.
+
+---
+
+## 🟠 HIGH-PRIORITY LOGIC ERRORS
+
+### E5: Stock Reservation Model Missing Seller Context
+Database Schema:
+model StockReservation {
+  id        String  @id
+  variantId String
+  orderId   String?
+  quantity  Int
+  status    ReservationStatus
+  // ❌ MISSING: sellerId, warehouseId
+}
+
+model StockLevel {
+  id          String  @id
+  variantId   String
+  sellerId    String  // Multi-seller context
+  warehouseId String  // Multi-warehouse context
+  qtyOnHand   Int
+  qtyReserved Int
+}
+Problem:
+When releasing a reservation, the system cannot determine which seller's stock to decrement. Multiple sellers can have the same variant in different warehouses.
+
+Example:
+Variant: iPhone 15 Pro
+Seller A (Warehouse 1): 10 reserved
+Seller B (Warehouse 2): 5 reserved
+
+orderService.cancelOrder(orderId)
+  → inventoryService.releaseStock(reservationId)
+  → But which seller's qtyReserved to decrement?
+Fix Required:
+model StockReservation {
+  id          String  @id
+  variantId   String
+  sellerId    String  // ← ADD
+  warehouseId String  // ← ADD
+  orderId     String?
+  quantity    Int
+  status      ReservationStatus
+  
+  // Relationship to decrement correct StockLevel
+  stockLevel  StockLevel @relation(fields: [variantId, sellerId, warehouseId], references: [variantId, sellerId, warehouseId])
+}
+Impact: Stock release logic is incomplete. Multi-seller orders will fail.
+
+---
+
+### E6: Order Status Machine Missing Transitions
+Current Allowed Statuses:
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID          // ← Payment received
+  PROCESSING    // ← Should be here after PAID
+  SHIPPED
+  DELIVERED
+  COMPLETED
+  CANCELLED
+  RETURN_REQUESTED
+  RETURNED
+  FRAUD_REVIEW
+}
+Problem - Missing Transition:
+Payment Flow:
+PENDING_PAYMENT ──(webhook)──> PAID
+                                 ❌ No logic to transition to PROCESSING
+                                 ❌ Seller never alerted
+                                 ❌ Order stuck in PAID forever
+Expected Logic (Not Implemented):
+// ❌ MISSING: No handler to move PAID → PROCESSING
+// Should be triggered by:
+// 1. Seller confirms item ready
+// 2. Inventory confirms stock
+// 3. Seller warehouse confirms shipment preparation
+
+async updateStatus(orderId, newStatus) {
+  const order = await db.order.findUnique({ where: { id: orderId } })
+  
+  // Validate transition
+  const allowed = {
+    'PENDING_PAYMENT': ['PAID', 'CANCELLED'],
+    'PAID': ['PROCESSING', 'FRAUD_REVIEW'],  // ← Who triggers this?
+    'PROCESSING': ['SHIPPED', 'CANCELLED'],
+    'SHIPPED': ['OUT_FOR_DELIVERY'],
+    'OUT_FOR_DELIVERY': ['DELIVERED', 'RETURN_REQUESTED'],
+    // ...
+  }
+}
+Impact: Orders can receive payment but never be fulfilled.
+
+---
+
+### E7: Cart Price Snapshot Missing Flash Sale Context (I5)
+Location: packages/api/modules/cart/services/cart-service.ts
+
+Problem:
+// ❌ WRONG — Uses base price, not flash sale price
+const cartItem = await db.cartItem.create({
+  data: {
+    variantId,
+    priceSnapshot: variant.price  // Base price
+    // Never checks for active flash sale
+  }
+})
+Database Reality:
+model CartItem {
+  priceSnapshot Decimal  // Should reflect current promotion
+}
+
+model FlashSale {
+  variantId     String
+  startTime     DateTime
+  endTime       DateTime
+  discountedPrice Decimal
+}
+[5/5/26 12:21 AM] Israel: Example Bug:
+Flash Sale: iPhone 15 Pro
+  Base Price: ₦500,000
+  Flash Sale Price: ₦350,000
+  Active until: 2026-05-04 20:00
+
+Customer adds to cart at 2026-05-04 19:30
+  → priceSnapshot: ₦500,000  ❌ WRONG
+  → Expected: ₦350,000
+
+Customer checks out at 2026-05-04 21:00 (sale ended)
+  → priceSnapshot still ₦500,000
+  → But checkout recalculates and applies base price ₦500,000
+  → Buyer confused: price changed in cart?
+Correct Logic:
+async addToCart(variantId, quantity) {
+  const flashSale = await db.flashSale.findFirst({
+    where: {
+      variantId,
+      startTime: { lte: now() },
+      endTime: { gt: now() }
+    }
+  })
+  
+  const priceSnapshot = flashSale?.discountedPrice || variant.price
+  
+  return db.cartItem.create({
+    data: {
+      variantId,
+      quantity,
+      priceSnapshot  // Correct price at cart time
+    }
+  })
+}
+Impact: Checkout totals mismatch cart display. Disputes over pricing.
+
+---
+
+### E8: Inventory Confirmation Never Happens
+Expected Flow After Payment:
+1. Order created → Stock RESERVED (StockReservation.status = ACTIVE)
+2. Payment confirmed → Stock CONFIRMED (StockReservation.status = CONFIRMED)
+3. Seller ships → Stock RELEASED (StockReservation.status = RELEASED)
+4. StockLevel.qtyReserved decremented → qtyOnHand decremented
+Actual Code:
+// In payment-service.ts handleWebhook:
+tx.order.update({ status: 'PAID' })  // ❌ Stops here
+
+// NO call to inventoryService.confirmReservation()
+// So StockReservation stays ACTIVE forever
+Database Consequence:
+StockReservation {
+  status: "ACTIVE"  // Never transitions to CONFIRMED
+}
+
+StockLevel {
+  qtyReserved: 5    // Never decremented, so qtyAvailable is wrong
+}
+Impact: Stock appears unavailable even after payment. Subsequent orders see phantom reservations.
+
+---
+
+## 🟡 DATA INTEGRITY ISSUES
+
+### E9: Order and OrderPackage Status Sync Problem
+Schemas:
+model Order {
+  status OrderStatus  // PAID, PROCESSING, SHIPPED, DELIVERED...
+}
+
+model OrderPackage {
+  status PackageStatus  // PENDING, READY_FOR_PICKUP, PICKED_UP, IN_TRANSIT, DELIVERED...
+}
+Problem - Misaligned Enums:
+Order.status = "SHIPPED" 
+  But OrderPackage.status = "PENDING" (never updated)
+
+What does "SHIPPED" mean if package is still PENDING?
+Should we show "In Transit" to buyer or "Ready for Pickup"?
+Issue: No defined relationship. When does Order.status update vs OrderPackage.status?
+
+Missing Logic:
+// ❌ No function like this:
+async updatePackageStatus(packageId, newStatus) {
+  const pkg = await db.orderPackage.findUnique({ where: { id: packageId } })
+  
+  // Update package
+  await db.orderPackage.update({
+    data: { status: newStatus }
+  })
+  
+  // Should this update parent Order too?
+  // const allPackages = await db.orderPackage.findMany({
+  //   where: { orderId: pkg.orderId }
+  // })
+  // const allDelivered = allPackages.every(p => p.status === 'DELIVERED')
+  // if (allDelivered) {
+  //   await updateOrderStatus(pkg.orderId, 'DELIVERED')
+  // }
+}
+Impact: Multi-seller orders show inconsistent status. One package delivered, order shows PROCESSING.
+
+---
+
+### E10: Refund Schema Type Mismatch
+Schema:
+model Refund {
+  status    PaymentStatus @default(PENDING)  // ❌ WRONG
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED  // ← Enum value for payment
+  HELD
+}
+Problem:
+Refund.status = "REFUNDED" ❌ Confusing
+  Does this mean the refund was processed?
+  Or the payment was refunded?
+  
+Expected enum values:
+enum RefundStatus {
+  PENDING      // Awaiting approval
+  APPROVED     // Admin approved
+  PROCESSED    // Wallet/bank credited
+  REJECTED     // Admin rejected
+}
+Impact: Ambiguous refund state. Code can't determine if refund succeeded.
+
+---
+
+### E11: Missing Inventory Adjustment on Order Cancellation
+Problem: When an order transitions to CANCELLED:
+
+`typescript
+// Currently happens:
+await inventoryService.releaseStock(orderId)  // ❌ Wrong param, fails silently
+[5/5/26 12:21 AM] Israel: // What SHOULD happen:
+1. Find all StockReservations for this order
+2. Release each reservation: status = RELEASED
+3. Decrement StockLevel.qtyReserved
+4. Event: stock.released published
+5. Notify seller if this was a reserved quantity they pledged
+
+// What ACTUALLY happens:
+// Nothing. Stock stays reserved.
+
+**Impact:** Cancelled orders ghost-reserve inventory forever.
+
+---
+
+## 📊 SUMMARY TABLE
+
+| Error ID | Module | Severity | Category | Impact |
+|----------|--------|----------|----------|--------|
+| **E1** | Payments/OMS | 🔴 CRITICAL | Logic | Orders never progress to PROCESSING |
+| **E2** | Inventory/OMS | 🔴 CRITICAL | Logic | Cancelled orders lock inventory permanently |
+| **E3** | Payments | 🔴 CRITICAL | Security | Unauthenticated payment processing |
+| **E4** | Payments | 🔴 CRITICAL | Data | Refunds cannot be attributed to users |
+| **E5** | Inventory | 🟠 HIGH | Schema | Multi-seller stock release impossible |
+| **E6** | OMS | 🟠 HIGH | Logic | PAID orders never advance to PROCESSING |
+| **E7** | Cart | 🟠 HIGH | Logic | Flash sale prices not captured in cart |
+| **E8** | Inventory | 🟠 HIGH | Logic | Stock reservations never confirmed |
+| **E9** | OMS | 🟡 MEDIUM | Data Sync | Order/package status misalignment |
+| **E10** | Payments | 🟡 MEDIUM | Schema | Refund state is ambiguous |
+| **E11** | Inventory | 🟡 MEDIUM | Logic | Cancelled orders don't release stock |
+
+---
+
+## 🔗 Cross-Module Failure Cascade
+
+Payment Webhook (Paystack) ──[E3: No HMAC check]──> Unverified
+                                                     │
+                                         [E4: Email stored as userId]
+                                                     │
+                    [E1: Direct update bypasses state machine]
+                                                     │
+         Order.status = PAID ✓  But never → PROCESSING
+                │
+         [E8: Stock reservation never confirmed]
+                │
+    StockReservation.status = ACTIVE (forever)
+                │
+         [E2: releaseStock called with wrong ID]
+                │
+         Next order for same variant: "Out of Stock"
+         (Even though previous order was cancelled)
+                │
+         [E11: Inventory corrupted]
+`
+
+This cascade explains why **completed orders don't trigger seller payouts, inventory becomes inaccurate, and multi-seller orders fail silently**.

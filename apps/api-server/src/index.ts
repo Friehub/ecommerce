@@ -9,7 +9,7 @@ import { createContext } from './context';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import { fastifyTRPCOpenApiPlugin } from 'trpc-openapi';
-import { openApiDocument } from '@ecom/api/openapi';
+import { openApiDocument } from '@ecom/api';
 
 import Redis from 'ioredis';
 

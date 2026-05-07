@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "tsx watch --env-file ../../.env src/index.ts",
     "build": "tsc -b",
     "start": "node dist/index.js",
     "typecheck": "tsc -b"
@@ -13,11 +13,11 @@
     "@ecom/api": "workspace:*",
     "@ecom/db": "workspace:*",
     "@ecom/shared": "workspace:*",
-    "@fastify/cors": "^9.0.1",
+    "@fastify/cors": "^8.5.0",
     "@fastify/helmet": "^11.1.1",
     "@fastify/rate-limit": "^9.1.0",
-    "@fastify/swagger": "^9.7.0",
-    "@fastify/swagger-ui": "^5.2.6",
+    "@fastify/swagger": "^8.15.0",
+    "@fastify/swagger-ui": "^4.0.1",
     "@trpc/server": "^10.45.2",
     "@types/jsonwebtoken": "^9.0.10",
     "dotenv": "^16.0.0",

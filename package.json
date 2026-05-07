@@ -10,8 +10,8 @@
     "db:migrate": "pnpm --filter @ecom/db migrate",
     "db:seed": "pnpm --filter @ecom/db seed",
     "db:studio": "pnpm --filter @ecom/db studio",
-    "test:e2e": "playwright test -c apps/e2e/playwright.config.ts",
-    "test:e2e:ui": "playwright test -c apps/e2e/playwright.config.ts --ui"
+    "test:e2e": "npx playwright test -c apps/e2e/playwright.config.ts",
+    "test:e2e:ui": "npx playwright test -c apps/e2e/playwright.config.ts --ui"
   },
   "devDependencies": {
     "prettier": "^3.0.0",

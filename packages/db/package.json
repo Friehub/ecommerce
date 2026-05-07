@@ -20,7 +20,7 @@
     "build": "tsc -b",
     "typecheck": "tsc -b",
     "migrate": "prisma migrate dev",
-    "seed": "ts-node seed.ts",
+    "seed": "tsx seed.ts",
     "studio": "prisma studio"
   },
   "dependencies": {

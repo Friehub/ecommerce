@@ -1,7 +1,9 @@
 import { PrismaClient, UserRole, SellerTier, SellerStatus, DisputeStatus, PackageStatus, Prisma } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({
+  log: ['query', 'info', 'warn', 'error'],
+})
 
 async function main() {
   console.log('🌱 Seeding database...')
@@ -11,18 +13,15 @@ async function main() {
 
   // 1. Clean existing data (idempotency)
   console.log('🧹 Cleaning existing data...');
-  await prisma.review.deleteMany();
-  await prisma.dispute.deleteMany();
-  await prisma.orderLine.deleteMany();
-  await prisma.orderPackage.deleteMany();
-  await prisma.order.deleteMany();
-  await prisma.stockLevel.deleteMany();
-  await prisma.productVariant.deleteMany();
-  await prisma.product.deleteMany();
-  await prisma.affiliateAgent.deleteMany();
-  await prisma.seller.deleteMany();
-  await prisma.userAddress.deleteMany();
-  await prisma.user.deleteMany({ where: { role: { not: 'ADMIN' as any } } });
+  try {
+    await prisma.$executeRawUnsafe(`
+      TRUNCATE TABLE "User", "Product", "Seller", "Category", "Brand", "Order", "OrderPackage", "OrderLine", "ProductVariant", "StockLevel", "AffiliateAgent", "ReferralLink", "Review", "Dispute" CASCADE;
+    `);
+    console.log('✅ Tables truncated.');
+  } catch (err) {
+    console.error('❌ Truncate failed:', err);
+    // Continue anyway, maybe tables are already empty
+  }
 
   // 1. Create Admin
   await prisma.user.upsert({

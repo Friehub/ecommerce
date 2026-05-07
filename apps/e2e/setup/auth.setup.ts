@@ -9,8 +9,8 @@ setup('authenticate', async ({ page }) => {
   await loginPage.goto();
   
   // Use test credentials from env
-  const email = process.env.TEST_USER_EMAIL || 'test@example.com';
-  const password = process.env.TEST_USER_PASSWORD || 'Password123!';
+  const email = process.env.TEST_USER_EMAIL || 'buyer1@ecom.dev';
+  const password = process.env.TEST_USER_PASSWORD || 'password123';
   
   await loginPage.login(email, password);
   await loginPage.expectLoggedIn();

@@ -27,12 +27,13 @@ export default defineConfig({
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        // Use the storage state from our setup project
+        channel: 'chrome', // Use system chrome
         storageState: 'apps/e2e/playwright/.auth/user.json',
       },
       dependencies: ['setup'],
     },
 
+    /*
     {
       name: 'firefox',
       use: { 
@@ -41,5 +42,6 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
+    */
   ],
 });

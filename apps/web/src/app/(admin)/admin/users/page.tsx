@@ -85,7 +85,7 @@ export default function AdminUsersPage() {
                   <td className="px-6 py-4">
                     <span className={`text-[10px] px-2.5 py-1 rounded-xl font-extrabold border uppercase tracking-wider ${
                       user.role === 'ADMIN' ? 'bg-purple-50 text-purple-600 border-purple-100' :
-                      user.role === 'STAFF' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                      user.role === 'MODERATOR' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                       user.role === 'SELLER' ? 'bg-orange-50 text-orange-600 border-orange-100' :
                       'bg-teal-50 text-teal-600 border-teal-100'
                     }`}>
@@ -94,26 +94,26 @@ export default function AdminUsersPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`text-[10px] px-2.5 py-1 rounded-xl font-extrabold border uppercase tracking-wider ${
-                      user.status === 'ACTIVE' 
+                      user.isActive 
                         ? 'bg-green-50 text-green-700 border-green-100' 
                         : 'bg-red-50 text-red-700 border-red-100'
                     }`}>
-                      {user.status}
+                      {user.isActive ? 'ACTIVE' : 'SUSPENDED'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button 
-                        onClick={() => toggleUserStatus(user.id, user.status)}
+                        onClick={() => toggleUserStatus(user.id, user.isActive ? 'ACTIVE' : 'SUSPENDED')}
                         disabled={updateStatusMutation.isLoading}
                         className={`p-2 rounded-xl border duration-200 transition-all cursor-pointer disabled:opacity-50 ${
-                          user.status === 'ACTIVE' 
+                          user.isActive 
                             ? 'text-red-600 bg-red-50 hover:bg-red-100/60 border-red-100/60' 
                             : 'text-green-600 bg-green-50 hover:bg-green-100/60 border-green-100/60'
                         }`}
-                        title={user.status === 'ACTIVE' ? 'Suspend Access' : 'Activate Access'}
+                        title={user.isActive ? 'Suspend Access' : 'Activate Access'}
                       >
-                        {user.status === 'ACTIVE' ? <ShieldAlert size={16} /> : <CheckCircle size={16} />}
+                        {user.isActive ? <ShieldAlert size={16} /> : <CheckCircle size={16} />}
                       </button>
                     </div>
                   </td>

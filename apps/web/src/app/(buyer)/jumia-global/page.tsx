@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Globe, ChevronRight, ShoppingBag } from 'lucide-react';
+import { Globe, ChevronRight, ShoppingBag, ShieldCheck } from 'lucide-react';
 import { api } from '@/trpc/react';
 import { ProductCard } from '../../../components/ui/ProductCard';
 

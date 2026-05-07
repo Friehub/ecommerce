@@ -52,6 +52,18 @@ const _catalogRouter = createTRPCRouter({
       return await catalogService.listProducts(input);
     }),
 
+  getProductById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      return await prisma.product.findUnique({
+        where: { id: input.id },
+        include: {
+          media: true,
+          seller: { select: { businessName: true } }
+        }
+      });
+    }),
+
   getProductBySlug: publicProcedure
     .meta({ openapi: { method: 'GET', path: '/catalog/product/{slug}' } })
     .input(z.object({ slug: z.string() }))

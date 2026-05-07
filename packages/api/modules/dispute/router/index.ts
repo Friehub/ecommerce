@@ -5,7 +5,7 @@ import { prisma } from '@ecom/db';
 import { z } from 'zod';
 
 const _disputeRouter = createTRPCRouter({
-  open: protectedProcedure
+  openDispute: protectedProcedure
     .input(OpenDisputeSchema)
     .mutation(async ({ ctx, input }) => {
       return disputeService.openDispute(
@@ -37,7 +37,7 @@ const _disputeRouter = createTRPCRouter({
       );
     }),
 
-  getById: protectedProcedure
+  getThread: protectedProcedure
     .input(GetDisputeSchema)
     .query(async ({ ctx, input }) => {
       return disputeService.getDisputeThread(

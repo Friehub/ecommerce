@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Star, MessageSquare, ChevronRight, ShieldCheck, ShoppingBag } from 'lucide-react';
 import { api } from '@/trpc/react';
 import { useSession } from 'next-auth/react';

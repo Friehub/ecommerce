@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { api } from '@/trpc/react';
-import { Star, ChevronLeft, Loader2, Upload, AlertCircle } from 'lucide-react';
+import { Star, ChevronLeft, Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
-export default function NewReviewPage() {
+function NewReviewPageContent() {
   const searchParams = useSearchParams();
   const productId = searchParams.get('productId');
   const router = useRouter();
@@ -145,5 +145,13 @@ export default function NewReviewPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewReviewPage() {
+  return (
+    <Suspense fallback={<div className="container py-20 text-center font-extrabold text-gray-500 uppercase tracking-widest text-xs">Loading review form...</div>}>
+      <NewReviewPageContent />
+    </Suspense>
   );
 }

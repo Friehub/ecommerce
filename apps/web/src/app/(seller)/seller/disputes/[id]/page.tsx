@@ -14,12 +14,12 @@ export default function SellerDisputeDetailPage() {
   const [message, setMessage] = useState('');
   
   const utils = api.useUtils();
-  const { data: dispute, isLoading } = api.dispute.getById.useQuery({ disputeId });
+  const { data: dispute, isLoading } = api.dispute.getThread.useQuery({ disputeId });
   
   const respondMutation = api.dispute.respond.useMutation({
     onSuccess: () => {
       setMessage('');
-      utils.dispute.getById.invalidate({ disputeId });
+      utils.dispute.getThread.invalidate({ disputeId });
     }
   });
 

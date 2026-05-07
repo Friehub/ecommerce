@@ -94,7 +94,7 @@ export default function AdminKYCVerificationPage() {
                   <td className="px-6 py-4">
                     <span className={`text-[10px] px-2.5 py-1 rounded-xl font-extrabold border uppercase tracking-wider ${
                       item.status === 'PENDING_VERIFICATION' ? 'bg-orange-50 text-orange-600 border-orange-100/60' :
-                      item.status === 'APPROVED' ? 'bg-green-50 text-green-600 border-green-100/60' :
+                      item.status === 'ACTIVE' ? 'bg-green-50 text-green-600 border-green-100/60' :
                       'bg-red-50 text-red-600 border-red-100/60'
                     }`}>
                       {item.status.replace('_', ' ')}

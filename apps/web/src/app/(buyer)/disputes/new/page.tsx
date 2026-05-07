@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { api } from '@/trpc/react';
-import { AlertCircle, ChevronLeft, Send, ShieldAlert, Package } from 'lucide-react';
+import { AlertCircle, ChevronLeft, Send, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 
-export default function NewDisputePage() {
+function NewDisputePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
@@ -127,5 +127,13 @@ export default function NewDisputePage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function NewDisputePage() {
+  return (
+    <Suspense fallback={<div className="container py-20 text-center font-bold text-gray-500">Loading dispute interface...</div>}>
+      <NewDisputePageContent />
+    </Suspense>
   );
 }

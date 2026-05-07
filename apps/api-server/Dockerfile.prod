@@ -32,5 +32,5 @@ USER apiuser
 
 EXPOSE 4000
 
-# No PM2, run directly to avoid env var caching
-CMD ["pnpm", "exec", "tsx", "apps/api-server/src/index.ts"]
+# Use node --import tsx for robust TS execution without shell wrappers
+CMD ["node", "--import", "tsx", "apps/api-server/src/index.ts"]

@@ -28,4 +28,4 @@ WORKDIR /app/services/event-consumer
 
 USER consumer
 
-CMD ["pnpm", "exec", "tsx", "src/index.ts"]
+CMD ["node", "--import", "tsx", "src/index.ts"]

@@ -83,7 +83,10 @@ export default function Home() {
     <div className="bg-[#F8F9FA] min-h-screen pb-12 select-none">
       {/* Hero Section */}
       <section className="container mt-4 md:mt-6 flex flex-col lg:flex-row gap-4 md:gap-6">
-        <CategorySidebar />
+        {/* Category sidebar — desktop only */}
+        <div className="hidden lg:block">
+          <CategorySidebar />
+        </div>
         <HeroCarousel />
         
         {/* Right Promo (Desktop) */}
@@ -139,21 +142,6 @@ export default function Home() {
       {/* Top Categories */}
       <TopCategoriesSection />
 
-      <style jsx>{`
-        .container {
-          max-width: 1280px;
-          margin: 0 auto;
-          padding: 0 24px;
-        }
-        @media (max-width: 640px) {
-          .container {
-            padding: 0 16px;
-          }
-        }
-        .mt-4 { margin-top: 1rem; }
-        .mt-6 { margin-top: 1.5rem; }
-        .pb-12 { padding-bottom: 3rem; }
-      `}</style>
     </div>
   );
 }

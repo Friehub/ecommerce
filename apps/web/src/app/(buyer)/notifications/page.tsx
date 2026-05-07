@@ -27,23 +27,29 @@ export default function NotificationsPage() {
 
   return (
     <div className="bg-[#F9F9FA] min-h-screen pb-12 select-none">
-      <div className="container py-6">
-        <div className="flex items-center gap-2 mb-6 font-bold text-gray-500 text-xs">
+      <div className="container mx-auto px-4 max-w-3xl py-8">
+        <div className="flex items-center gap-2 mb-8 font-black text-gray-400 text-[10px] uppercase tracking-[0.2em]">
           <Link href="/account" className="hover:text-[#F68B1E] transition-colors">My Account</Link>
-          <ChevronRight size={14} className="text-gray-300" />
-          <span className="text-gray-900 font-extrabold">Notifications</span>
+          <ChevronRight size={12} className="text-gray-300" />
+          <span className="text-gray-900">Notifications</span>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md overflow-hidden">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/60">
-            <h1 className="text-lg md:text-xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
-              <Bell size={22} className="text-[#F68B1E]" />
-              Notifications
-            </h1>
+        <div className="bg-white rounded-[32px] border border-gray-100 shadow-2xl shadow-gray-200/50 overflow-hidden">
+          <div className="p-8 border-b border-gray-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-white to-gray-50/30">
+            <div>
+              <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                <div className="w-10 h-10 bg-orange-50 rounded-2xl flex items-center justify-center">
+                  <Bell size={20} className="text-[#F68B1E]" />
+                </div>
+                Notifications
+              </h1>
+              <p className="text-sm text-gray-400 font-medium mt-1">Stay updated with your latest activities</p>
+            </div>
+            
             {notifications && notifications.some(n => !n.isRead) && (
               <button 
                 onClick={() => markAllAsRead.mutate()}
-                className="text-xs font-extrabold text-[#F68B1E] hover:underline flex items-center gap-1 uppercase tracking-wider bg-orange-50/80 hover:bg-[#F68B1E] hover:text-white px-3 py-1.5 border border-orange-100 hover:border-transparent rounded-lg transition-all"
+                className="text-[10px] font-black text-[#F68B1E] hover:text-white hover:bg-[#F68B1E] px-4 py-2 border border-orange-100 rounded-xl transition-all uppercase tracking-widest flex items-center gap-2 active:scale-95"
               >
                 <Check size={14} />
                 Mark all as read
@@ -52,9 +58,15 @@ export default function NotificationsPage() {
           </div>
 
           {isLoading ? (
-            <div className="p-6 space-y-4">
+            <div className="p-8 space-y-6">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-16 bg-gray-50/50 rounded-xl border border-gray-100 animate-pulse" />
+                <div key={i} className="flex gap-4">
+                  <div className="w-12 h-12 bg-gray-50 rounded-2xl animate-pulse shrink-0" />
+                  <div className="flex-1 space-y-2 py-2">
+                    <div className="h-4 bg-gray-50 rounded w-1/3 animate-pulse" />
+                    <div className="h-3 bg-gray-50 rounded w-full animate-pulse" />
+                  </div>
+                </div>
               ))}
             </div>
           ) : notifications && notifications.length > 0 ? (
@@ -62,29 +74,36 @@ export default function NotificationsPage() {
               {notifications.map((notification) => (
                 <div 
                   key={notification.id} 
-                  className={`p-5 transition-all duration-200 flex gap-4 ${notification.isRead ? 'bg-white' : 'bg-orange-50/30 border-l-4 border-l-[#F68B1E]'}`}
+                  className={`p-8 transition-all duration-300 flex flex-col sm:flex-row gap-6 relative group ${notification.isRead ? 'bg-white hover:bg-gray-50/30' : 'bg-orange-50/20'}`}
                 >
-                  <div className={`w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 border ${notification.isRead ? 'bg-gray-50 text-gray-400 border-gray-100' : 'bg-orange-50 text-[#F68B1E] border-orange-100'}`}>
-                    <Bell size={20} />
+                  {!notification.isRead && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#F68B1E] rounded-r-full shadow-[2px_0_10px_rgba(246,139,30,0.3)]" />
+                  )}
+                  
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 border transition-transform duration-300 group-hover:scale-110 ${notification.isRead ? 'bg-white text-gray-300 border-gray-100' : 'bg-white text-[#F68B1E] border-orange-100 shadow-sm'}`}>
+                    <Bell size={22} fill={notification.isRead ? 'none' : 'currentColor'} fillOpacity={0.1} />
                   </div>
+                  
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <h3 className={`text-sm md:text-base font-extrabold truncate tracking-tight ${notification.isRead ? 'text-gray-700' : 'text-gray-900'}`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                      <h3 className={`text-base font-black tracking-tight ${notification.isRead ? 'text-gray-700' : 'text-gray-900'}`}>
                         {notification.title}
                       </h3>
-                      <span className="text-[10px] md:text-xs font-bold text-gray-400 whitespace-nowrap bg-gray-50/80 px-2 py-0.5 rounded border border-gray-100/50">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap px-2 py-1 bg-gray-50 rounded-lg">
                         {format(new Date(notification.createdAt), 'dd MMM, HH:mm')}
                       </span>
                     </div>
-                    <p className={`text-sm font-medium leading-relaxed mb-1 ${notification.isRead ? 'text-gray-500' : 'text-gray-600'}`}>
+                    
+                    <p className={`text-sm font-medium leading-relaxed ${notification.isRead ? 'text-gray-400' : 'text-gray-600'}`}>
                       {notification.message}
                     </p>
+                    
                     {!notification.isRead && (
                       <button 
                         onClick={() => handleMarkAsRead(notification.id)}
-                        className="mt-2 text-[10px] font-extrabold text-[#F68B1E] uppercase hover:underline flex items-center gap-1 bg-orange-50/50 hover:bg-orange-50 border border-orange-100/60 hover:border-orange-200 px-2.5 py-1 rounded w-fit transition-all duration-200"
+                        className="mt-4 text-[10px] font-black text-[#F68B1E] uppercase hover:underline flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-orange-100 shadow-sm hover:shadow-md transition-all active:scale-95"
                       >
-                        <MailOpen size={11} />
+                        <MailOpen size={12} />
                         Mark as read
                       </button>
                     )}
@@ -93,37 +112,24 @@ export default function NotificationsPage() {
               ))}
             </div>
           ) : (
-            <div className="py-20 text-center px-4 select-none">
-              <div className="w-16 h-16 bg-orange-50 text-[#F68B1E] rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-100">
-                <Bell size={28} />
+            <div className="py-24 text-center px-8">
+              <div className="w-24 h-24 bg-gray-50 text-gray-200 rounded-[32px] flex items-center justify-center mx-auto mb-6 rotate-12 transition-transform hover:rotate-0 duration-500">
+                <Bell size={40} />
               </div>
-              <h3 className="font-extrabold text-lg text-gray-900 leading-tight">Your inbox is empty</h3>
-              <p className="text-gray-500 font-medium text-sm mt-2 max-w-xs mx-auto">We'll notify you when something important happens.</p>
+              <h3 className="font-black text-xl text-gray-900 uppercase tracking-tight">Your inbox is empty</h3>
+              <p className="text-gray-400 font-medium text-sm mt-2 max-w-xs mx-auto">We'll keep you posted with the latest updates and personalized offers.</p>
+              <Link 
+                href="/"
+                className="mt-8 inline-block px-8 py-3 bg-[#333] text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-black transition-all hover:shadow-xl active:scale-95"
+              >
+                Back to Shopping
+              </Link>
             </div>
           )}
         </div>
       </div>
-
-      <style jsx>{`
-        .container {
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 0 16px;
-        }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .gap-1 { gap: 4px; }
-        .gap-2 { gap: 8px; }
-        .gap-4 { gap: 16px; }
-        .rounded-xl { border-radius: 12px; }
-        .rounded-full { border-radius: 9999px; }
-        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-        .p-5 { padding: 1.25rem; }
-        .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
-        .mb-1 { margin-bottom: 0.25rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-      `}</style>
     </div>
+  );
+}
   );
 }

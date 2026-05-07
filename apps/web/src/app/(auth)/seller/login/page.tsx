@@ -28,8 +28,10 @@ export default function SellerLoginPage() {
       if (result?.error) {
         setError('Invalid seller credentials');
       } else {
-        router.push('/seller/dashboard');
         router.refresh();
+        const params = new URLSearchParams(window.location.search);
+        const callbackUrl = params.get('callbackUrl');
+        router.push(callbackUrl || '/seller/dashboard');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

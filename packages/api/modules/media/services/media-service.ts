@@ -8,17 +8,18 @@ const BUCKET = process.env.R2_BUCKET || 'ecom-media';
 
 export const mediaService: Service = {
   async getUploadUrl(path: string, contentType: string) {
+    const { getSignedUrl } = await import('@aws-sdk/s3-request-presigner');
     const key = `uploads/${generateId()}-${path}`;
     const command = new PutObjectCommand({
       Bucket: BUCKET,
       Key: key,
       ContentType: contentType,
     });
+    
+    const url = await getSignedUrl(s3, command, { expiresIn: 300 });
 
-    // In a real S3/R2 setup we'd use getSignedUrl
-    // For this environment, we'll return a mock URL or a direct upload endpoint
     return {
-      url: `${process.env.R2_PUBLIC_URL || 'http://localhost:9000/ecom-media'}/${key}`,
+      url,
       key,
     };
   },

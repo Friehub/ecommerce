@@ -10,6 +10,7 @@ export interface InitParams {
   amountInSubunit: number;
   currency: string;
   callbackUrl: string;
+  reference?: string;
   metadata?: Record<string, unknown>;
 }
 

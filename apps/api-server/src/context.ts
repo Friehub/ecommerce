@@ -32,7 +32,7 @@ export async function createContext(opts: {
       });
       if (user && user.isActive) {
         return {
-          session: { user },
+          session: { user, expires: "" },
           req: req.raw as unknown as Request,
           redis,
           ip,
@@ -72,7 +72,7 @@ export async function createContext(opts: {
 
           if (user && user.isActive) {
             return {
-              session: { user },
+              session: { user, expires: "" },
               req: req.raw as unknown as Request,
               redis,
               ip,

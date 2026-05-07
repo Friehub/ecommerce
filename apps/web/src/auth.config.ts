@@ -2,11 +2,35 @@ import type { NextAuthConfig } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 
 export default {
+  session: { strategy: 'jwt' },
   providers: [
     Credentials({
+      // authorize() is intentionally a no-op here.
+      // The real authorize() lives in auth.ts (server-only).
+      // This stub is required for the edge-compatible middleware build.
       async authorize() {
         return null;
       }
     })
   ],
+  callbacks: {
+    jwt({ token, user }) {
+      // Persist role and id into the JWT when the user first signs in.
+      if (user) {
+        token.id = user.id;
+        // @ts-expect-error — role is a custom field not in the base User type
+        token.role = user.role;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      // Expose id and role on session.user so middleware can read them.
+      if (session.user && token) {
+        session.user.id = token.id as string;
+        // @ts-expect-error — role is a custom field
+        session.user.role = token.role;
+      }
+      return session;
+    },
+  },
 } satisfies NextAuthConfig

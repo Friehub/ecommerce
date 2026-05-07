@@ -45,13 +45,15 @@ export const userService: Service = {
   },
 
   async addAddress(userId: string, data: AddressInput) {
-    if (data.isDefault) {
-      await prisma.userAddress.updateMany({
-        where: { userId },
-        data: { isDefault: false },
-      })
-    }
-    return prisma.userAddress.create({ data: { ...data, userId } as any })
+    return prisma.$transaction(async (tx) => {
+      if (data.isDefault) {
+        await tx.userAddress.updateMany({
+          where: { userId },
+          data: { isDefault: false },
+        })
+      }
+      return tx.userAddress.create({ data: { ...data, userId } as any })
+    });
   },
 
   async getAddresses(userId: string) {
@@ -60,5 +62,12 @@ export const userService: Service = {
 
   async deleteAddress(id: string, userId: string) {
     return prisma.userAddress.deleteMany({ where: { id, userId } })
+  },
+
+  async updateProfile(id: string, data: { firstName: string; lastName: string; phone?: string }) {
+    return prisma.user.update({
+      where: { id },
+      data,
+    });
   },
 }

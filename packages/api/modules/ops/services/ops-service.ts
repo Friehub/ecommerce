@@ -57,5 +57,44 @@ export const opsService: Service = {
         payload: { adminId, action, targetId, metadata }
       }
     });
+  },
+
+  async getAnalyticsTimeSeries() {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const orders = await prisma.order.findMany({
+      where: { createdAt: { gte: thirtyDaysAgo } },
+      select: { createdAt: true, total: true, status: true }
+    });
+
+    const users = await prisma.user.findMany({
+      where: { createdAt: { gte: thirtyDaysAgo } },
+      select: { createdAt: true }
+    });
+
+    // Group by day
+    const gmvByDay: Record<string, number> = {};
+    const ordersByDay: Record<string, number> = {};
+    const usersByDay: Record<string, number> = {};
+
+    orders.forEach(o => {
+      const day = o.createdAt.toISOString().split('T')[0];
+      ordersByDay[day] = (ordersByDay[day] || 0) + 1;
+      if (['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED'].includes(o.status)) {
+        gmvByDay[day] = (gmvByDay[day] || 0) + (o.total.toNumber() || 0);
+      }
+    });
+
+    users.forEach(u => {
+      const day = u.createdAt.toISOString().split('T')[0];
+      usersByDay[day] = (usersByDay[day] || 0) + 1;
+    });
+
+    return {
+      gmv: Object.entries(gmvByDay).map(([day, value]) => ({ day, value })),
+      orders: Object.entries(ordersByDay).map(([day, value]) => ({ day, value })),
+      users: Object.entries(usersByDay).map(([day, value]) => ({ day, value }))
+    };
   }
 };

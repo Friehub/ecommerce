@@ -27,8 +27,9 @@ export const notificationService: Service = {
 
     // 3. Dispatch external via Resend API using standard Fetch
     if (sendEmail) {
-      const RESEND_API_KEY = process.env.RESEND_API_KEY || 're_placeholder';
-      const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'help@friehub.cloud';
+      const { config } = await import('../../../config.js');
+      const RESEND_API_KEY = config.RESEND_API_KEY;
+      const RESEND_FROM_EMAIL = config.RESEND_FROM_EMAIL;
 
       if (RESEND_API_KEY !== 're_placeholder') {
         try {
@@ -69,11 +70,12 @@ export const notificationService: Service = {
     });
   },
 
-  async listNotifications(userId: string) {
+  async listNotifications(userId: string, limit = 20, offset = 0) {
     return prisma.notificationLog.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
-      take: 100
+      take: limit,
+      skip: offset
     });
   },
 

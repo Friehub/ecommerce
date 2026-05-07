@@ -13,14 +13,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No signature' }, { status: 400 });
     }
 
-    // Verify signature
-    const secret = process.env.PAYSTACK_WEBHOOK_SECRET || PAYSTACK_SECRET_KEY; // Fallback to secret key if webhook secret not set
-    const hash = crypto
-      .createHmac('sha512', secret)
-      .update(body)
-      .digest('hex');
-
-    if (hash !== signature) {
+    // Verify signature (Fix BUG-004 & BUG-017: Delegation to service with timing-safe check)
+    if (!paymentService.verifyWebhookSignature(body, signature)) {
       console.warn('[Paystack Webhook] Invalid signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }

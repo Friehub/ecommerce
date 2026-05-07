@@ -37,7 +37,8 @@ export const sellerService: Service = {
     const seller = await prisma.seller.findUnique({ where: { userId } });
     if (!seller) throw new Error('SELLER_NOT_FOUND');
 
-    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET || process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
+    const { config } = await import('../../../config.js');
+    const PAYSTACK_SECRET_KEY = config.PAYSTACK_SECRET_KEY;
 
     let recipientCode = `SIM_REC_${Math.random().toString(36).substring(7).toUpperCase()}`;
 

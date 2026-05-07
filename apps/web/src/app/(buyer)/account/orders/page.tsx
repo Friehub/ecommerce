@@ -3,155 +3,102 @@
 import React from 'react';
 import Link from 'next/link';
 import { api } from '@/trpc/react';
-import { ShoppingBag, ChevronRight, Package, Calendar, Clock } from 'lucide-react';
+import { ShoppingBag, ChevronRight, Package, Calendar, ArrowRight, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function OrdersPage() {
   const { data: orders, isLoading } = api.order.listMyOrders.useQuery();
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-12">
-      <div className="container py-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Link href="/account" className="text-gray-500 hover:text-[#F68B1E] transition-colors text-sm">My Account</Link>
-          <ChevronRight size={14} className="text-gray-400" />
-          <span className="text-sm font-bold">Orders</span>
+    <div className="bg-[#F9F9FA] min-h-screen pb-12">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center gap-3 mb-8">
+          <Link href="/account" className="text-gray-400 hover:text-[#F68B1E] transition-colors text-[10px] font-black uppercase tracking-widest">My Account</Link>
+          <ChevronRight size={14} className="text-gray-300" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-gray-900">Orders History</span>
         </div>
 
-        <div className="bg-white rounded shadow-sm overflow-hidden">
-          <div className="p-4 border-b">
-            <h1 className="text-xl font-bold">Orders</h1>
+        <div className="max-w-4xl">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">My Orders</h1>
+              <p className="text-xs font-bold text-gray-400 uppercase mt-1 tracking-tight">Track and manage your recent purchases</p>
+            </div>
+            <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-[#F68B1E]">
+              <Package size={24} />
+            </div>
           </div>
 
           {isLoading ? (
-            <div className="p-8 space-y-4">
+            <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-24 bg-gray-100 rounded animate-pulse" />
+                <div key={i} className="h-32 bg-white border border-gray-100 rounded-3xl animate-pulse" />
               ))}
             </div>
           ) : orders && orders.length > 0 ? (
-            <div className="divide-y">
+            <div className="space-y-4">
               {orders.map((order) => (
-                <div key={order.id} className="p-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center flex-shrink-0 text-[#F68B1E]">
-                        <Package size={24} />
+                <div 
+                  key={order.id} 
+                  className="bg-white border border-gray-100 rounded-[28px] overflow-hidden hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/[0.03] transition-all duration-300 group"
+                >
+                  <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex items-start gap-5">
+                      <div className="w-16 h-16 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center flex-shrink-0 text-gray-400 group-hover:text-[#F68B1E] group-hover:bg-orange-50 transition-colors">
+                        <Package size={28} />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-bold text-sm">Order #{order.id.substring(0, 8).toUpperCase()}</span>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="font-black text-sm text-gray-900 uppercase tracking-tight">#{order.id.substring(0, 8).toUpperCase()}</span>
+                          <span className={`text-[9px] px-3 py-1 rounded-full font-black uppercase tracking-widest ${
                             order.status === 'DELIVERED' || order.status === 'COMPLETED' 
-                              ? 'bg-green-100 text-green-700' 
+                              ? 'bg-green-50 text-green-600 border border-green-100' 
                               : order.status === 'CANCELLED'
-                              ? 'bg-red-100 text-red-700'
-                              : 'bg-blue-100 text-blue-700'
+                              ? 'bg-red-50 text-red-600 border border-red-100'
+                              : 'bg-orange-50 text-[#F68B1E] border border-orange-100'
                           }`}>
                             {order.status.replace('_', ' ')}
                           </span>
                         </div>
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <Calendar size={12} />
-                            <span>Placed on {format(new Date(order.createdAt), 'dd-MM-yyyy')}</span>
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                          <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <Calendar size={14} className="text-gray-300" />
+                            <span>{format(new Date(order.createdAt), 'MMM dd, yyyy')}</span>
                           </div>
-                          <div className="flex items-center gap-1 font-bold text-gray-900">
-                            <span>Total: ₦{Number(order.total).toLocaleString()}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total:</span>
+                            <span className="font-black text-sm text-gray-900">₦ {Number(order.total).toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
                     </div>
+                    
                     <Link 
                       href={`/account/orders/${order.id}`}
-                      className="text-[#F68B1E] text-sm font-bold uppercase tracking-wider hover:underline flex items-center gap-1"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-50 group-hover:bg-[#F68B1E] text-gray-900 group-hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm active:scale-95"
                     >
-                      See Details
-                      <ChevronRight size={16} />
+                      Order Details
+                      <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="py-20 text-center px-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ShoppingBag size={28} className="text-gray-400" />
+            <div className="py-24 text-center px-4 bg-white border border-gray-100 rounded-[40px] shadow-sm">
+              <div className="w-24 h-24 bg-gray-50 border border-gray-100 rounded-[32px] flex items-center justify-center mx-auto mb-6">
+                <ShoppingBag size={40} className="text-gray-300" />
               </div>
-              <h3 className="font-bold text-lg text-gray-900">You have no orders</h3>
-              <p className="text-gray-500 text-sm mt-1 mb-6">Items you order will show up here</p>
-              <Link href="/" className="px-6 py-2 bg-[#F68B1E] text-white rounded font-bold text-sm uppercase">
-                Continue Shopping
+              <h3 className="font-black text-2xl text-gray-900 tracking-tight uppercase">No orders found</h3>
+              <p className="text-xs font-bold text-gray-400 uppercase mt-2 mb-8 tracking-widest">Looks like you haven&apos;t placed any orders yet</p>
+              <Link href="/" className="inline-flex items-center gap-3 px-10 py-4 bg-[#F68B1E] text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-orange-500/20 hover:scale-105 active:scale-95 transition-all">
+                Start Shopping
+                <ArrowRight size={16} />
               </Link>
             </div>
           )}
         </div>
       </div>
-
-      <style jsx>{`
-        .container {
-          max-width: 960px;
-          margin: 0 auto;
-          padding: 0 16px;
-        }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .items-start { align-items: flex-start; }
-        .justify-between { justify-content: space-between; }
-        .flex-col { flex-direction: column; }
-        .flex-wrap { flex-wrap: wrap; }
-        .gap-1 { gap: 4px; }
-        .gap-2 { gap: 8px; }
-        .gap-4 { gap: 16px; }
-        .gap-6 { gap: 24px; }
-        .gap-x-4 { column-gap: 16px; }
-        .gap-y-1 { row-gap: 4px; }
-        .bg-gray-50 { background-color: #f9fafb; }
-        .bg-white { background-color: #ffffff; }
-        .bg-gray-100 { background-color: #f3f4f6; }
-        .bg-orange-50 { background-color: #fff7ed; }
-        .bg-green-100 { background-color: #dcfce7; }
-        .bg-red-100 { background-color: #fee2e2; }
-        .bg-blue-100 { background-color: #dbeafe; }
-        .text-green-700 { color: #15803d; }
-        .text-red-700 { color: #b91c1c; }
-        .text-blue-700 { color: #1d4ed8; }
-        .text-gray-900 { color: #111827; }
-        .text-gray-500 { color: #6b7280; }
-        .text-gray-400 { color: #9ca3af; }
-        .border-b { border-bottom: 1px solid #e5e7eb; }
-        .divide-y > * + * { border-top: 1px solid #e5e7eb; }
-        .rounded { border-radius: 4px; }
-        .rounded-full { border-radius: 9999px; }
-        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-        .p-4 { padding: 1rem; }
-        .p-8 { padding: 2rem; }
-        .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
-        .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
-        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
-        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
-        .mb-1 { margin-bottom: 0.25rem; }
-        .mb-4 { margin-bottom: 1rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .mt-1 { margin-top: 0.25rem; }
-        .text-sm { font-size: 0.875rem; }
-        .text-xs { font-size: 0.75rem; }
-        .text-[10px] { font-size: 10px; }
-        .text-xl { font-size: 1.25rem; }
-        .text-lg { font-size: 1.125rem; }
-        .font-bold { font-weight: 700; }
-        .uppercase { text-transform: uppercase; }
-        .tracking-wider { letter-spacing: 0.05em; }
-        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: .5; }
-        }
-        @media (min-width: 640px) {
-          .sm\\:flex-row { flex-direction: row; }
-          .sm\\:items-center { align-items: center; }
-        }
-      `}</style>
     </div>
   );
 }

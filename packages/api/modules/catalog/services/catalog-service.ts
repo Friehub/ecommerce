@@ -291,7 +291,13 @@ export const catalogService: Service = {
       prisma.productVariant.findMany({
         where,
         include: { product: { include: { media: true, brand: true, category: true } } },
-        orderBy: filters.sortBy === 'price_asc' ? { price: 'asc' } : filters.sortBy === 'price_desc' ? { price: 'desc' } : { createdAt: 'desc' },
+        orderBy: filters.sortBy === 'price_asc' 
+          ? { price: 'asc' } 
+          : filters.sortBy === 'price_desc' 
+          ? { price: 'desc' } 
+          : filters.sortBy === 'popularity'
+          ? { product: { reviewCount: 'desc' } }
+          : { createdAt: 'desc' },
         take: filters.limit || 20,
         skip: filters.offset || 0,
       }),

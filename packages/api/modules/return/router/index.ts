@@ -30,6 +30,15 @@ const _returnRouter = createTRPCRouter({
       include: { orderLine: { include: { variant: { include: { product: true } } } } }
     });
   }),
+
+  listForSeller: protectedProcedure.query(async ({ ctx }) => {
+    const seller = await prisma.seller.findUnique({
+      where: { userId: ctx.session.user.id },
+      select: { id: true }
+    });
+    if (!seller) throw new Error('NOT_A_SELLER');
+    return await returnService.listForSeller(seller.id);
+  }),
 });
 
 export const returnRouter = _returnRouter as any;

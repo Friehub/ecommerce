@@ -10,6 +10,7 @@ vi.mock('@ecom/db', () => ({
     wallet: {
       findUnique: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
     },
     walletTransaction: {
       create: vi.fn(),
@@ -22,6 +23,7 @@ vi.mock('@ecom/db', () => ({
     val: number;
     constructor(v: any) { this.val = Number(v); }
     lt(v: any) { return this.val < (v.val ?? Number(v)); }
+    gte(v: any) { return this.val >= (v.val ?? Number(v)); }
     toNumber() { return this.val; }
   }
 }));
@@ -44,32 +46,23 @@ describe('paymentService', () => {
       const amount = 500;
       
       const mockWallet = { id: 'w1', userId, balance: new Decimal(1000) };
-      const mockUpdatedWallet = { id: 'w1', balance: new Decimal(500) };
 
+      (prisma.wallet.updateMany as any).mockResolvedValue({ count: 1 });
       (prisma.wallet.findUnique as any).mockResolvedValue(mockWallet);
-      (prisma.wallet.update as any).mockResolvedValue(mockUpdatedWallet);
 
       await paymentService.payWithWallet(userId, orderId, amount);
 
-      expect(prisma.wallet.update).toHaveBeenCalled();
+      expect(prisma.wallet.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+        where: expect.objectContaining({ userId, balance: { gte: amount } })
+      }));
       expect(orderService.updateStatus).toHaveBeenCalledWith(orderId, 'PAID', expect.anything());
       expect(prisma.payment.create).toHaveBeenCalledWith(expect.objectContaining({
         data: expect.objectContaining({ status: 'SUCCESS' })
       }));
     });
 
-    it('should throw if initial balance is insufficient', async () => {
-      (prisma.wallet.findUnique as any).mockResolvedValue({ balance: new Decimal(100) });
-      await expect(paymentService.payWithWallet('u1', 'o1', 500)).rejects.toThrow('INSUFFICIENT_FUNDS');
-    });
-
-    it('should throw and rollback if balance becomes negative during update (race condition)', async () => {
-      const mockWallet = { id: 'w1', balance: new Decimal(1000) };
-      const mockUpdatedWallet = { id: 'w1', balance: new Decimal(-50) }; // Overdrafted by concurrent transaction
-
-      (prisma.wallet.findUnique as any).mockResolvedValue(mockWallet);
-      (prisma.wallet.update as any).mockResolvedValue(mockUpdatedWallet);
-
+    it('should throw if balance is insufficient (updateMany returns count 0)', async () => {
+      (prisma.wallet.updateMany as any).mockResolvedValue({ count: 0 });
       await expect(paymentService.payWithWallet('u1', 'o1', 500)).rejects.toThrow('INSUFFICIENT_FUNDS');
     });
   });

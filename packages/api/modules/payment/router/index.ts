@@ -48,5 +48,5 @@ const _paymentRouter = createTRPCRouter({
   }),
 });
 
-export const paymentRouter = _paymentRouter as any;
+export const paymentRouter = _paymentRouter;
 export type PaymentRouter = typeof _paymentRouter;

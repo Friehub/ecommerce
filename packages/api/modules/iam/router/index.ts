@@ -33,6 +33,16 @@ const _iamRouter = createTRPCRouter({
     return await userService.getAddresses(ctx.session.user.id);
   }),
 
+  updateProfile: protectedProcedure
+    .input(z.object({
+      firstName: z.string().min(1, "First name is required"),
+      lastName: z.string().min(1, "Last name is required"),
+      phone: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return await userService.updateProfile(ctx.session.user.id, input);
+    }),
+
   onboardSeller: rateLimitProcedure
     .use(({ ctx, next }) => {
       if (!ctx.session || !ctx.session.user) {
@@ -43,7 +53,7 @@ const _iamRouter = createTRPCRouter({
     .input(sellerOnboardingSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        return await sellerService.onboard(ctx.session.user.id, input as any);
+        return await sellerService.onboard(ctx.session!.user.id, input as any);
       } catch (error: any) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -68,7 +78,13 @@ const _iamRouter = createTRPCRouter({
         });
       }
     }),
+
+  deleteAddress: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await userService.deleteAddress(input.id, ctx.session.user.id);
+    }),
 });
 
-export const iamRouter = _iamRouter as any;
+export const iamRouter = _iamRouter;
 export type IamRouter = typeof _iamRouter;

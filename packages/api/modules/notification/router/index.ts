@@ -1,4 +1,5 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '../../../trpc.js';
+import { z } from "zod";
 import { UpdatePreferenceSchema, MarkAsReadSchema } from '../schemas/index.js';
 import { notificationService } from '../services/notification-service.js';
 
@@ -16,8 +17,12 @@ const _notificationRouter = createTRPCRouter({
     }),
 
   list: protectedProcedure
-    .query(async ({ ctx }) => {
-      return notificationService.listNotifications(ctx.session.user.id);
+    .input(z.object({
+      limit: z.number().min(1).max(100).optional().default(20),
+      offset: z.number().min(0).optional().default(0),
+    }))
+    .query(async ({ ctx, input }) => {
+      return notificationService.listNotifications(ctx.session.user.id, input.limit, input.offset);
     }),
 
   markAllAsRead: protectedProcedure

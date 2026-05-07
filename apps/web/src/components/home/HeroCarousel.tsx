@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { api } from '../../trpc/react';
@@ -41,17 +43,17 @@ export const HeroCarousel = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 h-[320px] md:h-[480px] bg-gray-50 rounded-2xl animate-pulse flex items-center justify-center text-gray-200">
+      <div className="flex-1 h-[280px] md:h-[480px] bg-gray-50 rounded-[24px] animate-pulse flex items-center justify-center text-gray-200">
         <div className="text-[10px] font-black uppercase tracking-[0.3em]">Calibrating Showcase...</div>
       </div>
     );
   }
 
   return (
-    <div className="relative flex-1 h-[320px] md:h-[480px] bg-white rounded-2xl shadow-2xl shadow-black/5 overflow-hidden group border border-gray-100 select-none">
+    <div className="relative flex-1 h-[280px] md:h-[480px] bg-white rounded-[24px] shadow-2xl shadow-black/5 overflow-hidden group border border-gray-100 select-none">
       {/* Slides */}
       <div 
-        className="flex h-full transition-transform duration-[1000ms] cubic-bezier(0.4, 0, 0.2, 1)"
+        className="flex h-full transition-transform duration-[1000ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
         {banners.map((banner: any, i) => (
@@ -63,29 +65,29 @@ export const HeroCarousel = () => {
             />
             
             {/* Modern Content Panel */}
-            <div className="absolute inset-y-0 left-0 w-full md:w-[500px] bg-gradient-to-r from-black/60 to-transparent flex flex-col justify-center px-12 md:px-16 z-20">
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 md:via-black/20 to-transparent flex flex-col justify-end md:justify-center px-5 pb-10 md:px-16 md:pb-0 z-20">
               <div className={`transition-all duration-700 delay-300 ${i === current ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-                <div className="inline-flex items-center gap-2 mb-6">
-                  <div className="w-8 h-1 bg-white/40 rounded-full" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/80">Premium Pick</span>
+                <div className="inline-flex items-center gap-2 mb-2 md:mb-6">
+                  <div className="w-8 h-1 bg-[#FF7A00] rounded-full" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/90">Premium Pick</span>
                 </div>
                 
-                <h2 className="text-4xl md:text-6xl font-black text-white mb-4 leading-[0.9] tracking-tighter uppercase drop-shadow-2xl">
+                <h2 className="text-2xl sm:text-5xl md:text-7xl font-black text-white mb-2 md:mb-4 leading-[0.95] tracking-tighter uppercase drop-shadow-2xl">
                   {banner.title.split(' ').map((word: string, idx: number) => (
-                    <span key={idx} className={idx === 1 ? 'text-[#FF7A00]' : ''}>{word}<br/></span>
+                    <span key={idx} className={idx === 1 ? 'text-[#FF7A00]' : ''}>{word}<br className="hidden sm:block" /> </span>
                   ))}
                 </h2>
                 
-                <p className="text-sm md:text-base font-medium text-white/70 max-w-sm mb-10 leading-relaxed border-l-2 border-white/20 pl-4">
+                <p className="text-[10px] md:text-base font-medium text-white/70 max-w-[180px] sm:max-w-sm mb-4 md:mb-10 leading-relaxed border-l-2 border-[#FF7A00]/50 pl-4">
                   {banner.subtitle || 'Experience the future of commerce with our exclusive partner collections.'}
                 </p>
                 
                 <Link 
                   href={banner.link || '#'}
-                  className="inline-flex items-center gap-3 bg-[#FF7A00] text-white px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-[#1A1A1A] transition-all transform active:scale-95 shadow-2xl shadow-orange-500/20 group/btn"
+                  className="inline-flex items-center gap-2 bg-[#FF7A00] text-white px-6 py-3 md:px-10 md:py-5 rounded-xl md:rounded-2xl font-black text-[10px] md:text-[11px] uppercase tracking-widest hover:bg-white hover:text-black transition-all transform active:scale-95 shadow-xl shadow-orange-500/20 group/btn w-fit"
                 >
-                  Explore Collection
-                  <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+                  Explore
+                  <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
@@ -97,10 +99,10 @@ export const HeroCarousel = () => {
       </div>
 
       {/* Navigation Controls */}
-      <div className="absolute bottom-10 right-12 flex items-center gap-4 z-30">
+      <div className="absolute bottom-6 md:bottom-10 right-6 md:right-12 flex items-center gap-4 z-30">
         <button 
           onClick={prev}
-          className="w-12 h-12 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl text-white flex items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90"
+          className="hidden md:flex w-12 h-12 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl text-white items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90"
         >
           <ChevronLeft size={20} />
         </button>
@@ -110,24 +112,19 @@ export const HeroCarousel = () => {
             <button 
               key={i}
               onClick={() => setCurrent(i)}
-              className={`h-1 rounded-full transition-all duration-500 ${i === current ? 'w-8 bg-[#FF7A00]' : 'w-2 bg-white/20 hover:bg-white/40'}`}
+              className={`h-1 rounded-full transition-all duration-500 ${i === current ? 'w-6 md:w-8 bg-[#FF7A00]' : 'w-2 bg-white/20 hover:bg-white/40'}`}
             />
           ))}
         </div>
 
         <button 
           onClick={next}
-          className="w-12 h-12 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl text-white flex items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90"
+          className="hidden md:flex w-12 h-12 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl text-white items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90"
         >
           <ChevronRight size={20} />
         </button>
       </div>
-
-      <style jsx>{`
-        .cubic-bezier {
-          transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        }
-      `}</style>
     </div>
   );
 };
+

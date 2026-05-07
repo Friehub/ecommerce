@@ -1,13 +1,14 @@
 import NextAuth from 'next-auth'
-import { PrismaAdapter } from '@auth/prisma-adapter'
-import { prisma } from '@ecom/db'
 import { userService } from '@ecom/api/modules/iam/services/user-service'
 import Credentials from 'next-auth/providers/credentials'
 import authConfig from "./auth.config"
 
+// auth.ts — server-only. Contains the real authorize() which uses bcrypt + Prisma.
+// The JWT/session callbacks and session strategy are defined in auth.config.ts
+// so they are shared with the edge-compatible middleware.
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  session: { strategy: 'jwt' },
+  // Override the stub provider with the real one that validates credentials.
   providers: [
     Credentials({
       credentials: {
@@ -17,19 +18,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         try {
-          console.log("Authorizing:", credentials.email);
           const user = await userService.validateCredentials(
             credentials.email as string,
             credentials.password as string
           );
-          if (!user) {
-            console.log("No user found or invalid password");
-            return null;
-          }
-          console.log("User authorized:", user.id);
+          if (!user) return null;
+          // Return id, email, and role — the jwt() callback in authConfig
+          // will persist these into the JWT token.
           return {
             id: user.id,
             email: user.email,
+            // @ts-expect-error - role is a custom field on the User model
             role: user.role,
           };
         } catch (error) {
@@ -39,23 +38,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     })
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        // @ts-expect-error - role is added to token
-        token.role = user.role;
-      }
-      return token;
-    },
-    session({ session, token }) {
-      if (session.user && token) {
-        session.user.id = token.id as string;
-        // @ts-expect-error - role is added to session user
-        session.user.role = token.role;
-      }
-      return session;
-    }
-  },
 })
 

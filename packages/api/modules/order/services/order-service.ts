@@ -28,6 +28,12 @@ export const orderService: Service = {
 
     if (!cart || cart.items.length === 0) throw new Error('CART_EMPTY');
 
+    // Fix BUG-005: Verify address ownership
+    const address = await prisma.userAddress.findFirst({
+      where: { id: addressId, userId }
+    });
+    if (!address) throw new Error('ADDRESS_NOT_FOUND_OR_UNAUTHORIZED');
+
     // 1. Group items by seller
     const itemsBySeller: Record<string, typeof cart.items> = {};
     let subtotal = new Decimal(0);
@@ -35,22 +41,21 @@ export const orderService: Service = {
     for (const item of cart.items) {
       if (!itemsBySeller[item.sellerId]) itemsBySeller[item.sellerId] = [];
       itemsBySeller[item.sellerId].push(item);
-      subtotal = subtotal.add(item.priceSnapshot.mul(item.quantity));
-    }
-
-    let discount = new Decimal(0);
-    if (couponCode) {
-      const promo = await promoService.validateCoupon(couponCode, userId, subtotal.toNumber());
-      if (promo.type === 'PERCENTAGE') {
-        discount = subtotal.mul(promo.value.div(100));
-      } else if (promo.type === 'FIXED_AMOUNT') {
-        discount = promo.value;
-      }
+      
+      // Fix BUG-014: Use CURRENT price from database, not stale cart snapshot
+      subtotal = subtotal.add(item.variant.price.mul(item.quantity));
     }
 
     // 2. Create Order
     const order = await prisma.$transaction(async (tx) => {
+      let discount = new Decimal(0);
       if (couponCode) {
+        const promo = await promoService.validateCoupon(couponCode, userId, subtotal.toNumber());
+        if (promo.type === 'PERCENTAGE') {
+          discount = subtotal.mul(promo.value.div(100));
+        } else if (promo.type === 'FIXED_AMOUNT') {
+          discount = promo.value;
+        }
         await promoService.markCouponUsed(couponCode, tx);
       }
 
@@ -69,11 +74,12 @@ export const orderService: Service = {
               sellerId,
               status: 'PENDING',
               lines: {
-                create: items.map(item => ({
-                  variantId: item.variantId,
-                  quantity: item.quantity,
-                  unitPrice: item.priceSnapshot,
-                }))
+    // Fix BUG-014: Ensure lines use current price snapshots
+    create: items.map(item => ({
+      variantId: item.variantId,
+      quantity: item.quantity,
+      unitPrice: item.variant.price, // Current price
+    }))
               }
             }))
           }
@@ -94,13 +100,20 @@ export const orderService: Service = {
         });
 
         if (flashSale) {
-          if (flashSale.qtySold + item.quantity > flashSale.qtyLimit) {
+          // Fix BUG-003: Atomic flash sale quantity increment with guard
+          const result = await tx.flashSale.updateMany({
+            where: {
+              id: flashSale.id,
+              qtySold: { lte: flashSale.qtyLimit - item.quantity }
+            },
+            data: {
+              qtySold: { increment: item.quantity }
+            }
+          });
+
+          if (result.count === 0) {
             throw new Error(`FLASH_SALE_EXHAUSTED:${item.variantId}`);
           }
-          await tx.flashSale.update({
-            where: { id: flashSale.id },
-            data: { qtySold: { increment: item.quantity } }
-          });
         }
 
         // Find a warehouse for this seller/variant
@@ -192,8 +205,13 @@ export const orderService: Service = {
         await publishEvent('package.pending_confirmation', { packageId: pkg.id, sellerId: pkg.sellerId });
       }
 
-      // Automatically move to PROCESSING to avoid getting stuck in PAID
-      await this.updateStatus(orderId, 'PROCESSING', db);
+      // Fix BUG-011: Avoid recursive call. Auto-move to PROCESSING in DB directly.
+      await db.order.update({
+        where: { id: orderId },
+        data: { status: 'PROCESSING' }
+      });
+      // Important: We don't fire a second status_updated event here to avoid double side-effects.
+      // Downstream services should treat PAID as implicitly PROCESSING or listen for the explicit transition if needed.
     }
 
     if (status === 'CANCELLED') {

@@ -2,8 +2,19 @@ import { initTRPC, TRPCError } from '@trpc/server'
 import { type OpenApiMeta } from "trpc-openapi";
 import superjson from 'superjson'
 import { ZodError } from 'zod'
+export interface Session {
+  user: {
+    id: string;
+    email: string;
+    role: string;
+    name?: string;
+    image?: string;
+  };
+  expires: string;
+}
+
 export interface TRPCContext {
-  session: any | null;
+  session: Session | null;
   req?: Request;
   redis?: any;
   ip?: string;
@@ -65,11 +76,8 @@ export const rateLimitProcedure = publicProcedure.use(async ({ ctx, next, path }
     } catch (err) {
       if (err instanceof TRPCError) throw err;
       console.error(`[RateLimit] Redis error for ${path}:`, err);
-      // Fail closed for rate limiting
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Service temporarily unavailable",
-      });
+      // Fix BUG-019: Fail open for rate limiting
+      return next();
     }
   }
   return next();

@@ -26,7 +26,7 @@ export class FlutterwaveAdapter implements PaymentAdapter {
   readonly name = 'flutterwave';
 
   async initializeTransaction(params: InitParams): Promise<InitResult> {
-    const reference = `FLW-ORD-${params.orderId}-${Date.now()}`;
+    const reference = params.reference ?? `FLW-ORD-${params.orderId}-${Date.now()}`;
 
     const res = await fetch(`${FLW_BASE}/payments`, {
       method: 'POST',

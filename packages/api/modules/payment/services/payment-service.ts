@@ -5,8 +5,10 @@ import type { Service } from '../../../types.js'
 import * as crypto from 'crypto'
 import { orderService } from '../../order/services/order-service.js'
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
-const PAYSTACK_WEBHOOK_SECRET = process.env.PAYSTACK_WEBHOOK_SECRET || 'whsec_test_placeholder';
+import { config } from '../../../config.js';
+
+const PAYSTACK_SECRET_KEY = config.PAYSTACK_SECRET_KEY;
+const PAYSTACK_WEBHOOK_SECRET = config.PAYSTACK_WEBHOOK_SECRET;
 
 import { getPaymentAdapter } from '../adapters/index.js'
 
@@ -33,6 +35,19 @@ export const paymentService: Service = {
 
     const adapter = getPaymentAdapter(provider);
     const callbackUrl = `${process.env.NEXTAUTH_URL}/checkout/success?orderId=${orderId}`;
+    const reference = `ORD-${orderId}-${Date.now()}`;
+
+    // Create payment record BEFORE calling processor (Fix BUG-001)
+    await prisma.payment.create({
+      data: {
+        orderId,
+        userId, 
+        amount: new Decimal(amount),
+        method: provider.toUpperCase(),
+        status: 'PENDING',
+        providerRef: reference,
+      }
+    });
 
     const initResult = await adapter.initializeTransaction({
       orderId,
@@ -41,23 +56,12 @@ export const paymentService: Service = {
       amountInSubunit: amount * 100,
       currency: 'NGN',
       callbackUrl,
-    });
-
-    // Create payment record
-    await prisma.payment.create({
-      data: {
-        orderId,
-        userId, 
-        amount: new Decimal(amount),
-        method: provider.toUpperCase(),
-        status: 'PENDING',
-        providerRef: initResult.providerRef,
-      }
+      reference, // Pass our reference
     });
 
     return {
       authorization_url: initResult.authorizationUrl,
-      reference: initResult.reference
+      reference
     };
   },
 
@@ -84,6 +88,18 @@ export const paymentService: Service = {
     const amountInKobo = amount * 100; // Paystack expects amount in kobo
     const reference = `ORD-${orderId}-${Date.now()}`;
     
+    // Create payment record BEFORE calling processor (Fix BUG-001)
+    await prisma.payment.create({
+      data: {
+        orderId,
+        userId, 
+        amount: new Decimal(amount),
+        method: 'CARD',
+        status: 'PENDING',
+        providerRef: reference,
+      }
+    });
+
     // Call Paystack API
     const response = await fetch('https://api.paystack.co/transaction/initialize', {
       method: 'POST',
@@ -111,20 +127,9 @@ export const paymentService: Service = {
 
     const data = await response.json();
     if (!data.status) {
+      // Note: We leave the PENDING record for manual reconciliation or cleanup
       throw new Error(`PAYSTACK_INIT_FAILED: ${data.message}`);
     }
-
-    // Create payment record
-    await prisma.payment.create({
-      data: {
-        orderId,
-        userId, 
-        amount: new Decimal(amount),
-        method: 'CARD',
-        status: 'PENDING',
-        providerRef: reference,
-      }
-    });
 
     return {
       authorization_url: data.data.authorization_url,
@@ -134,7 +139,11 @@ export const paymentService: Service = {
 
   verifyWebhookSignature(rawBody: string, signature: string): boolean {
     const hash = crypto.createHmac('sha512', PAYSTACK_WEBHOOK_SECRET).update(rawBody).digest('hex');
-    return hash === signature;
+    try {
+      return crypto.timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(signature, 'hex'));
+    } catch {
+      return false;
+    }
   },
 
   async handleWebhook(reference: string, status: string, eventType?: string) {
@@ -229,18 +238,24 @@ export const paymentService: Service = {
 
   async payWithWallet(userId: string, orderId: string, amount: number) {
     return prisma.$transaction(async (tx) => {
-      const wallet = await tx.wallet.findUnique({ where: { userId } });
-      if (!wallet || wallet.balance.lt(amount)) throw new Error('INSUFFICIENT_FUNDS');
-
-      // E06: Atomic balance decrement and re-verify
-      const updated = await tx.wallet.update({
-        where: { id: wallet.id },
-        data: { balance: { decrement: amount } }
+      // Fix BUG-002: Atomic decrement with guard in WHERE clause
+      const result = await tx.wallet.updateMany({
+        where: { 
+          userId, 
+          balance: { gte: amount } 
+        },
+        data: { 
+          balance: { decrement: amount } 
+        }
       });
 
-      if (updated.balance.lt(0)) {
-        throw new Error('INSUFFICIENT_FUNDS'); // Rollback if concurrent spend caused overdraft
+      if (result.count === 0) {
+        throw new Error('INSUFFICIENT_FUNDS');
       }
+
+      // Get wallet ID for transaction log
+      const wallet = await tx.wallet.findUnique({ where: { userId } });
+      if (!wallet) throw new Error('WALLET_NOT_FOUND');
 
       await tx.walletTransaction.create({
         data: {
@@ -260,7 +275,8 @@ export const paymentService: Service = {
           userId,
           amount: new Decimal(amount),
           method: 'WALLET',
-          status: 'SUCCESS'
+          status: 'SUCCESS',
+          providerRef: `WAL-${orderId}-${Date.now()}`
         }
       });
     });

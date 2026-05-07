@@ -18,7 +18,8 @@ export const ledgerService: Service = {
     const sellerId = line.package.sellerId;
     const grossAmount = line.unitPrice.mul(line.quantity);
     const commissionRate = line.variant.product.category.commissionRate || new Decimal(10); // Default 10%
-    const commissionAmount = grossAmount.mul(commissionRate).div(100);
+    // Fix BUG-018: Explicit rounding for financial amounts to avoid fractional issues
+    const commissionAmount = grossAmount.mul(commissionRate).div(100).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
 
     return await prisma.$transaction(async (tx) => {
       // 1. Record Gross Sale (PENDING)

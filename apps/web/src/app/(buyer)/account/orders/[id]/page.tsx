@@ -53,19 +53,20 @@ export default function OrderDetailPage() {
   }
 
   return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-12 select-none">
-      <div className="container py-6">
-        <Link href="/account/orders" className="flex items-center gap-1 text-gray-500 hover:text-[#F68B1E] transition-colors font-bold text-xs mb-6 select-none">
-          <ChevronLeft size={16} />
+    <div className="bg-[#F9F9FA] min-h-screen pb-12">
+      <div className="container mx-auto px-4 py-8">
+        <Link href="/account/orders" className="inline-flex items-center gap-2 text-gray-400 hover:text-[#F68B1E] transition-all font-black text-[10px] uppercase tracking-widest mb-8 group">
+          <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           Back to My Orders
         </Link>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all p-6 md:p-8 shadow-md">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-100">
+            <div className="bg-white rounded-[32px] border border-gray-100 shadow-xl shadow-black/[0.02] overflow-hidden">
+                <div className="p-6 md:p-10 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-gray-50/30">
                 <div>
-                  <h1 className="text-lg md:text-xl font-black text-gray-900 tracking-tight mb-1 leading-tight select-none uppercase">Order #{order.id.toUpperCase()}</h1>
-                  <p className="text-xs md:text-sm font-medium text-gray-400">Placed on {format(new Date(order.createdAt), 'PPPP')}</p>
+                  <h1 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight mb-1 uppercase">Order #{order.id.substring(0, 12).toUpperCase()}</h1>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Placed on {format(new Date(order.createdAt), 'MMMM dd, yyyy')}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   {(order.status === 'PENDING' || order.status === 'PAID') && (
@@ -76,17 +77,17 @@ export default function OrderDetailPage() {
                         }
                       }}
                       disabled={cancelOrder.isLoading}
-                      className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-tight border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                      className="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-100 text-red-500 hover:bg-red-50 transition-all disabled:opacity-50 active:scale-95"
                     >
-                      {cancelOrder.isLoading ? 'Cancelling...' : 'Cancel Order'}
+                      {cancelOrder.isLoading ? 'Processing...' : 'Cancel Order'}
                     </button>
                   )}
-                  <span className={`px-3 py-1.5 rounded-xl text-xs font-extrabold uppercase tracking-tight border w-fit ${
+                  <span className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
                     order.status === 'DELIVERED' || order.status === 'COMPLETED' 
-                      ? 'bg-green-50 text-green-700 border-green-100' 
+                      ? 'bg-green-50 text-green-600 border-green-100' 
                       : order.status === 'CANCELLED'
-                      ? 'bg-red-50 text-red-700 border-red-100'
-                      : 'bg-orange-50 text-orange-700 border-orange-100'
+                      ? 'bg-red-50 text-red-600 border-red-100'
+                      : 'bg-orange-50 text-[#F68B1E] border-orange-100'
                   }`}>
                     {order.status.replace('_', ' ')}
                   </span>
@@ -94,82 +95,82 @@ export default function OrderDetailPage() {
               </div>
 
               {/* Package List */}
-              <div className="space-y-8">
+              <div className="p-6 md:p-10 space-y-12">
                 {order.packages.map((pkg, idx) => (
-                  <div key={pkg.id} className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-9 h-9 bg-orange-50 text-[#F68B1E] rounded-xl flex items-center justify-center border border-orange-100/60">
-                        <Package size={20} />
+                  <div key={pkg.id} className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-white border border-gray-100 text-[#F68B1E] rounded-2xl flex items-center justify-center shadow-sm">
+                        <Package size={24} />
                       </div>
-                      <h3 className="font-extrabold text-sm md:text-base tracking-tight text-gray-800">Package {idx + 1} of {order.packages.length}</h3>
-                      <span className="text-[10px] bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-xl text-gray-500 uppercase font-black tracking-tight select-none">
-                        {pkg.status}
-                      </span>
+                      <div>
+                        <h3 className="font-black text-sm uppercase tracking-widest text-gray-900">Package {idx + 1} of {order.packages.length}</h3>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Handled by Jumia Express</p>
+                      </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {/* Tracking Timeline */}
-                      <div className="bg-gray-50/50 rounded-xl p-5 border border-gray-100/80">
-                        <h4 className="text-xs font-black uppercase text-gray-400 mb-5 tracking-wide flex items-center gap-1.5 select-none">
-                          <Truck size={15} /> Tracking History
+                      <div className="bg-gray-50/50 rounded-[24px] p-6 border border-gray-100/50">
+                        <h4 className="text-[10px] font-black uppercase text-gray-400 mb-6 tracking-[0.2em] flex items-center gap-2">
+                          <Truck size={14} className="text-[#F68B1E]" /> Timeline
                         </h4>
                         {pkg.shipments?.[0]?.events?.length ? (
-                          <div className="space-y-5 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gray-100">
+                          <div className="space-y-6 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[2px] before:bg-white">
                             {pkg.shipments[0].events.map((event, eIdx) => (
-                              <div key={event.id} className="relative pl-7 select-text">
-                                <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center transition-all duration-300 ${eIdx === 0 ? 'bg-[#F68B1E] scale-110 ring-4 ring-orange-100/50' : 'bg-gray-300'}`} />
-                                <div className={`text-xs font-extrabold tracking-tight ${eIdx === 0 ? 'text-[#F68B1E]' : 'text-gray-800'}`}>{event.status.replace('_', ' ')}</div>
-                                <div className="text-[10px] font-bold text-gray-400 mt-0.5">{format(new Date(event.createdAt), 'dd MMM, HH:mm')}</div>
-                                {event.note && <div className="text-[10px] font-medium text-gray-400 mt-1 italic leading-relaxed">{event.note}</div>}
+                              <div key={event.id} className="relative pl-8">
+                                <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center transition-all duration-500 ${eIdx === 0 ? 'bg-[#F68B1E] scale-125 ring-4 ring-orange-500/10' : 'bg-gray-200'}`} />
+                                <div className={`text-[11px] font-black uppercase tracking-widest ${eIdx === 0 ? 'text-[#F68B1E]' : 'text-gray-900'}`}>{event.status.replace('_', ' ')}</div>
+                                <div className="text-[10px] font-bold text-gray-400 mt-1">{format(new Date(event.createdAt), 'MMM dd, HH:mm')}</div>
+                                {event.note && <div className="text-[10px] font-medium text-gray-400 mt-2 italic bg-white/50 p-2 rounded-lg">{event.note}</div>}
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <div className="text-xs text-gray-400 font-medium italic py-3 select-none">Waiting for pickup by courier...</div>
+                          <div className="flex flex-col items-center justify-center py-8 text-center">
+                            <Clock size={32} className="text-gray-200 mb-3" />
+                            <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Awaiting Fulfillment</p>
+                          </div>
                         )}
                       </div>
 
                       {/* Items in Package */}
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {pkg.lines.map((line) => (
-                          <div key={line.id} className="flex gap-3 bg-gray-50/20 hover:bg-gray-50/40 duration-200 transition-all p-3 rounded-xl border border-transparent hover:border-gray-100/60 select-none">
-                            <div className="w-16 h-16 bg-gray-50 border border-gray-100 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden p-1.5">
+                          <div key={line.id} className="flex gap-4 bg-white border border-gray-50 p-4 rounded-2xl hover:border-orange-100 transition-all group">
+                            <div className="w-20 h-20 bg-gray-50 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden p-2">
                               <img 
                                 src={(line.variant?.product as any)?.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'}
                                 alt={line.variant?.product?.title}
-                                className="w-full h-full object-contain"
+                                className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                               />
                             </div>
-                            <div className="flex-1 min-w-0 flex flex-col justify-between">
-                              <div className="flex justify-between items-start gap-2">
-                                <h5 className="text-xs md:text-sm font-extrabold text-gray-900 leading-tight line-clamp-2 hover:text-[#F68B1E] transition-colors cursor-pointer">{line.variant?.product?.title}</h5>
+                            <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                              <div>
+                                <h5 className="text-[11px] font-black text-gray-900 leading-tight uppercase tracking-tight line-clamp-2 mb-1">{line.variant?.product?.title}</h5>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[9px] font-black uppercase bg-gray-50 text-gray-400 px-2 py-0.5 rounded-md border border-gray-100">QTY: {line.quantity}</span>
+                                </div>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <p className="font-black text-xs text-[#F68B1E]">₦ {Number(line.unitPrice).toLocaleString()}</p>
+                                
                                 {pkg.status === 'DELIVERED' && !line.isReturned && (
-                                  <div className="flex flex-col gap-1 shrink-0">
+                                  <div className="flex gap-2">
                                     <button 
                                       onClick={() => {
-                                        if (confirm('Initiate return for this item?')) {
+                                        if (confirm('Initiate return?')) {
                                           initiateReturn.mutate({ orderLineId: line.id, reason: 'CUSTOMER_REQUEST' });
                                         }
                                       }}
-                                      className="text-[9px] font-black uppercase text-[#264996] hover:underline bg-blue-50 px-2 py-1 rounded"
+                                      className="text-[9px] font-black uppercase text-[#264996] hover:bg-blue-50 px-2 py-1 rounded-lg border border-blue-50 transition-colors"
                                     >
                                       Return
                                     </button>
-                                    <Link 
-                                      href={`/account/reviews/new?productId=${line.variant?.product?.id}`}
-                                      className="text-[9px] font-black uppercase text-[#F68B1E] hover:underline bg-orange-50 px-2 py-1 rounded text-center"
-                                    >
-                                      Rate Item
-                                    </Link>
                                   </div>
                                 )}
                                 {line.isReturned && (
-                                  <span className="text-[9px] font-black uppercase text-green-600 bg-green-50 px-2 py-1 rounded shrink-0">Returned</span>
+                                  <span className="text-[9px] font-black uppercase text-green-600 bg-green-50 px-2 py-1 rounded-lg">Returned</span>
                                 )}
-                              </div>
-                              <div className="flex justify-between items-end mt-1">
-                                <p className="text-[11px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded w-fit border border-gray-100/50">Qty: {line.quantity}</p>
-                                <p className="text-sm font-black text-[#F68B1E]">₦{Number(line.unitPrice).toLocaleString()}</p>
                               </div>
                             </div>
                           </div>
@@ -185,86 +186,69 @@ export default function OrderDetailPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Delivery Details */}
-            <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all p-6 shadow-md select-none">
-              <h2 className="font-extrabold text-xs uppercase mb-4 tracking-wide flex items-center gap-2 text-gray-900">
-                <MapPin size={16} className="text-[#F68B1E]" /> Delivery Address
+            <div className="bg-white rounded-[32px] border border-gray-100 shadow-xl shadow-black/[0.02] p-8">
+              <h2 className="font-black text-[10px] uppercase mb-6 tracking-[0.2em] flex items-center gap-3 text-gray-900">
+                <MapPin size={18} className="text-[#F68B1E]" /> Delivery Address
               </h2>
-              <div className="text-xs md:text-sm font-medium space-y-1 text-gray-600">
-                <p className="font-extrabold text-gray-800">Shipping Address</p>
-                <p>Default delivery dropoff specified at checkout.</p>
+              <div className="space-y-4">
+                <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100/50">
+                  <p className="text-[10px] font-black uppercase text-gray-400 mb-1 tracking-widest">Shipping to</p>
+                  <p className="text-xs font-black text-gray-900 uppercase tracking-tight">Main Delivery Hub</p>
+                  <p className="text-[11px] font-bold text-gray-500 mt-2 leading-relaxed italic">Default dropoff specified at checkout.</p>
+                </div>
               </div>
             </div>
 
             {/* Payment Summary */}
-            <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all p-6 shadow-md select-none">
-              <h2 className="font-extrabold text-xs uppercase mb-4 tracking-wide flex items-center gap-2 text-gray-900">
-                <CreditCard size={16} className="text-[#F68B1E]" /> Payment Summary
-              </h2>
-              <div className="space-y-2 text-sm font-medium">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Subtotal</span>
-                  <span className="font-bold text-gray-800">₦{Number(order.subtotal).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Shipping Fee</span>
-                  <span className="font-bold text-gray-800">₦{Number(order.shippingFee).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between border-t border-gray-100 pt-3 font-extrabold text-base md:text-lg">
-                  <span className="text-gray-900">Total</span>
-                  <span className="text-[#F68B1E]">₦{Number(order.total).toLocaleString()}</span>
-                </div>
+            <div className="bg-[#1A1A1A] text-white rounded-[32px] shadow-2xl shadow-black/20 overflow-hidden">
+              <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                <h2 className="font-black text-[10px] uppercase tracking-[0.2em]">Summary</h2>
+                <CreditCard size={18} className="text-[#F68B1E]" />
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-2 text-xs font-extrabold text-gray-500 bg-gray-50/80 p-2.5 rounded-xl border border-gray-100/50">
-                  <CheckCircle2 size={14} className="text-green-500" />
-                  Paid via {order.paymentMethod.toUpperCase()}
+              <div className="p-8 space-y-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white/40">
+                    <span>Subtotal</span>
+                    <span className="text-white">₦ {Number(order.subtotal).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white/40">
+                    <span>Delivery</span>
+                    <span className="text-white">₦ {Number(order.shippingFee).toLocaleString()}</span>
+                  </div>
+                </div>
+                
+                <div className="pt-6 border-t border-white/10 flex justify-between items-end">
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40 mb-1">Total Paid</p>
+                    <span className="text-2xl font-black tracking-tighter">₦ {Number(order.total).toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
+                  <CheckCircle2 size={16} className="text-green-400" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Paid via {order.paymentMethod}</span>
                 </div>
               </div>
             </div>
 
-            {/* Need Help */}
-            <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all p-6 shadow-md select-none">
-              <h2 className="font-extrabold text-xs uppercase mb-4 tracking-wide flex items-center gap-2 text-gray-400">
-                <AlertCircle size={16} /> Need Help?
+            {/* Help Section */}
+            <div className="bg-white rounded-[32px] border border-gray-100 p-8">
+              <h2 className="font-black text-[10px] uppercase mb-6 tracking-[0.2em] flex items-center gap-3 text-gray-300">
+                <AlertCircle size={18} /> Need Help?
               </h2>
-              <div className="space-y-2 text-sm font-extrabold">
-                <Link href={`/disputes/new?orderId=${order.id}`} className="block text-[#F68B1E] hover:underline">
-                  Open a dispute
+              <div className="space-y-3">
+                <Link href={`/disputes/new?orderId=${order.id}`} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-2xl group hover:bg-orange-50 transition-colors">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-900">Open a dispute</span>
+                  <ChevronRight size={14} className="text-gray-300 group-hover:text-[#F68B1E] transition-colors" />
                 </Link>
-                <Link href="/help" className="block text-gray-600 hover:underline">
-                  Frequently asked questions
+                <Link href="/help" className="flex items-center justify-between p-4 bg-gray-50/50 rounded-2xl group hover:bg-gray-100 transition-colors">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Help center</span>
+                  <ChevronRight size={14} className="text-gray-300" />
                 </Link>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <style jsx>{`
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 16px;
-        }
-        .flex { display: flex; }
-        .grid { display: grid; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .flex-col { flex-direction: column; }
-        .gap-1 { gap: 4px; }
-        .gap-2 { gap: 8px; }
-        .gap-3 { gap: 12px; }
-        .gap-4 { gap: 16px; }
-        .gap-6 { gap: 24px; }
-        .mb-1 { margin-bottom: 0.25rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-      `}</style>
     </div>
   );
 }

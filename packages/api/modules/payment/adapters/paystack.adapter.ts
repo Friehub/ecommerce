@@ -28,7 +28,7 @@ export class PaystackAdapter implements PaymentAdapter {
   readonly name = 'paystack';
 
   async initializeTransaction(params: InitParams): Promise<InitResult> {
-    const reference = `ORD-${params.orderId}-${Date.now()}`;
+    const reference = params.reference ?? `ORD-${params.orderId}-${Date.now()}`;
 
     const res = await fetch(`${PAYSTACK_BASE}/transaction/initialize`, {
       method: 'POST',

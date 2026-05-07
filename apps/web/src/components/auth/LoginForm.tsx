@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -12,6 +12,8 @@ export const LoginForm = () => {
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +30,23 @@ export const LoginForm = () => {
       if (result?.error) {
         setError('Invalid email or password');
       } else {
-        router.push('/');
         router.refresh();
+        if (callbackUrl) {
+          router.push(callbackUrl);
+        } else {
+          // Fetch session to determine role-aware redirect
+          const response = await fetch('/api/auth/session');
+          const session = await response.json();
+          const role = session?.user?.role;
+
+          if (role === 'SELLER') {
+            router.push('/seller/dashboard');
+          } else if (role === 'ADMIN') {
+            router.push('/dashboard');
+          } else {
+            router.push('/');
+          }
+        }
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

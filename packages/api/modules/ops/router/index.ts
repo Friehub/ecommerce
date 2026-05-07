@@ -13,7 +13,15 @@ const _opsRouter = createTRPCRouter({
   }),
 
   getAuditLogs: adminProcedure.query(async () => {
-    return [];
+    return prisma.eventLog.findMany({
+      where: { topic: 'ADMIN_ACTION' },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+  }),
+
+  getTimeSeries: adminProcedure.query(async () => {
+    return await opsService.getAnalyticsTimeSeries();
   }),
 });
 

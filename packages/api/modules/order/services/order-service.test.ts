@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { orderService } from './order-service';
 import { prisma, Decimal } from '@ecom/db';
+import { inventoryService } from '../../inventory/services/inventory-service.js';
 
 // Mock Dependencies
 vi.mock('@ecom/db', () => ({
@@ -8,13 +9,32 @@ vi.mock('@ecom/db', () => ({
     order: {
       findUnique: vi.fn(),
       update: vi.fn(),
+      create: vi.fn(),
     },
     orderPackage: {
       findUnique: vi.fn(),
     },
     orderLine: {
       findMany: vi.fn(),
-    }
+    },
+    userAddress: {
+      findFirst: vi.fn(),
+    },
+    cart: {
+      findUnique: vi.fn(),
+    },
+    cartItem: {
+      deleteMany: vi.fn(),
+    },
+    flashSale: {
+      findFirst: vi.fn(),
+      updateMany: vi.fn(),
+    },
+    stockLevel: {
+      findFirst: vi.fn(),
+      update: vi.fn(),
+    },
+    $transaction: vi.fn((cb) => cb(prisma)),
   },
   Decimal: class {
     val: number;
@@ -43,6 +63,7 @@ vi.mock('../../inventory/services/inventory-service.js', () => ({
   inventoryService: {
     releaseStockByOrderId: vi.fn(),
     confirmStock: vi.fn(),
+    reserveStock: vi.fn(),
   }
 }));
 
@@ -97,6 +118,53 @@ describe('orderService', () => {
     it('should throw if order does not belong to user', async () => {
       (prisma.order.findUnique as any).mockResolvedValue(null);
       await expect(orderService.cancelOrder('o1', 'wrong_user')).rejects.toThrow('ORDER_NOT_FOUND');
+    });
+  });
+
+  describe('createFromCart', () => {
+    it('should throw if address does not belong to user (BUG-005 fix)', async () => {
+      const userId = 'u1';
+      const cartId = 'c1';
+      const addressId = 'a1';
+
+      (prisma.cart.findUnique as any).mockResolvedValue({
+        id: cartId,
+        items: [{ id: 'item1', sellerId: 's1', variantId: 'v1', quantity: 1, priceSnapshot: new Decimal(100), variant: { price: new Decimal(100) } }]
+      });
+
+      // Mock address ownership failure
+      (prisma.userAddress.findFirst as any).mockResolvedValue(null);
+
+      await expect(orderService.createFromCart(userId, cartId, 'CARD', addressId))
+        .rejects.toThrow('ADDRESS_NOT_FOUND_OR_UNAUTHORIZED');
+    });
+
+    it('should successfully create order if address belongs to user', async () => {
+      const userId = 'u1';
+      const cartId = 'c1';
+      const addressId = 'a1';
+
+      (prisma.cart.findUnique as any).mockResolvedValue({
+        id: cartId,
+        items: [{ id: 'item1', sellerId: 's1', variantId: 'v1', quantity: 1, priceSnapshot: new Decimal(100), variant: { price: new Decimal(100) } }]
+      });
+
+      (prisma.userAddress.findFirst as any).mockResolvedValue({ id: addressId, userId });
+      
+      (prisma.order.create as any).mockResolvedValue({ 
+        id: 'o1', 
+        total: new Decimal(600), 
+        packages: [{ id: 'pkg1', lines: [{ id: 'l1' }] }] 
+      });
+
+      (prisma.stockLevel.findFirst as any).mockResolvedValue({ id: 'sl1', warehouseId: 'w1' });
+      (prisma.flashSale.findFirst as any).mockResolvedValue(null);
+      (inventoryService.reserveStock as any).mockResolvedValue(true);
+
+      const result = await orderService.createFromCart(userId, cartId, 'CARD', addressId);
+
+      expect(result.id).toBe('o1');
+      expect(prisma.order.create).toHaveBeenCalled();
     });
   });
 });

@@ -95,5 +95,47 @@ export const returnService: Service = {
       orderId: request.orderLine.package.order.id,
       amount: result.toNumber()
     });
+  },
+
+  async listForSeller(sellerId: string) {
+    return prisma.returnShipment.findMany({
+      where: {
+        orderLine: {
+          variant: {
+            product: { sellerId }
+          }
+        }
+      },
+      include: {
+        orderLine: {
+          include: {
+            variant: {
+              include: {
+                product: {
+                  include: {
+                    media: true
+                  }
+                }
+              }
+            },
+            package: {
+              include: {
+                order: {
+                  include: {
+                    user: {
+                      select: {
+                        firstName: true,
+                        lastName: true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
   }
 };

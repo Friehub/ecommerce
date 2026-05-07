@@ -69,8 +69,8 @@ export default async function ProductDetailPage({
               <ProductActions product={product} />
             </div>
 
-            {/* Far Right: Delivery & Seller (Desktop Only) */}
-            <div className="w-full lg:w-[280px] hidden lg:block space-y-4 select-none">
+            {/* Delivery & Seller (Desktop Sidebar, but also shown below on mobile if we move it) */}
+            <div className="w-full lg:w-[280px] space-y-4 select-none">
               <div className="bg-white border border-gray-100 rounded-xl p-5 hover:border-gray-200 hover:shadow-sm transition-all duration-200">
                 <h4 className="text-xs font-extrabold uppercase text-gray-400 mb-3 tracking-wide">Delivery & Returns</h4>
                 <div className="space-y-4">

@@ -192,14 +192,14 @@ export default function CheckoutPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
           <div className="bg-white rounded-2xl w-full max-w-2xl my-auto overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="p-4 border-b flex items-center justify-between bg-gray-50/50">
-              <h3 className="font-extrabold uppercase text-sm tracking-widest text-gray-800">Add New Address</h3>
-              <button onClick={() => setShowAddressModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <h3 className="font-black uppercase text-xs tracking-widest text-gray-800">Add New Address</h3>
+              <button onClick={() => setShowAddressModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors p-2">
                 <X size={20} />
               </button>
             </div>
             
-            <div className="max-h-[80vh] overflow-y-auto">
-              <div className="p-6 pb-0">
+            <div className="max-h-[85vh] overflow-y-auto">
+              <div className="p-4 md:p-6 pb-0">
                 <LocationPicker onLocationSelect={handleLocationSelect} />
               </div>
 
@@ -220,9 +220,9 @@ export default function CheckoutPage() {
                     isDefault: true,
                   });
                 }}
-                className="p-6 grid grid-cols-2 gap-4"
+                className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-4"
               >
-                <div className="col-span-2 flex gap-4 mb-2">
+                <div className="md:col-span-2 flex gap-2 md:gap-4 mb-2">
                    <button 
                     type="button"
                     onClick={() => setAddressType('HOME')}
@@ -231,7 +231,7 @@ export default function CheckoutPage() {
                     }`}
                    >
                     <Home size={18} />
-                    <span className="text-xs font-extrabold uppercase tracking-wider">Home</span>
+                    <span className="text-[10px] md:text-xs font-black uppercase tracking-wider">Home</span>
                    </button>
                    <button 
                     type="button"
@@ -241,44 +241,44 @@ export default function CheckoutPage() {
                     }`}
                    >
                     <Briefcase size={18} />
-                    <span className="text-xs font-extrabold uppercase tracking-wider">Office</span>
+                    <span className="text-[10px] md:text-xs font-black uppercase tracking-wider">Office</span>
                    </button>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">First Name</label>
+                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">First Name</label>
                   <input required name="firstName" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">Last Name</label>
+                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Last Name</label>
                   <input required name="lastName" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
                 </div>
-                <div className="col-span-2 space-y-1.5">
-                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">Phone Number</label>
+                <div className="md:col-span-2 space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Phone Number</label>
                   <input required name="phone" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
                 </div>
-                <div className="col-span-2 space-y-1.5">
-                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">Street Address (House No, Building Name)</label>
+                <div className="md:col-span-2 space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Street Address</label>
                   <input required name="streetAddress" defaultValue={mapAddress.street} className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
                 </div>
-                <div className="col-span-2 space-y-1.5">
-                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide flex items-center gap-1.5">
-                    Landmark / Additional Info <Info size={10} className="text-blue-400" />
+                <div className="md:col-span-2 space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest flex items-center gap-1.5">
+                    Landmark <Info size={10} className="text-blue-400" />
                   </label>
-                  <input name="landmark" placeholder="e.g. Near the big oak tree, 2nd floor" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
+                  <input name="landmark" placeholder="e.g. Near the big oak tree" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">City</label>
+                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">City</label>
                   <input required name="city" defaultValue={mapAddress.city} className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">State</label>
+                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">State</label>
                   <input required name="state" defaultValue={mapAddress.state} className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
                 </div>
                 <button 
                   type="submit"
                   disabled={addAddressMutation.isLoading}
-                  className="col-span-2 mt-4 w-full bg-[#F68B1E] hover:bg-[#e07a1a] text-white h-12 rounded-xl font-extrabold uppercase tracking-widest transition-all shadow-lg active:scale-95 disabled:opacity-50 mb-6"
+                  className="md:col-span-2 mt-4 w-full bg-[#F68B1E] hover:bg-[#e07a1a] text-white h-12 rounded-xl font-black uppercase tracking-[0.2em] transition-all shadow-xl shadow-orange-500/20 active:scale-95 disabled:opacity-50 mb-6 text-xs"
                 >
                   {addAddressMutation.isLoading ? <Loader2 className="animate-spin mx-auto" size={20} /> : 'Save Address'}
                 </button>
@@ -288,23 +288,24 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      <div className="container py-8">
-        <button onClick={() => router.back()} className="flex items-center gap-2 font-bold text-gray-500 hover:text-gray-800 mb-6 transition-colors select-none">
-          <ChevronLeft size={20} />
-          <span className="text-xs tracking-wide uppercase">Back to Cart</span>
+      <div className="container mx-auto px-4 py-8">
+        <button onClick={() => router.back()} className="flex items-center gap-2 font-black text-gray-400 hover:text-gray-800 mb-6 transition-colors group">
+          <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-[10px] tracking-widest uppercase">Back to Cart</span>
         </button>
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1 space-y-6">
             {/* 1. Address Selection */}
-            <section className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md overflow-hidden select-none">
-              <div className="p-4 border-b border-gray-100 flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-50 border border-orange-100 text-[#F68B1E] rounded-full flex items-center justify-center font-extrabold text-sm select-none">
+            <section className="bg-white rounded-[24px] border border-gray-100 shadow-xl shadow-black/[0.02] overflow-hidden">
+              <div className="p-5 border-b border-gray-50 flex items-center gap-4 bg-gray-50/30">
+                <div className="w-10 h-10 bg-white border border-gray-100 text-[#F68B1E] rounded-2xl flex items-center justify-center font-black text-sm shadow-sm">
                   1
                 </div>
-                <h2 className="text-base md:text-lg font-extrabold uppercase tracking-tight text-gray-900">
-                  Delivery Address
-                </h2>
+                <div>
+                  <h2 className="text-sm font-black uppercase tracking-widest text-gray-900">Delivery Address</h2>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Where should we send your items?</p>
+                </div>
               </div>
               <div className="p-6">
                 {addresses && addresses.length > 0 ? (
@@ -313,62 +314,53 @@ export default function CheckoutPage() {
                       <div 
                         key={addr.id}
                         onClick={() => setSelectedAddressId(addr.id)}
-                        className={`p-5 border-2 rounded-xl cursor-pointer transition-all relative overflow-hidden ${
-                          selectedAddressId === addr.id ? 'border-[#F68B1E] bg-orange-50/20' : 'border-gray-100 hover:border-gray-200'
+                        className={`p-5 border-2 rounded-[20px] cursor-pointer transition-all relative overflow-hidden group ${
+                          selectedAddressId === addr.id ? 'border-[#F68B1E] bg-orange-50/10' : 'border-gray-50 hover:border-gray-200'
                         }`}
                       >
-                        <div className="absolute top-0 left-0 w-full h-1 flex">
-                          <div className={`flex-1 ${addr.addressType === 'HOME' ? 'bg-[#F68B1E]' : 'bg-blue-400'} opacity-20`} />
-                        </div>
-
                         {selectedAddressId === addr.id && (
-                          <div className="absolute top-3 right-3 text-[#F68B1E]">
-                            <CheckCircle2 size={18} fill="currentColor" className="text-white" />
+                          <div className="absolute top-4 right-4 text-[#F68B1E]">
+                            <CheckCircle2 size={20} fill="currentColor" className="text-white" />
                           </div>
                         )}
                         
-                        <div className="flex items-center gap-2 mb-3">
-                           <div className={`p-1.5 rounded-lg ${addr.addressType === 'HOME' ? 'bg-orange-50 text-[#F68B1E]' : 'bg-blue-50 text-blue-500'}`}>
-                             {addr.addressType === 'HOME' ? <Home size={14} /> : <Briefcase size={14} />}
+                        <div className="flex items-center gap-3 mb-4">
+                           <div className={`p-2 rounded-xl ${addr.addressType === 'HOME' ? 'bg-orange-50 text-[#F68B1E]' : 'bg-blue-50 text-blue-500'}`}>
+                             {addr.addressType === 'HOME' ? <Home size={16} /> : <Briefcase size={16} />}
                            </div>
-                           <p className="font-extrabold text-sm text-gray-800">{addr.firstName} {addr.lastName}</p>
+                           <p className="font-black text-sm text-gray-900 tracking-tight">{addr.firstName} {addr.lastName}</p>
                         </div>
 
-                        <p className="text-xs text-gray-600 font-bold leading-relaxed pr-6">
-                          {addr.streetAddress}
-                        </p>
-                        {addr.landmark && (
-                          <p className="text-[10px] text-gray-400 font-medium italic mt-1 flex items-start gap-1">
-                            <span className="text-[#F68B1E] font-black not-italic">@</span> {addr.landmark}
+                        <div className="space-y-1">
+                          <p className="text-xs text-gray-500 font-bold leading-relaxed">{addr.streetAddress}</p>
+                          <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{addr.city}, {addr.state}</p>
+                          <p className="text-[10px] text-gray-900 font-black pt-3 flex items-center gap-2">
+                            <span className="w-1 h-1 bg-[#F68B1E] rounded-full" /> {addr.phone}
                           </p>
-                        )}
-                        <p className="text-[11px] text-gray-500 font-extrabold mt-3 tracking-wide">
-                          {addr.city.toUpperCase()}, {addr.state.toUpperCase()}
-                        </p>
-                        <p className="text-[11px] text-gray-400 font-medium mt-2 flex items-center gap-1.5">
-                          <span className="w-1 h-1 bg-gray-300 rounded-full" /> {addr.phone}
-                        </p>
+                        </div>
                       </div>
                     ))}
                     <button 
                       onClick={() => setShowAddressModal(true)}
-                      className="p-4 border-2 border-dashed border-gray-200 hover:border-orange-200 bg-gray-50/50 hover:bg-orange-50/30 rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-[#F68B1E] transition-all group min-h-[160px] cursor-pointer"
+                      className="p-6 border-2 border-dashed border-gray-100 hover:border-orange-200 bg-gray-50/30 hover:bg-orange-50/20 rounded-[20px] flex flex-col items-center justify-center gap-3 text-gray-400 hover:text-[#F68B1E] transition-all group min-h-[160px]"
                     >
-                      <Plus size={24} className="group-hover:scale-110 duration-200 transition-transform" />
-                      <span className="text-xs font-extrabold uppercase tracking-wider">Add New Address</span>
+                      <Plus size={28} className="group-hover:scale-110 transition-transform duration-300" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">Add New Address</span>
                     </button>
                   </div>
                 ) : (
                    <button 
                     onClick={() => setShowAddressModal(true)}
-                    className="w-full p-8 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center gap-3 text-gray-400 hover:text-[#F68B1E] hover:border-orange-200 transition-all bg-gray-50/50"
+                    className="w-full p-12 border-2 border-dashed border-gray-100 rounded-[32px] flex flex-col items-center justify-center gap-4 text-gray-400 hover:text-[#F68B1E] hover:border-orange-200 transition-all bg-gray-50/30"
                    >
-                    <MapPin size={32} />
-                    <div className="text-center">
-                      <p className="font-extrabold text-base text-gray-800">No saved addresses</p>
-                      <p className="text-xs font-medium mt-1">Add a delivery address to continue</p>
+                    <div className="w-20 h-20 bg-white rounded-[24px] shadow-sm flex items-center justify-center border border-gray-50">
+                      <MapPin size={32} />
                     </div>
-                    <span className="mt-2 bg-[#F68B1E] hover:bg-[#e07a1a] text-white px-5 py-2.5 rounded-lg text-xs font-extrabold uppercase tracking-wide select-none transition-all shadow-md">
+                    <div className="text-center">
+                      <p className="font-black text-lg text-gray-900 uppercase tracking-tight">No saved addresses</p>
+                      <p className="text-xs font-bold text-gray-400 uppercase mt-1">Add a delivery address to continue</p>
+                    </div>
+                    <span className="mt-4 bg-[#F68B1E] text-white px-8 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-orange-500/20 active:scale-95 transition-all">
                       Add Address
                     </span>
                   </button>
@@ -377,40 +369,42 @@ export default function CheckoutPage() {
             </section>
 
             {/* 2. Payment Method */}
-            <section className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md overflow-hidden select-none">
-              <div className="p-4 border-b border-gray-100 flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-50 border border-orange-100 text-[#F68B1E] rounded-full flex items-center justify-center font-extrabold text-sm select-none">
+            <section className="bg-white rounded-[24px] border border-gray-100 shadow-xl shadow-black/[0.02] overflow-hidden">
+              <div className="p-5 border-b border-gray-50 flex items-center gap-4 bg-gray-50/30">
+                <div className="w-10 h-10 bg-white border border-gray-100 text-[#F68B1E] rounded-2xl flex items-center justify-center font-black text-sm shadow-sm">
                   2
                 </div>
-                <h2 className="text-base md:text-lg font-extrabold uppercase tracking-tight text-gray-900">
-                  Payment Method
-                </h2>
+                <div>
+                  <h2 className="text-sm font-black uppercase tracking-widest text-gray-900">Payment Method</h2>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Choose your preferred payment way</p>
+                </div>
               </div>
               <div className="p-6">
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
-                    { id: 'CARD', label: 'Cards / Bank Transfer / USSD', icon: <CreditCard size={20} />, sub: 'Securely pay with Paystack' },
-                    { id: 'POD', label: 'Payment on Delivery', icon: <ShoppingBag size={20} />, sub: 'Pay with cash or card when item arrives' },
-                    { id: 'WALLET', label: 'Jumia Wallet', icon: <div className="w-5 h-5 bg-[#F68B1E] rounded-full" />, sub: 'Use your account balance' },
+                    { id: 'CARD', label: 'Cards / Transfer / USSD', icon: <CreditCard size={20} />, sub: 'Pay with Paystack' },
+                    { id: 'POD', label: 'Cash on Delivery', icon: <ShoppingBag size={20} />, sub: 'Pay at your door' },
                   ].map((method) => (
                     <div 
                       key={method.id}
                       onClick={() => setPaymentMethod(method.id as any)}
-                      className={`p-4 border-2 rounded-xl cursor-pointer transition-all flex items-center gap-4 ${
-                        paymentMethod === method.id ? 'border-[#F68B1E] bg-orange-50/20' : 'border-gray-100 hover:border-gray-200'
+                      className={`p-5 border-2 rounded-[20px] cursor-pointer transition-all flex items-center gap-4 ${
+                        paymentMethod === method.id ? 'border-[#F68B1E] bg-orange-50/10' : 'border-gray-50 hover:border-gray-200'
                       }`}
                     >
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                        paymentMethod === method.id ? 'border-[#F68B1E]' : 'border-gray-300'
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                        paymentMethod === method.id ? 'bg-[#F68B1E] text-white' : 'bg-gray-50 text-gray-400'
                       }`}>
-                        {paymentMethod === method.id && <div className="w-2.5 h-2.5 bg-[#F68B1E] rounded-full" />}
-                      </div>
-                      <div className="text-[#F68B1E] bg-orange-50 border border-orange-100/50 p-2.5 rounded-xl flex items-center justify-center">
                         {method.icon}
                       </div>
                       <div className="flex-1">
-                        <p className="font-extrabold text-sm text-gray-800">{method.label}</p>
-                        <p className="text-[11px] font-medium text-gray-400">{method.sub}</p>
+                        <p className="font-black text-xs text-gray-900 uppercase tracking-tight">{method.label}</p>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{method.sub}</p>
+                      </div>
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        paymentMethod === method.id ? 'border-[#F68B1E]' : 'border-gray-300'
+                      }`}>
+                        {paymentMethod === method.id && <div className="w-2 h-2 bg-[#F68B1E] rounded-full" />}
                       </div>
                     </div>
                   ))}
@@ -420,119 +414,72 @@ export default function CheckoutPage() {
           </div>
 
           {/* Order Summary */}
-          <div className="w-full lg:w-[380px] select-none">
-            <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md overflow-hidden sticky top-24">
-              <div className="p-4 bg-gray-50/60 border-b border-gray-100">
-                <h3 className="font-extrabold uppercase text-sm tracking-tight text-gray-800">Order Summary</h3>
+          <div className="w-full lg:w-[380px]">
+            <div className="bg-[#1A1A1A] text-white rounded-[32px] shadow-2xl shadow-black/20 overflow-hidden sticky top-24">
+              <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                <h3 className="font-black uppercase text-xs tracking-widest">Order Summary</h3>
+                <ShoppingBag size={20} className="text-[#F68B1E]" />
               </div>
-              <div className="p-5 space-y-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 font-medium">Items ({cart?.items?.length || 0})</span>
-                  <span className="font-bold text-gray-800">₦ {subtotal.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 font-medium">Shipping</span>
-                  <span className="font-bold text-gray-800">₦ {shipping.toLocaleString()}</span>
-                </div>
-                {discountValue > 0 && (
-                  <div className="flex justify-between text-sm text-green-600 font-extrabold">
-                    <span>Discount ({appliedCoupon})</span>
-                    <span>- ₦ {discountValue.toLocaleString()}</span>
+              <div className="p-8 space-y-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-white/40">
+                    <span>Items ({cart?.items?.length || 0})</span>
+                    <span className="text-white">₦ {subtotal.toLocaleString()}</span>
                   </div>
-                )}
+                  <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-white/40">
+                    <span>Delivery Fee</span>
+                    <span className="text-white">₦ {shipping.toLocaleString()}</span>
+                  </div>
+                  {discountValue > 0 && (
+                    <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-green-400">
+                      <span>Discount ({appliedCoupon})</span>
+                      <span>- ₦ {discountValue.toLocaleString()}</span>
+                    </div>
+                  )}
+                </div>
 
-                <div className="border-t border-gray-100 pt-4 space-y-2 select-none">
+                <div className="pt-4 border-t border-white/10">
                   <div className="flex gap-2">
                     <input 
                       type="text" 
-                      placeholder="Coupon Code" 
+                      placeholder="COUPON" 
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      className="flex-1 border border-gray-200 focus:border-[#F68B1E] focus:ring-1 focus:ring-orange-200/50 rounded-lg px-3 py-1.5 text-sm outline-none font-medium text-gray-800" 
+                      className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest outline-none focus:border-[#F68B1E] transition-all" 
                     />
                     <button 
                       onClick={handleApplyCoupon}
                       disabled={isCheckingCoupon}
-                      className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-extrabold uppercase tracking-wide transition-all disabled:opacity-50 select-none"
+                      className="px-6 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
                     >
                       {isCheckingCoupon ? '...' : 'Apply'}
                     </button>
                   </div>
                 </div>
 
-                <div className="border-t border-gray-100 pt-4 flex justify-between items-center select-none">
-                  <span className="font-extrabold text-gray-800">Total</span>
-                  <span className="font-extrabold text-[#F68B1E] text-xl">₦ {total.toLocaleString()}</span>
+                <div className="pt-6 flex justify-between items-end">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-1">Final Amount</p>
+                    <span className="font-black text-3xl tracking-tighter">₦ {total.toLocaleString()}</span>
+                  </div>
                 </div>
 
                 <button 
                   onClick={handlePlaceOrder}
                   disabled={isPlacingOrder || !cart?.items.length}
-                  className="w-full h-12 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-xl font-extrabold uppercase tracking-wide hover:shadow-lg hover:scale-105 transition-all disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer border border-transparent shadow-md active:scale-95 duration-200"
+                  className="w-full h-16 bg-[#F68B1E] hover:bg-white hover:text-[#1A1A1A] text-white rounded-2xl font-black uppercase tracking-[0.2em] transition-all disabled:bg-white/5 disabled:text-white/20 flex items-center justify-center gap-3 shadow-2xl shadow-orange-500/20 active:scale-95 text-xs"
                 >
-                  {isPlacingOrder ? <Loader2 className="animate-spin" size={20} /> : 'Confirm Order'}
+                  {isPlacingOrder ? <Loader2 className="animate-spin" size={20} /> : 'Complete Order'}
                 </button>
-                <p className="text-[10px] text-center font-medium text-gray-400 mt-4 leading-relaxed">
-                  By placing your order, you agree to Jumia&apos;s <span className="underline">Terms of Service</span> and <span className="underline">Privacy Policy</span>.
+                
+                <p className="text-[9px] text-center font-bold text-white/30 uppercase tracking-widest leading-relaxed">
+                  Secured by Paystack / SSL Encryption
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 16px;
-        }
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .flex-1 { flex: 1; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .gap-1 { gap: 4px; }
-        .gap-1\.5 { gap: 6px; }
-        .gap-2 { gap: 8px; }
-        .gap-3 { gap: 12px; }
-        .gap-4 { gap: 16px; }
-        .gap-8 { gap: 32px; }
-        .grid { display: grid; }
-        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-        @media (min-width: 768px) {
-          .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-        @media (min-width: 1024px) {
-          .lg\:flex-row { flex-direction: row; }
-          .lg\:w-\[380px\] { width: 380px; }
-        }
-        .bg-white { background-color: #ffffff; }
-        .bg-gray-50 { background-color: #f9fafb; }
-        .rounded-xl { border-radius: 12px; }
-        .rounded-full { border-radius: 9999px; }
-        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-        .p-4 { padding: 1rem; }
-        .p-5 { padding: 1.25rem; }
-        .p-6 { padding: 1.5rem; }
-        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
-        .min-h-\[160px\] { min-height: 160px; }
-        .font-bold { font-weight: 700; }
-        .font-extrabold { font-weight: 800; }
-        .font-black { font-weight: 900; }
-        .font-medium { font-weight: 500; }
-        .uppercase { text-transform: uppercase; }
-        .tracking-wider { letter-spacing: 0.05em; }
-        .sticky { position: sticky; }
-        .top-24 { top: 6rem; }
-        .animate-spin { animation: spin 1s linear infinite; }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }

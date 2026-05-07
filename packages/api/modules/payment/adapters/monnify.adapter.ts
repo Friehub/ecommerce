@@ -38,7 +38,7 @@ export class MonnifyAdapter implements PaymentAdapter {
   }
 
   async initializeTransaction(params: InitParams): Promise<InitResult> {
-    const reference = `MNF-ORD-${params.orderId}-${Date.now()}`;
+    const reference = params.reference ?? `MNF-ORD-${params.orderId}-${Date.now()}`;
     const token = await this.getAuthToken();
 
     const res = await fetch(`${MONNIFY_BASE}/merchant/transactions/init-transaction`, {

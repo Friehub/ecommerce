@@ -5,7 +5,26 @@ import { api } from '@/trpc/react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useCart } from '../../../context/CartContext';
-import { ChevronLeft, MapPin, CreditCard, ShoppingBag, Loader2, Plus, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, MapPin, CreditCard, ShoppingBag, Loader2, Plus, CheckCircle2, X, AlertCircle, Home, Briefcase, Info } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const LocationPicker = dynamic(() => import('@/components/ui/LocationPicker'), { 
+  ssr: false,
+  loading: () => <div className="h-[300px] w-full bg-gray-50 animate-pulse rounded-xl flex items-center justify-center text-gray-400 font-bold uppercase text-[10px] tracking-widest">Loading Map...</div>
+});
+
+// Custom Toast Component
+const Toast = ({ message, type, onClose }: { message: string, type: 'success' | 'error', onClose: () => void }) => (
+  <div className={`fixed top-4 right-4 z-[100] flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl border animate-in fade-in slide-in-from-top-4 duration-300 ${
+    type === 'success' ? 'bg-green-50 border-green-100 text-green-800' : 'bg-red-50 border-red-100 text-red-800'
+  }`}>
+    {type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+    <p className="text-sm font-extrabold tracking-tight">{message}</p>
+    <button onClick={onClose} className="ml-2 hover:opacity-70 transition-opacity">
+      <X size={16} />
+    </button>
+  </div>
+);
 
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
@@ -21,7 +40,24 @@ export default function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = React.useState<string | null>(null);
   const [isCheckingCoupon, setIsCheckingCoupon] = React.useState(false);
 
+  // Modal & Toast States
+  const [showAddressModal, setShowAddressModal] = React.useState(false);
+  const [addressType, setAddressType] = React.useState<'HOME' | 'OFFICE'>('HOME');
+  const [toast, setToast] = React.useState<{ message: string, type: 'success' | 'error' } | null>(null);
+
+  // Form Auto-fill states from Map
+  const [mapAddress, setMapAddress] = React.useState<{
+    street?: string;
+    city?: string;
+    state?: string;
+  }>({});
+
   const utils = api.useUtils();
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 5000);
+  };
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -37,12 +73,12 @@ export default function CheckoutPage() {
         }
         setDiscountValue(discountAmount);
         setAppliedCoupon(couponCode);
-        alert('Coupon applied successfully!');
+        showToast('Coupon applied successfully!', 'success');
       } else {
-        alert('Invalid or expired coupon');
+        showToast('Invalid or expired coupon', 'error');
       }
     } catch (err: any) {
-      alert('Invalid or expired coupon: ' + (err.message || 'Error checking coupon'));
+      showToast(err.message || 'Error checking coupon', 'error');
     } finally {
       setIsCheckingCoupon(false);
     }
@@ -50,8 +86,28 @@ export default function CheckoutPage() {
 
   const { data: addresses, isLoading: isAddressesLoading } = api.iam.getAddresses.useQuery(
     undefined,
-    { enabled: !!session }
+    { 
+      enabled: !!session,
+      retry: false,
+      onError: (err) => {
+        if (err.data?.code === 'UNAUTHORIZED') {
+          router.push(`/login?callbackUrl=${encodeURIComponent(window.location.href)}`);
+        }
+      }
+    }
   );
+
+  const addAddressMutation = api.iam.addAddress.useMutation({
+    onSuccess: (newAddress) => {
+      utils.iam.getAddresses.invalidate();
+      setSelectedAddressId(newAddress.id);
+      setShowAddressModal(false);
+      showToast('Address added successfully!', 'success');
+    },
+    onError: (err) => {
+      showToast(err.message, 'error');
+    }
+  });
 
   const createOrder = api.order.create.useMutation({
     onSuccess: (order) => {
@@ -64,7 +120,7 @@ export default function CheckoutPage() {
       }
     },
     onError: (err) => {
-      alert(err.message);
+      showToast(err.message, 'error');
       setIsPlacingOrder(false);
     }
   });
@@ -74,7 +130,7 @@ export default function CheckoutPage() {
       window.location.href = data.authorization_url;
     },
     onError: (err) => {
-      alert('Failed to initialize payment: ' + err.message);
+      showToast('Failed to initialize payment: ' + err.message, 'error');
       setIsPlacingOrder(false);
     }
   });
@@ -101,7 +157,7 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = () => {
     if (!selectedAddressId) {
-      alert('Please select a delivery address');
+      showToast('Please select a delivery address', 'error');
       return;
     }
     setIsPlacingOrder(true);
@@ -116,8 +172,122 @@ export default function CheckoutPage() {
   const shipping = 1200;
   const total = Math.max(0, subtotal + shipping - discountValue);
 
+  const handleLocationSelect = (lat: number, lng: number, details?: any) => {
+    if (details?.address) {
+      const addr = details.address;
+      setMapAddress({
+        street: addr.road || addr.suburb || addr.neighbourhood || '',
+        city: addr.city || addr.town || addr.village || '',
+        state: addr.state || '',
+      });
+    }
+  };
+
   return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-12">
+    <div className="bg-[#F9F9FA] min-h-screen pb-12 relative">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
+      {/* Add Address Modal */}
+      {showAddressModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-2xl my-auto overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="p-4 border-b flex items-center justify-between bg-gray-50/50">
+              <h3 className="font-extrabold uppercase text-sm tracking-widest text-gray-800">Add New Address</h3>
+              <button onClick={() => setShowAddressModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="max-h-[80vh] overflow-y-auto">
+              <div className="p-6 pb-0">
+                <LocationPicker onLocationSelect={handleLocationSelect} />
+              </div>
+
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  addAddressMutation.mutate({
+                    firstName: formData.get('firstName') as string,
+                    lastName: formData.get('lastName') as string,
+                    phone: formData.get('phone') as string,
+                    streetAddress: formData.get('streetAddress') as string,
+                    landmark: formData.get('landmark') as string,
+                    city: formData.get('city') as string,
+                    state: formData.get('state') as string,
+                    country: 'Nigeria',
+                    addressType: addressType,
+                    isDefault: true,
+                  });
+                }}
+                className="p-6 grid grid-cols-2 gap-4"
+              >
+                <div className="col-span-2 flex gap-4 mb-2">
+                   <button 
+                    type="button"
+                    onClick={() => setAddressType('HOME')}
+                    className={`flex-1 p-3 rounded-xl border-2 flex items-center justify-center gap-3 transition-all ${
+                      addressType === 'HOME' ? 'border-[#F68B1E] bg-orange-50/20 text-[#F68B1E]' : 'border-gray-100 text-gray-400 grayscale'
+                    }`}
+                   >
+                    <Home size={18} />
+                    <span className="text-xs font-extrabold uppercase tracking-wider">Home</span>
+                   </button>
+                   <button 
+                    type="button"
+                    onClick={() => setAddressType('OFFICE')}
+                    className={`flex-1 p-3 rounded-xl border-2 flex items-center justify-center gap-3 transition-all ${
+                      addressType === 'OFFICE' ? 'border-[#F68B1E] bg-orange-50/20 text-[#F68B1E]' : 'border-gray-100 text-gray-400 grayscale'
+                    }`}
+                   >
+                    <Briefcase size={18} />
+                    <span className="text-xs font-extrabold uppercase tracking-wider">Office</span>
+                   </button>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">First Name</label>
+                  <input required name="firstName" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">Last Name</label>
+                  <input required name="lastName" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
+                </div>
+                <div className="col-span-2 space-y-1.5">
+                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">Phone Number</label>
+                  <input required name="phone" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
+                </div>
+                <div className="col-span-2 space-y-1.5">
+                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">Street Address (House No, Building Name)</label>
+                  <input required name="streetAddress" defaultValue={mapAddress.street} className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
+                </div>
+                <div className="col-span-2 space-y-1.5">
+                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide flex items-center gap-1.5">
+                    Landmark / Additional Info <Info size={10} className="text-blue-400" />
+                  </label>
+                  <input name="landmark" placeholder="e.g. Near the big oak tree, 2nd floor" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">City</label>
+                  <input required name="city" defaultValue={mapAddress.city} className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wide">State</label>
+                  <input required name="state" defaultValue={mapAddress.state} className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
+                </div>
+                <button 
+                  type="submit"
+                  disabled={addAddressMutation.isLoading}
+                  className="col-span-2 mt-4 w-full bg-[#F68B1E] hover:bg-[#e07a1a] text-white h-12 rounded-xl font-extrabold uppercase tracking-widest transition-all shadow-lg active:scale-95 disabled:opacity-50 mb-6"
+                >
+                  {addAddressMutation.isLoading ? <Loader2 className="animate-spin mx-auto" size={20} /> : 'Save Address'}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container py-8">
         <button onClick={() => router.back()} className="flex items-center gap-2 font-bold text-gray-500 hover:text-gray-800 mb-6 transition-colors select-none">
           <ChevronLeft size={20} />
@@ -143,29 +313,56 @@ export default function CheckoutPage() {
                       <div 
                         key={addr.id}
                         onClick={() => setSelectedAddressId(addr.id)}
-                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all relative ${
+                        className={`p-5 border-2 rounded-xl cursor-pointer transition-all relative overflow-hidden ${
                           selectedAddressId === addr.id ? 'border-[#F68B1E] bg-orange-50/20' : 'border-gray-100 hover:border-gray-200'
                         }`}
                       >
+                        <div className="absolute top-0 left-0 w-full h-1 flex">
+                          <div className={`flex-1 ${addr.addressType === 'HOME' ? 'bg-[#F68B1E]' : 'bg-blue-400'} opacity-20`} />
+                        </div>
+
                         {selectedAddressId === addr.id && (
-                          <div className="absolute top-2.5 right-2.5 text-[#F68B1E]">
+                          <div className="absolute top-3 right-3 text-[#F68B1E]">
                             <CheckCircle2 size={18} fill="currentColor" className="text-white" />
                           </div>
                         )}
-                        <p className="font-extrabold text-sm mb-1 text-gray-800">{addr.firstName} {addr.lastName}</p>
-                        <p className="text-xs text-gray-600 font-medium leading-relaxed">
-                          {addr.streetAddress}, {addr.city}, {addr.state}
+                        
+                        <div className="flex items-center gap-2 mb-3">
+                           <div className={`p-1.5 rounded-lg ${addr.addressType === 'HOME' ? 'bg-orange-50 text-[#F68B1E]' : 'bg-blue-50 text-blue-500'}`}>
+                             {addr.addressType === 'HOME' ? <Home size={14} /> : <Briefcase size={14} />}
+                           </div>
+                           <p className="font-extrabold text-sm text-gray-800">{addr.firstName} {addr.lastName}</p>
+                        </div>
+
+                        <p className="text-xs text-gray-600 font-bold leading-relaxed pr-6">
+                          {addr.streetAddress}
                         </p>
-                        <p className="text-[11px] text-gray-400 font-medium mt-2">{addr.phone}</p>
+                        {addr.landmark && (
+                          <p className="text-[10px] text-gray-400 font-medium italic mt-1 flex items-start gap-1">
+                            <span className="text-[#F68B1E] font-black not-italic">@</span> {addr.landmark}
+                          </p>
+                        )}
+                        <p className="text-[11px] text-gray-500 font-extrabold mt-3 tracking-wide">
+                          {addr.city.toUpperCase()}, {addr.state.toUpperCase()}
+                        </p>
+                        <p className="text-[11px] text-gray-400 font-medium mt-2 flex items-center gap-1.5">
+                          <span className="w-1 h-1 bg-gray-300 rounded-full" /> {addr.phone}
+                        </p>
                       </div>
                     ))}
-                    <button className="p-4 border-2 border-dashed border-gray-200 hover:border-orange-200 bg-gray-50/50 hover:bg-orange-50/30 rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-[#F68B1E] transition-all group min-h-[120px] cursor-pointer">
+                    <button 
+                      onClick={() => setShowAddressModal(true)}
+                      className="p-4 border-2 border-dashed border-gray-200 hover:border-orange-200 bg-gray-50/50 hover:bg-orange-50/30 rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-[#F68B1E] transition-all group min-h-[160px] cursor-pointer"
+                    >
                       <Plus size={24} className="group-hover:scale-110 duration-200 transition-transform" />
                       <span className="text-xs font-extrabold uppercase tracking-wider">Add New Address</span>
                     </button>
                   </div>
                 ) : (
-                   <button className="w-full p-8 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center gap-3 text-gray-400 hover:text-[#F68B1E] hover:border-orange-200 transition-all bg-gray-50/50">
+                   <button 
+                    onClick={() => setShowAddressModal(true)}
+                    className="w-full p-8 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center gap-3 text-gray-400 hover:text-[#F68B1E] hover:border-orange-200 transition-all bg-gray-50/50"
+                   >
                     <MapPin size={32} />
                     <div className="text-center">
                       <p className="font-extrabold text-base text-gray-800">No saved addresses</p>
@@ -296,6 +493,8 @@ export default function CheckoutPage() {
         .items-center { align-items: center; }
         .justify-between { justify-content: space-between; }
         .justify-center { justify-content: center; }
+        .gap-1 { gap: 4px; }
+        .gap-1\.5 { gap: 6px; }
         .gap-2 { gap: 8px; }
         .gap-3 { gap: 12px; }
         .gap-4 { gap: 16px; }
@@ -316,11 +515,13 @@ export default function CheckoutPage() {
         .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
         .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
         .p-4 { padding: 1rem; }
+        .p-5 { padding: 1.25rem; }
         .p-6 { padding: 1.5rem; }
         .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
-        .min-h-\[120px\] { min-height: 120px; }
+        .min-h-\[160px\] { min-height: 160px; }
         .font-bold { font-weight: 700; }
         .font-extrabold { font-weight: 800; }
+        .font-black { font-weight: 900; }
         .font-medium { font-weight: 500; }
         .uppercase { text-transform: uppercase; }
         .tracking-wider { letter-spacing: 0.05em; }

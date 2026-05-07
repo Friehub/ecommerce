@@ -45,15 +45,22 @@ export async function createContext(opts: {
   }
 
   // ── 2. Try NextAuth session cookie (web browser) ───────────────
-  const cookieNames = ['__Secure-authjs.session-token', 'authjs.session-token'];
+  const cookieNames = [
+    '__Secure-authjs.session-token', 
+    'authjs.session-token',
+    '__Secure-next-auth.session-token',
+    'next-auth.session-token'
+  ];
   
+  const nextAuthSecret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || process.env.AUTH_SECRET;
+
   for (const cookieName of cookieNames) {
     const sessionToken = cookies?.[cookieName];
     if (sessionToken) {
       try {
         const decoded = await decode({
           token: sessionToken,
-          secret: process.env.NEXTAUTH_SECRET!,
+          secret: nextAuthSecret!,
           salt: cookieName,
         });
 

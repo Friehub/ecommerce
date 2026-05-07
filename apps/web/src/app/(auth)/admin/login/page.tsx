@@ -1,19 +1,49 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, Key, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { ShieldCheck, Lock, Key, ArrowRight, Loader2 } from 'lucide-react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function AdminMFALoginPage() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mfaCode, setMfaCode] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
     if (step === 1 && email && password) {
       setStep(2);
+    }
+  };
+
+  const handleFinalLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError('Unauthorized administrative access');
+        setStep(1);
+      } else {
+        router.push('/dashboard');
+        router.refresh();
+      }
+    } catch (err) {
+      setError('A secure communication error occurred');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,6 +63,12 @@ export default function AdminMFALoginPage() {
               Multi-Factor Authentication Required
             </p>
           </div>
+
+          {error && (
+            <div className="bg-red-50 text-red-600 p-4 rounded-xl text-[10px] font-black border border-red-100 mb-6 uppercase tracking-widest text-center">
+              {error}
+            </div>
+          )}
 
           {step === 1 ? (
             <form onSubmit={handleNextStep} className="space-y-5">
@@ -72,7 +108,7 @@ export default function AdminMFALoginPage() {
               </button>
             </form>
           ) : (
-            <form className="space-y-5">
+            <form onSubmit={handleFinalLogin} className="space-y-5">
               <div className="space-y-1.5">
                 <label className="text-[10px] md:text-xs font-black uppercase text-gray-500 tracking-wider">
                   MFA Code (Authenticator / SMS)
@@ -91,14 +127,16 @@ export default function AdminMFALoginPage() {
                 </p>
               </div>
 
-              <Link 
-                href="/dashboard"
+              <button 
+                type="submit"
+                disabled={loading}
                 className="w-full h-12 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-xl font-extrabold text-xs uppercase tracking-wider hover:shadow-lg active:scale-95 duration-200 transition-all flex items-center justify-center gap-2 border border-transparent shadow-md mt-6 select-none"
               >
-                AUTHORIZE LOGIN
-              </Link>
+                {loading ? <Loader2 className="animate-spin" size={18} /> : 'AUTHORIZE LOGIN'}
+              </button>
 
               <button 
+                type="button"
                 onClick={() => setStep(1)}
                 className="w-full text-center text-xs text-gray-400 font-bold hover:text-gray-600 transition-all uppercase tracking-wider cursor-pointer mt-2"
               >

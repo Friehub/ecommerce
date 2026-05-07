@@ -85,6 +85,13 @@ export default function SellerRegistrationKYCPage() {
               >
                 PROCEED TO KYC <ArrowRight size={16} />
               </button>
+
+              <div className="mt-6 pt-6 border-t border-gray-50 text-center">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">
+                  Already have a seller account? 
+                  <Link href="/seller/login" className="text-[#FF7A00] hover:underline ml-1 font-black">Login here</Link>
+                </p>
+              </div>
             </form>
           ) : (
             <form className="space-y-5">
@@ -133,6 +140,7 @@ export default function SellerRegistrationKYCPage() {
               </Link>
 
               <button 
+                type="button"
                 onClick={() => setStep(1)}
                 className="w-full text-center text-xs text-gray-400 font-bold hover:text-gray-600 transition-all uppercase tracking-wider cursor-pointer mt-2"
               >

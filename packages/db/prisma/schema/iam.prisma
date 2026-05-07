@@ -49,9 +49,11 @@ model UserAddress {
   lastName      String
   phone         String
   streetAddress String
+  landmark      String?
   city          String
   state         String
   country       String   @default("Nigeria")
+  addressType   String   @default("HOME") // HOME or OFFICE
   isDefault     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

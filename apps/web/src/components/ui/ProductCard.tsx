@@ -9,8 +9,8 @@ interface ProductCardProps {
 
 export const ProductCard = ({ product }: ProductCardProps) => {
   const primaryVariant = product.variants?.[0];
-  const price = primaryVariant?.price || 0;
-  const comparePrice = primaryVariant?.comparePrice;
+  const price = product.price ?? primaryVariant?.price ?? 0;
+  const comparePrice = product.comparePrice ?? primaryVariant?.comparePrice;
   const discount = comparePrice ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
 
   return (

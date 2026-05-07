@@ -13,7 +13,7 @@
     "@ecom/api": "workspace:*",
     "@ecom/db": "workspace:*",
     "@ecom/shared": "workspace:*",
-    "@fastify/cookie": "^11.0.2",
+    "@fastify/cookie": "^9.4.0",
     "@fastify/cors": "^8.5.0",
     "@fastify/helmet": "^11.1.1",
     "@fastify/rate-limit": "^9.1.0",

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Urbanist } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const urbanist = Urbanist({
   subsets: ["latin"],
   display: 'swap',
 });
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
+    <html lang="en" className={urbanist.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
         <Providers>
           <Navbar />

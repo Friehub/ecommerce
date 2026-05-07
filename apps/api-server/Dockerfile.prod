@@ -33,4 +33,4 @@ USER apiuser
 EXPOSE 4000
 
 # No PM2, run directly to avoid env var caching
-CMD ["npx", "tsx", "apps/api-server/src/index.ts"]
+CMD ["pnpm", "exec", "tsx", "apps/api-server/src/index.ts"]

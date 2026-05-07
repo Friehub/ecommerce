@@ -24,4 +24,4 @@ COPY --from=builder /app/packages ./packages
 
 USER worker
 
-CMD ["npx", "tsx", "packages/api/scripts/run-workers.ts"]
+CMD ["pnpm", "exec", "tsx", "packages/api/scripts/run-workers.ts"]

@@ -28,4 +28,4 @@ WORKDIR /app/services/event-consumer
 
 USER consumer
 
-CMD ["npx", "tsx", "src/index.ts"]
+CMD ["pnpm", "exec", "tsx", "src/index.ts"]

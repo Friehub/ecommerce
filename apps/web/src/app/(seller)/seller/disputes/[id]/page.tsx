@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { api } from '../../../../../trpc/react';
+import { api } from '@/trpc/react';
 import { ArrowLeft, Send, Upload, ShieldAlert, MessageSquare, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';

@@ -15,12 +15,14 @@ model Category {
 }
 
 model Brand {
-  id         String    @id @default(cuid())
-  name       String
-  slug       String    @unique
-  logoUrl    String?
-  isVerified Boolean   @default(false)
-  products   Product[]
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  logoUrl     String?
+  bannerUrl   String?
+  description String?   @db.Text
+  isVerified  Boolean   @default(false)
+  products    Product[]
 }
 
 model Product {
@@ -34,6 +36,9 @@ model Product {
   status      ProductStatus @default(DRAFT)
   averageRating Decimal      @default(0) @db.Decimal(3, 2)
   reviewCount   Int          @default(0)
+  isGlobal      Boolean      @default(false)
+  isOfficial    Boolean      @default(false)
+  isExpress     Boolean      @default(false)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 

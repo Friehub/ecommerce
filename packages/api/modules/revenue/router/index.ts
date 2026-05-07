@@ -27,6 +27,28 @@ const _revenueRouter = createTRPCRouter({
     return await revenueService.getSellerStats(seller.id);
   }),
 
+  getPayoutAccount: sellerProcedure.query(async ({ ctx }) => {
+    const seller = await prisma.seller.findUnique({ 
+      where: { userId: ctx.session.user.id },
+      select: { bankCode: true, bankAccountNumber: true, bankAccountName: true }
+    });
+    if (!seller) throw new Error('NOT_A_SELLER');
+    return seller;
+  }),
+
+  updatePayoutAccount: sellerProcedure
+    .input(z.object({
+      bankCode: z.string(),
+      accountNumber: z.string(),
+      accountName: z.string()
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new Error('NOT_A_SELLER');
+      
+      return await revenueService.updatePayoutAccount(seller.id, input);
+    }),
+
   approvePayout: adminProcedure
     .input(z.object({ payoutId: z.string() }))
     .mutation(async ({ ctx, input }) => {

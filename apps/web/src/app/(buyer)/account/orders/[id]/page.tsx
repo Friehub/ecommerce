@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { api } from '../../../../../trpc/react';
+import { api } from '@/trpc/react';
 import { 
   ChevronLeft, 
   Package, 
@@ -18,8 +18,26 @@ import {
 import { format } from 'date-fns';
 
 export default function OrderDetailPage() {
+  const utils = api.useUtils();
   const { id } = useParams() as { id: string };
   const { data: order, isLoading } = api.order.get.useQuery({ orderId: id });
+
+  const initiateReturn = api.return.initiate.useMutation({
+    onSuccess: () => {
+      utils.order.get.invalidate({ orderId: id });
+      alert('Return request initiated successfully!');
+    }
+  });
+
+  const cancelOrder = api.order.cancel.useMutation({
+    onSuccess: () => {
+      utils.order.get.invalidate({ orderId: id });
+      alert('Order cancelled successfully!');
+    },
+    onError: (err) => {
+      alert(`Cancellation failed: ${err.message}`);
+    }
+  });
 
   if (isLoading) {
     return <div className="container py-20 text-center font-extrabold text-gray-500">Loading order details...</div>;
@@ -44,20 +62,35 @@ export default function OrderDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all p-6 md:p-8 shadow-md">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-100">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-100">
                 <div>
                   <h1 className="text-lg md:text-xl font-black text-gray-900 tracking-tight mb-1 leading-tight select-none uppercase">Order #{order.id.toUpperCase()}</h1>
                   <p className="text-xs md:text-sm font-medium text-gray-400">Placed on {format(new Date(order.createdAt), 'PPPP')}</p>
                 </div>
-                <span className={`px-3 py-1.5 rounded-xl text-xs font-extrabold uppercase tracking-tight border w-fit ${
-                  order.status === 'DELIVERED' || order.status === 'COMPLETED' 
-                    ? 'bg-green-50 text-green-700 border-green-100' 
-                    : order.status === 'CANCELLED'
-                    ? 'bg-red-50 text-red-700 border-red-100'
-                    : 'bg-orange-50 text-orange-700 border-orange-100'
-                }`}>
-                  {order.status.replace('_', ' ')}
-                </span>
+                <div className="flex items-center gap-3">
+                  {(order.status === 'PENDING' || order.status === 'PAID') && (
+                    <button 
+                      onClick={() => {
+                        if (confirm('Are you sure you want to cancel this order?')) {
+                          cancelOrder.mutate({ orderId: order.id });
+                        }
+                      }}
+                      disabled={cancelOrder.isLoading}
+                      className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-tight border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    >
+                      {cancelOrder.isLoading ? 'Cancelling...' : 'Cancel Order'}
+                    </button>
+                  )}
+                  <span className={`px-3 py-1.5 rounded-xl text-xs font-extrabold uppercase tracking-tight border w-fit ${
+                    order.status === 'DELIVERED' || order.status === 'COMPLETED' 
+                      ? 'bg-green-50 text-green-700 border-green-100' 
+                      : order.status === 'CANCELLED'
+                      ? 'bg-red-50 text-red-700 border-red-100'
+                      : 'bg-orange-50 text-orange-700 border-orange-100'
+                  }`}>
+                    {order.status.replace('_', ' ')}
+                  </span>
+                </div>
               </div>
 
               {/* Package List */}
@@ -108,7 +141,32 @@ export default function OrderDetailPage() {
                               />
                             </div>
                             <div className="flex-1 min-w-0 flex flex-col justify-between">
-                              <h5 className="text-xs md:text-sm font-extrabold text-gray-900 leading-tight line-clamp-2 hover:text-[#F68B1E] transition-colors cursor-pointer">{line.variant?.product?.title}</h5>
+                              <div className="flex justify-between items-start gap-2">
+                                <h5 className="text-xs md:text-sm font-extrabold text-gray-900 leading-tight line-clamp-2 hover:text-[#F68B1E] transition-colors cursor-pointer">{line.variant?.product?.title}</h5>
+                                {pkg.status === 'DELIVERED' && !line.isReturned && (
+                                  <div className="flex flex-col gap-1 shrink-0">
+                                    <button 
+                                      onClick={() => {
+                                        if (confirm('Initiate return for this item?')) {
+                                          initiateReturn.mutate({ orderLineId: line.id, reason: 'CUSTOMER_REQUEST' });
+                                        }
+                                      }}
+                                      className="text-[9px] font-black uppercase text-[#264996] hover:underline bg-blue-50 px-2 py-1 rounded"
+                                    >
+                                      Return
+                                    </button>
+                                    <Link 
+                                      href={`/account/reviews/new?productId=${line.variant?.product?.id}`}
+                                      className="text-[9px] font-black uppercase text-[#F68B1E] hover:underline bg-orange-50 px-2 py-1 rounded text-center"
+                                    >
+                                      Rate Item
+                                    </Link>
+                                  </div>
+                                )}
+                                {line.isReturned && (
+                                  <span className="text-[9px] font-black uppercase text-green-600 bg-green-50 px-2 py-1 rounded shrink-0">Returned</span>
+                                )}
+                              </div>
                               <div className="flex justify-between items-end mt-1">
                                 <p className="text-[11px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded w-fit border border-gray-100/50">Qty: {line.quantity}</p>
                                 <p className="text-sm font-black text-[#F68B1E]">₦{Number(line.unitPrice).toLocaleString()}</p>

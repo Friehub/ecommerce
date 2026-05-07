@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { api } from '../../../../trpc/react';
+import { api } from '@/trpc/react';
 import { ShoppingBag, ChevronRight, Package, Calendar, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 

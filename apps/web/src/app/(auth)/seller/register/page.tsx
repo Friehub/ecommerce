@@ -19,11 +19,11 @@ export default function SellerRegistrationKYCPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F9FA] flex flex-col justify-center items-center py-12 px-4 select-none">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden duration-300 transition-all hover:shadow-2xl">
+    <div className="min-h-[calc(100vh-160px)] flex flex-col justify-center items-center py-12 px-4 select-none bg-[#F8F9FA]">
+      <div className="w-full max-w-lg bg-white rounded-[24px] shadow-2xl shadow-black/5 border border-gray-100 overflow-hidden duration-300 transition-all hover:shadow-black/10">
         <div className="p-6 md:p-8">
           <div className="flex justify-center mb-6">
-            <div className="w-14 h-14 bg-orange-50 border border-orange-100 rounded-2xl flex items-center justify-center text-[#F68B1E]">
+            <div className="w-14 h-14 bg-orange-50 border border-orange-100 rounded-2xl flex items-center justify-center text-[#FF7A00]">
               <UserPlus size={32} />
             </div>
           </div>
@@ -47,7 +47,7 @@ export default function SellerRegistrationKYCPage() {
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
                   placeholder="Enterprise Ltd"
-                  className="w-full border border-gray-200 bg-gray-50/30 rounded-xl px-4 h-12 text-sm text-gray-900 font-medium focus:outline-none focus:border-[#F68B1E] focus:bg-white transition-all shadow-sm duration-200"
+                  className="w-full border border-gray-200 bg-gray-50/30 rounded-xl px-4 h-12 text-sm text-gray-900 font-medium focus:outline-none focus:border-[#FF7A00] focus:bg-white transition-all shadow-sm duration-200"
                 />
               </div>
 
@@ -61,7 +61,7 @@ export default function SellerRegistrationKYCPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="vendor@enterprise.dev"
-                  className="w-full border border-gray-200 bg-gray-50/30 rounded-xl px-4 h-12 text-sm text-gray-900 font-medium focus:outline-none focus:border-[#F68B1E] focus:bg-white transition-all shadow-sm duration-200"
+                  className="w-full border border-gray-200 bg-gray-50/30 rounded-xl px-4 h-12 text-sm text-gray-900 font-medium focus:outline-none focus:border-[#FF7A00] focus:bg-white transition-all shadow-sm duration-200"
                 />
               </div>
 
@@ -75,13 +75,13 @@ export default function SellerRegistrationKYCPage() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="080 1234 5678"
-                  className="w-full border border-gray-200 bg-gray-50/30 rounded-xl px-4 h-12 text-sm text-gray-900 font-medium focus:outline-none focus:border-[#F68B1E] focus:bg-white transition-all shadow-sm duration-200"
+                  className="w-full border border-gray-200 bg-gray-50/30 rounded-xl px-4 h-12 text-sm text-gray-900 font-medium focus:outline-none focus:border-[#FF7A00] focus:bg-white transition-all shadow-sm duration-200"
                 />
               </div>
 
               <button 
                 type="submit"
-                className="w-full h-12 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-xl font-extrabold text-xs uppercase tracking-wider hover:shadow-lg active:scale-95 duration-200 transition-all flex items-center justify-center gap-2 border border-transparent shadow-md mt-6 select-none cursor-pointer"
+                className="w-full h-12 bg-[#FF7A00] hover:bg-[#E66E00] text-white rounded-xl font-extrabold text-xs uppercase tracking-wider hover:shadow-lg active:scale-95 duration-200 transition-all flex items-center justify-center gap-2 border border-transparent shadow-md mt-6 select-none cursor-pointer"
               >
                 PROCEED TO KYC <ArrowRight size={16} />
               </button>
@@ -110,7 +110,7 @@ export default function SellerRegistrationKYCPage() {
                     </>
                   ) : (
                     <>
-                      <div className="w-10 h-10 bg-orange-50 border border-orange-100 text-[#F68B1E] rounded-xl flex items-center justify-center mb-2">
+                      <div className="w-10 h-10 bg-orange-50 border border-orange-100 text-[#FF7A00] rounded-xl flex items-center justify-center mb-2">
                         <Upload size={20} />
                       </div>
                       <span className="font-extrabold text-xs text-gray-800 tracking-tight block">Browse to upload file</span>
@@ -127,7 +127,7 @@ export default function SellerRegistrationKYCPage() {
 
               <Link 
                 href="/seller/dashboard"
-                className="w-full h-12 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-xl font-extrabold text-xs uppercase tracking-wider hover:shadow-lg active:scale-95 duration-200 transition-all flex items-center justify-center gap-2 border border-transparent shadow-md mt-6 select-none"
+                className="w-full h-12 bg-[#FF7A00] hover:bg-[#E66E00] text-white rounded-xl font-extrabold text-xs uppercase tracking-wider hover:shadow-lg active:scale-95 duration-200 transition-all flex items-center justify-center gap-2 border border-transparent shadow-md mt-6 select-none"
               >
                 FINALIZE ONBOARDING
               </Link>

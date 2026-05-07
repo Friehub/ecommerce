@@ -1,6 +1,6 @@
 'use client';
 
-import { api } from '../../../../trpc/react';
+import { api } from '@/trpc/react';
 import { 
   Wallet, 
   ArrowUpRight, 
@@ -15,6 +15,7 @@ export default function SellerFinance() {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const { data: stats, isLoading: statsLoading } = api.revenue.getMyStats.useQuery();
   const { data: payouts, isLoading: payoutsLoading } = api.revenue.listMyPayouts.useQuery();
+  const { data: account } = api.revenue.getPayoutAccount.useQuery();
   
   const utils = api.useUtils();
   const requestPayout = api.revenue.requestPayout.useMutation({
@@ -27,6 +28,13 @@ export default function SellerFinance() {
     onError: (err) => {
       alert(err.message || 'Failed to request payout');
       setIsWithdrawing(false);
+    }
+  });
+
+  const updateAccount = api.revenue.updatePayoutAccount.useMutation({
+    onSuccess: () => {
+      utils.revenue.getPayoutAccount.invalidate();
+      alert('Payout account updated successfully!');
     }
   });
 
@@ -151,6 +159,75 @@ export default function SellerFinance() {
               )}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* Payout Account Setup */}
+      <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all shadow-md overflow-hidden">
+        <div className="p-5 border-b border-gray-100 bg-gray-50/60">
+          <h3 className="text-xs font-extrabold text-gray-800 uppercase tracking-wide">Payout Account Settings</h3>
+        </div>
+        <div className="p-6">
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              updateAccount.mutate({
+                bankCode: formData.get('bankCode') as string,
+                accountNumber: formData.get('accountNumber') as string,
+                accountName: formData.get('accountName') as string,
+              });
+            }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
+            <div>
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Bank Name</label>
+              <select 
+                name="bankCode" 
+                defaultValue={account?.bankCode || ''}
+                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:outline-none focus:border-[#F68B1E] transition-all"
+                required
+              >
+                <option value="">Select Bank</option>
+                <option value="044">Access Bank</option>
+                <option value="058">GTBank</option>
+                <option value="011">First Bank</option>
+                <option value="033">United Bank for Africa</option>
+                <option value="057">Zenith Bank</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Account Number</label>
+              <input 
+                name="accountNumber" 
+                type="text" 
+                defaultValue={account?.bankAccountNumber || ''}
+                placeholder="0123456789"
+                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:outline-none focus:border-[#F68B1E] transition-all"
+                required 
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Account Name</label>
+              <input 
+                name="accountName" 
+                type="text" 
+                defaultValue={account?.bankAccountName || ''}
+                placeholder="Business Name Ltd"
+                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:outline-none focus:border-[#F68B1E] transition-all"
+                required 
+              />
+            </div>
+            <div className="md:col-span-3">
+              <button 
+                type="submit"
+                disabled={updateAccount.isLoading}
+                className="bg-gray-900 hover:bg-black text-white px-8 py-3 rounded-xl font-extrabold text-xs uppercase tracking-wide transition-all shadow-md hover:shadow-lg active:scale-95 duration-200 disabled:opacity-50"
+              >
+                {updateAccount.isLoading ? 'Saving...' : 'Save Account Settings'}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

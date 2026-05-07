@@ -30,7 +30,14 @@ export async function POST(req: Request) {
 
     if (event.event === 'charge.success') {
       const { reference } = event.data;
-      await paymentService.handleWebhook(reference, 'success');
+      await paymentService.handleWebhook(reference, 'success', event.event);
+    } else if (event.event === 'charge.failed') {
+      const { reference } = event.data;
+      await paymentService.handleWebhook(reference, 'failed', event.event);
+    } else if (event.event === 'transfer.success' || event.event === 'transfer.failed') {
+      const { transfer_code, reference } = event.data;
+      // reference for transfers should be our payout ID
+      await paymentService.handleWebhook(reference || transfer_code, 'success', event.event);
     }
 
     return NextResponse.json({ received: true });

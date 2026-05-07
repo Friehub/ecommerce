@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { api } from '../../../../trpc/react';
+import { api } from '@/trpc/react';
 import { Search, Filter, MoreVertical, ExternalLink, Package, Truck, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const tabs = [

@@ -110,6 +110,7 @@ model Payout {
   amount      Decimal  @db.Decimal(12, 2)
   status      String // e.g., "PENDING", "SUCCESS", "FAILED"
   bankRef     String?
+  processedAt DateTime?
   createdAt   DateTime @default(now())
 
   seller    Seller          @relation(fields: [sellerId], references: [id])

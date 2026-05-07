@@ -51,6 +51,23 @@ const _iamRouter = createTRPCRouter({
         });
       }
     }),
+
+  setupPayoutAccount: protectedProcedure
+    .input(z.object({
+      bankCode: z.string(),
+      bankAccountNumber: z.string(),
+      bankAccountName: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await sellerService.setupPayoutAccount(ctx.session.user.id, input);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error.message,
+        });
+      }
+    }),
 });
 
 export const iamRouter = _iamRouter as any;

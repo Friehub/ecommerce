@@ -1,123 +1,205 @@
 'use client';
 
-import { api } from '../../../../trpc/react';
 import { useState } from 'react';
-import { ArrowLeft, Send, Upload, ShieldAlert, User, Store } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { api } from '@/trpc/react';
+import { 
+  ChevronLeft, 
+  Send, 
+  User, 
+  Store, 
+  ShieldAlert, 
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  FileText
+} from 'lucide-react';
+import { format } from 'date-fns';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 
-export default function DisputeThread({ params }: { params: { id: string } }) {
-  const { data: session } = useSession();
-  const disputeId = params.id;
+export default function DisputeThreadPage() {
+  const { id } = useParams() as { id: string };
+  const utils = api.useUtils();
+  const [message, setMessage] = useState('');
+
+  const { data: dispute, isLoading } = api.dispute.getThread.useQuery({ disputeId: id });
   
-  const { data: dispute, isLoading, refetch } = api.dispute.getById.useQuery({ disputeId });
-  const respondMutation = api.dispute.respond.useMutation({
+  const sendMessage = api.dispute.respond.useMutation({
     onSuccess: () => {
       setMessage('');
-      refetch();
+      utils.dispute.getThread.invalidate({ disputeId: id });
     }
   });
 
-  const [message, setMessage] = useState('');
+  const escalate = api.dispute.escalate.useMutation({
+    onSuccess: () => {
+      utils.dispute.getThread.invalidate({ disputeId: id });
+      alert('Dispute escalated to support!');
+    }
+  });
 
   if (isLoading) {
-    return <div className="container py-12 text-center text-gray-500 uppercase tracking-widest text-xs font-bold">Loading Thread...</div>;
+    return <div className="container py-20 text-center font-bold text-gray-500 uppercase tracking-widest text-xs">Loading Thread...</div>;
   }
 
   if (!dispute) {
-    return <div className="container py-12 text-center text-red-500 font-bold">Dispute not found.</div>;
+    return (
+      <div className="container py-20 text-center">
+        <h2 className="text-xl font-bold mb-4">Dispute not found</h2>
+        <Link href="/disputes" className="text-[#F68B1E] font-bold hover:underline">Back to Dispute Center</Link>
+      </div>
+    );
   }
 
-  const isBuyer = session?.user?.id === dispute.buyerId;
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    sendMessage.mutate({ disputeId: id, content: message });
+  };
 
   return (
-    <div className="container py-8 max-w-4xl">
-      <Link href="/disputes" className="inline-flex items-center text-gray-500 hover:text-[#f68b1e] text-xs font-bold uppercase tracking-widest mb-6 transition-colors">
-        <ArrowLeft size={14} className="mr-1" /> Back to Disputes
-      </Link>
+    <div className="bg-[#F9F9FA] min-h-screen pb-20">
+      <div className="container py-12 max-w-4xl space-y-8">
+        <Link href="/disputes" className="flex items-center gap-1 text-gray-500 hover:text-[#F68B1E] transition-colors font-bold text-xs mb-4 select-none">
+          <ChevronLeft size={16} />
+          Back to Dispute Center
+        </Link>
 
-      <div className="bg-white rounded shadow-sm border border-gray-200 overflow-hidden mb-6">
-        <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <ShieldAlert className="text-red-500" size={20} />
-              <h1 className="text-xl font-bold text-gray-900 uppercase tracking-tight">Dispute Thread</h1>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
-                dispute.status === 'OPEN' ? 'bg-red-50 text-red-600 border-red-100' :
-                dispute.status === 'UNDER_REVIEW' ? 'bg-orange-50 text-orange-600 border-orange-100' :
-                'bg-green-50 text-green-600 border-green-100'
-              }`}>
-                {dispute.status.replace('_', ' ')}
-              </span>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Header / Info */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+               <div className="flex items-center justify-between mb-4">
+                 <span className={`px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                   dispute.status === 'OPEN' ? 'bg-red-50 text-red-600 border-red-100' :
+                   dispute.status === 'UNDER_REVIEW' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                   'bg-green-50 text-green-600 border-green-100'
+                 }`}>
+                   {dispute.status.replace('_', ' ')}
+                 </span>
+                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                   Order #{dispute.orderId.slice(-8).toUpperCase()}
+                 </span>
+               </div>
+               <h1 className="text-xl font-black text-gray-900 tracking-tight leading-tight mb-2 uppercase">{dispute.reason}</h1>
+               <div className="flex items-center gap-4 text-xs font-bold text-gray-500">
+                  <div className="flex items-center gap-1.5">
+                    <User size={14} className="text-[#F68B1E]" />
+                    {dispute.buyer.firstName} {dispute.buyer.lastName}
+                  </div>
+                  <div className="w-1 h-1 bg-gray-300 rounded-full" />
+                  <div className="flex items-center gap-1.5">
+                    <Store size={14} className="text-[#264996]" />
+                    {dispute.seller.businessName}
+                  </div>
+               </div>
             </div>
-            <p className="text-gray-900 font-medium">{dispute.reason}</p>
+
+            {/* Message Thread */}
+            <div className="space-y-4">
+               {dispute.messages.map((msg: any) => {
+                 const isMe = msg.senderId === dispute.buyerId;
+                 return (
+                   <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[80%] rounded-2xl p-4 shadow-sm border ${
+                        isMe 
+                          ? 'bg-[#282828] text-white border-transparent rounded-tr-none' 
+                          : 'bg-white text-gray-800 border-gray-100 rounded-tl-none'
+                      }`}>
+                        <p className="text-sm font-medium leading-relaxed">{msg.content}</p>
+                        <p className={`text-[9px] font-bold uppercase mt-2 tracking-widest ${isMe ? 'text-gray-400' : 'text-gray-400'}`}>
+                          {format(new Date(msg.createdAt), 'HH:mm • dd MMM')}
+                        </p>
+                      </div>
+                   </div>
+                 );
+               })}
+            </div>
+
+            {/* Reply Area */}
+            {dispute.status !== 'RESOLVED' && (
+              <form onSubmit={handleSend} className="bg-white rounded-2xl border border-gray-100 shadow-md p-4 flex gap-3 items-end">
+                <textarea 
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Type your message to the seller..."
+                  rows={2}
+                  className="flex-1 bg-gray-50 border border-transparent focus:border-[#F68B1E] focus:bg-white rounded-xl p-3 text-sm font-medium transition-all outline-none resize-none"
+                />
+                <button 
+                  type="submit"
+                  disabled={sendMessage.isLoading || !message.trim()}
+                  className="bg-[#F68B1E] hover:bg-[#e07a1a] text-white p-3 rounded-xl shadow-lg shadow-orange-100 transition-all active:scale-95 disabled:opacity-50 flex-shrink-0"
+                >
+                  <Send size={20} />
+                </button>
+              </form>
+            )}
           </div>
-          <div className="text-right">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Order Reference</p>
-            <p className="text-sm font-bold text-gray-900">#{dispute.orderId.slice(-8).toUpperCase()}</p>
+
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 select-none">
+               <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                 <AlertCircle size={16} className="text-[#F68B1E]" /> Dispute Actions
+               </h3>
+               
+               {dispute.status === 'OPEN' && (
+                 <div className="space-y-4">
+                    <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl">
+                      <p className="text-[10px] font-bold text-gray-600 leading-relaxed uppercase tracking-tight">
+                        Has the seller stopped responding? You can escalate this to support for manual intervention.
+                      </p>
+                      <button 
+                        onClick={() => escalate.mutate({ disputeId: id })}
+                        disabled={escalate.isLoading}
+                        className="mt-3 w-full bg-[#282828] text-white py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
+                      >
+                        Escalate to Support
+                      </button>
+                    </div>
+                 </div>
+               )}
+
+               {dispute.status === 'ESCALATED' && (
+                 <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-3">
+                    <Clock size={18} className="text-[#264996] shrink-0" />
+                    <div>
+                      <p className="text-[10px] font-black text-[#264996] uppercase tracking-tight">Under Support Review</p>
+                      <p className="text-[10px] font-medium text-gray-600 mt-1">An agent is reviewing the logs and evidence.</p>
+                    </div>
+                 </div>
+               )}
+
+               {dispute.status === 'RESOLVED' && (
+                 <div className="p-4 bg-green-50 border border-green-100 rounded-xl flex gap-3">
+                    <CheckCircle size={18} className="text-green-600 shrink-0" />
+                    <div>
+                      <p className="text-[10px] font-black text-green-700 uppercase tracking-tight">Case Resolved</p>
+                      <p className="text-[10px] font-medium text-gray-600 mt-1">This dispute has been closed.</p>
+                    </div>
+                 </div>
+               )}
+            </div>
+
+            <div className="bg-[#282828] rounded-2xl p-6 text-white select-none">
+               <h3 className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2 opacity-80">
+                 <FileText size={16} /> Buyer Protection
+               </h3>
+               <p className="text-[11px] font-medium opacity-70 leading-relaxed">
+                 You are protected by the Jumia Guarantee. If the item is not as described or never arrived, you will get a full refund.
+               </p>
+            </div>
           </div>
         </div>
-
-        <div className="p-6 bg-white min-h-[300px] flex flex-col gap-6">
-          {dispute.messages.map((msg) => {
-            const isMe = msg.senderId === session?.user?.id;
-            const isModerator = msg.senderId !== dispute.buyerId && msg.senderId !== dispute.sellerId;
-            
-            return (
-              <div key={msg.id} className={`flex flex-col max-w-[80%] ${isMe ? 'self-end items-end' : 'self-start items-start'}`}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    {isModerator ? 'Admin Moderator' : msg.senderId === dispute.buyerId ? 'Buyer' : 'Seller'}
-                  </span>
-                  <span className="text-gray-300 text-[10px]">•</span>
-                  <span className="text-gray-400 text-[10px]">{new Date(msg.createdAt).toLocaleString()}</span>
-                </div>
-                <div className={`p-4 rounded-lg text-sm ${
-                  isModerator ? 'bg-blue-50 border border-blue-100 text-blue-900' :
-                  isMe ? 'bg-[#282828] text-white rounded-br-none' : 'bg-gray-100 text-gray-900 rounded-bl-none'
-                }`}>
-                  {msg.content}
-                </div>
-              </div>
-            );
-          })}
-          {dispute.messages.length === 0 && (
-            <div className="text-center text-gray-400 text-xs font-bold uppercase tracking-widest my-auto py-12">
-              No messages yet. Start the conversation.
-            </div>
-          )}
-        </div>
-
-        {dispute.status !== 'RESOLVED' && (
-          <div className="p-4 border-t border-gray-100 bg-gray-50 flex gap-2">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your response..."
-              className="flex-1 px-4 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#f68b1e]"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && message.trim()) {
-                  respondMutation.mutate({ disputeId, content: message });
-                }
-              }}
-            />
-            <button 
-              className="bg-gray-200 text-gray-600 px-4 py-2 rounded hover:bg-gray-300 transition-colors flex items-center justify-center"
-              title="Upload Evidence"
-            >
-              <Upload size={18} />
-            </button>
-            <button 
-              onClick={() => message.trim() && respondMutation.mutate({ disputeId, content: message })}
-              disabled={respondMutation.isLoading || !message.trim()}
-              className="bg-[#f68b1e] text-white px-6 py-2 rounded font-bold text-xs uppercase tracking-widest hover:bg-[#e07a1a] transition-colors disabled:opacity-50 flex items-center gap-2"
-            >
-              Send <Send size={14} />
-            </button>
-          </div>
-        )}
       </div>
+
+      <style jsx>{`
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 16px;
+        }
+      `}</style>
     </div>
   );
 }

@@ -70,6 +70,12 @@ const _orderRouter = createTRPCRouter({
 
       return await packageService.updateStatus(input.packageId, input.status, input.trackingNumber);
     }),
+
+  cancel: protectedProcedure
+    .input(z.object({ orderId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await orderService.cancelOrder(input.orderId, ctx.session.user.id);
+    }),
 });
 
 export const orderRouter = _orderRouter as any;

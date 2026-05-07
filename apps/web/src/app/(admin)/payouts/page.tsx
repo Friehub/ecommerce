@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { api } from '../../../trpc/react';
+import { api } from '@/trpc/react';
 import { Banknote, CheckCircle, Clock, AlertTriangle, ExternalLink, Search } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -75,10 +75,12 @@ export default function AdminPayoutsPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase ${
-                      payout.status === 'SUCCESS' 
+                      payout.status === 'SUCCESS' || payout.status === 'COMPLETED'
                         ? 'bg-green-100 text-green-700' 
                         : payout.status === 'FAILED'
                         ? 'bg-red-100 text-red-700'
+                        : payout.status === 'PROCESSING'
+                        ? 'bg-blue-100 text-blue-700'
                         : 'bg-orange-100 text-orange-700'
                     }`}>
                       {payout.status}

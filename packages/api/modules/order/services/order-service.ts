@@ -246,5 +246,14 @@ export const orderService: Service = {
       take: limit,
       skip: offset,
     });
+  },
+
+  async cancelOrder(orderId: string, userId: string) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId, userId }
+    });
+    if (!order) throw new Error('ORDER_NOT_FOUND');
+    
+    return await this.updateStatus(orderId, 'CANCELLED');
   }
 };

@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import cookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import { fastifyTRPCPlugin, FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
@@ -68,6 +69,8 @@ async function start() {
     origin: allowedOrigins,
     credentials: true,
   });
+
+  await server.register(cookie);
 
   await server.register(rateLimit, {
     max: 100,

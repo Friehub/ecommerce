@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { api } from '../../trpc/react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface ProductActionsProps {
   product: any;
@@ -12,6 +14,8 @@ interface ProductActionsProps {
 export const ProductActions = ({ product }: ProductActionsProps) => {
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
   const [quantity, setQuantity] = useState(1);
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const price = selectedVariant?.price || 0;
   const comparePrice = selectedVariant?.comparePrice;
@@ -22,6 +26,7 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
   const utils = api.useUtils();
   const { data: wishlist } = api.catalog.getWishlist.useQuery(undefined, {
     retry: false,
+    enabled: !!session,
   });
 
   const addToWishlist = api.catalog.addToWishlist.useMutation({
@@ -39,6 +44,11 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
   const isInWishlist = wishlist?.items?.some((item: any) => item.variantId === selectedVariant.id);
 
   const handleWishlistToggle = async () => {
+    if (!session) {
+      router.push(`/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
     if (isInWishlist) {
       await removeFromWishlist.mutateAsync({ variantId: selectedVariant.id });
     } else {

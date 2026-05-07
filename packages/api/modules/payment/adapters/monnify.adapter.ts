@@ -114,4 +114,15 @@ export class MonnifyAdapter implements PaymentAdapter {
       status: 'success',
     };
   }
+
+  async createTransferRecipient(params: {
+    accountName: string;
+    accountNumber: string;
+    bankCode: string;
+    currency: string;
+  }): Promise<{ recipientCode: string }> {
+    return {
+      recipientCode: `MNF-REC-${params.accountNumber}`
+    };
+  }
 }

@@ -1,115 +1,131 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-
-const banners = [
-  {
-    id: 1,
-    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1600&auto=format&fit=crop',
-    title: 'New Smart Phones',
-    subtitle: 'Elevate your experience with up to 30% OFF',
-    accentColor: '#F68B1E'
-  },
-  {
-    id: 2,
-    image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=1600&auto=format&fit=crop',
-    title: 'Computing Deals',
-    subtitle: 'High performance laptops & desktops',
-    accentColor: '#2196F3'
-  },
-  {
-    id: 3,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop',
-    title: 'Fashion Trends',
-    subtitle: 'Premium styles for everyone this season',
-    accentColor: '#E91E63'
-  }
-];
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { api } from '../../trpc/react';
+import Link from 'next/link';
 
 export const HeroCarousel = () => {
+  const { data: bannersData, isLoading } = api.content.getHeroBanners.useQuery();
   const [current, setCurrent] = useState(0);
+
+  // Default fallback banners if none are in DB
+  const defaultBanners = [
+    {
+      id: '1',
+      title: 'Digital Horizon',
+      subtitle: 'The latest in computing and mobile tech.',
+      imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1600',
+      link: '/category/computing',
+      accentColor: '#FF7A00'
+    },
+    {
+      id: '2',
+      title: 'Vogue Essentials',
+      subtitle: 'Premium styles curated for the modern era.',
+      imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600',
+      link: '/category/fashion',
+      accentColor: '#2196F3'
+    }
+  ];
+
+  const banners = bannersData || defaultBanners;
 
   const next = () => setCurrent((prev) => (prev + 1) % banners.length);
   const prev = () => setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
 
   useEffect(() => {
-    const timer = setInterval(next, 6000);
-    return () => clearInterval(timer);
-  }, []);
+    if (banners.length > 1) {
+      const timer = setInterval(next, 8000);
+      return () => clearInterval(timer);
+    }
+  }, [banners.length]);
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 h-[320px] md:h-[480px] bg-gray-50 rounded-2xl animate-pulse flex items-center justify-center text-gray-200">
+        <div className="text-[10px] font-black uppercase tracking-[0.3em]">Calibrating Showcase...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative flex-1 h-[480px] bg-white rounded-xl shadow-lg overflow-hidden group border border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all duration-300">
+    <div className="relative flex-1 h-[320px] md:h-[480px] bg-white rounded-2xl shadow-2xl shadow-black/5 overflow-hidden group border border-gray-100 select-none">
       {/* Slides */}
       <div 
-        className="flex h-full transition-transform duration-700 ease-out"
+        className="flex h-full transition-transform duration-[1000ms] cubic-bezier(0.4, 0, 0.2, 1)"
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
-        {banners.map((banner) => (
-          <div key={banner.id} className="relative w-full h-full flex-shrink-0 select-none">
+        {banners.map((banner: any, i) => (
+          <div key={banner.id} className="relative w-full h-full flex-shrink-0">
             <img 
-              src={banner.image} 
+              src={banner.imageUrl} 
               alt={banner.title}
-              className="w-full h-full object-cover select-none pointer-events-none scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2000ms] ease-out"
             />
-            {/* Enhanced visual gradient for readable text */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent flex flex-col justify-center px-12 md:px-16">
-              <span className="text-xs tracking-widest font-extrabold uppercase py-1 px-3 bg-white/10 backdrop-blur-md rounded border border-white/20 w-fit text-white mb-4 animate-fadeIn">
-                Exclusive Deal
-              </span>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-2 leading-tight tracking-tight drop-shadow-md max-w-lg">
-                {banner.title}
-              </h2>
-              <p className="text-lg md:text-xl font-medium mb-6 drop-shadow" style={{ color: banner.accentColor }}>
-                {banner.subtitle}
-              </p>
-              <button 
-                className="bg-primary-container hover:bg-orange-600 text-white font-extrabold px-8 py-4 rounded-lg text-sm w-fit transition-all hover:scale-105 hover:shadow-lg active:scale-95 duration-200 border border-white/10 tracking-wide uppercase select-none flex items-center gap-2"
-                style={{ backgroundColor: '#f68b1e' }}
-              >
-                Shop Now
-              </button>
+            
+            {/* Modern Content Panel */}
+            <div className="absolute inset-y-0 left-0 w-full md:w-[500px] bg-gradient-to-r from-black/60 to-transparent flex flex-col justify-center px-12 md:px-16 z-20">
+              <div className={`transition-all duration-700 delay-300 ${i === current ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                <div className="inline-flex items-center gap-2 mb-6">
+                  <div className="w-8 h-1 bg-white/40 rounded-full" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/80">Premium Pick</span>
+                </div>
+                
+                <h2 className="text-4xl md:text-6xl font-black text-white mb-4 leading-[0.9] tracking-tighter uppercase drop-shadow-2xl">
+                  {banner.title.split(' ').map((word: string, idx: number) => (
+                    <span key={idx} className={idx === 1 ? 'text-[#FF7A00]' : ''}>{word}<br/></span>
+                  ))}
+                </h2>
+                
+                <p className="text-sm md:text-base font-medium text-white/70 max-w-sm mb-10 leading-relaxed border-l-2 border-white/20 pl-4">
+                  {banner.subtitle || 'Experience the future of commerce with our exclusive partner collections.'}
+                </p>
+                
+                <Link 
+                  href={banner.link || '#'}
+                  className="inline-flex items-center gap-3 bg-[#FF7A00] text-white px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-[#1A1A1A] transition-all transform active:scale-95 shadow-2xl shadow-orange-500/20 group/btn"
+                >
+                  Explore Collection
+                  <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+                </Link>
+              </div>
             </div>
+
+            {/* Background Accent Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
           </div>
         ))}
       </div>
 
-      {/* Premium Controls */}
-      <button 
-        onClick={prev}
-        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-105 transition-all backdrop-blur-sm border border-white/10 cursor-pointer shadow-md"
-      >
-        <ChevronLeft size={24} />
-      </button>
-      <button 
-        onClick={next}
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-105 transition-all backdrop-blur-sm border border-white/10 cursor-pointer shadow-md"
-      >
-        <ChevronRight size={24} />
-      </button>
+      {/* Navigation Controls */}
+      <div className="absolute bottom-10 right-12 flex items-center gap-4 z-30">
+        <button 
+          onClick={prev}
+          className="w-12 h-12 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl text-white flex items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        
+        <div className="flex gap-2">
+          {banners.map((_, i) => (
+            <button 
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`h-1 rounded-full transition-all duration-500 ${i === current ? 'w-8 bg-[#FF7A00]' : 'w-2 bg-white/20 hover:bg-white/40'}`}
+            />
+          ))}
+        </div>
 
-      {/* Visual Indicator Dots with glowing effect */}
-      <div className="absolute bottom-6 left-12 flex gap-3 z-10 select-none">
-        {banners.map((banner, i) => (
-          <button 
-            key={banner.id}
-            onClick={() => setCurrent(i)}
-            className={`h-2.5 rounded-full transition-all duration-300 ${i === current ? 'w-8 bg-[#F68B1E] shadow-lg shadow-orange-500/50' : 'w-2.5 bg-white/40 hover:bg-white/60'}`}
-            style={i === current ? { backgroundColor: banner.accentColor } : {}}
-          />
-        ))}
+        <button 
+          onClick={next}
+          className="w-12 h-12 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl text-white flex items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90"
+        >
+          <ChevronRight size={20} />
+        </button>
       </div>
 
       <style jsx>{`
-        .bg-primary-container {
-          background-color: #f68b1e;
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.8s ease-in-out;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+        .cubic-bezier {
+          transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         }
       `}</style>
     </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { api } from '../../../trpc/react';
+import { api } from '@/trpc/react';
 import { Truck, Package, MapPin, Camera, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 

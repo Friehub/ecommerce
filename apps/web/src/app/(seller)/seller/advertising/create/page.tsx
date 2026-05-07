@@ -1,6 +1,6 @@
 'use client';
 
-import { api } from '../../../../../trpc/react';
+import { api } from '@/trpc/react';
 import { useState } from 'react';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import Link from 'next/link';

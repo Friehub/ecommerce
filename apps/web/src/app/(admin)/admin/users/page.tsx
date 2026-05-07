@@ -1,24 +1,31 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Users, Shield, UserPlus, Search, Edit2, ShieldAlert, CheckCircle } from 'lucide-react';
+import { api } from '@/trpc/react';
+import { Users, Shield, UserPlus, Search, Edit2, ShieldAlert, CheckCircle, Loader2 } from 'lucide-react';
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState([
-    { id: '1', firstName: 'Admin', lastName: 'Staff', email: 'admin@ecom.dev', role: 'ADMIN', status: 'ACTIVE' },
-    { id: '2', firstName: 'Customer', lastName: 'Care', email: 'care@ecom.dev', role: 'STAFF', status: 'ACTIVE' },
-    { id: '3', firstName: 'Reviewer', lastName: 'Agent', email: 'reviewer@ecom.dev', role: 'AGENT', status: 'ACTIVE' },
-    { id: '4', firstName: 'Support', lastName: 'Supervisor', email: 'support@ecom.dev', role: 'STAFF', status: 'SUSPENDED' },
-  ]);
+  const utils = api.useUtils();
+  const { data: users, isLoading } = api.admin.listAllUsers.useQuery();
 
-  const toggleUserStatus = (id: string) => {
-    setUsers(users.map(u => {
-      if (u.id === id) {
-        return { ...u, status: u.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE' };
-      }
-      return u;
-    }));
+  const updateStatusMutation = api.admin.updateUserStatus.useMutation({
+    onSuccess: () => {
+      utils.admin.listAllUsers.invalidate();
+    }
+  });
+
+  const toggleUserStatus = (userId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+    updateStatusMutation.mutate({ userId, status: newStatus as any });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <Loader2 className="animate-spin text-[#F68B1E]" size={40} />
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Loading User Registry...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 select-none bg-[#F9F9FA] min-h-screen">
@@ -65,7 +72,7 @@ export default function AdminUsersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100/60">
-              {users.map((user) => (
+              {users?.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50/40 duration-200 transition-all select-none">
                   <td className="px-6 py-4">
                     <div className="font-extrabold text-xs md:text-sm text-gray-900 leading-tight tracking-tight">
@@ -79,6 +86,7 @@ export default function AdminUsersPage() {
                     <span className={`text-[10px] px-2.5 py-1 rounded-xl font-extrabold border uppercase tracking-wider ${
                       user.role === 'ADMIN' ? 'bg-purple-50 text-purple-600 border-purple-100' :
                       user.role === 'STAFF' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                      user.role === 'SELLER' ? 'bg-orange-50 text-orange-600 border-orange-100' :
                       'bg-teal-50 text-teal-600 border-teal-100'
                     }`}>
                       {user.role}
@@ -96,8 +104,9 @@ export default function AdminUsersPage() {
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button 
-                        onClick={() => toggleUserStatus(user.id)}
-                        className={`p-2 rounded-xl border duration-200 transition-all cursor-pointer ${
+                        onClick={() => toggleUserStatus(user.id, user.status)}
+                        disabled={updateStatusMutation.isLoading}
+                        className={`p-2 rounded-xl border duration-200 transition-all cursor-pointer disabled:opacity-50 ${
                           user.status === 'ACTIVE' 
                             ? 'text-red-600 bg-red-50 hover:bg-red-100/60 border-red-100/60' 
                             : 'text-green-600 bg-green-50 hover:bg-green-100/60 border-green-100/60'

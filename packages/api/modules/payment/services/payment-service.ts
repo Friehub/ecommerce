@@ -137,7 +137,32 @@ export const paymentService: Service = {
     return hash === signature;
   },
 
-  async handleWebhook(reference: string, status: string) {
+  async handleWebhook(reference: string, status: string, eventType?: string) {
+    // Handle Payout Transfers
+    if (eventType === 'transfer.success' || eventType === 'transfer.failed') {
+      const payout = await prisma.payout.findFirst({
+        where: { id: reference } // We use payout ID as reference for transfers
+      });
+
+      if (!payout) return;
+
+      await prisma.payout.update({
+        where: { id: payout.id },
+        data: { 
+          status: eventType === 'transfer.success' ? 'COMPLETED' : 'FAILED',
+          processedAt: new Date()
+        }
+      });
+
+      if (eventType === 'transfer.success') {
+        await publishEvent('payout.completed', { payoutId: payout.id });
+      } else {
+        await publishEvent('payout.failed', { payoutId: payout.id });
+      }
+      return;
+    }
+
+    // Handle Charge Events (Payments)
     const payment = await prisma.payment.findFirst({
       where: { providerRef: reference }
     });
@@ -170,6 +195,7 @@ export const paymentService: Service = {
         where: { id: payment.id },
         data: { status: 'FAILED' }
       });
+      // Optionally notify order service that payment failed
     }
   },
 
@@ -237,6 +263,51 @@ export const paymentService: Service = {
           status: 'SUCCESS'
         }
       });
+    });
+  },
+
+  async setupPayoutAccount(sellerId: string, params: { bankCode: string, accountNumber: string, accountName: string }) {
+    const adapter = getPaymentAdapter('paystack');
+    const { recipientCode } = await adapter.createTransferRecipient({
+      ...params,
+      currency: 'NGN'
+    });
+
+    return await prisma.seller.update({
+      where: { id: sellerId },
+      data: {
+        bankCode: params.bankCode,
+        bankAccountNumber: params.accountNumber,
+        bankAccountName: params.accountName,
+        transferRecipientCode: recipientCode
+      }
+    });
+  },
+
+  async initiatePayout(payoutId: string) {
+    const payout = await prisma.payout.findUnique({
+      where: { id: payoutId },
+      include: { seller: true }
+    });
+
+    if (!payout || !payout.seller.transferRecipientCode) {
+      throw new Error('PAYOUT_OR_RECIPIENT_NOT_FOUND');
+    }
+
+    const adapter = getPaymentAdapter('paystack');
+    const result = await adapter.initiatePayout({
+      recipientCode: payout.seller.transferRecipientCode,
+      amountInSubunit: payout.amount.mul(100).toNumber(),
+      reason: `Payout for ${payout.seller.businessName}`,
+      reference: payout.id // Use payout ID as our reference
+    });
+
+    return await prisma.payout.update({
+      where: { id: payoutId },
+      data: {
+        status: 'PROCESSING', // Move to PROCESSING until webhook confirms
+        bankRef: result.transferRef
+      }
     });
   }
 };

@@ -13,7 +13,10 @@ import {
   Gamepad2, 
   Dumbbell, 
   Car,
-  MoreHorizontal
+  MoreHorizontal,
+  ShieldCheck,
+  Globe,
+  TrendingUp
 } from 'lucide-react';
 import { api } from '../../trpc/react';
 
@@ -63,6 +66,30 @@ export const CategorySidebar = () => {
             </Link>
           );
         })}
+
+        <div className="border-t border-gray-100 mt-2 pt-2">
+          <Link 
+            href="/official-stores"
+            className="flex items-center gap-3 px-5 py-2.5 text-sm font-bold text-gray-700 hover:text-[#48A44C] hover:bg-green-50/40 transition-all duration-200 relative group"
+          >
+            <ShieldCheck size={18} className="text-[#48A44C]" />
+            <span>Official Stores</span>
+          </Link>
+          <Link 
+            href="/jumia-global"
+            className="flex items-center gap-3 px-5 py-2.5 text-sm font-bold text-gray-700 hover:text-[#2196F3] hover:bg-blue-50/40 transition-all duration-200 relative group"
+          >
+            <Globe size={18} className="text-[#2196F3]" />
+            <span>Jumia Global</span>
+          </Link>
+          <Link 
+            href="/best-sellers"
+            className="flex items-center gap-3 px-5 py-2.5 text-sm font-bold text-gray-700 hover:text-[#F68B1E] hover:bg-orange-50/40 transition-all duration-200 relative group"
+          >
+            <TrendingUp size={18} className="text-[#F68B1E]" />
+            <span>Best Sellers</span>
+          </Link>
+        </div>
       </nav>
     </aside>
   );

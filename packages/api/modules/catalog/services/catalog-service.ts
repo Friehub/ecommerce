@@ -277,6 +277,9 @@ export const catalogService: Service = {
         status: 'ACTIVE',
         categoryId: filters.categoryId,
         brandId: filters.brandId,
+        isGlobal: (filters as any).isGlobal,
+        isOfficial: (filters as any).isOfficial,
+        isExpress: (filters as any).isExpress,
       },
       price: {
         gte: filters.minPrice,

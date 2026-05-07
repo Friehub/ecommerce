@@ -90,5 +90,13 @@ export const reviewService: Service = {
       select: { averageRating: true, reviewCount: true }
     });
     return product || { averageRating: 0, reviewCount: 0 };
+  },
+
+  async getUserReviews(userId: string) {
+    return prisma.review.findMany({
+      where: { userId },
+      include: { product: true },
+      orderBy: { createdAt: 'desc' }
+    });
   }
 };

@@ -20,6 +20,14 @@ const _adminRouter = createTRPCRouter({
       });
     }),
 
+  listAllUsers: adminProcedure
+    .query(async () => {
+      return prisma.user.findMany({
+        select: { id: true, email: true, firstName: true, lastName: true, role: true, isActive: true },
+        orderBy: { createdAt: 'desc' }
+      });
+    }),
+
   updateSellerStatus: adminProcedure
     .input(z.object({
       sellerId: z.string(),
@@ -29,6 +37,18 @@ const _adminRouter = createTRPCRouter({
       return prisma.seller.update({
         where: { id: input.sellerId },
         data: { status: input.status }
+      });
+    }),
+
+  updateUserStatus: adminProcedure
+    .input(z.object({
+      userId: z.string(),
+      status: z.enum(['ACTIVE', 'SUSPENDED'])
+    }))
+    .mutation(async ({ input }) => {
+      return prisma.user.update({
+        where: { id: input.userId },
+        data: { isActive: input.status === 'ACTIVE' }
       });
     }),
 
@@ -60,7 +80,10 @@ const _adminRouter = createTRPCRouter({
     .query(async () => {
       return prisma.seller.findMany({
         where: { status: 'PENDING_VERIFICATION' },
-        include: { user: { select: { email: true, firstName: true, lastName: true } } },
+        include: { 
+          user: { select: { email: true, firstName: true, lastName: true } },
+          documents: true
+        },
         orderBy: { createdAt: 'asc' }
       });
     }),

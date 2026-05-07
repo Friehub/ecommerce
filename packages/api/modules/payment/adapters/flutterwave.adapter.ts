@@ -135,4 +135,16 @@ export class FlutterwaveAdapter implements PaymentAdapter {
       status: 'pending',
     };
   }
+
+  async createTransferRecipient(params: {
+    accountName: string;
+    accountNumber: string;
+    bankCode: string;
+    currency: string;
+  }): Promise<{ recipientCode: string }> {
+    // For Flutterwave, we might just store the combo as the recipient code
+    return {
+      recipientCode: `${params.bankCode}:${params.accountNumber}`
+    };
+  }
 }

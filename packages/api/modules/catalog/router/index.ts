@@ -41,6 +41,9 @@ const _catalogRouter = createTRPCRouter({
       minPrice: z.number().optional(),
       maxPrice: z.number().optional(),
       sortBy: z.string().optional(),
+      isGlobal: z.boolean().optional(),
+      isOfficial: z.boolean().optional(),
+      isExpress: z.boolean().optional(),
       limit: z.number().optional(),
       offset: z.number().optional(),
     }))

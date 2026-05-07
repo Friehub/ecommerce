@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { api } from '../../../trpc/react';
+import { api } from '@/trpc/react';
 import { AlertCircle, ChevronRight, MessageSquare, Clock, CheckCircle2, XCircle, ShieldAlert } from 'lucide-react';
 import { format } from 'date-fns';
 

@@ -58,7 +58,7 @@ export const LoginForm = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-12 pl-11 pr-4 border border-gray-200 focus:border-[#F68B1E] focus:ring-1 focus:ring-orange-200/50 rounded-xl outline-none font-medium text-gray-800 bg-gray-50/20 focus:bg-white transition-all duration-200"
+              className="w-full h-12 pl-11 pr-4 border border-gray-200 focus:border-[#FF7A00] focus:ring-1 focus:ring-orange-200/50 rounded-xl outline-none font-medium text-gray-800 bg-gray-50/20 focus:bg-white transition-all duration-200"
               placeholder="example@mail.com"
               required
             />
@@ -73,7 +73,7 @@ export const LoginForm = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-12 pl-11 pr-4 border border-gray-200 focus:border-[#F68B1E] focus:ring-1 focus:ring-orange-200/50 rounded-xl outline-none font-medium text-gray-800 bg-gray-50/20 focus:bg-white transition-all duration-200"
+              className="w-full h-12 pl-11 pr-4 border border-gray-200 focus:border-[#FF7A00] focus:ring-1 focus:ring-orange-200/50 rounded-xl outline-none font-medium text-gray-800 bg-gray-50/20 focus:bg-white transition-all duration-200"
               placeholder="••••••••"
               required
             />
@@ -83,7 +83,7 @@ export const LoginForm = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-12 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-xl font-extrabold uppercase tracking-wide hover:shadow-lg hover:scale-[1.02] active:scale-95 duration-200 transition-all flex items-center justify-center gap-2 cursor-pointer border border-transparent shadow-md disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+          className="w-full h-12 bg-[#FF7A00] hover:bg-[#E66E00] text-white rounded-xl font-extrabold uppercase tracking-wide hover:shadow-lg hover:scale-[1.02] active:scale-95 duration-200 transition-all flex items-center justify-center gap-2 cursor-pointer border border-transparent shadow-md disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
         >
           {loading ? <Loader2 className="animate-spin" size={20} /> : 'Login'}
         </button>
@@ -91,7 +91,7 @@ export const LoginForm = () => {
 
       <div className="mt-6 text-center text-sm font-medium">
         <span className="text-gray-400">Don&apos;t have an account? </span>
-        <Link href="/register" className="text-[#F68B1E] font-black hover:underline tracking-tight">Register</Link>
+        <Link href="/register" className="text-[#FF7A00] font-black hover:underline tracking-tight">Register</Link>
       </div>
     </div>
   );

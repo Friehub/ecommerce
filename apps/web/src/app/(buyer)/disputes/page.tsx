@@ -1,6 +1,6 @@
 'use client';
 
-import { api } from '../../../trpc/react';
+import { api } from '@/trpc/react';
 import Link from 'next/link';
 import { AlertTriangle, Clock, CheckCircle, ArrowRight } from 'lucide-react';
 

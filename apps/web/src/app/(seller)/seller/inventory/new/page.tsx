@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '../../../../../trpc/react';
+import { api } from '@/trpc/react';
 import { 
   ArrowLeft, 
   Plus, 

@@ -63,7 +63,12 @@ export const logisticsService: Service = {
 
     // B11: Authoritative sync via packageService
     const { packageService } = await import('../../order/services/package-service.js');
-    await packageService.updateStatus(shipment.packageId, status as any);
+    
+    // Map ShipmentStatus to PackageStatus (handle mismatches like 'FAILED')
+    let packageStatus = status;
+    if (status === 'FAILED') packageStatus = 'CANCELLED';
+    
+    await packageService.updateStatus(shipment.packageId, packageStatus as any);
 
     await publishEvent('shipment.status_updated', { shipmentId, status });
     

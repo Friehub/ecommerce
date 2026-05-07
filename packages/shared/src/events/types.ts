@@ -33,6 +33,8 @@ export type EventType =
   | 'seller.approved'
   | 'seller.document_rejected'
   | 'payout.triggered'
+  | 'payout.completed'
+  | 'payout.failed'
   | 'dispute.escalated';
 
 export interface BaseEvent<T = any> {

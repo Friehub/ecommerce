@@ -67,4 +67,11 @@ export interface PaymentAdapter {
   initiateRefund(params: RefundParams): Promise<RefundResult>;
 
   initiatePayout(params: PayoutParams): Promise<PayoutResult>;
+
+  createTransferRecipient(params: {
+    accountName: string;
+    accountNumber: string;
+    bankCode: string;
+    currency: string;
+  }): Promise<{ recipientCode: string }>;
 }

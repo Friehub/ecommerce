@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { api } from '../../../trpc/react';
+import { api } from '@/trpc/react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useCart } from '../../../context/CartContext';
@@ -112,7 +112,7 @@ export default function CheckoutPage() {
     });
   };
 
-  const subtotal = cart?.items.reduce((acc, item) => acc + (item.price * item.quantity), 0) || 0;
+  const subtotal = cart?.items.reduce((acc, item) => acc + (Number(item.priceSnapshot ?? 0) * item.quantity), 0) || 0;
   const shipping = 1200;
   const total = Math.max(0, subtotal + shipping - discountValue);
 
@@ -230,7 +230,7 @@ export default function CheckoutPage() {
               </div>
               <div className="p-5 space-y-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 font-medium">Items ({cart?.totalItems || 0})</span>
+                  <span className="text-gray-500 font-medium">Items ({cart?.items?.length || 0})</span>
                   <span className="font-bold text-gray-800">₦ {subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">

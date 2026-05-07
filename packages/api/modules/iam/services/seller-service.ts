@@ -32,4 +32,52 @@ export const sellerService: Service = {
       include: { documents: true },
     })
   },
+
+  async setupPayoutAccount(userId: string, data: { bankCode: string, bankAccountNumber: string, bankAccountName: string }) {
+    const seller = await prisma.seller.findUnique({ where: { userId } });
+    if (!seller) throw new Error('SELLER_NOT_FOUND');
+
+    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET || process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
+
+    let recipientCode = `SIM_REC_${Math.random().toString(36).substring(7).toUpperCase()}`;
+
+    // Production logic for Paystack Transfer Recipient
+    if (PAYSTACK_SECRET_KEY !== 'sk_test_placeholder' && process.env.NODE_ENV === 'production') {
+      try {
+        const response = await fetch('https://api.paystack.co/transferrecipient', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'nuban',
+            name: data.bankAccountName,
+            account_number: data.bankAccountNumber,
+            bank_code: data.bankCode,
+            currency: 'NGN'
+          }),
+        });
+
+        const result = await response.json();
+        if (!result.status) {
+          throw new Error(`Paystack Error: ${result.message}`);
+        }
+        recipientCode = result.data.recipient_code;
+      } catch (err: any) {
+        console.error('Paystack Transfer Recipient creation failed:', err);
+        throw new Error(`FAILED_TO_CREATE_RECIPIENT: ${err.message}`);
+      }
+    }
+
+    return prisma.seller.update({
+      where: { id: seller.id },
+      data: {
+        bankCode: data.bankCode,
+        bankAccountNumber: data.bankAccountNumber,
+        bankAccountName: data.bankAccountName,
+        transferRecipientCode: recipientCode
+      }
+    });
+  }
 }

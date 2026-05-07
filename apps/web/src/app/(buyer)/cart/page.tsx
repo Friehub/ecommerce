@@ -8,7 +8,7 @@ import Link from 'next/link';
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, totalItems } = useCart();
 
-  const subtotal = cart?.items?.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0) || 0;
+  const subtotal = cart?.items?.reduce((acc: number, item: any) => acc + (Number(item.priceSnapshot ?? 0) * item.quantity), 0) || 0;
   const shipping = cart?.items?.length > 0 ? 1200 : 0;
   const total = subtotal + shipping;
 
@@ -80,7 +80,7 @@ export default function CartPage() {
                             </button>
                           </div>
                           <div className="text-base md:text-lg font-black text-[#F68B1E]">
-                            ₦ {(item.price * item.quantity).toLocaleString()}
+                            ₦ {(Number(item.priceSnapshot ?? 0) * item.quantity).toLocaleString()}
                           </div>
                         </div>
                       </div>

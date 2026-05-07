@@ -140,4 +140,32 @@ export class PaystackAdapter implements PaymentAdapter {
       status: 'pending',
     };
   }
+  
+  async createTransferRecipient(params: {
+    accountName: string;
+    accountNumber: string;
+    bankCode: string;
+    currency: string;
+  }): Promise<{ recipientCode: string }> {
+    const res = await fetch(`${PAYSTACK_BASE}/transferrecipient`, {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({
+        type: 'nuban',
+        name: params.accountName,
+        account_number: params.accountNumber,
+        bank_code: params.bankCode,
+        currency: params.currency,
+      }),
+    });
+
+    const data = await res.json();
+    if (!data.status) {
+      throw new Error(`PAYSTACK_RECIPIENT_FAILED: ${data.message}`);
+    }
+
+    return {
+      recipientCode: data.data.recipient_code as string,
+    };
+  }
 }

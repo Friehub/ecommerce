@@ -8,6 +8,10 @@ import Link from 'next/link';
 export const CartDrawer = () => {
   const { cart, isOpen, setIsOpen, updateQuantity, removeFromCart, totalItems } = useCart();
 
+  const cartTotal = cart?.items?.reduce((acc: number, item: any) =>
+    acc + (Number(item.priceSnapshot ?? item.variant?.price ?? 0)) * item.quantity, 0
+  ) ?? 0;
+
   if (!isOpen) return null;
 
   return (
@@ -68,7 +72,7 @@ export const CartDrawer = () => {
                       </button>
                     </div>
                     <div className="text-sm font-bold text-[#F68B1E]">
-                      ₦ {(item.variant.price * item.quantity).toLocaleString()}
+                      ₦ {((Number(item.priceSnapshot ?? item.variant?.price ?? 0)) * item.quantity).toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -101,7 +105,7 @@ export const CartDrawer = () => {
           <div className="p-4 border-t bg-gray-50 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-500 font-medium">Subtotal</span>
-              <span className="text-xl font-bold">₦ {cart.total.toLocaleString()}</span>
+              <span className="text-xl font-bold">₦ {cartTotal.toLocaleString()}</span>
             </div>
             <Link 
               href="/cart"

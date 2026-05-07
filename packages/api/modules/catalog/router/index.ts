@@ -105,8 +105,9 @@ const _catalogRouter = createTRPCRouter({
       return await wishlistService.removeItem(ctx.session.user.id, input.variantId);
     }),
 
-  getWishlist: protectedProcedure
+  getWishlist: publicProcedure
     .query(async ({ ctx }) => {
+      if (!ctx.session?.user) return { items: [] };
       return await wishlistService.getWishlist(ctx.session.user.id);
     }),
 });

@@ -1,10 +1,11 @@
-import { createTRPCRouter, protectedProcedure } from '../../../trpc.js';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '../../../trpc.js';
 import { UpdatePreferenceSchema, MarkAsReadSchema } from '../schemas/index.js';
 import { notificationService } from '../services/notification-service.js';
 
 const _notificationRouter = createTRPCRouter({
-  getUnread: protectedProcedure
+  getUnread: publicProcedure
     .query(async ({ ctx }) => {
+      if (!ctx.session?.user) return [];
       return notificationService.getUnreadNotifications(ctx.session.user.id);
     }),
 

@@ -129,6 +129,11 @@ async function main() {
           categoryId: category.id,
           sellerId: seller.id,
           status: 'ACTIVE',
+          media: {
+            create: [
+              { url: `https://picsum.photos/seed/${slug}/400/400`, position: 0 }
+            ]
+          },
           variants: {
             create: [
               {
@@ -140,18 +145,6 @@ async function main() {
                     sellerId: seller.id,
                     warehouseId: warehouse.id,
                     qtyOnHand: 100,
-                  }
-                }
-              },
-              {
-                sku: `${slug.toUpperCase()}-PRM`,
-                price: new Decimal(Math.floor(Math.random() * 80000) + 5000),
-                attributes: { color: 'Gold', size: 'Premium' },
-                stockLevels: {
-                  create: {
-                    sellerId: seller.id,
-                    warehouseId: warehouse.id,
-                    qtyOnHand: 50,
                   }
                 }
               }

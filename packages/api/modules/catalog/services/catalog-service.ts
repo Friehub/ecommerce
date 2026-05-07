@@ -246,8 +246,21 @@ export const catalogService: Service = {
              }
            }
 
+           const flattenedResults = sortedResults.map(v => ({
+             ...v,
+             title: v.product.title,
+             slug: v.product.slug,
+             media: v.product.media,
+             brand: v.product.brand,
+             category: v.product.category,
+             price: v.price.toNumber(),
+             comparePrice: v.comparePrice?.toNumber(),
+             isSponsored: (v as any).isSponsored,
+             adGroupId: (v as any).adGroupId
+           }));
+
            return {
-             results: sortedResults,
+             results: flattenedResults,
              total: (searchResponse.total || results.length) + (sponsoredProduct ? 1 : 0),
              facets: searchResponse.facets
            };
@@ -282,7 +295,18 @@ export const catalogService: Service = {
       prisma.productVariant.count({ where })
     ]);
 
-    return { results, total, facets: {} };
+    const flattenedResults = results.map(v => ({
+      ...v,
+      title: v.product.title,
+      slug: v.product.slug,
+      media: v.product.media,
+      brand: v.product.brand,
+      category: v.product.category,
+      price: v.price.toNumber(),
+      comparePrice: v.comparePrice?.toNumber()
+    }));
+
+    return { results: flattenedResults, total, facets: {} };
   },
 
   async createCategory(data: CategoryInput) {

@@ -9,7 +9,7 @@ export const cartService: Service = {
     if (userId) {
       const userCart = await prisma.cart.findUnique({
         where: { userId },
-        include: { items: { include: { variant: { include: { product: true } } } } }
+        include: { items: { include: { variant: { include: { product: { include: { media: true } } } } } } }
       });
       if (userCart) return userCart;
     }
@@ -20,7 +20,7 @@ export const cartService: Service = {
       where: { sessionId },
       update: userId ? { userId } : {},
       create: { sessionId, userId },
-      include: { items: { include: { variant: { include: { product: true } } } } }
+      include: { items: { include: { variant: { include: { product: { include: { media: true } } } } } } }
     });
   },
 

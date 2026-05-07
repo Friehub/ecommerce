@@ -46,7 +46,7 @@ export const rateLimitProcedure = publicProcedure.use(async ({ ctx, next, path }
   if (ctx.redis && ctx.ip) {
     try {
       const key = `rl:${path}:${ctx.ip}`;
-      const limit = 5; // 5 req/min
+      const limit = 100; // 100 req/min (Relaxed from 5)
       const window = 60; // 60 seconds
 
       const pipeline = ctx.redis.multi();

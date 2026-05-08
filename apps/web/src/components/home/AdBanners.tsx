@@ -46,14 +46,14 @@ export const AdBanners = () => {
         <Link 
           key={banner.id}
           href={banner.link}
-          className="group relative h-[180px] rounded-xl overflow-hidden shadow-sm border border-outline-variant/20 transition-all hover:shadow-md hover:-translate-y-1"
+          className="group relative h-[110px] lg:h-[140px] rounded-xl overflow-hidden shadow-sm border border-outline-variant/20 transition-all hover:shadow-md hover:-translate-y-1"
         >
           <img 
             src={banner.imageUrl} 
             alt={banner.title}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 text-white">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
             <h3 className="font-inter text-lg font-black uppercase tracking-tight leading-tight mb-1">
               {banner.title}
             </h3>

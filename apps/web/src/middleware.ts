@@ -68,7 +68,12 @@ export default auth((req) => {
   // ---- Auth pages: redirect away if already logged in ----
   const isAnyAuthRoute = isBuyerAuthRoute || isSellerAuthRoute || isAdminAuthRoute;
   if (isAnyAuthRoute && isLoggedIn) {
-    // Role-aware redirect
+    const callbackUrl = nextUrl.searchParams.get('callbackUrl');
+    if (callbackUrl) {
+      return NextResponse.redirect(new URL(callbackUrl, nextUrl.origin));
+    }
+
+    // Role-aware default redirect
     if (role === 'SELLER') return NextResponse.redirect(new URL('/seller/dashboard', nextUrl.origin));
     if (role === 'ADMIN') return NextResponse.redirect(new URL('/dashboard', nextUrl.origin));
     return NextResponse.redirect(new URL('/', nextUrl.origin));

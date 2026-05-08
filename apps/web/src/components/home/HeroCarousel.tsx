@@ -43,14 +43,14 @@ export const HeroCarousel = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 h-[280px] md:h-[480px] bg-gray-50 rounded-[24px] animate-pulse flex items-center justify-center text-gray-200">
+      <div className="flex-1 h-[180px] md:h-[380px] bg-gray-50 rounded-xl animate-pulse flex items-center justify-center text-gray-200">
         <div className="text-[10px] font-black uppercase tracking-[0.3em]">Calibrating Showcase...</div>
       </div>
     );
   }
 
   return (
-    <div className="relative flex-1 group overflow-hidden rounded-xl h-[320px] md:h-[480px] shadow-lg">
+    <div className="relative flex-1 group overflow-hidden rounded-xl h-[180px] md:h-[380px] shadow-lg">
       <div 
         className="flex h-full transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${current * 100}%)` }}

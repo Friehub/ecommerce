@@ -36,7 +36,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           {product.title}
         </h3>
         <div className="mt-auto pt-2 flex flex-col gap-0.5">
-          <div className="text-lg font-extrabold text-gray-900 group-hover:text-[#F68B1E] transition-colors">
+          <div className="text-lg font-semibold text-gray-900 group-hover:text-[#F68B1E] transition-colors">
             ₦ {price.toLocaleString()}
           </div>
           {comparePrice && (

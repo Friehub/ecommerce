@@ -65,7 +65,7 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
       {/* Price Section */}
       <div className="border-b pb-4">
         <div className="flex items-center gap-3">
-          <span className="text-3xl font-bold text-gray-900">₦ {price.toLocaleString()}</span>
+          <span className="text-3xl font-semibold text-gray-900">₦ {price.toLocaleString()}</span>
           {discount > 0 && (
             <span className="bg-[#FEE2E2] text-[#DF3131] text-xs font-bold px-2 py-1 rounded">
               -{discount}%

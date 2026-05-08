@@ -71,7 +71,7 @@ export const CartDrawer = () => {
                         <Plus size={14} />
                       </button>
                     </div>
-                    <div className="text-sm font-bold text-[#F68B1E]">
+                    <div className="text-sm font-semibold text-[#F68B1E]">
                       ₦ {((Number(item.priceSnapshot ?? item.variant?.price ?? 0)) * item.quantity).toLocaleString()}
                     </div>
                   </div>
@@ -105,7 +105,7 @@ export const CartDrawer = () => {
           <div className="p-4 border-t bg-gray-50 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-500 font-medium">Subtotal</span>
-              <span className="text-xl font-bold">₦ {cartTotal.toLocaleString()}</span>
+              <span className="text-xl font-semibold">₦ {cartTotal.toLocaleString()}</span>
             </div>
             <Link 
               href="/cart"

@@ -42,6 +42,9 @@ const _sellerRouter = createTRPCRouter({
       offset: z.number().min(0).default(0),
     }).optional())
     .query(async ({ ctx, input }) => {
+      const limit = input?.limit ?? 50;
+      const offset = input?.offset ?? 0;
+
       const seller = await prisma.seller.findUnique({
         where: { userId: ctx.session.user.id }
       });
@@ -61,8 +64,8 @@ const _sellerRouter = createTRPCRouter({
           media: true,
         },
         orderBy: { createdAt: 'desc' },
-        take: input.limit,
-        skip: input.offset,
+        take: limit,
+        skip: offset,
       });
     }),
 

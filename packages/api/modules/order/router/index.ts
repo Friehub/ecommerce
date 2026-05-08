@@ -35,9 +35,11 @@ const _orderRouter = createTRPCRouter({
     .input(z.object({
       limit: z.number().min(1).max(100).default(20),
       offset: z.number().min(0).default(0),
-    }))
+    }).optional())
     .query(async ({ ctx, input }) => {
-      return await orderService.listUserOrders(ctx.session.user.id, input.limit, input.offset);
+      const limit = input?.limit ?? 20;
+      const offset = input?.offset ?? 0;
+      return await orderService.listUserOrders(ctx.session.user.id, limit, offset);
     }),
 
   listSellerPackages: sellerProcedure

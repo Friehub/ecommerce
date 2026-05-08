@@ -147,5 +147,5 @@ const _catalogRouter = createTRPCRouter({
     }),
 });
 
-export const catalogRouter = _catalogRouter as any;
+export const catalogRouter = _catalogRouter;
 export type CatalogRouter = typeof _catalogRouter;

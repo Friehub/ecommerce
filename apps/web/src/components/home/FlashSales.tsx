@@ -3,7 +3,7 @@
 import React from 'react';
 import { ProductCard } from '../ui/ProductCard';
 import { api } from '../../trpc/react';
-import { Zap } from 'lucide-react';
+import { Zap, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 

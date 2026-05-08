@@ -14,7 +14,9 @@ import {
 import Link from 'next/link';
 
 export default function SellerInventory() {
+  const { data: products, isLoading } = api.seller.listMyProducts.useQuery();
   const utils = api.useUtils();
+  
   const deleteProduct = api.catalog.deleteProduct.useMutation({
     onSuccess: () => {
       utils.seller.listMyProducts.invalidate();
@@ -25,7 +27,7 @@ export default function SellerInventory() {
     }
   });
 
-  if (isLoading) return <div className="text-gray-400">Loading inventory...</div>;
+  if (isLoading) return <div className="p-12 text-center text-xs font-bold uppercase tracking-widest text-gray-400">Loading inventory...</div>;
 
   return (
     <div className="space-y-6">

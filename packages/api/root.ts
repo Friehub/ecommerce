@@ -43,5 +43,5 @@ const _appRouter = createTRPCRouter({
   media: mediaRouter as MediaRouter,
 });
 
-export const appRouter = _appRouter as any;
+export const appRouter = _appRouter;
 export type AppRouter = typeof _appRouter;

@@ -58,6 +58,10 @@ const parseConfig = () => {
     return configSchema.parse(envData);
   } catch (error) {
     if (error instanceof z.ZodError) {
+      if (process.env.SKIP_ENV_VALIDATION === 'true' || process.env.NEXT_PHASE === 'phase-production-build') {
+        console.warn('⚠️  Warning: Missing environment variables during build phase. Skipping validation.');
+        return {} as any;
+      }
       const missingKeys = error.errors.map(e => e.path.join('.')).join(', ');
       console.error(`❌ Configuration Error: Missing or invalid environment variables: ${missingKeys}`);
       process.exit(1);

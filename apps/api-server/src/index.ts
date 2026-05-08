@@ -85,7 +85,7 @@ async function start() {
   });
 
   // ── Socket.io ───────────────────────────────────────────────────
-  await server.register(socketio, {
+  await server.register(socketio as any, {
     cors: {
       origin: allowedOrigins,
       credentials: true,

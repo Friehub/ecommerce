@@ -52,7 +52,7 @@ const _catalogRouter = createTRPCRouter({
       return await catalogService.listProducts(input);
     }),
 
-  getProductById: publicProcedure
+  getProduct: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       return await prisma.product.findUnique({

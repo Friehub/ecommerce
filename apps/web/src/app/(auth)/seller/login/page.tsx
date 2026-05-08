@@ -41,52 +41,67 @@ export default function SellerLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F9FA] flex flex-col justify-center items-center py-12 px-4 select-none">
-      <div className="w-full max-w-[440px] bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden duration-300 transition-all hover:shadow-orange-100/50">
-        <div className="bg-[#333] p-8 text-center relative overflow-hidden">
-           <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+    <div className="min-h-screen bg-[#F4F4F7] flex flex-col justify-center items-center py-20 px-4 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,#fff_0%,#f4f4f7_100%)] z-0" />
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-100/30 rounded-full blur-[120px] z-0" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-100/20 rounded-full blur-[120px] z-0" />
+
+      <div className="w-full max-w-[460px] bg-white rounded-[40px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] border border-white/20 relative z-10 overflow-hidden transition-all duration-500 hover:shadow-[0_48px_80px_-24px_rgba(246,139,30,0.15)]">
+        <div className="bg-[#1A1A1A] p-10 text-center relative">
+           <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
            <div className="relative z-10">
-             <div className="w-16 h-16 bg-[#F68B1E] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/20 rotate-3">
-               <ShoppingBag size={32} className="text-white" />
+             <div className="w-20 h-20 bg-[#F68B1E] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-orange-500/40 rotate-6 hover:rotate-0 transition-transform duration-500">
+               <ShoppingBag size={40} className="text-white" />
              </div>
-             <h1 className="text-2xl font-black text-white uppercase tracking-tighter">Seller Center</h1>
-             <p className="text-orange-200 text-xs font-bold uppercase tracking-[0.2em] mt-2">Manage Your Store</p>
+             <h1 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">Seller Center</h1>
+             <div className="flex items-center justify-center gap-2">
+               <div className="h-[1px] w-4 bg-orange-500/50" />
+               <p className="text-orange-200/80 text-[10px] font-black uppercase tracking-[0.3em]">Global Marketplace</p>
+               <div className="h-[1px] w-4 bg-orange-500/50" />
+             </div>
            </div>
         </div>
 
-        <div className="p-8 md:p-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="p-10 md:p-12">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {error && (
-              <div className="bg-red-50 text-red-600 p-4 rounded-xl text-xs font-black border border-red-100 flex items-center gap-2 animate-in slide-in-from-top-2">
-                <span className="w-2 h-2 bg-red-600 rounded-full animate-ping" />
+              <div className="bg-red-50 text-red-600 p-5 rounded-2xl text-[10px] font-black border border-red-100 flex items-center gap-3 animate-in fade-in zoom-in-95">
+                <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse" />
                 {error.toUpperCase()}
               </div>
             )}
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Business Email</label>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center px-1">
+                <label className="text-[11px] font-black uppercase text-gray-400 tracking-widest">Credentials</label>
+                <span className="text-[9px] font-bold text-orange-500/60 uppercase">Required</span>
+              </div>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#F68B1E] transition-colors" size={20} />
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#F68B1E] transition-colors" size={22} />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-14 pl-12 pr-4 border-2 border-gray-50 bg-gray-50/30 focus:border-[#F68B1E] focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all duration-300"
-                  placeholder="seller@ecom.dev"
+                  className="w-full h-16 pl-14 pr-6 border-2 border-gray-100 bg-gray-50/50 focus:border-[#F68B1E] focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all duration-300 placeholder:text-gray-300 placeholder:font-medium"
+                  placeholder="business@example.com"
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Secure Password</label>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center px-1">
+                <label className="text-[11px] font-black uppercase text-gray-400 tracking-widest">Security</label>
+                <Link href="#" className="text-[9px] font-bold text-gray-300 hover:text-[#F68B1E] uppercase transition-colors">Forgot?</Link>
+              </div>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#F68B1E] transition-colors" size={20} />
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#F68B1E] transition-colors" size={22} />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-14 pl-12 pr-4 border-2 border-gray-100 bg-gray-50/30 focus:border-[#F68B1E] focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all duration-300"
+                  className="w-full h-16 pl-14 pr-6 border-2 border-gray-100 bg-gray-50/50 focus:border-[#F68B1E] focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all duration-300 placeholder:text-gray-300"
                   placeholder="••••••••"
                   required
                 />
@@ -96,23 +111,29 @@ export default function SellerLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-14 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-2xl font-black uppercase tracking-widest hover:shadow-xl hover:translate-y-[-2px] active:translate-y-[1px] duration-300 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg shadow-orange-500/10 disabled:opacity-50"
+              className="w-full h-16 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-2xl font-black uppercase tracking-widest hover:shadow-[0_20px_40px_-12px_rgba(246,139,30,0.4)] hover:translate-y-[-4px] active:translate-y-[1px] duration-300 transition-all flex items-center justify-center gap-4 cursor-pointer disabled:opacity-50"
             >
-              {loading ? <Loader2 className="animate-spin" size={24} /> : (
+              {loading ? <Loader2 className="animate-spin" size={28} /> : (
                 <>
-                  Enter Dashboard <ArrowRight size={20} />
+                  Access Terminal <ArrowRight size={22} />
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-8 pt-8 border-t border-gray-50 text-center space-y-4">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">
-              New to Jumia? <Link href="/seller/register" className="text-[#F68B1E] hover:underline ml-1">Join as a Seller</Link>
+          <div className="mt-12 pt-10 border-t border-gray-100 text-center space-y-6">
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">
+              New merchant? <Link href="/seller/register" className="text-[#F68B1E] hover:underline ml-1">Establish Store</Link>
             </p>
-            <Link href="/login" className="block text-[10px] font-black text-gray-300 hover:text-gray-500 uppercase tracking-widest transition-colors">
-              Customer Login
-            </Link>
+            <div className="flex items-center justify-center gap-4">
+              <Link href="/login" className="text-[10px] font-black text-gray-300 hover:text-[#F68B1E] uppercase tracking-widest transition-colors">
+                Customer Port
+              </Link>
+              <div className="w-1 h-1 bg-gray-200 rounded-full" />
+              <Link href="/support" className="text-[10px] font-black text-gray-300 hover:text-gray-500 uppercase tracking-widest transition-colors">
+                Support
+              </Link>
+            </div>
           </div>
         </div>
       </div>

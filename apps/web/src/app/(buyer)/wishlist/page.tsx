@@ -19,17 +19,7 @@ export default function WishlistPage() {
 
   const handleAddToCart = async (item: any) => {
     try {
-      await addToCart({
-        id: item.variant.id,
-        productId: item.variant.productId,
-        title: item.variant.product.title,
-        price: Number(item.variant.price),
-        image: item.variant.product.media[0]?.url || '',
-        quantity: 1,
-        slug: item.variant.product.slug,
-      });
-      // Optionally remove from wishlist after adding to cart
-      // removeFromWishlist.mutate({ variantId: item.variant.id });
+      await addToCart(item.variant.id, 1);
     } catch (error) {
       console.error('Failed to add to cart:', error);
     }

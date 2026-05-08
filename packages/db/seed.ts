@@ -133,29 +133,39 @@ async function main() {
   
   const categoryImages: Record<string, string[]> = {
     'Electronics': [
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800',
-      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800',
-      'https://images.unsplash.com/photo-1526170315870-ef68a8fdc18b?q=80&w=800'
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800', // Headphones
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800', // Watch
+      'https://images.unsplash.com/photo-1526170315870-ef68a8fdc18b?q=80&w=800', // Camera
+      'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?q=80&w=800', // Earbuds
+      'https://images.unsplash.com/photo-1491933382434-500287f9b54b?q=80&w=800'  // Speakers
     ],
     'Fashion': [
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800',
-      'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800',
-      'https://images.unsplash.com/photo-1511499767390-a7335b719484?q=80&w=800'
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800', // Nike Shoe
+      'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800', // Clothing
+      'https://images.unsplash.com/photo-1511499767390-a7335b719484?q=80&w=800', // Sunglasses
+      'https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=800', // Shoes
+      'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=800'  // Fashion items
     ],
     'Computing': [
-      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=800',
-      'https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=800',
-      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800'
+      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=800', // Laptop
+      'https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=800', // Tablet
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800', // MacBook
+      'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?q=80&w=800', // PC
+      'https://images.unsplash.com/photo-1547082299-de196ea013d6?q=80&w=800'  // Monitor
     ],
     'Home & Office': [
-      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800',
-      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=800',
-      'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=800'
+      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800', // Chair
+      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=800', // Lamp
+      'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=800', // Table
+      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=800', // Desk
+      'https://images.unsplash.com/photo-1538688543446-5900fbdf6a3e?q=80&w=800'  // Decor
     ],
     'Health & Beauty': [
-      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=800',
-      'https://images.unsplash.com/photo-1596462502278-27bfdc4033c8?q=80&w=800',
-      'https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=800'
+      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=800', // Perfume
+      'https://images.unsplash.com/photo-1596462502278-27bfdc4033c8?q=80&w=800', // Skincare
+      'https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=800', // Beauty
+      'https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=800', // Cosmetic
+      'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=800'  // Makeup
     ]
   };
 

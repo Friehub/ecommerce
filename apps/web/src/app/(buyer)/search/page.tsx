@@ -1,10 +1,11 @@
 'use client';
 
 import React, { Suspense, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/trpc/react';
 import { ProductCard } from '../../../components/ui/ProductCard';
-import { Filter, SortAsc, Search as SearchIcon, X, SlidersHorizontal } from 'lucide-react';
+import { Filter, SortAsc, Search as SearchIcon, X, SlidersHorizontal, Loader2 } from 'lucide-react';
 
 function SearchResults() {
   const searchParams = useSearchParams();

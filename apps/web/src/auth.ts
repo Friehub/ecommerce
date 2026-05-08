@@ -28,7 +28,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return {
             id: user.id,
             email: user.email,
-            // @ts-expect-error - role is a custom field on the User model
             role: user.role,
           };
         } catch (error) {

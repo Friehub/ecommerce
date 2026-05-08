@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { api } from '@/trpc/react';
 import { 
   ChevronLeft, 
+  ChevronRight,
   Package, 
   MapPin, 
   CreditCard, 
@@ -249,6 +250,7 @@ export default function OrderDetailPage() {
             </div>
           </div>
         </div>
+      </div>
     </div>
   );
 }

@@ -50,7 +50,7 @@ export const HeroCarousel = () => {
   }
 
   return (
-    <div className="relative flex-1 h-[280px] md:h-[480px] bg-white rounded-[24px] shadow-2xl shadow-black/5 overflow-hidden group border border-gray-100 select-none">
+    <div className="relative flex-1 h-[320px] md:h-[480px] bg-white rounded-[24px] shadow-2xl shadow-black/5 overflow-hidden group border border-gray-100 select-none">
       {/* Slides */}
       <div 
         className="flex h-full transition-transform duration-[1000ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
@@ -64,65 +64,66 @@ export const HeroCarousel = () => {
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2000ms] ease-out"
             />
             
-            {/* Modern Content Panel */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 md:via-black/20 to-transparent flex flex-col justify-end md:justify-center px-5 pb-10 md:px-16 md:pb-0 z-20">
+            {/* Modern Content Panel - Glassmorphism & Subtle Gradients */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 md:via-transparent md:bg-gradient-to-r md:from-black/40 md:to-transparent flex flex-col justify-end md:justify-center px-6 pb-12 md:px-16 md:pb-0 z-20">
               <div className={`transition-all duration-700 delay-300 ${i === current ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-                <div className="inline-flex items-center gap-2 mb-2 md:mb-6">
-                  <div className="w-8 h-1 bg-[#FF7A00] rounded-full" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/90">Premium Pick</span>
+                <div className="inline-flex items-center gap-2 mb-3 md:mb-6">
+                  <div className="w-6 h-1 bg-[#FF7A00] rounded-full" />
+                  <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-white/90">Exclusive Deal</span>
                 </div>
                 
-                <h2 className="text-2xl sm:text-5xl md:text-7xl font-black text-white mb-2 md:mb-4 leading-[0.95] tracking-tighter uppercase drop-shadow-2xl">
+                <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white mb-3 md:mb-5 leading-[0.9] tracking-tighter uppercase drop-shadow-lg">
                   {banner.title.split(' ').map((word: string, idx: number) => (
                     <span key={idx} className={idx === 1 ? 'text-[#FF7A00]' : ''}>{word}<br className="hidden sm:block" /> </span>
                   ))}
                 </h2>
                 
-                <p className="text-[10px] md:text-base font-medium text-white/70 max-w-[180px] sm:max-w-sm mb-4 md:mb-10 leading-relaxed border-l-2 border-[#FF7A00]/50 pl-4">
-                  {banner.subtitle || 'Experience the future of commerce with our exclusive partner collections.'}
+                <p className="text-[11px] md:text-base font-medium text-white/80 max-w-[200px] sm:max-w-sm mb-6 md:mb-10 leading-relaxed border-l-2 border-[#FF7A00] pl-4 md:pl-6">
+                  {banner.subtitle || 'Discover premium collections curated for the most discerning shoppers.'}
                 </p>
                 
                 <Link 
                   href={banner.link || '#'}
-                  className="inline-flex items-center gap-2 bg-[#FF7A00] text-white px-6 py-3 md:px-10 md:py-5 rounded-xl md:rounded-2xl font-black text-[10px] md:text-[11px] uppercase tracking-widest hover:bg-white hover:text-black transition-all transform active:scale-95 shadow-xl shadow-orange-500/20 group/btn w-fit"
+                  className="inline-flex items-center gap-3 bg-[#FF7A00] text-white px-8 py-4 md:px-12 md:py-6 rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all transform active:scale-95 shadow-xl shadow-orange-500/30 group/btn w-fit"
                 >
-                  Explore
-                  <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                  Shop Collection
+                  <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
 
-            {/* Background Accent Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+            {/* Subtle Overlay to ensure readability */}
+            <div className="absolute inset-0 bg-black/10 pointer-events-none" />
           </div>
         ))}
       </div>
 
       {/* Navigation Controls */}
-      <div className="absolute bottom-6 md:bottom-10 right-6 md:right-12 flex items-center gap-4 z-30">
-        <button 
-          onClick={prev}
-          className="hidden md:flex w-12 h-12 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl text-white items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        
+      <div className="absolute bottom-6 md:bottom-12 left-6 md:left-16 flex items-center gap-6 z-30">
         <div className="flex gap-2">
           {banners.map((_, i) => (
             <button 
               key={i}
               onClick={() => setCurrent(i)}
-              className={`h-1 rounded-full transition-all duration-500 ${i === current ? 'w-6 md:w-8 bg-[#FF7A00]' : 'w-2 bg-white/20 hover:bg-white/40'}`}
+              className={`h-1.5 rounded-full transition-all duration-500 ${i === current ? 'w-8 md:w-12 bg-[#FF7A00]' : 'w-2 md:w-3 bg-white/30 hover:bg-white/50'}`}
             />
           ))}
         </div>
 
-        <button 
-          onClick={next}
-          className="hidden md:flex w-12 h-12 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl text-white items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90"
-        >
-          <ChevronRight size={20} />
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={prev}
+            className="w-10 h-10 md:w-12 md:h-12 rounded-xl border border-white/10 bg-white/10 backdrop-blur-md text-white items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90 flex"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button 
+            onClick={next}
+            className="w-10 h-10 md:w-12 md:h-12 rounded-xl border border-white/10 bg-white/10 backdrop-blur-md text-white items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90 flex"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
       </div>
     </div>
   );

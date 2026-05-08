@@ -20,7 +20,7 @@ export default async function SellerLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#f5f5f5]">
+    <div className="flex min-h-screen bg-background antialiased">
       <SellerSidebar />
       <main className="flex-1 p-8 overflow-y-auto">
         {children}

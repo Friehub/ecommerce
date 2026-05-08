@@ -85,9 +85,19 @@ input {
 
 /* Utils */
 .container {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 16px;
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
 }
 
 .flex { display: flex; }

@@ -38,7 +38,7 @@ export const Navbar = () => {
 
   return (
     <header className="bg-surface sticky top-0 z-50 shadow-sm border-b border-outline-variant">
-      <div className="flex flex-col w-full max-w-container-max mx-auto px-gutter py-base">
+      <div className="container py-base">
         <div className="flex items-center justify-between gap-gutter py-2">
           {/* Mobile: Hamburger & Logo */}
           <div className="flex items-center gap-3">

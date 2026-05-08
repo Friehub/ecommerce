@@ -29,18 +29,18 @@ export function SellerSidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full">
-      <div className="p-6 flex items-center gap-3 border-b border-gray-100">
-        <div className="w-8 h-8 bg-[#f68b1e] rounded flex items-center justify-center font-bold text-white shadow-lg shadow-orange-500/20">
-          <Store size={18} />
+    <div className="flex flex-col h-full bg-white select-none">
+      <div className="p-8 flex items-center gap-4">
+        <div className="w-10 h-10 bg-[#f68b1e] rounded-xl flex items-center justify-center text-white shrink-0">
+          <Store size={22} strokeWidth={2.5} />
         </div>
         <div>
-          <h1 className="text-gray-900 font-bold text-base leading-none tracking-tight">Seller Center</h1>
-          <p className="text-[#f68b1e] text-[10px] font-bold mt-1 uppercase tracking-widest">Vendor Portal</p>
+          <h1 className="text-gray-900 font-extrabold text-sm uppercase tracking-tight leading-none">Seller Center</h1>
+          <p className="text-gray-400 text-[9px] font-bold mt-1 uppercase tracking-widest">Vendor Portal</p>
         </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 px-4 space-y-1 mt-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -48,33 +48,25 @@ export function SellerSidebar() {
               key={item.name}
               href={item.href}
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded transition-all duration-200 group ${
+              className={`flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-300 group ${
                 isActive 
                   ? 'bg-[#f68b1e]/10 text-[#f68b1e]' 
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
               }`}
             >
-              <item.icon className={`w-5 h-5 ${isActive ? 'text-[#f68b1e]' : 'text-gray-400 group-hover:text-gray-600'}`} />
-              <span className="font-bold text-sm uppercase tracking-tight">{item.name}</span>
+              <item.icon className={`w-5 h-5 ${isActive ? 'text-[#f68b1e]' : 'text-gray-400 group-hover:text-gray-900'} transition-colors`} strokeWidth={isActive ? 2.5 : 2} />
+              <span className={`text-[11px] font-black uppercase tracking-widest ${isActive ? 'text-[#f68b1e]' : 'text-gray-500 group-hover:text-gray-900'}`}>{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-100 space-y-1">
-        <Link
-          href="/seller/finance"
-          onClick={() => setIsOpen(false)}
-          className="flex items-center gap-3 px-4 py-3 rounded text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all group"
-        >
-          <Settings className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
-          <span className="font-bold text-sm uppercase tracking-tight">Settings</span>
-        </Link>
+      <div className="p-4 border-t border-gray-50 mt-auto">
         <button
-          className="w-full flex items-center gap-3 px-4 py-3 rounded text-red-500 hover:bg-red-50 hover:text-red-600 transition-all text-left"
+          className="w-full flex items-center gap-4 px-5 py-4 rounded-xl text-red-500 hover:bg-red-50 transition-all group"
         >
-          <LogOut className="w-5 h-5" />
-          <span className="font-bold text-sm uppercase tracking-tight">Logout</span>
+          <LogOut size={20} />
+          <span className="font-black text-[11px] uppercase tracking-widest">Logout</span>
         </button>
       </div>
     </div>
@@ -97,12 +89,12 @@ export function SellerSidebar() {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
             onClick={() => setIsOpen(false)}
           />
-          <div className="relative w-64 max-w-[80vw] bg-white h-full flex flex-col shadow-2xl animate-in slide-in-from-left duration-300">
+          <div className="relative w-72 max-w-[85vw] bg-white h-full flex flex-col shadow-2xl animate-in slide-in-from-left duration-500">
             <button 
               onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2"
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 p-2"
             >
-              <X size={20} />
+              <X size={24} />
             </button>
             <SidebarContent />
           </div>
@@ -110,7 +102,7 @@ export function SellerSidebar() {
       )}
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex w-64 bg-white border-r border-gray-200 h-screen sticky top-0 flex-col shadow-sm">
+      <div className="hidden lg:flex w-72 bg-white border-r border-gray-100 h-screen sticky top-0 flex-col">
         <SidebarContent />
       </div>
     </>

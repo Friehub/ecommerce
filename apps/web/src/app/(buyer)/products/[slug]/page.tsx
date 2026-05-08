@@ -18,10 +18,10 @@ export default async function ProductDetailPage({
   }
 
   return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-12">
+    <div className="pb-12">
       {/* Breadcrumbs */}
       <div className="bg-white border-b border-gray-100 select-none">
-        <div className="container py-3.5 flex items-center gap-2 text-xs font-semibold text-gray-500">
+        <div className="container py-3 flex items-center gap-2 text-xs font-semibold text-gray-500">
           <a href="/" className="hover:text-[#F68B1E] transition-colors">Home</a>
           <ChevronRight size={14} className="text-gray-300" />
           <a href={`/category/${product.category.slug}`} className="hover:text-[#F68B1E] transition-colors">{product.category.name}</a>

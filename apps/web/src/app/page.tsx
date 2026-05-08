@@ -12,8 +12,8 @@ import { Package, ShieldCheck, RotateCcw } from 'lucide-react';
 
 export default function Home() {
   return (
-    <main className="bg-surface-bright min-h-screen pb-20 select-none">
-      <div className="max-w-container-max mx-auto px-gutter py-stack-md">
+    <main className="min-h-screen pb-20 select-none">
+      <div className="container py-6">
         {/* Hero Section Grid */}
         <section className="grid grid-cols-12 gap-4 lg:gap-6 items-start">
           {/* Category Sidebar (Hidden on Mobile) */}

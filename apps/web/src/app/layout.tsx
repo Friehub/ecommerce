@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={urbanist.className} suppressHydrationWarning>
-      <body className="flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen bg-background antialiased">
         <Providers>
           <Navbar />
           <CartDrawer />

@@ -5,10 +5,13 @@ import {
   TrendingUp, 
   Users, 
   ShoppingBag, 
+  ShoppingCart,
   Clock,
   ArrowUpRight,
   ChevronRight,
-  Package
+  Package,
+  BarChart3,
+  Info
 } from 'lucide-react';
 import Link from 'next/link';
 

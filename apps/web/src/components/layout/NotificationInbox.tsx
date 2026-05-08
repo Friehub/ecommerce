@@ -12,7 +12,7 @@ export function NotificationInbox() {
 
   const { data: notifications, isLoading } = api.notification.getUnread.useQuery(undefined, {
     enabled: !!session?.user,
-    refetchInterval: 30000 // Poll every 30 seconds
+    staleTime: 60000, // Keep data fresh for 1 minute
   });
 
   const markAsReadMutation = api.notification.markAsRead.useMutation({

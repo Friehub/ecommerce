@@ -42,19 +42,22 @@ export const notificationService: Service = {
         try {
           const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
           if (user?.email) {
-            await fetch('https://api.resend.com/emails', {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${RESEND_API_KEY}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                from: `Friehub Jumia <${RESEND_FROM_EMAIL}>`,
-                to: [user.email],
-                subject: title,
-                html: message
-              })
-            });
+          // Non-blocking fetch (C04: Optimization)
+          fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${RESEND_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              from: `Friehub Jumia <${RESEND_FROM_EMAIL}>`,
+              to: [user.email],
+              subject: title,
+              html: message
+            })
+          }).catch(err => {
+            console.error('Background Email Dispatch Failed:', err.message);
+          });
           }
         } catch (err: any) {
           console.warn('Could not send email via Resend:', err.message);

@@ -338,11 +338,13 @@ export const catalogService: Service = {
   },
 
   async getCategoryTree() {
-    return prisma.category.findMany({
-      where: { parentId: null },
-      take: 50, // Limit root categories
-      include: { children: { include: { children: true } } }
-    });
+    return cacheService.wrap('catalog:category_tree', async () => {
+      return prisma.category.findMany({
+        where: { parentId: null },
+        take: 50, // Limit root categories
+        include: { children: { include: { children: true } } }
+      });
+    }, 3600); // Cache for 1 hour
   },
 
   async getCategoryBySlug(slug: string) {

@@ -50,7 +50,7 @@ export const Navbar = () => {
               <Menu size={24} />
             </button>
             <Link href="/" className="flex items-center gap-2 shrink-0">
-              <span className="text-xl md:text-2xl font-bold tracking-tight text-gray-900">
+              <span className="text-xl md:text-2xl font-bold text-gray-900">
                 JUMIA<span className="text-[#F68B1E]">★</span>
               </span>
             </Link>
@@ -184,7 +184,7 @@ export const Navbar = () => {
           />
           <div className="relative w-72 max-w-[85vw] bg-white h-full flex flex-col shadow-2xl animate-in slide-in-from-left duration-300">
             <div className="p-4 border-b flex items-center justify-between">
-              <span className="text-xl font-bold tracking-tight text-gray-900">
+              <span className="text-xl font-bold text-gray-900">
                 JUMIA<span className="text-[#F68B1E]">★</span>
               </span>
               <button onClick={() => setMobileMenuOpen(false)} className="text-gray-500">

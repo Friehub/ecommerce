@@ -137,7 +137,7 @@ export const FlashSales = () => {
         .font-extrabold { font-weight: 800; }
         .font-medium { font-weight: 500; }
         .uppercase { text-transform: uppercase; }
-        .tracking-tight { letter-spacing: -0.025em; }
+        .tracking-tight { letter-spacing: -0.01em; }
         .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse {
           0%, 100% { opacity: 1; }

@@ -32,7 +32,7 @@ export default function SellerRegistrationKYCPage() {
              <div className="w-20 h-20 bg-[#F68B1E] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-orange-500/40 rotate-6 hover:rotate-0 transition-transform duration-500">
                <UserPlus size={40} className="text-white" />
              </div>
-             <h1 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">Merchant Registration</h1>
+             <h1 className="text-3xl font-black text-white uppercase tracking-tight mb-2">Merchant Registration</h1>
              <div className="flex items-center justify-center gap-4">
                <div className={`h-1.5 w-12 rounded-full transition-all duration-500 ${step === 1 ? 'bg-orange-500' : 'bg-green-500'}`} />
                <div className={`h-1.5 w-12 rounded-full transition-all duration-500 ${step === 2 ? 'bg-orange-500' : 'bg-white/20'}`} />

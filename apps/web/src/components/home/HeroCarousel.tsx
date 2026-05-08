@@ -72,7 +72,7 @@ export const HeroCarousel = () => {
                   <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-white/90">Exclusive Deal</span>
                 </div>
                 
-                <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white mb-3 md:mb-5 leading-[0.9] tracking-tighter uppercase drop-shadow-lg">
+                <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white mb-3 md:mb-5 leading-[0.9] tracking-tight uppercase drop-shadow-lg">
                   {banner.title.split(' ').map((word: string, idx: number) => (
                     <span key={idx} className={idx === 1 ? 'text-[#FF7A00]' : ''}>{word}<br className="hidden sm:block" /> </span>
                   ))}

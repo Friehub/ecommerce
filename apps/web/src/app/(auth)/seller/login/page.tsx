@@ -54,7 +54,7 @@ export default function SellerLoginPage() {
              <div className="w-20 h-20 bg-[#F68B1E] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-orange-500/40 rotate-6 hover:rotate-0 transition-transform duration-500">
                <ShoppingBag size={40} className="text-white" />
              </div>
-             <h1 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">Seller Center</h1>
+             <h1 className="text-3xl font-black text-white uppercase tracking-tight mb-2">Seller Center</h1>
              <div className="flex items-center justify-center gap-2">
                <div className="h-[1px] w-4 bg-orange-500/50" />
                <p className="text-orange-200/80 text-[10px] font-black uppercase tracking-[0.3em]">Global Marketplace</p>

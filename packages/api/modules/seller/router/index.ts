@@ -40,7 +40,7 @@ const _sellerRouter = createTRPCRouter({
     .input(z.object({
       limit: z.number().min(1).max(100).default(50),
       offset: z.number().min(0).default(0),
-    }))
+    }).optional())
     .query(async ({ ctx, input }) => {
       const seller = await prisma.seller.findUnique({
         where: { userId: ctx.session.user.id }

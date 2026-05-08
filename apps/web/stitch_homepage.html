@@ -1,0 +1,658 @@
+<html class="light" lang="en"><head></head><body class="text-on-background bg-background">```html
+
+
+
+  <meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JUMIA | Online Shopping for Electronics, Fashion &amp; More</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface": "#231a12",
+            "on-background": "#231a12",
+            "surface": "#fff8f5",
+            "on-tertiary-fixed-variant": "#004b6f",
+            "on-error-container": "#93000a",
+            "surface-dim": "#e9d6cb",
+            "surface-variant": "#f2dfd3",
+            "inverse-surface": "#392e26",
+            "on-surface-variant": "#554335",
+            "on-secondary-fixed": "#1c1b1b",
+            "on-primary-container": "#5e3000",
+            "inverse-on-surface": "#ffede3",
+            "surface-bright": "#fff8f5",
+            "outline": "#897363",
+            "tertiary-container": "#00b0fb",
+            "outline-variant": "#dcc2af",
+            "on-secondary-fixed-variant": "#474746",
+            "surface-container": "#feeade",
+            "on-tertiary-fixed": "#001e2f",
+            "secondary-fixed": "#e5e2e1",
+            "on-primary-fixed": "#2f1500",
+            "secondary": "#5f5e5e",
+            "secondary-container": "#e2dfde",
+            "inverse-primary": "#ffb77e",
+            "on-primary": "#ffffff",
+            "primary-fixed": "#ffdcc3",
+            "tertiary-fixed": "#c9e6ff",
+            "tertiary": "#006491",
+            "primary-fixed-dim": "#ffb77e",
+            "tertiary-fixed-dim": "#8aceff",
+            "background": "#fff8f5",
+            "surface-tint": "#914d00",
+            "on-error": "#ffffff",
+            "primary-container": "#f68b1e",
+            "on-tertiary-container": "#00405e",
+            "error": "#ba1a1a",
+            "secondary-fixed-dim": "#c8c6c5",
+            "surface-container-high": "#f8e5d8",
+            "surface-container-highest": "#f2dfd3",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#fff1e9",
+            "on-secondary-container": "#636262",
+            "error-container": "#ffdad6",
+            "on-secondary": "#ffffff",
+            "primary": "#914d00",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed-variant": "#6e3900"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "stack-sm": "12px",
+            "stack-md": "24px",
+            "container-max": "1280px",
+            "base": "8px",
+            "gutter": "24px",
+            "stack-lg": "48px",
+            "margin": "32px"
+          },
+          "fontFamily": {
+            "headline-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "label-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "display-lg": ["Inter"],
+            "headline-md": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+            "label-sm": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "500"}],
+            "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+            "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F9FAFB;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .hero-gradient {
+      background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%);
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<!-- TopAppBar -->
+<header class="bg-surface sticky top-0 z-50 shadow-sm border-b border-outline-variant">
+<div class="flex flex-col w-full max-w-container-max mx-auto px-gutter py-base">
+<div class="flex items-center justify-between gap-gutter py-2">
+<a class="text-headline-lg font-headline-lg font-black text-primary flex items-center" href="#">
+          JUMIA <span class="text-primary-container ml-1">★</span>
+</a>
+<div class="flex-1 max-w-2xl relative">
+<div class="flex items-center bg-surface-container-low rounded-lg px-4 py-2 border border-outline-variant focus-within:border-primary-container transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-body-md text-on-surface" placeholder="Search products, brands and categories" type="text"/>
+<button class="bg-primary-container text-on-primary font-bold px-6 py-1.5 rounded-lg hover:opacity-90 transition-all scale-95 active:opacity-80">
+              SEARCH
+            </button>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-1 text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Hi, seller1</span>
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+<button class="flex items-center gap-1 text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-sm text-label-sm">Help</span>
+</button>
+<button class="relative text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center gap-2 text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-label-sm text-label-sm">Cart</span>
+</button>
+</div>
+</div>
+<nav class="flex items-center gap-8 pt-2 pb-1 overflow-x-auto whitespace-nowrap">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label-sm text-label-sm" href="#">FLASH SALES</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label-sm text-label-sm" href="#">OFFICIAL STORES</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label-sm text-label-sm" href="#">JUMIA GLOBAL</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label-sm text-label-sm" href="#">BEST SELLERS</a>
+</nav>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-gutter py-stack-md space-y-stack-lg">
+<!-- Hero Section with Sidebar and Info Cards -->
+<section class="grid grid-cols-12 gap-gutter items-start">
+<!-- SideNavBar -->
+<aside class="col-span-12 md:col-span-3 lg:col-span-2 bg-surface rounded-lg shadow-sm p-stack-sm flex flex-col gap-base border border-outline-variant/30">
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">devices</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary">Electronics</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg bg-surface-variant text-primary font-semibold transition-all duration-200" href="#">
+<span class="material-symbols-outlined">checkroom</span>
+<span class="font-body-md text-body-md">Fashion</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">laptop</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary">Computing</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">sanitizer</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary">Health &amp; Beauty</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">home_work</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary">Home &amp; Office</span>
+</a>
+</div>
+<div class="border-t border-outline-variant my-2"></div>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">verified</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary">Official Stores</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">public</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary">Jumia Global</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">trending_up</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary">Best Sellers</span>
+</a>
+</div>
+</aside>
+<!-- Main Hero Banner -->
+<div class="col-span-12 md:col-span-9 lg:col-span-7 relative group overflow-hidden rounded-xl h-[480px] shadow-lg">
+<img alt="Fashion Sale Banner" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A sophisticated wide shot of a high-end boutique interior with rows of premium clothing and vintage decor items." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9Vthnyyhp76F2Z10xd6Jx6IhI1sjY-cJXxlKtZHlOMi9h8KiHmrIA_LtL64Kt4pNLenLaaT5aTFjdMWGU2v4MuxsVcOl0TimJa8dbk-crtqU1R-zBtC1y-xrI8YNcUd2AKpC1SN5AlyyJ-f1FtMKU9EMBdx2sgmk44WABiQnC1IcUhBuWG0UzaQNF5NE5GhoH_gXnk0II2QVwWc5Z0Xxtcsq8nOKQuse1f4dcCM61Ddc5DERPd6sJ1OmdH_43OOPI3oaSjXZf81Y"/>
+<div class="absolute inset-0 hero-gradient flex flex-col justify-center px-12 text-white">
+<div class="flex items-center gap-2 mb-4">
+<span class="w-10 h-1 bg-primary-container"></span>
+<span class="font-label-sm tracking-widest text-primary-fixed uppercase">Exclusive Deal</span>
+</div>
+<h1 class="font-display-lg text-display-lg mb-0 leading-tight">FASHION</h1>
+<h1 class="font-display-lg text-display-lg text-primary-container mb-6 leading-tight">SALE</h1>
+<p class="font-body-lg text-body-lg max-w-md text-surface-variant/90 mb-8 border-l-2 border-primary-container pl-4">
+            Discover premium collections curated for the most discerning shoppers.
+          </p>
+<div class="flex items-center gap-4">
+<button class="bg-primary-container text-on-primary font-bold px-10 py-4 rounded-lg shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all active:translate-y-0">
+              SHOP COLLECTION
+            </button>
+<div class="flex gap-2">
+<button class="w-10 h-10 flex items-center justify-center border border-surface-variant/30 rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center border border-surface-variant/30 rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Feature Column -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-gutter">
+<!-- Trust Cards -->
+<div class="bg-surface rounded-xl p-6 shadow-sm flex flex-col gap-6 border border-outline-variant/30">
+<div class="flex items-center gap-4 group">
+<div class="w-12 h-12 flex items-center justify-center rounded-xl bg-orange-50 text-primary-container group-hover:bg-primary-container group-hover:text-white transition-all">
+<span class="material-symbols-outlined">inventory_2</span>
+</div>
+<div>
+<h4 class="font-headline-md text-sm font-bold uppercase tracking-wide">Free Delivery</h4>
+<p class="text-xs text-on-surface-variant font-medium">ORDERS OVER ₦10K</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<div class="w-12 h-12 flex items-center justify-center rounded-xl bg-green-50 text-green-600 group-hover:bg-green-600 group-hover:text-white transition-all">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<div>
+<h4 class="font-headline-md text-sm font-bold uppercase tracking-wide">Secure Pay</h4>
+<p class="text-xs text-on-surface-variant font-medium">100% SAFE CHECKOUT</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<div class="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+<span class="material-symbols-outlined">update</span>
+</div>
+<div>
+<h4 class="font-headline-md text-sm font-bold uppercase tracking-wide">Easy Returns</h4>
+<p class="text-xs text-on-surface-variant font-medium">7 DAYS POLICY</p>
+</div>
+</div>
+</div>
+<!-- Sell on Jumia -->
+<div class="bg-inverse-surface text-inverse-on-surface rounded-xl p-8 flex flex-col justify-between h-56 shadow-lg relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="font-headline-lg text-2xl font-black mb-1">SELL ON JUMIA</h3>
+<p class="font-label-sm text-xs opacity-70 tracking-widest uppercase">Join the network</p>
+</div>
+<button class="relative z-10 w-full py-4 bg-white text-on-surface font-black rounded-lg hover:bg-primary-container hover:text-on-primary transition-all shadow-lg active:scale-95">
+            REGISTER NOW
+          </button>
+<div class="absolute -right-4 -bottom-4 w-32 h-32 bg-primary/20 rounded-full blur-3xl transition-transform duration-1000 group-hover:scale-150"></div>
+</div>
+</div>
+</section>
+<!-- Top Categories -->
+<section class="bg-surface rounded-xl p-stack-md shadow-sm border border-outline-variant/30">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-headline-md font-bold text-on-surface">Top Categories</h2>
+<a class="text-primary font-bold text-label-sm flex items-center gap-1" href="#">SEE ALL <span class="material-symbols-outlined text-[18px]">chevron_right</span></a>
+</div>
+<div class="grid grid-cols-4 md:grid-cols-8 gap-gutter">
+<a class="flex flex-col items-center gap-3 group" href="#">
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary-fixed transition-colors border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-3xl">devices</span>
+</div>
+<span class="text-label-sm text-center font-medium group-hover:text-primary">Electronics</span>
+</a>
+<a class="flex flex-col items-center gap-3 group" href="#">
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary-fixed transition-colors border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-3xl">checkroom</span>
+</div>
+<span class="text-label-sm text-center font-medium group-hover:text-primary">Fashion</span>
+</a>
+<a class="flex flex-col items-center gap-3 group" href="#">
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary-fixed transition-colors border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-3xl">laptop</span>
+</div>
+<span class="text-label-sm text-center font-medium group-hover:text-primary">Computing</span>
+</a>
+<a class="flex flex-col items-center gap-3 group" href="#">
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary-fixed transition-colors border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-3xl">sanitizer</span>
+</div>
+<span class="text-label-sm text-center font-medium group-hover:text-primary">Health</span>
+</a>
+<a class="flex flex-col items-center gap-3 group" href="#">
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary-fixed transition-colors border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-3xl">home_work</span>
+</div>
+<span class="text-label-sm text-center font-medium group-hover:text-primary">Home</span>
+</a>
+<a class="flex flex-col items-center gap-3 group" href="#">
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary-fixed transition-colors border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-3xl">toys</span>
+</div>
+<span class="text-label-sm text-center font-medium group-hover:text-primary">Baby</span>
+</a>
+<a class="flex flex-col items-center gap-3 group" href="#">
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary-fixed transition-colors border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-3xl">sports_esports</span>
+</div>
+<span class="text-label-sm text-center font-medium group-hover:text-primary">Gaming</span>
+</a>
+<a class="flex flex-col items-center gap-3 group" href="#">
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary-fixed transition-colors border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-3xl">more_horiz</span>
+</div>
+<span class="text-label-sm text-center font-medium group-hover:text-primary">Other</span>
+</a>
+</div>
+</section>
+<!-- Flash Sales Carousel -->
+<section class="bg-surface-container rounded-xl overflow-hidden shadow-sm">
+<div class="bg-error text-white px-6 py-3 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined font-bold">bolt</span>
+<h2 class="font-headline-md text-xl font-bold uppercase tracking-wide">Flash Sales</h2>
+<div class="hidden md:flex items-center gap-2 ml-4">
+<span class="text-sm font-medium">Time Left:</span>
+<span class="bg-white text-error font-bold px-2 py-1 rounded">08h : 21m : 45s</span>
+</div>
+</div>
+<a class="font-bold text-label-sm flex items-center gap-1 hover:underline" href="#">SEE ALL <span class="material-symbols-outlined text-[18px]">chevron_right</span></a>
+</div>
+<div class="p-4 overflow-x-auto flex gap-4 hide-scrollbar">
+<!-- Product Card 1 -->
+<div class="min-w-[200px] md:min-w-[240px] bg-white rounded-lg p-3 group transition-all hover:shadow-md border border-outline-variant/20">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjR7VuMYoE_MoM6dm2hGS-ANqZHAh04Wlrm1QXHveUBA65Kyd06OOWjRBKpK5g1p7q8PSsdD0FkTXxbHtsfpa5KeU3oQOcIwRdXgOph_H5POscBrhC7FQK8CqSjkNroGVpObZ0RgOf-ZDpBP_JH4-c1ukpGZVwAKf7d3qw8k7OD56H2GGn2LOqTc0c42yflJT0uPOGqADmZCiLmEFpACYsYSgcsXjrHQh_MSbWMURUZ9W8skHVoKUPtJHPkqaBAKt-dFmaYmmsgeo"/>
+<span class="absolute top-2 left-2 bg-error text-white text-[10px] font-bold px-2 py-1 rounded">-45%</span>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">NIKE</p>
+<h3 class="text-body-md font-medium text-on-surface truncate">Air Max Speed Runner 2.0</h3>
+<div class="flex flex-col">
+<span class="text-headline-md text-lg font-black">₦ 45,900</span>
+<span class="text-xs text-on-surface-variant line-through">₦ 83,500</span>
+</div>
+<button class="w-full mt-2 py-2 bg-primary-container text-on-primary font-bold rounded-lg text-sm transition-colors hover:opacity-90">ADD TO CART</button>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="min-w-[200px] md:min-w-[240px] bg-white rounded-lg p-3 group transition-all hover:shadow-md border border-outline-variant/20">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu8ZuMhHjeaYyavSPaF7ApLdTA8j1f03J77IuIv7OwImmAACdi7ct9Ta1AWWpngCw8mRjZ7nDVmciQ648wUg3-dfiapYRvkHPIgnMtVADnFb95HBpUWNeQ402E9Veu03wQfyg-vzPBSNK52MY85KkkUmd3GZNdtcue64GJIfuJEy0MFZ-HAE0g7yLn2bWIuudlWmjWDHbwKGbPRapFxhkzWGRYwA5jQ0Rfan082MWFkLeJUWW7dJWBtlOHzOni8z3z7mPE0r15hFI"/>
+<span class="absolute top-2 left-2 bg-error text-white text-[10px] font-bold px-2 py-1 rounded">-20%</span>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">APPLE</p>
+<h3 class="text-body-md font-medium text-on-surface truncate">Apple Watch Series 9</h3>
+<div class="flex flex-col">
+<span class="text-headline-md text-lg font-black">₦ 520,000</span>
+<span class="text-xs text-on-surface-variant line-through">₦ 650,000</span>
+</div>
+<button class="w-full mt-2 py-2 bg-primary-container text-on-primary font-bold rounded-lg text-sm transition-colors hover:opacity-90">ADD TO CART</button>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="min-w-[200px] md:min-w-[240px] bg-white rounded-lg p-3 group transition-all hover:shadow-md border border-outline-variant/20">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlSvSQI0OyILxrb2Rf-_utZQmWQgO5ObpvtnelgpvTYnp4QR51L5uznDvGx3FmbzJcDFqWTDDc9FtvQQWciIA7tu9e6Xbl-jjPsXPP4r8YtIMkz4Px_uCI_UKsKtdDiTm0IsdCh6TMSh_QnIlRD9vfsKmw3CF1ulfOCX8ago-4m5-rFkaZxOmGpRj4nYwpsMq6Gm78lRdV88479SLAosbXKQGsKK1q_9twHY_DWeenk_HoiT2HJM2mpYEplfjREF5Hr8NAAy1E8XA"/>
+<span class="absolute top-2 left-2 bg-error text-white text-[10px] font-bold px-2 py-1 rounded">-15%</span>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">SONY</p>
+<h3 class="text-body-md font-medium text-on-surface truncate">Wireless Bluetooth Headphones</h3>
+<div class="flex flex-col">
+<span class="text-headline-md text-lg font-black">₦ 125,000</span>
+<span class="text-xs text-on-surface-variant line-through">₦ 147,000</span>
+</div>
+<button class="w-full mt-2 py-2 bg-primary-container text-on-primary font-bold rounded-lg text-sm transition-colors hover:opacity-90">ADD TO CART</button>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="min-w-[200px] md:min-w-[240px] bg-white rounded-lg p-3 group transition-all hover:shadow-md border border-outline-variant/20">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd33oG230Mn-nux1s4XBwoYO0fFko-4w70Sfm62tlPyZg1AfLPTi3zSb8heTkglJHJozU7ZZr_Zb7aTxR-qHiRphRmve6ClWv_E_aCa8yfLJoPcUa6v1Pw-w9TpmimEeWBV5dNAUiQDt4WaDlqXIwBSViBseRI-ydwF7DcVasEe7gmvBypGTr3-5gPI8ySKKtD9mN4k2YnouXoB-QrdZvNUwZI53YlAAz2Yz8PabwKlx8HArqFERWLzV80i56k6yCM7xkRpYIfbPg"/>
+<span class="absolute top-2 left-2 bg-error text-white text-[10px] font-bold px-2 py-1 rounded">-30%</span>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">RAY-BAN</p>
+<h3 class="text-body-md font-medium text-on-surface truncate">Classic Aviator Sunglasses</h3>
+<div class="flex flex-col">
+<span class="text-headline-md text-lg font-black">₦ 65,000</span>
+<span class="text-xs text-on-surface-variant line-through">₦ 92,000</span>
+</div>
+<button class="w-full mt-2 py-2 bg-primary-container text-on-primary font-bold rounded-lg text-sm transition-colors hover:opacity-90">ADD TO CART</button>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="min-w-[200px] md:min-w-[240px] bg-white rounded-lg p-3 group transition-all hover:shadow-md border border-outline-variant/20">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbE_oGP6nEGDNaXPz8A9KWSNOolgqsgYMWi2yrV9gBe0Z7FE8K57O5z7-nYQJNKi7gANN7OCrxXYaYHr-oXdmi8oy0QKx5p5bWOwrPT_tudmlfL6i1ePVWlfX1VUdteLzWQyHrQdxmm5xkI74tsKiIMU7vjg4Ohkr5kyjG6TkIopPiPEVZrSu5p6xvU4CXZHAhDRCTq6EM2sYcAgEGbIPJj-oQfcRmDxHCcBTUhxD_xsVKiZ-4XoZeRdnkWy99ns4GwBY1YWfjksM"/>
+<span class="absolute top-2 left-2 bg-error text-white text-[10px] font-bold px-2 py-1 rounded">-10%</span>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">POLAROID</p>
+<h3 class="text-body-md font-medium text-on-surface truncate">Now I-Type Instant Camera</h3>
+<div class="flex flex-col">
+<span class="text-headline-md text-lg font-black">₦ 89,000</span>
+<span class="text-xs text-on-surface-variant line-through">₦ 99,000</span>
+</div>
+<button class="w-full mt-2 py-2 bg-primary-container text-on-primary font-bold rounded-lg text-sm transition-colors hover:opacity-90">ADD TO CART</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Trending Now Grid -->
+<section class="bg-surface rounded-xl p-stack-md shadow-sm border border-outline-variant/30">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-headline-md font-bold text-on-surface">Trending Now</h2>
+<a class="text-primary font-bold text-label-sm flex items-center gap-1" href="#">SHOP ALL <span class="material-symbols-outlined text-[18px]">chevron_right</span></a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+<!-- Card -->
+<div class="bg-white rounded-lg overflow-hidden flex flex-col group border border-outline-variant/10 hover:shadow-lg transition-all">
+<div class="relative aspect-square">
+<img alt="Trend" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYYRZPz6YZTSWBQEJlWLvwoZbrOgR6hGTYLlWpqlDeiLhtR5KVi71LpaVKn3EReajPb_wJ5KFyb7RNle2TF9iFeS-upC0sf7dhnV6gB1X6CGyw831o42S0N33f-JlPf-L1tD0t5TJGgb6p1_TpzxOrojTdvyyZsAvbCfI8f6hNA-P1Y5_mfZL9FAQuNmJ1kVansRawmyMedCiHM2U9Xxq2qG2YzsUVDg9zbJA0y_6dy0Fr6yCkRHDoLIm0xJUP02bD6tuOXrHZnTs"/>
+</div>
+<div class="p-3 space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold">CASUAL WEAR</p>
+<h4 class="text-sm font-medium text-on-surface truncate">Designer Cotton T-Shirt</h4>
+<p class="font-bold text-on-surface">₦ 12,500</p>
+<button class="w-full text-primary border border-primary font-bold py-1.5 rounded text-[11px] mt-2 hover:bg-primary-fixed transition-colors">BUY NOW</button>
+</div>
+</div>
+<!-- Repeat for 6 cards -->
+<div class="bg-white rounded-lg overflow-hidden flex flex-col group border border-outline-variant/10 hover:shadow-lg transition-all">
+<div class="relative aspect-square">
+<img alt="Trend" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE7FpMKJHl9Pipkl9V2plOTO8VVCienbMClmmMp9KmHwR2MlNYpdOmwzYqLTQOjBEEVYfk7Q5ITqlj9GpXc-8oRUdEQrrDqVB3AJp1ET2mhIN-jmGAtbvjlSsOwGrhJgkPdSVIRyI1CLBFpN1Eeuflk-Ot0V0nU0WWc_zsUUO9durSajXh3S_n-s9lOFibNtZIxDwHAVTMaKen74LN43X_EHUrTL-ieHSPZi9TSotA9T99BJBXO_SV55K3X9n1kT7Ql9JLTQC_25M"/>
+</div>
+<div class="p-3 space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold">FOOTWEAR</p>
+<h4 class="text-sm font-medium text-on-surface truncate">Ultra-Light Running Shoes</h4>
+<p class="font-bold text-on-surface">₦ 28,000</p>
+<button class="w-full text-primary border border-primary font-bold py-1.5 rounded text-[11px] mt-2 hover:bg-primary-fixed transition-colors">BUY NOW</button>
+</div>
+</div>
+<div class="bg-white rounded-lg overflow-hidden flex flex-col group border border-outline-variant/10 hover:shadow-lg transition-all">
+<div class="relative aspect-square">
+<img alt="Trend" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNZczqVoJ8h-4Pi86-j9K0rmDapFNUgsyFdkSeXQlARq_rvoi0HKNiOKVEMNC8dZiuMplTJBkx72cd8O6XLz5pLPUjRIHklJVchjX_zkEFad_CTqu22POhqrpXk52_w-6LAIOAWvqLNHzQBaeL-q1lrVub5JqzEZUfWHxeaINZkt_EEhk4MS2shKj2lF4VdUWgGcV-v5Zo_w9vdfRO9QgnRTtTGRFl9x7sWu1XwQYgYz0SMESUYJiDm0aryDuaKk6nnARHmcjkMJ8"/>
+</div>
+<div class="p-3 space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold">GADGETS</p>
+<h4 class="text-sm font-medium text-on-surface truncate">Sleek Aluminum Smartphone Case</h4>
+<p class="font-bold text-on-surface">₦ 5,500</p>
+<button class="w-full text-primary border border-primary font-bold py-1.5 rounded text-[11px] mt-2 hover:bg-primary-fixed transition-colors">BUY NOW</button>
+</div>
+</div>
+<div class="bg-white rounded-lg overflow-hidden flex flex-col group border border-outline-variant/10 hover:shadow-lg transition-all">
+<div class="relative aspect-square">
+<img alt="Trend" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDt7kJD-E-JQlloqj7zzBCvJzgeB8AnvYAw1O9KLiu5fBnMv-wgov7amgVwocGZYbeQvvt1SkStbK5_7HOhvcrkCb6nn2hAm0V-ieBjSB11DiAlJNUv6q3Vf44TpCmIob5E1Hk565gV5jIuuvCrEJWEp0oGRdZgmMjvMc_gY3QFDdu5W9bDWjbtuluEMYe6j_BiB10z91DS21AjcmTEXVLE4uufkHz3rZPggNa0cPG-tOWenrsZCsiV68s6csNu0UPwaY-3tFf2f9c"/>
+</div>
+<div class="p-3 space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold">SKINCARE</p>
+<h4 class="text-sm font-medium text-on-surface truncate">Natural Revitalizing Serum</h4>
+<p class="font-bold text-on-surface">₦ 18,900</p>
+<button class="w-full text-primary border border-primary font-bold py-1.5 rounded text-[11px] mt-2 hover:bg-primary-fixed transition-colors">BUY NOW</button>
+</div>
+</div>
+<div class="bg-white rounded-lg overflow-hidden flex flex-col group border border-outline-variant/10 hover:shadow-lg transition-all">
+<div class="relative aspect-square">
+<img alt="Trend" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIIlDrWUCwicoGT1RdX6pwURfP0T7drD-Ev3vW96ZmLxH4soIv2sxoZW2BNR7_wPKlFyGZXX98ulNSrHaFlf2bt2RuuIksFER4UTrb-rbR_-DWjMTM1l6TDU7tU8BMBRoxNCSChaAvFBpFqnn1TDtyPBWXXnUYE8ch0rTaXixwkn7u4SBkhqp4jHI2NZnJ8aiTINMzSB4dzLSmzIBlDhAtXkDr1YC3sajOK-9hb1jVZNTaBFsq3iV0yE_x5fL-EFuEGwiqnW_8GS4"/>
+</div>
+<div class="p-3 space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold">ACCESSORIES</p>
+<h4 class="text-sm font-medium text-on-surface truncate">Classic Minimalist Leather Watch</h4>
+<p class="font-bold text-on-surface">₦ 35,000</p>
+<button class="w-full text-primary border border-primary font-bold py-1.5 rounded text-[11px] mt-2 hover:bg-primary-fixed transition-colors">BUY NOW</button>
+</div>
+</div>
+<div class="bg-white rounded-lg overflow-hidden flex flex-col group border border-outline-variant/10 hover:shadow-lg transition-all">
+<div class="relative aspect-square">
+<img alt="Trend" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDODiOUII-nR9tDk9fJaQAN5NorCmdjGsQiFPFhkr8V9XP59SL1DjX3c9Gc2dYNoMN4QDXkvve3DLM82fPNbXCuhpDumMk3fUGXTwBXgPndHVXQuvQZPMwlsdOiRABlVy6MugvpVNLKpsQgfMRcuE5voV9KWE1Uv16sxJteVi_9fAb6w1CrO4vthKWO6xHijtE9AXhHLnjGXAMHUHVaXarM-ZkHh5NaKkDNkEdgve6ysrHqwebwUtmj4HzRjEb6_ujwdGSu_gxY0bQ"/>
+</div>
+<div class="p-3 space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold">HOME</p>
+<h4 class="text-sm font-medium text-on-surface truncate">Aromatic Scented Candle Set</h4>
+<p class="font-bold text-on-surface">₦ 15,000</p>
+<button class="w-full text-primary border border-primary font-bold py-1.5 rounded text-[11px] mt-2 hover:bg-primary-fixed transition-colors">BUY NOW</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Promo Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="relative group rounded-xl overflow-hidden h-64 shadow-sm hover:shadow-xl transition-all duration-300">
+<img alt="Free Delivery" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A clean, minimalist commercial photograph of a cardboard delivery box resting on a pristine white surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrfRD2PGyzqLJE48gfffLvGUMD9Gnrts5yL9uPIY1O_QJdAuq2Zr3LD9RzeeZuj6zKrYfGAoBnMGNavcrYovVkcx8uIfx9285fuTFYlwFFtTJ1b3QdkVYQq2NQ7bcUldDoNpYh0qFs94_3GtfAmzCb8Q19VmDkygyHfFYEuQ8qYZtLHQtR6FqW_6hrDndx8BrUWAGlz9q5nYqscuZFnBOL2hxX21vAciCvJTBy-mID2nhSL-qu9jAeJek426Q-_yqy1cju-Ss7Erc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end">
+<h3 class="text-white font-headline-md font-bold mb-1">FREE DELIVERY</h3>
+<p class="text-white/80 text-xs flex items-center gap-1 group-hover:gap-2 transition-all">
+            ON ALL ORDERS ABOVE ₦10,000 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</p>
+</div>
+</div>
+<div class="relative group rounded-xl overflow-hidden h-64 shadow-sm hover:shadow-xl transition-all duration-300">
+<img alt="Jumia Global" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A breathtaking landscape photograph representing global reach." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyc4VD_qObe2U0qykZ_3_Ce6hs-zTVBuikEkm7A2hRVur_qokjsREn6wRTHiv3WUha9fqyY_m0Id1n2LyDnckCZy9ghw_OiwwGECW2MOuD3RGeQLY4pxMIvKE8mY-VWDqwfIGEJYOoMAmz-izYLKxyhuUqoJMNWi3T55CUTgvPBQwrSGsR_cxIeQ1AUTICjgE8s63LLxDZfH2aJECm0vn5wmjIrBC-tzoLIOr9096_ecxSFMBFThbFR0LnHSodHS3XyTmKctBfjUo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end">
+<h3 class="text-white font-headline-md font-bold mb-1">JUMIA GLOBAL</h3>
+<p class="text-white/80 text-xs flex items-center gap-1 group-hover:gap-2 transition-all">
+            MILLIONS OF ITEMS FROM ABROAD <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</p>
+</div>
+</div>
+<div class="relative group rounded-xl overflow-hidden h-64 shadow-sm hover:shadow-xl transition-all duration-300">
+<img alt="Official Stores" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A professional, organized display of premium products." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-tVjY-Mibd1FdQsjsy9GEPjfEwmkriAKYYbzOUjgdsL-AgPAKQAyD8rZoOVXXAAJEqv_QyCNOrDveYbbpm_nd5gPQ9y9HJ-q9SuuI_gCxbwRoF4iHDootJP7APzrEtIBf7pyTf4xlOxKj37mrosqFt7tKrX8TCn5vH8bCW_XGgePTfzGLe0fgjb2_m9eQI964CTO4I2470PqNLuPflT6qWvYjvzxBARuE4ETd4u5vjMOo4Egk8M-nNW2BTB1hndXS9DN8owY6cPk"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end">
+<h3 class="text-white font-headline-md font-bold mb-1">OFFICIAL STORES</h3>
+<p class="text-white/80 text-xs flex items-center gap-1 group-hover:gap-2 transition-all">
+            100% GENUINE BRANDS <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</p>
+</div>
+</div>
+<div class="relative group rounded-xl overflow-hidden h-64 shadow-sm hover:shadow-xl transition-all duration-300">
+<img alt="Flash Sales" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="High-contrast, artistic shot of luxury shopping bags." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDC9eSP9sEGr7InezE4_h_xmlBmnNXRZaKhzkdGBWqDSRhEfbmOr7p3sVaIpomT3_y1K5jHf3jpbu6fqR0gF19rgiKHEjxtr-8kQ6erC_Hml4T7Qo41XcfMnJWIFLk7BzmHbHPgrxWoFvvI7VOrtRcE_yvT9t7GRxvZWQze_vTEiuCSi4VqfboH1Z8ZUTI8XmIFR-mwlSOLjuEg9YoNhK3w-3Hlw1RkPl7SEm_V-bVTAPtCDIlkZfBKm1-t6KWnVeM1-175khxWfE0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end">
+<h3 class="text-white font-headline-md font-bold mb-1">FLASH SALES</h3>
+<p class="text-white/80 text-xs flex items-center gap-1 group-hover:gap-2 transition-all">
+            UP TO 80% OFF DAILY <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</p>
+</div>
+</div>
+</section>
+<!-- Recommended for You -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-headline-md font-bold text-on-surface">Recommended for You</h2>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-gutter">
+<!-- Reusable Product Card Component -->
+<div class="bg-surface rounded-lg p-3 group transition-all hover:shadow-lg border border-outline-variant/30 flex flex-col h-full">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB40o4yCceNCBU4y2BOeNte4dZmJpuI2xXgwlhfmHZQmTeXbu3WkHX_fU82ycFHyJcAbxvLmH7v7C8YndpTDW-0ZPloNzm3D85aoksfxmOLpHiGaCPGA3j0dTi72uhZkzx7-B_gr5X3MUW8dpPfWKBBwIACHxG_-5YlrbiQ5Hb3zHyuwDYaBo1K_MvYwQhxi2xsvqTeRxXe-HOrsMtTpiNycDPm9KLjebbowDt6cWb_UVRbvG1KDgN7M3rGryihVDqvf8y5Ofu1TkY"/>
+</div>
+<div class="flex-1 flex flex-col space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">SONOS</p>
+<h3 class="text-sm font-medium text-on-surface line-clamp-2">Premium Smart Speaker with Voice Control</h3>
+<div class="mt-auto pt-2">
+<span class="text-headline-md text-base font-black">₦ 185,000</span>
+</div>
+<button class="w-full mt-3 py-2 bg-primary text-on-primary font-bold rounded-lg text-xs transition-colors hover:opacity-90">BUY NOW</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface rounded-lg p-3 group transition-all hover:shadow-lg border border-outline-variant/30 flex flex-col h-full">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4BPRgMcFoWDYdYf5OuTqJs1qMT_U_g1FWLaErvI1SBlZs-4hK3_MNoHBKmD5rCvWX6CK6m5Tv2kX4oxkakXdsOsBBS5Q8DaMYyvICBsR7TVPwUkf6OWDtO1UZY2TxDfPdT20wgT1eSEbHSwpY8l47X3lxPBSz6FBnyIxmxFHX969ur3TpYzllXjvPZTTmQ7qBZcrRAeWVkq4la0NRkZnPq2zPTSZ1akfyI4PV9EUQVsxdFATX4kjwjRvw8P1Rg9j-z4wE2Yiwrvo"/>
+</div>
+<div class="flex-1 flex flex-col space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">LEATHER CO.</p>
+<h3 class="text-sm font-medium text-on-surface line-clamp-2">Handcrafted Full-Grain Travel Duffel Bag</h3>
+<div class="mt-auto pt-2">
+<span class="text-headline-md text-base font-black">₦ 72,000</span>
+</div>
+<button class="w-full mt-3 py-2 bg-primary text-on-primary font-bold rounded-lg text-xs transition-colors hover:opacity-90">BUY NOW</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface rounded-lg p-3 group transition-all hover:shadow-lg border border-outline-variant/30 flex flex-col h-full">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdf09w4P1rYd5SR6kiZGUPI_aclvAFTCD7qC5GepSRFpWnCNLiI3jAqn9fVdQK8Ht3wlfSvedfEO6xNi2bZVGrH10W9GrfOyTi6XOqv3Wm2NlFR_VCb3o9H5euFmpaxYm4XPHzb6SELqa9UvwFdH5Yi71Tz-HQfFhCZspkmIkYVlRDjDrt88iQglSaus-bHoPLmGLNucRGhlRdvdKbQPsm6GpTvtYZskCPphaGgWprvUYhDYvLl4XBtYpjP9mhTZPIQtyvFrCik2k"/>
+</div>
+<div class="flex-1 flex flex-col space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">ADIDAS</p>
+<h3 class="text-sm font-medium text-on-surface line-clamp-2">Originals Superstar Classic Sneakers</h3>
+<div class="mt-auto pt-2">
+<span class="text-headline-md text-base font-black">₦ 42,500</span>
+</div>
+<button class="w-full mt-3 py-2 bg-primary text-on-primary font-bold rounded-lg text-xs transition-colors hover:opacity-90">BUY NOW</button>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface rounded-lg p-3 group transition-all hover:shadow-lg border border-outline-variant/30 flex flex-col h-full">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYMewiuHYSWCENLxaGFE4-_a42sqS0yiyAD5ZNn-hAdoQ32bvnnjeGid9Ykrp6lF7UlLAxZt66h2aQvlClR20D-dD0EZ_x_7OPiRkIRvJvyBFP6INFEgaQLYJ-QyYCPEic1L2gp4kVZ0qe24q6aGj-58cZqFirYT7tUau2ONe2DiQ6va8JcKtYPG3BwXhzVcpJqkMTqMsiniDxFqGWplhMyag3z7H0Qe-fa0tRiO-DNvFuOJMv03c8f7iGxehAKH3ieSxLKJITycg"/>
+</div>
+<div class="flex-1 flex flex-col space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">SAMSUNG</p>
+<h3 class="text-sm font-medium text-on-surface line-clamp-2">55" QLED 4K Smart TV with HDR10+</h3>
+<div class="mt-auto pt-2">
+<span class="text-headline-md text-base font-black">₦ 495,000</span>
+</div>
+<button class="w-full mt-3 py-2 bg-primary text-on-primary font-bold rounded-lg text-xs transition-colors hover:opacity-90">BUY NOW</button>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="bg-surface rounded-lg p-3 group transition-all hover:shadow-lg border border-outline-variant/30 flex flex-col h-full">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAGIaqfDA5vsLkZRQflJoDkbz5WKxvU1aFz6hDZyMXDHcWWvaUEuqQzYPttBc0vLxL0Pn4ucVjZQ57SfoyiM00G1n6TV8s8XNQcFzUGHsT-x6cGE3x2fG3L6KSQ-sGT7ryrGr4A5gOe03q6pLbSLf1AzEVs3nHzyAYNpOIZX1Tuqe8X3J24KAfxbjQWM2vZ1JKRLaMleDBJQHtjRekfGn2D942QevhtJ4GjG_PcutBPe0zF-XacvKGKsBmzVl5BtS5__sgciMqUqI"/>
+</div>
+<div class="flex-1 flex flex-col space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">ESSENTIALS</p>
+<h3 class="text-sm font-medium text-on-surface line-clamp-2">Modern White Ceramic Table Lamp</h3>
+<div class="mt-auto pt-2">
+<span class="text-headline-md text-base font-black">₦ 15,500</span>
+</div>
+<button class="w-full mt-3 py-2 bg-primary text-on-primary font-bold rounded-lg text-xs transition-colors hover:opacity-90">BUY NOW</button>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="bg-surface rounded-lg p-3 group transition-all hover:shadow-lg border border-outline-variant/30 flex flex-col h-full">
+<div class="relative overflow-hidden rounded-md mb-3 aspect-square">
+<img alt="Product" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq0LpopbKBUcerT5NmXprKBHcsHaIPu3WB1wJ0f-4-KitR0TRubzQnVFZMeHgyv8pCdUcZbPi1KJ5ntdW1ooIDmYAUfPFkz-dAGgRDIgkTEBEsx0q_nKfZ_SMtG1M8wYwOnHFJI8-BlE8UR6PKMn2V-OM8fyDaPPMi-1o0Iydq1xLcaXOhUB0NzMwFLP7aQW54Gm3jmDXDyyTPPegI6w7XlnnbOM_A8K54K1truqQ9KRDJSnhvmtgKeh8z72CR5LARNv_4Z7Vy0Ss"/>
+</div>
+<div class="flex-1 flex flex-col space-y-1">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">DYSON</p>
+<h3 class="text-sm font-medium text-on-surface line-clamp-2">Supersonic Hair Dryer Pro</h3>
+<div class="mt-auto pt-2">
+<span class="text-headline-md text-base font-black">₦ 320,000</span>
+</div>
+<button class="w-full mt-3 py-2 bg-primary text-on-primary font-bold rounded-lg text-xs transition-colors hover:opacity-90">BUY NOW</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant mt-stack-lg">
+<div class="flex flex-col items-center py-stack-lg px-gutter max-w-container-max mx-auto">
+<div class="w-full grid grid-cols-1 md:grid-cols-4 gap-stack-lg mb-12">
+<div class="col-span-1">
+<h3 class="text-headline-md font-headline-md text-primary mb-6">JUMIA ★</h3>
+<p class="text-on-surface-variant text-body-md">The best e-commerce platform providing quality products at the best prices with nationwide delivery.</p>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-on-surface uppercase tracking-wider text-sm">Customer Service</h4>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-sm" href="#">Help Center</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-sm" href="#">Return Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-sm" href="#">Privacy Policy</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-on-surface uppercase tracking-wider text-sm">About Jumia</h4>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-sm" href="#">Sell on Jumia</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-sm" href="#">Terms &amp; Conditions</a>
+</div></div></div></footer></body></html>

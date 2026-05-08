@@ -50,10 +50,9 @@ export const HeroCarousel = () => {
   }
 
   return (
-    <div className="relative flex-1 h-[320px] md:h-[480px] bg-white rounded-[24px] shadow-2xl shadow-black/5 overflow-hidden group border border-gray-100 select-none">
-      {/* Slides */}
+    <div className="relative flex-1 group overflow-hidden rounded-xl h-[320px] md:h-[480px] shadow-lg">
       <div 
-        className="flex h-full transition-transform duration-[1000ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+        className="flex h-full transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
         {banners.map((banner: any, i) => (
@@ -61,70 +60,45 @@ export const HeroCarousel = () => {
             <img 
               src={banner.imageUrl} 
               alt={banner.title}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2000ms] ease-out"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            
-            {/* Modern Content Panel - Glassmorphism & Subtle Gradients */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 md:via-transparent md:bg-gradient-to-r md:from-black/40 md:to-transparent flex flex-col justify-end md:justify-center px-6 pb-12 md:px-16 md:pb-0 z-20">
-              <div className={`transition-all duration-700 delay-300 ${i === current ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-                <div className="inline-flex items-center gap-2 mb-3 md:mb-6">
-                  <div className="w-6 h-1 bg-[#FF7A00] rounded-full" />
-                  <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-white/90">Exclusive Deal</span>
-                </div>
-                
-                <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white mb-3 md:mb-5 leading-[0.9] tracking-tight uppercase drop-shadow-lg">
-                  {banner.title.split(' ').map((word: string, idx: number) => (
-                    <span key={idx} className={idx === 1 ? 'text-[#FF7A00]' : ''}>{word}<br className="hidden sm:block" /> </span>
-                  ))}
-                </h2>
-                
-                <p className="text-[11px] md:text-base font-medium text-white/80 max-w-[200px] sm:max-w-sm mb-6 md:mb-10 leading-relaxed border-l-2 border-[#FF7A00] pl-4 md:pl-6">
-                  {banner.subtitle || 'Discover premium collections curated for the most discerning shoppers.'}
-                </p>
-                
+            <div className="absolute inset-0 hero-gradient flex flex-col justify-center px-12 text-white">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="w-10 h-1 bg-primary-container"></span>
+                <span className="font-label-sm tracking-widest text-primary-fixed uppercase text-xs">Exclusive Deal</span>
+              </div>
+              <h2 className="font-inter text-4xl md:text-6xl font-black mb-4 leading-tight uppercase tracking-tighter">
+                {banner.title}
+              </h2>
+              <p className="font-inter text-sm md:text-lg max-w-md text-surface-variant/90 mb-8 border-l-2 border-primary-container pl-4">
+                {banner.subtitle || 'Discover premium collections curated for the most discerning shoppers.'}
+              </p>
+              <div className="flex items-center gap-4">
                 <Link 
                   href={banner.link || '#'}
-                  className="inline-flex items-center gap-3 bg-[#FF7A00] text-white px-8 py-4 md:px-12 md:py-6 rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all transform active:scale-95 shadow-xl shadow-orange-500/30 group/btn w-fit"
+                  className="bg-primary-container text-on-primary font-bold px-10 py-4 rounded-lg shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all active:translate-y-0 text-sm uppercase tracking-widest"
                 >
-                  Shop Collection
-                  <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+                  SHOP COLLECTION
                 </Link>
+                <div className="flex gap-2">
+                  <button onClick={prev} className="w-10 h-10 flex items-center justify-center border border-surface-variant/30 rounded-full hover:bg-white/10 transition-colors">
+                    <ChevronLeft className="text-white" />
+                  </button>
+                  <button onClick={next} className="w-10 h-10 flex items-center justify-center border border-surface-variant/30 rounded-full hover:bg-white/10 transition-colors">
+                    <ChevronRight className="text-white" />
+                  </button>
+                </div>
               </div>
             </div>
-
-            {/* Subtle Overlay to ensure readability */}
-            <div className="absolute inset-0 bg-black/10 pointer-events-none" />
           </div>
         ))}
       </div>
-
-      {/* Navigation Controls */}
-      <div className="absolute bottom-6 md:bottom-12 left-6 md:left-16 flex items-center gap-6 z-30">
-        <div className="flex gap-2">
-          {banners.map((_, i) => (
-            <button 
-              key={i}
-              onClick={() => setCurrent(i)}
-              className={`h-1.5 rounded-full transition-all duration-500 ${i === current ? 'w-8 md:w-12 bg-[#FF7A00]' : 'w-2 md:w-3 bg-white/30 hover:bg-white/50'}`}
-            />
-          ))}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={prev}
-            className="w-10 h-10 md:w-12 md:h-12 rounded-xl border border-white/10 bg-white/10 backdrop-blur-md text-white items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90 flex"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button 
-            onClick={next}
-            className="w-10 h-10 md:w-12 md:h-12 rounded-xl border border-white/10 bg-white/10 backdrop-blur-md text-white items-center justify-center hover:bg-white hover:text-black transition-all transform active:scale-90 flex"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
-      </div>
+      
+      <style jsx>{`
+        .hero-gradient {
+          background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%);
+        }
+      `}</style>
     </div>
   );
 };

@@ -1,9 +1,27 @@
 'use client';
 
 import React from 'react';
-import { TrendingUp, Award, BarChart3, Users, DollarSign, Calendar, Flame, FlameKindling } from 'lucide-react';
+import { api } from '@/trpc/react';
+import { TrendingUp, Award, BarChart3, Users, DollarSign, Calendar, Flame, FlameKindling, Loader2, Package, AlertTriangle } from 'lucide-react';
 
 export default function SellerInsightsPage() {
+  const { data: metrics, isLoading } = api.seller.getDashboardMetrics.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh] select-none">
+        <Loader2 className="animate-spin text-[#F68B1E]" size={40} />
+      </div>
+    );
+  }
+
+  const gmv = metrics?.gmv || 0;
+  const revenue = metrics?.revenue || 0;
+  const pendingOrders = metrics?.pendingOrders || 0;
+  const deliveredOrders = metrics?.deliveredOrders || 0;
+  const totalOrders = pendingOrders + deliveredOrders;
+  const conversionRate = totalOrders > 0 ? (deliveredOrders / totalOrders) * 100 : 0;
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 select-none bg-[#F9F9FA] min-h-screen">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -17,7 +35,7 @@ export default function SellerInsightsPage() {
         </div>
         <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-gray-200/80 shadow-sm">
           <Calendar className="text-gray-400" size={16} />
-          <span className="text-xs font-extrabold text-gray-700 uppercase tracking-widest">Last 30 Days</span>
+          <span className="text-xs font-extrabold text-gray-700 uppercase tracking-widest">Real-time Data</span>
         </div>
       </div>
 
@@ -28,50 +46,44 @@ export default function SellerInsightsPage() {
             <DollarSign size={20} className="p-1 rounded-lg bg-orange-50 border border-orange-100 shrink-0" />
             <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Gross Revenues</h3>
           </div>
-          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">₦ 425,000</p>
+          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">₦ {gmv.toLocaleString()}</p>
           <div className="flex items-center gap-1.5 mt-2">
             <TrendingUp size={14} className="text-green-500" />
-            <span className="text-xs font-extrabold text-green-500 bg-green-50/50 px-1.5 py-0.5 rounded border border-green-100/40">+12%</span>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">vs last month</span>
+            <span className="text-xs font-extrabold text-green-500 bg-green-50/50 px-1.5 py-0.5 rounded border border-green-100/40">Active</span>
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Live tracking</span>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:border-gray-200/80 duration-300 transition-all">
           <div className="flex items-center gap-3 mb-3 text-[#F68B1E]">
             <Award size={20} className="p-1 rounded-lg bg-orange-50 border border-orange-100 shrink-0" />
-            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Conversion Rate</h3>
+            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Performance Score</h3>
           </div>
-          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">3.85%</p>
+          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">{(metrics?.performanceScore || 5.0).toFixed(1)}</p>
           <div className="flex items-center gap-1.5 mt-2">
-            <TrendingUp size={14} className="text-green-500" />
-            <span className="text-xs font-extrabold text-green-500 bg-green-50/50 px-1.5 py-0.5 rounded border border-green-100/40">+0.4%</span>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">vs last month</span>
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Out of 5.0</span>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:border-gray-200/80 duration-300 transition-all">
           <div className="flex items-center gap-3 mb-3 text-blue-500">
-            <Users size={20} className="p-1 rounded-lg bg-blue-50 border border-blue-100 shrink-0" />
-            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Traffic (Visits)</h3>
+            <Package size={20} className="p-1 rounded-lg bg-blue-50 border border-blue-100 shrink-0" />
+            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Total Orders</h3>
           </div>
-          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">14,210</p>
-          <div className="flex items-center gap-1.5 mt-2">
-            <TrendingUp size={14} className="text-green-500" />
-            <span className="text-xs font-extrabold text-green-500 bg-green-50/50 px-1.5 py-0.5 rounded border border-green-100/40">+8%</span>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">vs last month</span>
+          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">{totalOrders}</p>
+          <div className="flex items-center gap-1.5 mt-2 text-blue-500">
+            <span className="text-xs font-extrabold uppercase tracking-widest">{pendingOrders} pending</span>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:border-gray-200/80 duration-300 transition-all">
           <div className="flex items-center gap-3 mb-3 text-red-500">
             <Flame size={20} className="p-1 rounded-lg bg-red-50 border border-red-100 shrink-0" />
-            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Total Items Sold</h3>
+            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Items Sold</h3>
           </div>
-          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">524</p>
+          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">{deliveredOrders}</p>
           <div className="flex items-center gap-1.5 mt-2">
-            <TrendingUp size={14} className="text-green-500" />
-            <span className="text-xs font-extrabold text-green-500 bg-green-50/50 px-1.5 py-0.5 rounded border border-green-100/40">+15%</span>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">vs last month</span>
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Verified deliveries</span>
           </div>
         </div>
       </div>
@@ -80,14 +92,13 @@ export default function SellerInsightsPage() {
         {/* Performance details */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-md p-5 md:p-7">
           <h3 className="text-xs md:text-sm font-extrabold text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
-            <FlameKindling size={16} className="text-[#F68B1E]" /> Hot Trends & Customer Insights
+            <FlameKindling size={16} className="text-[#F68B1E]" /> Performance Metrics
           </h3>
           <div className="space-y-5">
             {[
-              { label: 'Repeat Customer Growth', val: '64%', progress: 64, color: 'bg-[#F68B1E]' },
-              { label: 'Cross-Category Purchases', val: '28%', progress: 28, color: 'bg-blue-500' },
-              { label: 'Listing Conversion Improvement', val: '41%', progress: 41, color: 'bg-green-500' },
-              { label: 'Abandonment Prevention Rate', val: '72%', progress: 72, color: 'bg-indigo-500' },
+              { label: 'Fulfillment Rate', val: `${conversionRate.toFixed(1)}%`, progress: conversionRate, color: 'bg-[#F68B1E]' },
+              { label: 'Inventory Health', val: metrics?.lowStockCount === 0 ? 'Optimal' : `${metrics?.lowStockCount} Low`, progress: metrics?.lowStockCount === 0 ? 100 : 50, color: 'bg-blue-500' },
+              { label: 'Customer Satisfaction', val: `${((metrics?.performanceScore || 5.0) * 20).toFixed(0)}%`, progress: (metrics?.performanceScore || 5.0) * 20, color: 'bg-green-500' },
             ].map((item, idx) => (
               <div key={idx} className="space-y-1.5">
                 <div className="flex justify-between items-center text-xs">
@@ -102,34 +113,46 @@ export default function SellerInsightsPage() {
           </div>
         </div>
 
-        {/* Top selling catalog items */}
+        {/* Low Stock Alerts */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-md p-5 md:p-7 overflow-hidden">
-          <h3 className="text-xs md:text-sm font-extrabold text-gray-900 uppercase tracking-widest mb-6">Top Selling Items</h3>
-          <div className="divide-y divide-gray-100">
-            {[
-              { id: 1, title: 'Corporate Leather Briefcase', price: 45000, qty: 124, rev: 5580000 },
-              { id: 2, title: 'Multi-Utility Tactical Backpack', price: 18500, qty: 89, rev: 1646500 },
-              { id: 3, title: 'Modern Premium Ergonomic Desk Chair', price: 62000, qty: 45, rev: 2790000 },
-              { id: 4, title: 'Smart Ultra-High Definition Display 4K', price: 110000, qty: 32, rev: 3520000 },
-            ].map((item) => (
-              <div key={item.id} className="py-3 flex items-center justify-between hover:bg-gray-50/50 transition-colors duration-200">
-                <div className="min-w-0">
-                  <h4 className="font-extrabold text-xs md:text-sm text-gray-900 leading-tight tracking-tight hover:text-[#F68B1E] transition-colors cursor-pointer truncate">
-                    {item.title}
-                  </h4>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
-                    ₦ {item.price.toLocaleString()} • {item.qty} units sold
-                  </p>
-                </div>
-                <div className="text-right flex-shrink-0 ml-4">
-                  <p className="text-xs md:text-sm font-black text-gray-800">₦ {item.rev.toLocaleString()}</p>
-                  <span className="text-[10px] font-extrabold text-green-500 uppercase tracking-widest bg-green-50 px-1.5 py-0.5 rounded border border-green-100/30">Active</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <h3 className="text-xs md:text-sm font-extrabold text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+            <AlertTriangle size={16} className="text-orange-500" /> Stock Alerts
+          </h3>
+          {metrics?.lowStockCount && metrics.lowStockCount > 0 ? (
+            <div className="p-8 text-center bg-orange-50 rounded-2xl border border-orange-100">
+               <Package className="mx-auto text-orange-200 mb-2" size={32} />
+               <p className="text-sm font-bold text-orange-800">You have {metrics.lowStockCount} items running low on stock.</p>
+               <p className="text-[10px] uppercase font-black text-orange-400 mt-1 tracking-widest">Replenish soon to avoid losing sales</p>
+            </div>
+          ) : (
+            <div className="p-8 text-center bg-green-50 rounded-2xl border border-green-100">
+               <CheckCircle2 className="mx-auto text-green-200 mb-2" size={32} />
+               <p className="text-sm font-bold text-green-800">Inventory levels are healthy.</p>
+               <p className="text-[10px] uppercase font-black text-green-400 mt-1 tracking-widest">All active products have sufficient stock</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
+  );
+}
+
+function CheckCircle2({ className, size }: { className?: string, size?: number }) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
   );
 }

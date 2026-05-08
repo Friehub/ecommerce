@@ -26,7 +26,6 @@ export const ProductSection = ({
   categoryId, 
   brandId, 
   sortBy = 'newest', 
-  color = 'orange',
   limit = 6
 }: ProductSectionProps) => {
   const { data: products, isLoading } = api.catalog.listProducts.useQuery({
@@ -38,16 +37,7 @@ export const ProductSection = ({
 
   if (isLoading) {
     return (
-      <section className="container mt-8 md:mt-12">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-          <div className={`h-12 bg-gray-100 animate-pulse`} />
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 p-4">
-            {[...Array(limit)].map((_, i) => (
-              <div key={i} className="aspect-[3/4] bg-gray-50 rounded-lg animate-pulse" />
-            ))}
-          </div>
-        </div>
-      </section>
+      <section className="bg-surface rounded-xl overflow-hidden border border-outline-variant/30 animate-pulse h-[400px]" />
     );
   }
 
@@ -56,27 +46,25 @@ export const ProductSection = ({
   }
 
   return (
-    <section className="container mt-8 md:mt-12">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300">
-        {/* Header */}
-        <div className={`bg-gradient-to-r ${colorMap[color]} h-12 md:h-14 flex items-center justify-between px-5 text-white select-none`}>
-          <h2 className="font-extrabold uppercase tracking-tight text-white text-sm md:text-lg">
-            {title}
-          </h2>
-          <Link 
-            href={categoryId ? `/category/${categoryId}` : '/search'} 
-            className="text-[10px] font-extrabold hover:underline uppercase tracking-widest bg-white/10 hover:bg-white/20 transition-all px-3 py-1.5 rounded-lg border border-white/10"
-          >
-            See All
-          </Link>
-        </div>
+    <section className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/20">
+      {/* Header */}
+      <div className="bg-surface-container h-14 flex items-center justify-between px-6">
+        <h2 className="font-inter text-lg font-bold uppercase tracking-tight text-on-surface">
+          {title}
+        </h2>
+        <Link 
+          href={categoryId ? `/category/${categoryId}` : '/search'} 
+          className="text-primary font-bold text-xs uppercase tracking-widest hover:underline"
+        >
+          See All
+        </Link>
+      </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 p-4 md:p-5 bg-white">
-          {products.results.map((product: any) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+      {/* Grid */}
+      <div className="p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {products.results.map((product: any) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
       </div>
     </section>
   );

@@ -28,7 +28,7 @@ export default function NewProduct() {
     brandId: '',
     images: [] as { url: string; key: string }[],
     variants: [
-      { sku: '', price: 0, comparePrice: 0, stock: 10, attributes: {} }
+      { sku: '', price: 1, comparePrice: 0, stock: 10, attributes: {} }
     ]
   });
 

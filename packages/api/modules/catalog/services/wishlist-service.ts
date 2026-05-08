@@ -53,7 +53,11 @@ export const wishlistService: Service = {
           include: {
             variant: {
               include: {
-                product: true
+                product: {
+                  include: {
+                    media: true
+                  }
+                }
               }
             }
           }

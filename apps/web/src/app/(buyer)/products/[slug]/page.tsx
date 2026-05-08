@@ -2,6 +2,7 @@ import { api } from '@/trpc/server';
 import { notFound } from "next/navigation";
 import { ProductGallery } from "../../../../components/products/ProductGallery";
 import { ProductActions } from "../../../../components/products/ProductActions";
+import { ProductReviews } from "../../../../components/products/ProductReviews";
 import { ChevronRight, Star, Share2 } from "lucide-react";
 
 export default async function ProductDetailPage({
@@ -60,10 +61,17 @@ export default async function ProductDetailPage({
               <div className="flex items-center gap-2 border-b border-gray-100 pb-5 select-none">
                 <div className="flex text-orange-400">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} fill={i < 4 ? "currentColor" : "none"} className={i < 4 ? "text-orange-400" : "text-gray-200"} />
+                    <Star 
+                      key={i} 
+                      size={14} 
+                      fill={i < Math.round(product.averageRating || 0) ? "currentColor" : "none"} 
+                      className={i < Math.round(product.averageRating || 0) ? "text-orange-400" : "text-gray-200"} 
+                    />
                   ))}
                 </div>
-                <span className="text-xs text-[#264996] font-semibold hover:underline cursor-pointer">(124 ratings)</span>
+                <span className="text-xs text-[#264996] font-semibold hover:underline cursor-pointer">
+                  ({product.reviewCount || 0} ratings)
+                </span>
               </div>
 
               <ProductActions product={product} />
@@ -131,6 +139,11 @@ export default async function ProductDetailPage({
               <span className="text-gray-800 uppercase font-bold text-xs">{product.variants[0]?.sku}</span>
             </div>
           </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mt-6 bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md p-5 lg:p-7">
+          <ProductReviews productId={product.id} />
         </div>
       </main>
     </div>

@@ -79,81 +79,29 @@ export const FlashSales = () => {
   }, new Date(flashSales[0].endTime));
 
   return (
-    <section className="container mt-6">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300">
-        {/* Header */}
-        <div className="bg-[#DF3131] h-12 md:h-14 flex items-center justify-between px-4 md:px-5 text-white select-none shadow-sm">
-          <div className="flex items-center gap-2 md:gap-3">
-            <Zap size={20} className="text-white fill-white" />
-            <h2 className="font-extrabold uppercase tracking-tight text-white text-sm md:text-lg">
-              Flash Sales
-            </h2>
-          </div>
-          <div className="flex items-center gap-3 md:gap-6">
-            <div className="text-[11px] md:text-sm font-bold flex items-center gap-2">
-              <span className="text-white/90 font-medium hidden xs:inline">Time Left:</span>
+    <section className="bg-surface-container rounded-xl overflow-hidden shadow-sm mt-stack-md">
+      <div className="bg-error text-white px-6 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Zap size={24} className="fill-white" />
+          <h2 className="font-inter text-xl font-bold uppercase tracking-wide">Flash Sales</h2>
+          <div className="hidden md:flex items-center gap-2 ml-4">
+            <span className="text-sm font-medium">Time Left:</span>
+            <div className="bg-white text-error font-bold px-2 py-1 rounded">
               <CountdownTimer endTime={earliestEnd} />
             </div>
-            <Link href="/flash-sales" className="text-[10px] md:text-xs font-extrabold hover:underline uppercase tracking-widest flex items-center gap-1">
-              See All <span className="text-lg leading-none">›</span>
-            </Link>
           </div>
         </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 p-5 bg-white">
-          {flashProducts.map((product: any) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <Link href="/flash-sales" className="font-bold text-xs flex items-center gap-1 hover:underline uppercase tracking-widest">
+          SEE ALL <ChevronRight size={18} />
+        </Link>
       </div>
-
-      <style jsx>{`
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 16px;
-        }
-        .mt-6 { margin-top: 1.5rem; }
-        .bg-white { background-color: #ffffff; }
-        .bg-gray-50 { background-color: #f9fafb; }
-        .rounded-xl { border-radius: 12px; }
-        .rounded-lg { border-radius: 8px; }
-        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-        .overflow-hidden { overflow: hidden; }
-        .p-5 { padding: 1.25rem; }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .gap-3 { gap: 12px; }
-        .gap-4 { gap: 16px; }
-        .gap-5 { gap: 20px; }
-        .grid { display: grid; }
-        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .text-white { color: #ffffff; }
-        .text-sm { font-size: 0.875rem; }
-        .text-xs { font-size: 0.75rem; }
-        .font-bold { font-weight: 700; }
-        .font-extrabold { font-weight: 800; }
-        .font-medium { font-weight: 500; }
-        .uppercase { text-transform: uppercase; }
-        .tracking-tight { letter-spacing: -0.01em; }
-        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: .5; }
-        }
-        @media (min-width: 768px) {
-          .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        }
-        @media (min-width: 1024px) {
-          .lg\:grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-        }
-        .hidden { display: none; }
-        @media (min-width: 640px) {
-          .sm\:inline-flex { display: inline-flex; }
-        }
-      `}</style>
+      <div className="p-4 overflow-x-auto flex gap-4 hide-scrollbar">
+        {flashProducts.map((product: any) => (
+          <div key={product.id} className="min-w-[200px] md:min-w-[240px] bg-white rounded-lg p-3 group transition-all hover:shadow-md border border-outline-variant/20">
+            <ProductCard product={product} />
+          </div>
+        ))}
+      </div>
     </section>
   );
 };

@@ -60,7 +60,7 @@ export default function WishlistPage() {
                 >
                   <div className="relative aspect-square bg-gray-50/30 overflow-hidden">
                     <img 
-                      src={item.variant.product.media[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'} 
+                      src={item.variant.product.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'} 
                       alt={item.variant.product.title}
                       className="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700"
                     />

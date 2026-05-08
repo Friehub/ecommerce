@@ -16,52 +16,52 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <Link 
       href={`/products/${product.slug}`} 
-      className="bg-white rounded-xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group h-full border border-gray-100 hover:border-gray-200 select-none shadow-sm hover:shadow-orange-500/5"
+      className="flex flex-col h-full group bg-surface p-3 rounded-lg border border-outline-variant/30 hover:border-primary/40 hover:shadow-md transition-all duration-300"
     >
-      <div className="relative aspect-square overflow-hidden bg-gray-50 flex items-center justify-center">
+      <div className="relative aspect-square mb-4 bg-surface-container rounded-md overflow-hidden flex items-center justify-center p-2">
         <img 
-          src={product.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'} 
+          src={product.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400'} 
           alt={product.title}
-          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-2"
+          className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
         />
         {discount > 0 && (
-          <div className="absolute top-3 right-3 bg-red-100 backdrop-blur-md border border-red-200/50 text-[#DF3131] text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg tracking-wide uppercase select-none shadow-sm">
+          <div className="absolute top-2 right-2 bg-error text-white text-[10px] font-black px-2 py-1 rounded-md shadow-sm">
             -{discount}%
           </div>
         )}
       </div>
       
-      <div className="p-3 md:p-4 flex flex-col flex-1 bg-white">
-        <h3 className="text-[11px] md:text-sm font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-[#F68B1E] transition-colors leading-normal h-8 md:h-10">
+      <div className="flex flex-col flex-1">
+        <h3 className="font-inter text-xs text-on-surface-variant line-clamp-2 mb-3 leading-snug group-hover:text-primary transition-colors h-8">
           {product.title}
         </h3>
-        <div className="mt-auto pt-1 flex flex-col gap-0.5">
-          <div className="text-sm md:text-lg font-semibold text-gray-900 group-hover:text-[#F68B1E] transition-colors">
-            ₦ {price.toLocaleString()}
+        
+        <div className="mt-auto">
+          <div className="flex flex-col gap-1">
+            <span className="font-inter text-base font-medium text-on-surface">
+              ₦ {price.toLocaleString()}
+            </span>
+            {comparePrice && (
+              <span className="font-inter text-[10px] text-on-surface-variant/60 line-through">
+                ₦ {comparePrice.toLocaleString()}
+              </span>
+            )}
           </div>
-          {comparePrice && (
-            <div className="text-[10px] md:text-xs text-gray-400 line-through font-medium">
-              ₦ {comparePrice.toLocaleString()}
+
+          {product.isFlashSale && (
+            <div className="mt-3 space-y-1.5">
+              <div className="w-full h-1 bg-outline-variant/30 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-error rounded-full" 
+                  style={{ width: `${(product.itemsLeft / (product.itemsLeft + 20)) * 100}%` }}
+                />
+              </div>
+              <span className="text-[9px] font-bold text-on-surface-variant/60 uppercase">
+                {product.itemsLeft || 10} ITEMS LEFT
+              </span>
             </div>
           )}
         </div>
-
-        {/* Flash Sale Progress Bar */}
-        {product.isFlashSale && (
-          <div className="mt-3 space-y-1.5">
-            <div className="flex justify-between items-center">
-              <span className="text-[9px] font-bold text-gray-500 uppercase tracking-tight">
-                {product.itemsLeft || 10} items left
-              </span>
-            </div>
-            <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-[#F68B1E] rounded-full" 
-                style={{ width: `${(product.itemsLeft / (product.itemsLeft + 20)) * 100}%` }}
-              />
-            </div>
-          </div>
-        )}
       </div>
     </Link>
   );

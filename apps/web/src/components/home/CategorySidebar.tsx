@@ -38,59 +38,46 @@ export const CategorySidebar = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl shadow-md p-5 w-[240px] h-[480px] animate-pulse border border-gray-100 flex flex-col justify-between">
-        {[...Array(10)].map((_, i) => (
-          <div key={i} className="h-7 bg-gray-100 rounded-md" />
+      <aside className="col-span-12 md:col-span-3 lg:col-span-2 bg-surface rounded-lg shadow-sm p-stack-sm flex flex-col gap-base border border-outline-variant/30 h-[480px] animate-pulse">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="h-10 bg-surface-variant rounded-lg" />
         ))}
-      </div>
+      </aside>
     );
   }
 
   return (
-    <aside className="bg-white rounded-xl shadow-md w-[240px] overflow-hidden hidden lg:block border border-gray-100 hover:border-gray-200 transition-all duration-300">
-      <nav className="flex flex-col py-3">
+    <aside className="col-span-12 md:col-span-3 lg:col-span-2 bg-surface rounded-lg shadow-sm p-stack-sm flex flex-col gap-base border border-outline-variant/30">
+      <div className="flex flex-col gap-1">
         {categories?.map((category: any) => {
           const Icon = categoryIcons[category.name] || MoreHorizontal;
           return (
             <Link 
               key={category.id} 
               href={`/category/${category.slug}`}
-              className="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-[#F68B1E] hover:bg-orange-50/40 transition-all duration-200 relative group"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group"
             >
-              <div className="text-gray-400 group-hover:text-[#F68B1E] group-hover:scale-110 transition-all duration-200">
-                <Icon size={18} />
-              </div>
-              <span className="truncate flex-1">{category.name}</span>
-              {/* Subtle indicator bar on hover */}
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#F68B1E] scale-y-0 group-hover:scale-y-100 transition-all duration-200" />
+              <Icon size={20} className="text-on-surface-variant group-hover:text-primary transition-colors" />
+              <span className="font-body-md text-sm text-on-surface-variant group-hover:text-primary truncate">{category.name}</span>
             </Link>
           );
         })}
-
-        <div className="border-t border-gray-100 mt-2 pt-2">
-          <Link 
-            href="/official-stores"
-            className="flex items-center gap-3 px-5 py-2.5 text-sm font-bold text-gray-700 hover:text-[#48A44C] hover:bg-green-50/40 transition-all duration-200 relative group"
-          >
-            <ShieldCheck size={18} className="text-[#48A44C]" />
-            <span>Official Stores</span>
-          </Link>
-          <Link 
-            href="/jumia-global"
-            className="flex items-center gap-3 px-5 py-2.5 text-sm font-bold text-gray-700 hover:text-[#2196F3] hover:bg-blue-50/40 transition-all duration-200 relative group"
-          >
-            <Globe size={18} className="text-[#2196F3]" />
-            <span>Jumia Global</span>
-          </Link>
-          <Link 
-            href="/best-sellers"
-            className="flex items-center gap-3 px-5 py-2.5 text-sm font-bold text-gray-700 hover:text-[#F68B1E] hover:bg-orange-50/40 transition-all duration-200 relative group"
-          >
-            <TrendingUp size={18} className="text-[#F68B1E]" />
-            <span>Best Sellers</span>
-          </Link>
-        </div>
-      </nav>
+      </div>
+      <div className="border-t border-outline-variant my-2"></div>
+      <div className="flex flex-col gap-1">
+        <Link href="/official-stores" className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group">
+          <ShieldCheck size={20} className="text-on-surface-variant group-hover:text-primary transition-colors" />
+          <span className="font-body-md text-sm text-on-surface-variant group-hover:text-primary">Official Stores</span>
+        </Link>
+        <Link href="/jumia-global" className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group">
+          <Globe size={20} className="text-on-surface-variant group-hover:text-primary transition-colors" />
+          <span className="font-body-md text-sm text-on-surface-variant group-hover:text-primary">Jumia Global</span>
+        </Link>
+        <Link href="/best-sellers" className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group">
+          <TrendingUp size={20} className="text-on-surface-variant group-hover:text-primary transition-colors" />
+          <span className="font-body-md text-sm text-on-surface-variant group-hover:text-primary">Best Sellers</span>
+        </Link>
+      </div>
     </aside>
   );
 };

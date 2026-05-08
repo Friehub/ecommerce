@@ -1,4 +1,5 @@
 import { prisma } from '@ecom/db';
+import { redis } from '@ecom/shared';
 import type { Service } from '../../../types.js'
 
 export const notificationService: Service = {
@@ -15,7 +16,7 @@ export const notificationService: Service = {
 
     // 2. Log in app (always do this if push is enabled, or as a general log)
     if (sendPush) {
-      await prisma.notificationLog.create({
+      const notification = await prisma.notificationLog.create({
         data: {
           userId,
           title,
@@ -23,6 +24,12 @@ export const notificationService: Service = {
           type
         }
       });
+
+      // Emit real-time notification via Redis Pub/Sub (picked up by api-server)
+      await redis.publish('notifications', JSON.stringify({
+        userId,
+        notification
+      }));
     }
 
     // 3. Dispatch external via Resend API using standard Fetch

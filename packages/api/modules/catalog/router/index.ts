@@ -120,6 +120,26 @@ const _catalogRouter = createTRPCRouter({
       return await wishlistService.removeItem(ctx.session.user.id, input.variantId);
     }),
 
+  deleteProduct: sellerProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({
+        where: { userId: ctx.session.user.id },
+        select: { id: true }
+      });
+      if (!seller) throw new Error('NOT_A_SELLER');
+      
+      // Ensure seller owns the product
+      const product = await prisma.product.findUnique({
+        where: { id: input.id, sellerId: seller.id }
+      });
+      if (!product) throw new Error('PRODUCT_NOT_FOUND_OR_NOT_OWNED');
+
+      return await prisma.product.delete({
+        where: { id: input.id }
+      });
+    }),
+
   getWishlist: publicProcedure
     .query(async ({ ctx }) => {
       if (!ctx.session?.user) return { items: [] };

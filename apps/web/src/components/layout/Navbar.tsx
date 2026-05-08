@@ -37,75 +37,73 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      {/* Top Bar - Content matches Jumia Desktop but shifts on Mobile */}
-      <div className="container mx-auto px-4">
-        <div className="h-16 md:h-[72px] flex items-center justify-between gap-4 md:gap-8">
+    <header className="bg-surface sticky top-0 z-50 shadow-sm border-b border-outline-variant">
+      <div className="flex flex-col w-full max-w-container-max mx-auto px-gutter py-base">
+        <div className="flex items-center justify-between gap-gutter py-2">
           {/* Mobile: Hamburger & Logo */}
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden text-gray-700 hover:text-[#F68B1E] transition-colors"
+              className="md:hidden text-on-surface hover:text-primary transition-colors"
             >
               <Menu size={24} />
             </button>
-            <Link href="/" className="flex items-center gap-2 shrink-0">
-              <span className="text-xl md:text-2xl font-bold text-gray-900">
-                JUMIA<span className="text-[#F68B1E]">★</span>
-              </span>
+            <Link href="/" className="text-2xl font-black text-primary flex items-center shrink-0">
+              JUMIA <span className="text-primary-container ml-1">★</span>
             </Link>
           </div>
 
           {/* Desktop Search Bar */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-[600px] relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              <Search size={20} />
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl relative">
+            <div className="flex items-center bg-surface-container-low rounded-lg px-4 py-2 border border-outline-variant focus-within:border-primary-container transition-all w-full">
+              <Search size={20} className="text-on-surface-variant mr-2" />
+              <input 
+                type="text" 
+                placeholder="Search products, brands and categories" 
+                className="bg-transparent border-none focus:ring-0 w-full text-body-md text-on-surface"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button 
+                type="submit"
+                className="bg-primary-container text-on-primary font-bold px-6 py-1.5 rounded-lg hover:opacity-90 transition-all scale-95 active:opacity-80"
+              >
+                SEARCH
+              </button>
             </div>
-            <input 
-              type="text" 
-              placeholder="Search products, brands and categories" 
-              className="w-full h-11 bg-gray-50 border border-gray-200 rounded-md pl-11 pr-4 focus:outline-none focus:border-[#F68B1E] focus:ring-1 focus:ring-[#F68B1E] transition-all"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button 
-              type="submit"
-              className="absolute right-1 top-1/2 -translate-y-1/2 bg-[#F68B1E] text-white px-4 h-9 rounded font-semibold hover:bg-[#E07A1A] transition-colors"
-            >
-              SEARCH
-            </button>
           </form>
 
-          {/* Desktop/Mobile Actions */}
-          <nav className="flex items-center gap-3 md:gap-6">
-            {/* Desktop Account Menu */}
+          {/* Actions */}
+          <div className="flex items-center gap-6">
             <div className="hidden md:block relative">
               <button 
                 onClick={() => setShowAccountMenu(!showAccountMenu)}
-                className="flex items-center gap-2 text-gray-700 hover:text-[#F68B1E] font-medium py-2"
+                className="flex items-center gap-1 text-on-surface hover:text-primary transition-colors group"
               >
                 <User size={24} />
-                <span className="hidden lg:inline">{session ? `Hi, ${session.user?.email?.split('@')[0]}` : 'Account'}</span>
-                <ChevronDown size={16} className={`transition-transform ${showAccountMenu ? 'rotate-180' : ''}`} />
+                <span className="text-label-sm font-medium">
+                  {session ? `Hi, ${session.user?.email?.split('@')[0]}` : 'Account'}
+                </span>
+                <ChevronDown size={18} className={`transition-transform ${showAccountMenu ? 'rotate-180' : ''}`} />
               </button>
 
               {showAccountMenu && (
-                <div className="absolute top-full right-0 mt-1 w-48 bg-white border rounded-lg shadow-xl py-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-1">
+                <div className="absolute top-full right-0 mt-2 w-56 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg py-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-1">
                   {session ? (
                     <>
-                      <Link href="/account" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#F68B1E]">
+                      <Link href="/account" className="flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-variant transition-colors">
                         <User size={18} /> My Account
                       </Link>
-                      <Link href="/account/orders" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#F68B1E]">
+                      <Link href="/account/orders" className="flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-variant transition-colors">
                         <Package size={18} /> Orders
                       </Link>
-                      <Link href="/wishlist" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#F68B1E]">
+                      <Link href="/wishlist" className="flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-variant transition-colors">
                         <Heart size={18} /> Saved Items
                       </Link>
-                      <div className="border-t my-1"></div>
+                      <div className="border-t border-outline-variant my-1"></div>
                       <button 
                         onClick={() => signOut()}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-semibold"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-error font-bold hover:bg-error/5"
                       >
                         <LogOut size={18} /> Logout
                       </button>
@@ -114,7 +112,7 @@ export const Navbar = () => {
                     <div className="p-4">
                       <Link 
                         href="/login" 
-                        className="block w-full bg-[#F68B1E] text-white text-center py-2 rounded font-bold text-sm uppercase hover:bg-[#E07A1A] transition-colors"
+                        className="block w-full bg-primary-container text-on-primary text-center py-3 rounded-lg font-bold text-sm uppercase hover:opacity-90 transition-all"
                       >
                         Sign In
                       </Link>
@@ -124,9 +122,9 @@ export const Navbar = () => {
               )}
             </div>
             
-            <button className="hidden sm:flex items-center gap-2 text-gray-700 hover:text-[#F68B1E] font-medium">
+            <button className="hidden md:flex items-center gap-1 text-on-surface hover:text-primary transition-colors">
               <HelpCircle size={24} />
-              <span className="hidden lg:inline">Help</span>
+              <span className="text-label-sm font-medium">Help</span>
             </button>
 
             <div className="hidden sm:block">
@@ -135,44 +133,26 @@ export const Navbar = () => {
 
             <button 
               onClick={() => setIsOpen(true)}
-              className="flex items-center gap-2 text-gray-700 hover:text-[#F68B1E] font-medium relative"
+              className="flex items-center gap-2 text-on-surface hover:text-primary transition-colors relative group"
             >
               <ShoppingCart size={24} />
-              <span className="hidden md:inline">Cart</span>
+              <span className="hidden md:inline text-label-sm font-medium">Cart</span>
               {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#F68B1E] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white font-bold">
+                <span className="absolute -top-2 -right-2 bg-primary-container text-on-primary text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-surface font-bold">
                   {totalItems}
                 </span>
               )}
             </button>
-          </nav>
+          </div>
         </div>
 
-        {/* Mobile Search Row - visible only on sm/md */}
-        <div className="md:hidden pb-3">
-          <form onSubmit={handleSearch} className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              <Search size={18} />
-            </div>
-            <input 
-              type="text" 
-              placeholder="Search products, brands, categories" 
-              className="w-full h-10 bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-4 text-sm focus:outline-none focus:border-[#F68B1E]"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </form>
-        </div>
-      </div>
-      
-      {/* Desktop Sub-Navbar - categories */}
-      <div className="bg-white border-t border-gray-100 hidden md:block">
-        <div className="container mx-auto px-4 h-10 flex items-center gap-8 text-sm font-medium text-gray-600">
-          <Link href="/flash-sales" className="hover:text-[#F68B1E]">FLASH SALES</Link>
-          <Link href="/official-stores" className="hover:text-[#F68B1E]">OFFICIAL STORES</Link>
-          <Link href="/jumia-global" className="hover:text-[#F68B1E]">JUMIA GLOBAL</Link>
-          <Link href="/best-sellers" className="hover:text-[#F68B1E]">BEST SELLERS</Link>
-        </div>
+        {/* Sub-Nav / Mobile Search */}
+        <nav className="flex items-center gap-8 pt-2 pb-1 overflow-x-auto whitespace-nowrap hide-scrollbar">
+          <Link href="/flash-sales" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-label-sm">FLASH SALES</Link>
+          <Link href="/official-stores" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-label-sm">OFFICIAL STORES</Link>
+          <Link href="/jumia-global" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-label-sm">JUMIA GLOBAL</Link>
+          <Link href="/best-sellers" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-label-sm">BEST SELLERS</Link>
+        </nav>
       </div>
 
       {/* Mobile Drawer Overlay */}

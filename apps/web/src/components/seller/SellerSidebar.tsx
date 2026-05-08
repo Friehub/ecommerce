@@ -21,7 +21,7 @@ const navItems = [
   { name: 'Orders', href: '/seller/orders', icon: ShoppingCart },
   { name: 'Inventory', href: '/seller/inventory', icon: Package },
   { name: 'Finance', href: '/seller/finance', icon: Wallet },
-  { name: 'Analytics', href: '/seller/analytics', icon: BarChart3 },
+  { name: 'Insights', href: '/seller/insights', icon: BarChart3 },
 ];
 
 export function SellerSidebar() {
@@ -63,7 +63,7 @@ export function SellerSidebar() {
 
       <div className="p-4 border-t border-gray-100 space-y-1">
         <Link
-          href="/seller/settings"
+          href="/seller/finance"
           onClick={() => setIsOpen(false)}
           className="flex items-center gap-3 px-4 py-3 rounded text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all group"
         >

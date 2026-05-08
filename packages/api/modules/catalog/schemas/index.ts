@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const productVariantSchema = z.object({
   sku: z.string().min(1),
-  price: z.number().positive(),
+  price: z.number().min(1, "Price must be at least 1"),
   comparePrice: z.number().positive().optional(),
   attributes: z.record(z.any()),
   weightGrams: z.number().int().positive().optional(),

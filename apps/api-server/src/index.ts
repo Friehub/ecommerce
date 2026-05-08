@@ -11,6 +11,11 @@ import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import { fastifyTRPCOpenApiPlugin } from 'trpc-openapi';
 import { openApiDocument } from '@ecom/api';
+import socketio from 'fastify-socket.io';
+import jwt from 'jsonwebtoken';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { nanoid } from 'nanoid';
 
 import { Redis } from 'ioredis';
 
@@ -78,6 +83,62 @@ async function start() {
     redis: redis,
     keyGenerator: (req) => (req.headers['x-forwarded-for'] as string) || req.ip,
   });
+
+  // ── Socket.io ───────────────────────────────────────────────────
+  await server.register(socketio, {
+    cors: {
+      origin: allowedOrigins,
+      credentials: true,
+    }
+  });
+
+  server.ready(err => {
+    if (err) throw err;
+
+    server.io.on('connection', (socket) => {
+      const cookies = socket.handshake.headers.cookie?.split(';').reduce((acc: any, c) => {
+        const [k, v] = c.trim().split('=');
+        acc[k] = v;
+        return acc;
+      }, {}) || {};
+
+      const token = socket.handshake.auth.token || cookies['authjs.session-token'] || cookies['__Secure-authjs.session-token'];
+      
+      if (!token) {
+        server.log.warn('Socket connection attempt without token');
+        return;
+      }
+
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+        const userId = decoded.sub || decoded.id;
+        
+        if (userId) {
+          socket.join(`user:${userId}`);
+          server.log.info(`User ${userId} connected via socket`);
+        }
+      } catch (e) {
+        server.log.error('Socket auth failed');
+      }
+    });
+  });
+
+  // Redis Pub/Sub for cross-instance notifications
+  const sub = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379');
+  sub.subscribe('notifications', (err) => {
+    if (err) server.log.error('Failed to subscribe to Redis notifications channel');
+  });
+
+  sub.on('message', (channel, message) => {
+    if (channel === 'notifications') {
+      try {
+        const { userId, notification } = JSON.parse(message);
+        server.io.to(`user:${userId}`).emit('notification', notification);
+      } catch (e) {
+        server.log.error('Failed to process Redis notification message');
+      }
+    }
+  });
   
   // ── Swagger & OpenAPI ───────────────────────────────────────────
   if (process.env.NODE_ENV !== 'production') {
@@ -114,6 +175,58 @@ async function start() {
         reply.code(401).send({ error: 'Unauthorized internal request' });
         return;
       }
+    }
+  });
+
+  // ── Media Upload ──────────────────────────────────────────────────
+  const s3Client = new S3Client({
+    region: process.env.S3_REGION || 'auto',
+    endpoint: process.env.S3_ENDPOINT,
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+    },
+  });
+
+  server.post('/api/media/upload', async (req, reply) => {
+    // Auth check: check cookie or header
+    const cookies = (req.headers.cookie || '').split(';').reduce((acc: any, c) => {
+      const [k, v] = c.trim().split('=');
+      acc[k] = v;
+      return acc;
+    }, {}) || {};
+
+    const token = cookies['authjs.session-token'] || cookies['__Secure-authjs.session-token'] || req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+      const userId = decoded.sub || decoded.id;
+      
+      const { fileName, contentType } = req.body as any;
+      if (!fileName || !contentType) {
+        return reply.code(400).send({ error: 'Missing file info' });
+      }
+
+      const fileExtension = fileName.split('.').pop();
+      const key = `uploads/${userId}/${nanoid()}.${fileExtension}`;
+      
+      const command = new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET,
+        Key: key,
+        ContentType: contentType,
+      });
+
+      const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+      const publicUrl = `${process.env.S3_PUBLIC_URL}/${key}`;
+
+      return { uploadUrl, publicUrl, key };
+    } catch (e) {
+      server.log.error(e, 'Media upload failed');
+      return reply.code(500).send({ error: 'Failed to generate upload URL' });
     }
   });
 

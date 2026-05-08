@@ -14,7 +14,16 @@ import {
 import Link from 'next/link';
 
 export default function SellerInventory() {
-  const { data: products, isLoading } = api.seller.listMyProducts.useQuery();
+  const utils = api.useUtils();
+  const deleteProduct = api.catalog.deleteProduct.useMutation({
+    onSuccess: () => {
+      utils.seller.listMyProducts.invalidate();
+      alert('Product deleted successfully');
+    },
+    onError: (err) => {
+      alert(err.message || 'Failed to delete product');
+    }
+  });
 
   if (isLoading) return <div className="text-gray-400">Loading inventory...</div>;
 
@@ -111,7 +120,15 @@ export default function SellerInventory() {
                       <button className="p-1.5 text-gray-400 hover:text-orange-600 transition-all">
                         <Edit2 size={16} />
                       </button>
-                      <button className="p-1.5 text-gray-400 hover:text-red-600 transition-all">
+                      <button 
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this product?')) {
+                            deleteProduct.mutate({ id: product.id });
+                          }
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-red-600 transition-all"
+                        disabled={deleteProduct.isLoading}
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>

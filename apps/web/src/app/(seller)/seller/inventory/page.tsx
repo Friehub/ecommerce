@@ -9,9 +9,11 @@ import {
   Package, 
   Eye,
   Edit2,
-  Trash2
+  Trash2,
+  Star
 } from 'lucide-react';
 import Link from 'next/link';
+import { ProductStatusBadge } from '@/components/ui/ProductStatusBadge';
 
 export default function SellerInventory() {
   const { data: products, isLoading } = api.seller.listMyProducts.useQuery();
@@ -60,8 +62,8 @@ export default function SellerInventory() {
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 text-[10px] font-bold uppercase tracking-widest">
               <th className="px-6 py-4">Product Info</th>
-              <th className="px-6 py-4">Category / Brand</th>
-              <th className="px-6 py-4">Price Range</th>
+              <th className="px-6 py-4">Performance</th>
+              <th className="px-6 py-4">Price / Marketing</th>
               <th className="px-6 py-4">Total Stock</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4 text-right">Actions</th>
@@ -72,6 +74,13 @@ export default function SellerInventory() {
               const prices = product.variants.map(v => Number(v.price));
               const minPrice = Math.min(...prices);
               const maxPrice = Math.max(...prices);
+              
+              const discounts = product.variants
+                .filter(v => v.comparePrice && Number(v.comparePrice) > Number(v.price))
+                .map(v => Math.round(((Number(v.comparePrice) - Number(v.price)) / Number(v.comparePrice)) * 100));
+              
+              const maxDiscount = discounts.length > 0 ? Math.max(...discounts) : 0;
+
               const totalStock = product.variants.reduce((acc, v) => 
                 acc + v.stockLevels.reduce((sAcc, s) => sAcc + s.qtyOnHand, 0), 0
               );
@@ -80,31 +89,52 @@ export default function SellerInventory() {
                 <tr key={product.id} className="hover:bg-gray-50/50 transition-all group">
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gray-50 rounded flex items-center justify-center border border-gray-100 shrink-0">
+                      <div className="w-12 h-12 bg-gray-50 rounded flex items-center justify-center border border-gray-100 shrink-0 overflow-hidden">
                         {product.media[0] ? (
-                          <img src={product.media[0].url} alt="" className="w-full h-full object-cover rounded" />
+                          <img src={product.media[0].url} alt="" className="w-full h-full object-cover" />
                         ) : (
                           <Package size={20} className="text-gray-300" />
                         )}
                       </div>
-                      <div className="max-w-[240px] truncate">
-                        <div className="text-sm font-bold text-gray-900">{product.title}</div>
-                        <div className="text-gray-400 text-[10px] mt-1">ID: {product.id.slice(-8).toUpperCase()}</div>
+                      <div className="max-w-[240px]">
+                        <div className="text-sm font-bold text-gray-900 truncate">{product.title}</div>
+                        <div className="flex items-center gap-2 mt-1">
+                          {product.isExpress && <ProductStatusBadge type="EXPRESS" />}
+                          {product.isOfficial && <ProductStatusBadge type="OFFICIAL" />}
+                          {!product.isExpress && !product.isOfficial && (
+                             <div className="text-gray-400 text-[9px] font-bold uppercase tracking-widest">ID: {product.id.slice(-8).toUpperCase()}</div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-5">
-                    <div className="text-gray-600 text-xs font-medium">{product.category.name}</div>
-                    <div className="text-gray-400 text-[10px] mt-0.5">{product.brand.name}</div>
+                    <div className="flex items-center gap-1.5">
+                      <Star size={12} className="fill-amber-400 text-amber-400" />
+                      <span className="text-sm font-bold text-gray-900">{Number(product.averageRating || 0).toFixed(1)}</span>
+                    </div>
+                    <div className="text-gray-400 text-[10px] font-bold uppercase mt-1 tracking-tight">
+                      {product.reviewCount || 0} Reviews
+                    </div>
                   </td>
                   <td className="px-6 py-5">
                     <div className="text-sm font-bold text-gray-900">
                       ₦{minPrice.toLocaleString()} {maxPrice > minPrice && ` - ₦${maxPrice.toLocaleString()}`}
                     </div>
+                    {maxDiscount > 0 && (
+                      <div className="mt-1 flex items-center gap-2">
+                        <span className="text-[9px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded uppercase">
+                          Up to {maxDiscount}% OFF
+                        </span>
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-5">
                     <div className={`text-xs font-bold ${totalStock > 0 ? 'text-gray-900' : 'text-red-500'}`}>
                       {totalStock} units
+                    </div>
+                    <div className="text-gray-400 text-[10px] font-bold mt-1 uppercase tracking-tight">
+                      {product.variants.length} Variants
                     </div>
                   </td>
                   <td className="px-6 py-5">

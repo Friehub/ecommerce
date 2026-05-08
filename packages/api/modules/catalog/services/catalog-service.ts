@@ -280,6 +280,12 @@ export const catalogService: Service = {
         isGlobal: (filters as any).isGlobal,
         isOfficial: (filters as any).isOfficial,
         isExpress: (filters as any).isExpress,
+        ...(filters.search ? {
+          OR: [
+            { title: { contains: filters.search, mode: 'insensitive' } },
+            { description: { contains: filters.search, mode: 'insensitive' } },
+          ]
+        } : {})
       },
       price: {
         gte: filters.minPrice,

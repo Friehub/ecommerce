@@ -68,6 +68,8 @@ export const FlashSales = () => {
         comparePrice: parseFloat(fs.variant.price)
       }
     ];
+    p.isFlashSale = true;
+    p.itemsLeft = fs.limit - fs.sold; // Calculate from data
     return p;
   });
 
@@ -80,22 +82,20 @@ export const FlashSales = () => {
     <section className="container mt-6">
       <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300">
         {/* Header */}
-        <div className="bg-gradient-to-r from-red-600 to-orange-500 h-14 flex items-center justify-between px-5 text-white select-none shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/20">
-              <Zap size={18} className="text-yellow-300 animate-pulse" style={{ fill: 'currentColor' }} />
-            </div>
-            <h2 className="font-extrabold uppercase tracking-tight text-white text-base md:text-lg">
+        <div className="bg-[#DF3131] h-12 md:h-14 flex items-center justify-between px-4 md:px-5 text-white select-none shadow-sm">
+          <div className="flex items-center gap-2 md:gap-3">
+            <Zap size={20} className="text-white fill-white" />
+            <h2 className="font-extrabold uppercase tracking-tight text-white text-sm md:text-lg">
               Flash Sales
             </h2>
           </div>
-          <div className="flex items-center gap-5">
-            <div className="text-sm font-bold bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-1.5 rounded-lg hidden sm:inline-flex items-center gap-2">
-              <span className="text-white/80 font-medium">Ends in:</span>
+          <div className="flex items-center gap-3 md:gap-6">
+            <div className="text-[11px] md:text-sm font-bold flex items-center gap-2">
+              <span className="text-white/90 font-medium hidden xs:inline">Time Left:</span>
               <CountdownTimer endTime={earliestEnd} />
             </div>
-            <Link href="/flash-sales" className="text-xs font-extrabold hover:underline uppercase tracking-wide bg-white/20 hover:bg-white/30 transition-all px-3 py-1.5 rounded-lg border border-white/10">
-              See All
+            <Link href="/flash-sales" className="text-[10px] md:text-xs font-extrabold hover:underline uppercase tracking-widest flex items-center gap-1">
+              See All <span className="text-lg leading-none">›</span>
             </Link>
           </div>
         </div>

@@ -37,11 +37,13 @@ async function main() {
 
   // 2. Create Categories
   const categories = [
+    { name: 'Phones & Tablets', slug: 'phones-tablets', commission: 5 },
     { name: 'Electronics', slug: 'electronics', commission: 5 },
     { name: 'Fashion', slug: 'fashion', commission: 15 },
     { name: 'Computing', slug: 'computing', commission: 7 },
     { name: 'Health & Beauty', slug: 'health-beauty', commission: 10 },
     { name: 'Home & Office', slug: 'home-office', commission: 8 },
+    { name: 'Baby Products', slug: 'baby-products', commission: 12 },
   ];
 
   const createdCategories = [];
@@ -166,6 +168,15 @@ async function main() {
       'https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=800', // Beauty
       'https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=800', // Cosmetic
       'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=800'  // Makeup
+    ],
+    'Phones & Tablets': [
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800', // Phone
+      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=800', // Tablet
+      'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?q=80&w=800', // Mobile
+    ],
+    'Baby Products': [
+      'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?q=80&w=800', // Toys
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?q=80&w=800', // Baby room
     ]
   };
 
@@ -324,7 +335,25 @@ async function main() {
     });
   }
 
-  // 10. Create CMS Content (Banners)
+  // 10. Create Flash Sales
+  console.log('⚡ Creating flash sales...');
+  for (let i = 0; i < 6; i++) {
+    const variant = createdVariants[Math.floor(Math.random() * createdVariants.length)];
+    const salePrice = variant.price.mul(0.7); // 30% off
+    await prisma.flashSale.create({
+      data: {
+        variantId: variant.id,
+        sellerId: variant.product.sellerId,
+        salePrice: salePrice,
+        qtyLimit: 50,
+        qtySold: Math.floor(Math.random() * 40),
+        startTime: new Date(),
+        endTime: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours from now
+      }
+    });
+  }
+
+  // 11. Create CMS Content (Banners)
   console.log('🖼️  Creating homepage banners...');
   const banners = [
     { 

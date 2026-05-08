@@ -31,20 +31,37 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         )}
       </div>
       
-      <div className="p-4 flex flex-col flex-1 bg-white">
-        <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-[#F68B1E] transition-colors leading-normal">
+      <div className="p-3 md:p-4 flex flex-col flex-1 bg-white">
+        <h3 className="text-[11px] md:text-sm font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-[#F68B1E] transition-colors leading-normal h-8 md:h-10">
           {product.title}
         </h3>
-        <div className="mt-auto pt-2 flex flex-col gap-0.5">
-          <div className="text-lg font-semibold text-gray-900 group-hover:text-[#F68B1E] transition-colors">
+        <div className="mt-auto pt-1 flex flex-col gap-0.5">
+          <div className="text-sm md:text-lg font-semibold text-gray-900 group-hover:text-[#F68B1E] transition-colors">
             ₦ {price.toLocaleString()}
           </div>
           {comparePrice && (
-            <div className="text-xs text-gray-400 line-through font-medium">
+            <div className="text-[10px] md:text-xs text-gray-400 line-through font-medium">
               ₦ {comparePrice.toLocaleString()}
             </div>
           )}
         </div>
+
+        {/* Flash Sale Progress Bar */}
+        {product.isFlashSale && (
+          <div className="mt-3 space-y-1.5">
+            <div className="flex justify-between items-center">
+              <span className="text-[9px] font-bold text-gray-500 uppercase tracking-tight">
+                {product.itemsLeft || 10} items left
+              </span>
+            </div>
+            <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-[#F68B1E] rounded-full" 
+                style={{ width: `${(product.itemsLeft / (product.itemsLeft + 20)) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </Link>
   );

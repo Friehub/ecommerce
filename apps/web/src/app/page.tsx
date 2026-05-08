@@ -6,6 +6,7 @@ import { CategorySidebar } from '../components/home/CategorySidebar';
 import { HeroCarousel } from '../components/home/HeroCarousel';
 import { AdBanners } from '../components/home/AdBanners';
 import { FlashSales } from '../components/home/FlashSales';
+import { ProductSection } from '../components/home/ProductSection';
 import { Package, ShieldCheck, RotateCcw, Smartphone, Home as HomeIcon, ChefHat, Tv, Laptop, Baby, ShoppingBag, Gamepad2, Dumbbell, Car, MoreHorizontal, Globe, TrendingUp, Zap } from 'lucide-react';
 import { api } from '@/trpc/react';
 
@@ -154,12 +155,45 @@ export default function Home() {
       <AdBanners />
 
       {/* Flash Sales */}
-      <div className="mt-8 md:mt-12">
-        <FlashSales />
-      </div>
+      <FlashSales />
 
       {/* Top Categories */}
       <TopCategoriesSection />
+
+      {/* Phone Deals */}
+      <ProductSection 
+        title="Phone Deals" 
+        categoryId="phones-tablets" 
+        color="orange"
+      />
+
+      {/* Computing Essentials */}
+      <ProductSection 
+        title="Computing Essentials" 
+        categoryId="computing" 
+        color="orange"
+      />
+
+      {/* Fashion Picks */}
+      <ProductSection 
+        title="Fashion Picks" 
+        categoryId="fashion" 
+        color="orange"
+      />
+
+      {/* Health & Beauty */}
+      <ProductSection 
+        title="Health & Beauty" 
+        categoryId="health-beauty" 
+        color="orange"
+      />
+
+      {/* Baby Essentials */}
+      <ProductSection 
+        title="Baby Essentials" 
+        categoryId="baby-products" 
+        color="orange"
+      />
 
     </div>
   );

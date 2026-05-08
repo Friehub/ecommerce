@@ -26,6 +26,8 @@ const Toast = ({ message, type, onClose }: { message: string, type: 'success' | 
   </div>
 );
 
+import { NIGERIA_STATES, STATE_LOCATIONS } from '../../../constants/locations';
+
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -45,12 +47,9 @@ export default function CheckoutPage() {
   const [addressType, setAddressType] = React.useState<'HOME' | 'OFFICE'>('HOME');
   const [toast, setToast] = React.useState<{ message: string, type: 'success' | 'error' } | null>(null);
 
-  // Form Auto-fill states from Map
-  const [mapAddress, setMapAddress] = React.useState<{
-    street?: string;
-    city?: string;
-    state?: string;
-  }>({});
+  // Form states for localized dropdowns
+  const [selectedState, setSelectedState] = React.useState('');
+  const [selectedCity, setSelectedCity] = React.useState('');
 
   const utils = api.useUtils();
 
@@ -175,11 +174,11 @@ export default function CheckoutPage() {
   const handleLocationSelect = (lat: number, lng: number, details?: any) => {
     if (details?.address) {
       const addr = details.address;
-      setMapAddress({
-        street: addr.road || addr.suburb || addr.neighbourhood || '',
-        city: addr.city || addr.town || addr.village || '',
-        state: addr.state || '',
-      });
+      // Try to match state from list
+      const stateMatch = NIGERIA_STATES.find(s => 
+        s.toLowerCase().includes(addr.state?.toLowerCase().replace(' state', ''))
+      );
+      if (stateMatch) setSelectedState(stateMatch);
     }
   };
 
@@ -213,8 +212,8 @@ export default function CheckoutPage() {
                     phone: formData.get('phone') as string,
                     streetAddress: formData.get('streetAddress') as string,
                     landmark: formData.get('landmark') as string,
-                    city: formData.get('city') as string,
-                    state: formData.get('state') as string,
+                    city: selectedCity || formData.get('city') as string,
+                    state: selectedState,
                     country: 'Nigeria',
                     addressType: addressType,
                     isDefault: true,
@@ -259,7 +258,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="md:col-span-2 space-y-1.5">
                   <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Street Address</label>
-                  <input required name="streetAddress" defaultValue={mapAddress.street} className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
+                  <input required name="streetAddress" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
                 </div>
                 <div className="md:col-span-2 space-y-1.5">
                   <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest flex items-center gap-1.5">
@@ -267,17 +266,54 @@ export default function CheckoutPage() {
                   </label>
                   <input name="landmark" placeholder="e.g. Near the big oak tree" className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">City</label>
-                  <input required name="city" defaultValue={mapAddress.city} className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
-                </div>
+                
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">State</label>
-                  <input required name="state" defaultValue={mapAddress.state} className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" />
+                  <select 
+                    required 
+                    name="state" 
+                    value={selectedState}
+                    onChange={(e) => {
+                      setSelectedState(e.target.value);
+                      setSelectedCity('');
+                    }}
+                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold appearance-none"
+                  >
+                    <option value="">Select State</option>
+                    {NIGERIA_STATES.map(state => (
+                      <option key={state} value={state}>{state}</option>
+                    ))}
+                  </select>
                 </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">City / Town</label>
+                  {STATE_LOCATIONS[selectedState] ? (
+                    <select 
+                      required 
+                      name="city"
+                      value={selectedCity}
+                      onChange={(e) => setSelectedCity(e.target.value)}
+                      className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold appearance-none"
+                    >
+                      <option value="">Select City</option>
+                      {STATE_LOCATIONS[selectedState].map(city => (
+                        <option key={city} value={city}>{city}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input 
+                      required 
+                      name="city" 
+                      placeholder="Enter City"
+                      className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-4 py-3 text-sm focus:border-[#F68B1E] focus:bg-white outline-none transition-all font-bold" 
+                    />
+                  )}
+                </div>
+
                 <button 
                   type="submit"
-                  disabled={addAddressMutation.isLoading}
+                  disabled={addAddressMutation.isLoading || !selectedState}
                   className="md:col-span-2 mt-4 w-full bg-[#F68B1E] hover:bg-[#e07a1a] text-white h-12 rounded-xl font-black uppercase tracking-[0.2em] transition-all shadow-xl shadow-orange-500/20 active:scale-95 disabled:opacity-50 mb-6 text-xs"
                 >
                   {addAddressMutation.isLoading ? <Loader2 className="animate-spin mx-auto" size={20} /> : 'Save Address'}

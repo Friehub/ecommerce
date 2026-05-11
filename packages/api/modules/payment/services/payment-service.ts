@@ -195,10 +195,18 @@ export const paymentService: Service = {
         });
 
         // Use orderService to ensure side effects are triggered
-        await orderService.updateStatus(payment.orderId, 'PAID', tx);
+        if (payment.orderId === 'WALLET_FUND') {
+          await this.fundWallet(payment.userId, payment.amount.toNumber(), tx);
+        } else {
+          await orderService.updateStatus(payment.orderId, 'PAID', tx);
+        }
       });
 
-      await publishEvent('payment.confirmed', { orderId: payment.orderId, amount: payment.amount });
+      if (payment.orderId === 'WALLET_FUND') {
+        await publishEvent('wallet.funded', { userId: payment.userId, amount: payment.amount });
+      } else {
+        await publishEvent('payment.confirmed', { orderId: payment.orderId, amount: payment.amount });
+      }
     } else {
       await prisma.payment.update({
         where: { id: payment.id },
@@ -233,6 +241,70 @@ export const paymentService: Service = {
           }
         }
       }
+    });
+  },
+  
+  async requestWalletFunding(userId: string, email: string, amount: number) {
+     const reference = `WALLET-FUND-${userId}-${Date.now()}`;
+     
+     // Create a payment record to track the funding attempt
+     await prisma.payment.create({
+       data: {
+         orderId: 'WALLET_FUND', // Sentinel for wallet funding
+         userId,
+         amount: new Decimal(amount),
+         method: 'CARD',
+         status: 'PENDING',
+         providerRef: reference,
+       }
+     });
+
+     const adapter = getPaymentAdapter('paystack');
+     const initResult = await adapter.initializeTransaction({
+       orderId: 'WALLET_FUND',
+       userId,
+       email,
+       amountInSubunit: amount * 100,
+       currency: 'NGN',
+       callbackUrl: `${process.env.NEXTAUTH_URL}/wallet`,
+       reference,
+     });
+
+     return initResult;
+  },
+
+  async initiateWithdrawal(userId: string, amount: number) {
+    return prisma.$transaction(async (tx) => {
+      const wallet = await tx.wallet.findUnique({ where: { userId } });
+      if (!wallet || wallet.balance.lt(amount)) {
+        throw new Error('INSUFFICIENT_FUNDS');
+      }
+
+      // 1. Deduct from wallet immediately (escrow-style)
+      await tx.wallet.update({
+        where: { userId },
+        data: { balance: { decrement: amount } }
+      });
+
+      // 2. Create withdrawal record (Reusing Payout table or specific table if available)
+      // Since we don't have a Withdrawal table, we check schema or use a generic settlement flow.
+      // For now, we'll log it as a DEBIT transaction and publish an event for admin approval.
+      const transaction = await tx.walletTransaction.create({
+        data: {
+          walletId: wallet.id,
+          type: 'DEBIT',
+          amount: new Decimal(amount),
+          description: 'Withdrawal request'
+        }
+      });
+
+      await publishEvent('wallet.withdrawal_requested', {
+        userId,
+        amount,
+        transactionId: transaction.id
+      });
+
+      return transaction;
     });
   },
 

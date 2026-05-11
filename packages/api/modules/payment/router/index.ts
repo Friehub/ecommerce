@@ -40,6 +40,29 @@ const _paymentRouter = createTRPCRouter({
       );
     }),
 
+  fundWallet: protectedProcedure
+    .input(z.object({
+      amount: z.number().min(100),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return await paymentService.requestWalletFunding(
+        ctx.session.user.id,
+        ctx.session.user.email!,
+        input.amount
+      );
+    }),
+
+  withdraw: protectedProcedure
+    .input(z.object({
+      amount: z.number().min(1000),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return await paymentService.initiateWithdrawal(
+        ctx.session.user.id,
+        input.amount
+      );
+    }),
+
   getWallet: protectedProcedure.query(async ({ ctx }) => {
     return await prisma.wallet.findUnique({
       where: { userId: ctx.session.user.id },

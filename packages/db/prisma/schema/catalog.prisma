@@ -49,6 +49,7 @@ model Product {
   media    ProductMedia[]
   reviews  Review[]
   adGroups AdGroup[]
+  questions ProductQuestion[]
 
   @@index([status])
   @@index([brandId])
@@ -101,4 +102,34 @@ model ProductMedia {
 
   @@index([productId])
   @@index([variantId])
+}
+
+model ProductQuestion {
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  text      String   @db.Text
+  createdAt DateTime @default(now())
+
+  product Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User            @relation(fields: [userId], references: [id])
+  answers ProductAnswer[]
+
+  @@index([productId])
+  @@index([userId])
+}
+
+model ProductAnswer {
+  id         String   @id @default(cuid())
+  questionId String
+  userId     String
+  text       String   @db.Text
+  isSeller   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  question ProductQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user     User            @relation(fields: [userId], references: [id])
+
+  @@index([questionId])
+  @@index([userId])
 }

@@ -161,6 +161,80 @@ const _catalogRouter = createTRPCRouter({
       if (!ctx.session?.user) return { items: [] };
       return await wishlistService.getWishlist(ctx.session.user.id);
     }),
+
+  askQuestion: protectedProcedure
+    .input(z.object({
+      productId: z.string(),
+      text: z.string().min(5).max(500)
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return await prisma.productQuestion.create({
+        data: {
+          productId: input.productId,
+          userId: ctx.session.user.id,
+          text: input.text
+        }
+      });
+    }),
+
+  answerQuestion: protectedProcedure
+    .input(z.object({
+      questionId: z.string(),
+      text: z.string().min(2).max(1000)
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const question = await prisma.productQuestion.findUnique({
+        where: { id: input.questionId },
+        include: { product: true }
+      });
+      if (!question) throw new Error('QUESTION_NOT_FOUND');
+
+      const seller = await prisma.seller.findUnique({
+        where: { userId: ctx.session.user.id },
+        select: { id: true }
+      });
+
+      const isSeller = seller?.id === question.product.sellerId;
+
+      return await prisma.productAnswer.create({
+        data: {
+          questionId: input.questionId,
+          userId: ctx.session.user.id,
+          text: input.text,
+          isSeller
+        }
+      });
+    }),
+
+  getQuestions: publicProcedure
+    .input(z.object({
+      productId: z.string(),
+      limit: z.number().min(1).max(50).default(10),
+      cursor: z.string().optional()
+    }))
+    .query(async ({ input }) => {
+      const items = await prisma.productQuestion.findMany({
+        where: { productId: input.productId },
+        take: input.limit + 1,
+        cursor: input.cursor ? { id: input.cursor } : undefined,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: { select: { firstName: true, lastName: true } },
+          answers: {
+            include: { user: { select: { firstName: true, lastName: true } } },
+            orderBy: { createdAt: 'asc' }
+          }
+        }
+      });
+
+      let nextCursor: typeof input.cursor | undefined = undefined;
+      if (items.length > input.limit) {
+        const nextItem = items.pop();
+        nextCursor = nextItem!.id;
+      }
+
+      return { items, nextCursor };
+    }),
 });
 
 export const catalogRouter = _catalogRouter;

@@ -24,6 +24,8 @@ model User {
   pref          NotificationPreference[]
   wishlist      Wishlist?
   resolvedDisputes DisputeResolution[]
+  questions     ProductQuestion[]
+  answers       ProductAnswer[]
 }
 
 enum UserRole {

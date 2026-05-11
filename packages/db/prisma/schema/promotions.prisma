@@ -8,7 +8,9 @@ model Promotion {
   startDate   DateTime
   endDate     DateTime
   isActive    Boolean       @default(true)
-  sellerId    String?
+  sellerId           String?
+  minOrderValue      Decimal? @db.Decimal(12, 2)
+  usageLimitPerUser  Int?     @default(1)
 
   coupons Coupon[]
   seller  Seller? @relation(fields: [sellerId], references: [id])

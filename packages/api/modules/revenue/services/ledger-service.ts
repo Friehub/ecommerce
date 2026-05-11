@@ -17,6 +17,12 @@ export const ledgerService: Service = {
 
     if (!line) throw new Error('ORDER_LINE_NOT_FOUND');
 
+    // Idempotency: Check if sale already recorded
+    const existing = await prisma.sellerLedgerEntry.findFirst({
+      where: { orderLineId, type: LedgerEntryType.SALE }
+    });
+    if (existing) return { saleEntry: existing };
+
     const sellerId = line.package.sellerId;
     const grossAmount = line.unitPrice.mul(line.quantity);
     const commissionRate = line.variant.product.category.commissionRate || new Decimal(10);

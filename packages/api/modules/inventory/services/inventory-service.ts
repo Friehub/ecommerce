@@ -213,7 +213,7 @@ export const inventoryService: Service = {
 
   async updateStockBatch(sellerId: string, warehouseId: string, updates: { variantId: string, quantity: number }[]) {
     return await prisma.$transaction(async (tx) => {
-      const results = [];
+      const results: any[] = [];
       for (const update of updates) {
         const stock = await tx.stockLevel.upsert({
           where: {

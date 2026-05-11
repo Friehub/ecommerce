@@ -1,4 +1,4 @@
-import { createTRPCRouter, agentProcedure, adminProcedure } from "../../../trpc.js";
+import { createTRPCRouter, agentProcedure, adminProcedure, publicProcedure, protectedProcedure } from "../../../trpc.js";
 import { z } from "zod";
 import { logisticsService } from "../services/logistics-service.js";
 import { mediaService } from "../../media/services/media-service.js";

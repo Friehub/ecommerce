@@ -85,6 +85,7 @@ model OrderLine {
   reviews       Review[]
   conversions   AdConversion[]
   isReturned    Boolean             @default(false)
+  returnedAt    DateTime?
 
   @@index([packageId])
   @@index([variantId])

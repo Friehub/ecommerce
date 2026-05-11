@@ -36,7 +36,10 @@ export type EventType =
   | 'dispute.escalated'
   | 'seller.suspended'
   | 'seller.status_updated'
-  | 'seller.tier_changed';
+  | 'seller.tier_changed'
+  | 'wallet.funded'
+  | 'wallet.withdrawal_requested'
+  | 'payout.completed';
 
 export interface BaseEvent<T = any> {
   id: string;

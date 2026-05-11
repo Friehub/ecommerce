@@ -125,4 +125,35 @@ export class MonnifyAdapter implements PaymentAdapter {
       recipientCode: `MNF-REC-${params.accountNumber}`
     };
   }
+
+  async verifyTransaction(reference: string): Promise<WebhookResult> {
+    const token = await this.getAuthToken();
+    try {
+      const res = await fetch(`${MONNIFY_BASE}/merchant/transactions/query?paymentReference=${reference}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (data.requestSuccessful && data.responseBody.paymentStatus === 'PAID') {
+        return {
+          orderId: data.responseBody.metaData?.orderId || '',
+          reference,
+          status: 'success',
+          amount: data.responseBody.amountPaid,
+        };
+      }
+    } catch (e) {
+      console.warn(`Monnify verify failed for ${reference}, using failure state`);
+    }
+    
+    return {
+      orderId: '',
+      reference,
+      status: 'failed',
+      amount: 0
+    };
+  }
 }
+

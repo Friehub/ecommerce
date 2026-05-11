@@ -28,6 +28,11 @@ export const promoService: Service = {
       throw new Error('COUPON_EXPIRED');
     }
 
+    // Check minimum order value (Fix 2.12)
+    if (promo.minOrderValue && orderTotal && new Decimal(orderTotal).lt(promo.minOrderValue)) {
+      throw new Error('MIN_ORDER_VALUE_NOT_MET');
+    }
+
     // Check seller scoping (C05)
     if (promo.sellerId && userId) {
       const cart = await prisma.cart.findFirst({

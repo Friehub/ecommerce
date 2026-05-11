@@ -147,4 +147,25 @@ export class FlutterwaveAdapter implements PaymentAdapter {
       recipientCode: `${params.bankCode}:${params.accountNumber}`
     };
   }
+
+  async verifyTransaction(reference: string): Promise<WebhookResult> {
+    const res = await fetch(`${FLW_BASE}/transactions/verify_by_reference?tx_ref=${reference}`, {
+      method: 'GET',
+      headers: headers(),
+    });
+
+    const data = await res.json();
+    if (data.status !== 'success') {
+      throw new Error(`FLUTTERWAVE_VERIFY_FAILED: ${data.message}`);
+    }
+
+    const tx = data.data;
+    return {
+      orderId: tx.meta?.orderId || '',
+      reference: tx.tx_ref,
+      status: tx.status === 'successful' ? 'success' : 'failed',
+      amount: tx.amount,
+    };
+  }
 }
+

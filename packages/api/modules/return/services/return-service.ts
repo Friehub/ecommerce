@@ -84,7 +84,10 @@ export const returnService: Service = {
       // 4. Mark line as returned
       await tx.orderLine.update({
         where: { id: request.orderLineId },
-        data: { isReturned: true }
+        data: { 
+          isReturned: true,
+          returnedAt: new Date()
+        }
       });
 
       return refundAmount;

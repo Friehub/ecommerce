@@ -83,6 +83,9 @@ export const logisticsService: Service = {
     return shipment;
   },
 
+  async listShipments(agentId?: string) {
+    return prisma.shipment.findMany({
+      where: agentId ? { agentId } : {},
       orderBy: { createdAt: 'desc' }
     });
   },

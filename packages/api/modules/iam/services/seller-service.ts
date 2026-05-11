@@ -56,8 +56,7 @@ export const sellerService: Service = {
         status: true,
         tier: true,
         createdAt: true,
-        averageRating: true,
-        reviewCount: true,
+        rating: true,
         _count: {
           select: { products: { where: { status: 'ACTIVE' } } }
         }
@@ -70,7 +69,7 @@ export const sellerService: Service = {
       ...seller,
       memberSince: seller.createdAt,
       productCount: seller._count.products,
-      rating: seller.averageRating?.toNumber() || 0
+      rating: seller.rating?.toNumber() || 0
     };
   }
 }

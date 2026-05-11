@@ -70,8 +70,8 @@ export const revenueService: Service = {
 
     const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET || process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
 
-    // Simulation block for non-prod or missing key
-    if (PAYSTACK_SECRET_KEY === 'sk_test_placeholder' || process.env.NODE_ENV !== 'production') {
+    // Simulation block for missing key
+    if (PAYSTACK_SECRET_KEY === 'sk_test_placeholder') {
       if (process.env.NODE_ENV === 'production' && PAYSTACK_SECRET_KEY === 'sk_test_placeholder') {
         throw new Error('PAYOUT_SIMULATION_BLOCKED_IN_PRODUCTION: Missing Paystack Secret');
       }

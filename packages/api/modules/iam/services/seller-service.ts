@@ -71,6 +71,13 @@ export const sellerService: Service = {
       }
     }
 
+    return prisma.seller.update({
+      where: { id: seller.id },
+      data: {
+        bankCode: data.bankCode,
+        bankAccountNumber: data.bankAccountNumber,
+        bankAccountName: data.bankAccountName,
+        transferRecipientCode: recipientCode
       }
     });
   },

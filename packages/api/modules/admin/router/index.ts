@@ -48,11 +48,32 @@ const _adminRouter = createTRPCRouter({
       sellerId: z.string(),
       status: z.nativeEnum(SellerStatus)
     }))
-    .mutation(async ({ input }) => {
-      return prisma.seller.update({
+    .mutation(async ({ ctx, input }) => {
+      const { publishEvent } = await import('@ecom/shared');
+      
+      const seller = await prisma.seller.update({
         where: { id: input.sellerId },
         data: { status: input.status }
       });
+
+      // Publish specific or generic event
+      const eventType = input.status === 'SUSPENDED' ? 'seller.suspended' : 'seller.status_updated';
+      await publishEvent(eventType as any, { sellerId: input.sellerId, status: input.status });
+
+      // Audit Log
+      await prisma.eventLog.create({
+        data: {
+          topic: 'ADMIN_ACTION',
+          payload: { 
+            adminId: ctx.session.user.id, 
+            action: 'UPDATE_SELLER_STATUS', 
+            targetId: input.sellerId, 
+            newStatus: input.status 
+          }
+        }
+      });
+
+      return seller;
     }),
 
   updateUserStatus: adminProcedure

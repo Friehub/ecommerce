@@ -32,10 +32,10 @@ export type EventType =
   | 'user.registered'
   | 'seller.approved'
   | 'seller.document_rejected'
-  | 'payout.triggered'
-  | 'payout.completed'
   | 'payout.failed'
-  | 'dispute.escalated';
+  | 'dispute.escalated'
+  | 'seller.suspended'
+  | 'seller.status_updated';
 
 export interface BaseEvent<T = any> {
   id: string;

@@ -1,6 +1,7 @@
 import { orderWorker } from '../modules/order/workers/order-worker.js';
 import { notificationWorker } from '../modules/notification/workers/notification-worker.js';
 import { bulkImportWorker } from '../modules/catalog/workers/bulk-import-worker.js';
+import { logisticsWorker } from '../modules/logistics/workers/logistics-worker.js';
 import { ledgerService } from '../modules/revenue/services/ledger-service.js';
 import { prisma } from '@ecom/db';
 import { affiliateService } from '../modules/affiliate/services/affiliate-service.js';
@@ -25,6 +26,14 @@ notificationWorker.on('completed', (job: any) => {
 
 notificationWorker.on('failed', (job: any, err: any) => {
   console.error(`❌ Notification Job ${job?.id} failed:`, err);
+});
+
+logisticsWorker.on('completed', (job: any) => {
+  console.log(`✅ Logistics Job ${job.id} completed`);
+});
+
+logisticsWorker.on('failed', (job: any, err: any) => {
+  console.error(`❌ Logistics Job ${job?.id} failed:`, err);
 });
 
 
@@ -182,6 +191,7 @@ process.on('SIGTERM', async () => {
   await orderWorker.close();
   await notificationWorker.close();
   await bulkImportWorker.close();
+  await logisticsWorker.close();
   process.exit(0);
 });
 

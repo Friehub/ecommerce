@@ -228,5 +228,33 @@ export const ledgerService: Service = {
         status: 'OPEN'
       }
     });
+  },
+
+  async getLedger(sellerId: string, limit = 50, cursor?: string) {
+    const entries = await prisma.sellerLedgerEntry.findMany({
+      where: { sellerId },
+      take: limit + 1,
+      cursor: cursor ? { id: cursor } : undefined,
+      orderBy: { createdAt: 'desc' }
+    });
+
+    let nextCursor: typeof cursor | undefined = undefined;
+    if (entries.length > limit) {
+      const nextItem = entries.pop();
+      nextCursor = nextItem!.id;
+    }
+
+    const availableBalance = await this.getSellerBalance(sellerId, LedgerStatus.AVAILABLE);
+    const pendingBalance = await this.getSellerBalance(sellerId, LedgerStatus.PENDING);
+
+    return {
+      entries,
+      nextCursor,
+      summary: {
+        available: availableBalance,
+        pending: pendingBalance,
+        total: availableBalance.add(pendingBalance)
+      }
+    };
   }
 };

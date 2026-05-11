@@ -27,6 +27,18 @@ const _revenueRouter = createTRPCRouter({
     return await revenueService.getSellerStats(seller.id);
   }),
 
+  getLedger: sellerProcedure
+    .input(z.object({
+      limit: z.number().min(1).max(100).default(50),
+      cursor: z.string().optional()
+    }))
+    .query(async ({ ctx, input }) => {
+      const { ledgerService } = await import('../services/ledger-service.js');
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new Error('NOT_A_SELLER');
+      return await ledgerService.getLedger(seller.id, input.limit, input.cursor);
+    }),
+
   getPayoutAccount: sellerProcedure.query(async ({ ctx }) => {
     const seller = await prisma.seller.findUnique({ 
       where: { userId: ctx.session.user.id },

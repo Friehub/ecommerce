@@ -84,6 +84,22 @@ const _iamRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await userService.deleteAddress(input.id, ctx.session.user.id);
     }),
+
+  uploadDocument: protectedProcedure
+    .input(z.object({
+      type: z.enum(['NIN', 'BANK_STATEMENT', 'CAC', 'UTILITY_BILL']),
+      url: z.string().url(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await sellerService.getProfile(ctx.session.user.id);
+      if (!seller) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "Please complete seller onboarding first",
+        });
+      }
+      return await sellerService.uploadDocument(seller.id, input);
+    }),
 });
 
 export const iamRouter = _iamRouter;

@@ -272,6 +272,49 @@ const _adminRouter = createTRPCRouter({
 
       return product;
     }),
+
+  createBanner: adminProcedure
+    .input(z.object({
+      title: z.string(),
+      imageUrl: z.string(),
+      link: z.string().optional(),
+      position: z.number().default(0)
+    }))
+    .mutation(async ({ input }) => {
+      const { cacheService } = await import('@ecom/shared');
+      const banner = await prisma.banner.create({ data: input });
+      await cacheService.del('content:banners');
+      return banner;
+    }),
+
+  updateBanner: adminProcedure
+    .input(z.object({
+      id: z.string(),
+      title: z.string().optional(),
+      imageUrl: z.string().optional(),
+      link: z.string().optional(),
+      position: z.number().optional(),
+      isActive: z.boolean().optional()
+    }))
+    .mutation(async ({ input }) => {
+      const { cacheService } = await import('@ecom/shared');
+      const { id, ...data } = input;
+      const banner = await prisma.banner.update({
+        where: { id },
+        data
+      });
+      await cacheService.del('content:banners');
+      return banner;
+    }),
+
+  deleteBanner: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      const { cacheService } = await import('@ecom/shared');
+      await prisma.banner.delete({ where: { id: input.id } });
+      await cacheService.del('content:banners');
+      return { success: true };
+    }),
 });
 
 export const adminRouter = _adminRouter as any;

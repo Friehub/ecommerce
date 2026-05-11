@@ -12,6 +12,21 @@ const _adminRouter = createTRPCRouter({
       return adminService.approveSellerKYC(ctx.session.user.id, input.sellerId);
     }),
 
+  reviewDocument: adminProcedure
+    .input(z.object({
+      documentId: z.string(),
+      decision: z.enum(['APPROVED', 'REJECTED']),
+      rejectionReason: z.string().optional()
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return adminService.reviewDocument(
+        ctx.session.user.id,
+        input.documentId,
+        input.decision,
+        input.rejectionReason
+      );
+    }),
+
   listAllSellers: adminProcedure
     .query(async () => {
       return prisma.seller.findMany({

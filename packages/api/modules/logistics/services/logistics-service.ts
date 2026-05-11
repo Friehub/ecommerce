@@ -87,12 +87,27 @@ export const logisticsService: Service = {
     });
   },
 
-  async calculateShipping(userId: string, cartId: string, addressId: string) {
-    const cart = await prisma.cart.findUnique({
-      where: { id: cartId },
-      include: { items: { include: { variant: true } } }
-    });
-    if (!cart) throw new Error('CART_NOT_FOUND');
+  async calculateShipping(userId: string, cartId: string, addressId: string, items?: { weightGrams: number, quantity: number }[]) {
+    let totalWeightGrams = 0;
+
+    if (cartId) {
+      const cart = await prisma.cart.findUnique({
+        where: { id: cartId },
+        include: { items: { include: { variant: true } } }
+      });
+      if (cart) {
+        for (const item of cart.items) {
+          totalWeightGrams += (item.variant.weightGrams || 500) * item.quantity;
+        }
+      }
+    } else if (items) {
+      for (const item of items) {
+        totalWeightGrams += (item.weightGrams || 500) * item.quantity;
+      }
+    } else {
+      // Fallback for when we don't have items yet (estimate)
+      totalWeightGrams = 1000;
+    }
 
     const address = await prisma.userAddress.findUnique({
       where: { id: addressId }
@@ -100,11 +115,6 @@ export const logisticsService: Service = {
     if (!address) throw new Error('ADDRESS_NOT_FOUND');
 
     // Logic: Base fee + Weight-based + State-based multiplier
-    let totalWeightGrams = 0;
-    for (const item of cart.items) {
-      totalWeightGrams += (item.variant.weightGrams || 500) * item.quantity;
-    }
-
     const baseFee = 500; // NGN
     const weightFee = Math.ceil(totalWeightGrams / 1000) * 200; // 200 NGN per kg
     

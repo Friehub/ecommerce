@@ -76,15 +76,23 @@ export const orderService: Service = {
         await promoService.markCouponUsed(couponCode, tx);
       }
 
+      const { logisticsService } = await import('../../logistics/services/logistics-service.js');
+      const shippingItems = items.map(i => ({ 
+        weightGrams: i.variant.weightGrams || 500, 
+        quantity: i.quantity 
+      }));
+      const shipping = await logisticsService.calculateShipping(userId, '', addressId, shippingItems);
+      const shippingFee = new Decimal(shipping.total);
+
       const newOrder = await tx.order.create({
         data: {
           userId,
           addressId,
           paymentMethod,
           subtotal,
-          shippingFee: 500, // Fixed for contest demo
+          shippingFee,
           discount,
-          total: subtotal.add(500).sub(discount),
+          total: subtotal.add(shippingFee).sub(discount),
           status: 'PENDING_PAYMENT',
           packages: {
             create: Object.values(fulfillmentGroups).map(group => ({

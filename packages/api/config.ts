@@ -30,6 +30,12 @@ const configSchema = z.object({
   
   // Redis (for inventory/queues)
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
+
+  // SMS Providers
+  TERMII_API_KEY: z.string().default('placeholder'),
+  TERMII_SENDER_ID: z.string().default('Friehub'),
+  AFRICAS_TALKING_USERNAME: z.string().default('sandbox'),
+  AFRICAS_TALKING_API_KEY: z.string().default('placeholder'),
 });
 
 const parseConfig = () => {
@@ -49,6 +55,10 @@ const parseConfig = () => {
       RESEND_API_KEY: process.env.RESEND_API_KEY,
       RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
       REDIS_URL: process.env.REDIS_URL,
+      TERMII_API_KEY: process.env.TERMII_API_KEY,
+      TERMII_SENDER_ID: process.env.TERMII_SENDER_ID,
+      AFRICAS_TALKING_USERNAME: process.env.AFRICAS_TALKING_USERNAME,
+      AFRICAS_TALKING_API_KEY: process.env.AFRICAS_TALKING_API_KEY,
     };
 
     return configSchema.parse(envData);

@@ -68,8 +68,46 @@ export const notificationService: Service = {
     }
 
     if (sendSms) {
-      console.log(`[STUB] Sending SMS to user ${userId} | Msg: ${message}`);
-      // e.g. Termii.sendSms(...)
+      const { config } = await import('../../../config.js');
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { phone: true } });
+      
+      if (user?.phone) {
+        // C10: Termii Implementation (Standard for Nigeria)
+        if (config.TERMII_API_KEY !== 'placeholder') {
+          fetch('https://api.ng.termii.com/api/sms/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: user.phone,
+              from: config.TERMII_SENDER_ID,
+              sms: message,
+              type: 'plain',
+              channel: 'generic',
+              api_key: config.TERMII_API_KEY,
+            })
+          }).catch(err => console.error('Termii SMS Dispatch Failed:', err.message));
+        } 
+        // Africa's Talking Fallback (Standard for East/West Africa)
+        else if (config.AFRICAS_TALKING_API_KEY !== 'placeholder') {
+          const params = new URLSearchParams();
+          params.append('username', config.AFRICAS_TALKING_USERNAME);
+          params.append('to', user.phone);
+          params.append('message', message);
+
+          fetch('https://api.africastalking.com/version1/messaging', {
+            method: 'POST',
+            headers: { 
+              'Accept': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'apikey': config.AFRICAS_TALKING_API_KEY
+            },
+            body: params
+          }).catch(err => console.error('Africa\'s Talking Dispatch Failed:', err.message));
+        }
+        else {
+          console.log(`[STUB/TEST] Sending SMS to user ${userId} (${user.phone}) | Msg: ${message}`);
+        }
+      }
     }
   },
 

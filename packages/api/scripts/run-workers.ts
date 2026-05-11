@@ -2,6 +2,7 @@ import { orderWorker } from '../modules/order/workers/order-worker.js';
 import { notificationWorker } from '../modules/notification/workers/notification-worker.js';
 import { bulkImportWorker } from '../modules/catalog/workers/bulk-import-worker.js';
 import { logisticsWorker } from '../modules/logistics/workers/logistics-worker.js';
+import { fraudWorker } from '../modules/order/workers/fraud-worker.js';
 import { ledgerService } from '../modules/revenue/services/ledger-service.js';
 import { prisma } from '@ecom/db';
 import { affiliateService } from '../modules/affiliate/services/affiliate-service.js';
@@ -34,6 +35,14 @@ logisticsWorker.on('completed', (job: any) => {
 
 logisticsWorker.on('failed', (job: any, err: any) => {
   console.error(`❌ Logistics Job ${job?.id} failed:`, err);
+});
+ 
+fraudWorker.on('completed', (job: any) => {
+  console.log(`✅ Fraud Job ${job.id} completed`);
+});
+ 
+fraudWorker.on('failed', (job: any, err: any) => {
+  console.error(`❌ Fraud Job ${job?.id} failed:`, err);
 });
 
 
@@ -192,6 +201,7 @@ process.on('SIGTERM', async () => {
   await notificationWorker.close();
   await bulkImportWorker.close();
   await logisticsWorker.close();
+  await fraudWorker.close();
   process.exit(0);
 });
 

@@ -219,13 +219,8 @@ export const orderService: Service = {
         await publishEvent('package.pending_confirmation', { packageId: pkg.id, sellerId: pkg.sellerId });
       }
 
-      // Fix BUG-011: Avoid recursive call. Auto-move to PROCESSING in DB directly.
-      await db.order.update({
-        where: { id: orderId },
-        data: { status: 'PROCESSING' }
-      });
-      // Important: We don't fire a second status_updated event here to avoid double side-effects.
-      // Downstream services should treat PAID as implicitly PROCESSING or listen for the explicit transition if needed.
+      // FraudWorker will now handle the transition to PROCESSING after screening.
+      // This prevents suspicious orders from auto-creating shipments immediately.
     }
 
     if (status === 'CANCELLED') {

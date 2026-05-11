@@ -1,5 +1,6 @@
 import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
 import type { Service } from '../../../types.js'
+import { currencyService } from './currency-service.js';
 
 export const ledgerService: Service = {
   // Explicit return types to avoid TS2742 inference errors
@@ -230,12 +231,13 @@ export const ledgerService: Service = {
     });
   },
 
-  async getLedger(sellerId: string, limit = 50, cursor?: string) {
+  async getLedger(sellerId: string, limit = 50, cursor?: string, targetCurrency?: string) {
     const entries = await prisma.sellerLedgerEntry.findMany({
       where: { sellerId },
       take: limit + 1,
       cursor: cursor ? { id: cursor } : undefined,
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: { seller: true }
     });
 
     let nextCursor: typeof cursor | undefined = undefined;
@@ -244,16 +246,28 @@ export const ledgerService: Service = {
       nextCursor = nextItem!.id;
     }
 
+    // Determine target currency (seller's default if not provided)
+    const seller = entries[0]?.seller || await prisma.seller.findUnique({ where: { id: sellerId } });
+    const currency = targetCurrency || seller?.currency || 'NGN';
+
+    // Convert entries if needed (read-time conversion as per gap-88)
+    const localizedEntries = await Promise.all(entries.map(async entry => ({
+      ...entry,
+      amount: await currencyService.convert(entry.amount, 'NGN', currency),
+      currency
+    })));
+
     const availableBalance = await this.getSellerBalance(sellerId, LedgerStatus.AVAILABLE);
     const pendingBalance = await this.getSellerBalance(sellerId, LedgerStatus.PENDING);
 
     return {
-      entries,
+      entries: localizedEntries,
       nextCursor,
       summary: {
-        available: availableBalance,
-        pending: pendingBalance,
-        total: availableBalance.add(pendingBalance)
+        available: await currencyService.convert(availableBalance, 'NGN', currency),
+        pending: await currencyService.convert(pendingBalance, 'NGN', currency),
+        total: await currencyService.convert(availableBalance.add(pendingBalance), 'NGN', currency),
+        currency
       }
     };
   },

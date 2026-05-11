@@ -70,4 +70,45 @@ export const userService: Service = {
       data,
     });
   },
+
+  async requestPhoneOTP(userId: string) {
+    const { redis } = await import('@ecom/shared');
+    const { notificationService } = await import('../../notification/services/notification-service.js');
+    
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { phone: true } });
+    if (!user?.phone) throw new Error('NO_PHONE_NUMBER');
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Store in Redis with 10 min TTL
+    await redis.set(`otp:phone:${userId}`, otp, 'EX', 600);
+
+    // Dispatch via SMS
+    await notificationService.sendNotification(
+      userId, 
+      'SYSTEM', 
+      'Phone Verification', 
+      `Your Jumia verification code is: ${otp}. Valid for 10 minutes.`
+    );
+
+    return { success: true };
+  },
+
+  async verifyPhoneOTP(userId: string, otp: string) {
+    const { redis } = await import('@ecom/shared');
+    
+    const storedOtp = await redis.get(`otp:phone:${userId}`);
+    if (!storedOtp || storedOtp !== otp) {
+      throw new Error('INVALID_OR_EXPIRED_OTP');
+    }
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { phoneVerified: true }
+    });
+
+    await redis.del(`otp:phone:${userId}`);
+    return { success: true };
+  },
 }

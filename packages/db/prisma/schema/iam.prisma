@@ -6,6 +6,7 @@ model User {
   firstName    String?
   lastName     String?
   phone        String?
+  phoneVerified Boolean  @default(false)
   role         UserRole @default(BUYER)
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())

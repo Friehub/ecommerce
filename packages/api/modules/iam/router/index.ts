@@ -106,6 +106,17 @@ const _iamRouter = createTRPCRouter({
       }
       return await sellerService.uploadDocument(seller.id, input);
     }),
+
+  requestPhoneOTP: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      return await userService.requestPhoneOTP(ctx.session.user.id);
+    }),
+
+  verifyPhoneOTP: protectedProcedure
+    .input(z.object({ otp: z.string().length(6) }))
+    .mutation(async ({ ctx, input }) => {
+      return await userService.verifyPhoneOTP(ctx.session.user.id, input.otp);
+    }),
 });
 
 export const iamRouter = _iamRouter;

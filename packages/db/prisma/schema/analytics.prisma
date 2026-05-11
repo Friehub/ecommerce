@@ -1,0 +1,16 @@
+// packages/db/prisma/schema/analytics.prisma
+model ProductRelation {
+  id               String   @id @default(cuid())
+  productId        String
+  relatedProductId String
+  score            Float    // Frequency or confidence score
+  relationType     String   // e.g., "CO_PURCHASE", "CO_VIEW"
+  updatedAt        DateTime @updatedAt
+
+  product        Product @relation("ProductToRelation", fields: [productId], references: [id], onDelete: Cascade)
+  relatedProduct Product @relation("RelatedProductToRelation", fields: [relatedProductId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, relatedProductId, relationType])
+  @@index([productId])
+  @@index([relatedProductId])
+}

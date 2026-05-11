@@ -50,6 +50,8 @@ model Product {
   reviews  Review[]
   adGroups AdGroup[]
   questions ProductQuestion[]
+  relations        ProductRelation[] @relation("ProductToRelation")
+  relatedTo        ProductRelation[] @relation("RelatedProductToRelation")
 
   @@index([status])
   @@index([brandId])

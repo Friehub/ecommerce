@@ -3,6 +3,7 @@ import { notificationWorker } from '../modules/notification/workers/notification
 import { bulkImportWorker } from '../modules/catalog/workers/bulk-import-worker.js';
 import { logisticsWorker } from '../modules/logistics/workers/logistics-worker.js';
 import { fraudWorker } from '../modules/order/workers/fraud-worker.js';
+import { recommendationWorker } from '../modules/catalog/workers/recommendation-worker.js';
 import { ledgerService } from '../modules/revenue/services/ledger-service.js';
 import { prisma } from '@ecom/db';
 import { affiliateService } from '../modules/affiliate/services/affiliate-service.js';
@@ -43,6 +44,14 @@ fraudWorker.on('completed', (job: any) => {
  
 fraudWorker.on('failed', (job: any, err: any) => {
   console.error(`❌ Fraud Job ${job?.id} failed:`, err);
+});
+ 
+recommendationWorker.on('completed', (job: any) => {
+  console.log(`✅ Recommendation Job ${job.id} completed`);
+});
+ 
+recommendationWorker.on('failed', (job: any, err: any) => {
+  console.error(`❌ Recommendation Job ${job?.id} failed:`, err);
 });
 
 
@@ -193,6 +202,18 @@ cron.schedule('0 3 * * *', async () => {
     console.error('❌ Fraud queue cleanup failed:', error);
   }
 });
+ 
+// Nightly Recommendation Engine Update (runs at 04:00 UTC every day)
+import { queues } from '@ecom/shared';
+cron.schedule('0 4 * * *', async () => {
+  console.log('⏳ Triggering nightly recommendation engine update...');
+  try {
+    await queues.catalogQueue.add('update-recommendations', {});
+    console.log('✅ Recommendation update job enqueued.');
+  } catch (error) {
+    console.error('❌ Failed to enqueue recommendation update:', error);
+  }
+});
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
@@ -202,6 +223,7 @@ process.on('SIGTERM', async () => {
   await bulkImportWorker.close();
   await logisticsWorker.close();
   await fraudWorker.close();
+  await recommendationWorker.close();
   process.exit(0);
 });
 

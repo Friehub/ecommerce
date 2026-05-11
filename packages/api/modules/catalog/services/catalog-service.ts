@@ -179,17 +179,40 @@ export const catalogService: Service = {
           seller: true 
         }
       });
-
+ 
       if (product) {
+        let recommendations: any[] = [];
         try {
-          const recommendations = await RustClient.recommendations.forProduct(product.id);
-          return { ...product, recommendations };
+          recommendations = await RustClient.recommendations.forProduct(product.id);
         } catch (e) {
-          console.warn('Rust recommendations failed:', e);
-          return { ...product, recommendations: [] };
+          console.warn('Rust recommendations failed, using local collaborative filtering:', e.message);
+          // Tier 1: Collaborative Filtering Fallback
+          const relations = await prisma.productRelation.findMany({
+            where: { productId: product.id, relationType: 'CO_PURCHASE' },
+            orderBy: { score: 'desc' },
+            take: 6,
+            include: { 
+              relatedProduct: { 
+                include: { variants: true, media: true, brand: true, category: true } 
+              } 
+            }
+          });
+          recommendations = relations.map(r => r.relatedProduct);
         }
-      }
 
+        // If still no recommendations, fallback to newest in same category
+        if (recommendations.length === 0) {
+          recommendations = await prisma.product.findMany({
+            where: { categoryId: product.categoryId, status: 'ACTIVE', id: { not: product.id } },
+            include: { variants: true, media: true, brand: true, category: true },
+            take: 6,
+            orderBy: { createdAt: 'desc' }
+          });
+        }
+
+        return { ...product, recommendations };
+      }
+ 
       return product;
     }, 300);
   },

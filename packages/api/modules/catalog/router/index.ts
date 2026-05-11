@@ -229,6 +229,31 @@ const _catalogRouter = createTRPCRouter({
 
       return { items, nextCursor };
     }),
+
+  autocomplete: publicProcedure
+    .input(z.object({ query: z.string().min(1) }))
+    .query(async ({ input }) => {
+      const { redis } = await import('@ecom/shared');
+      const query = input.query.toLowerCase();
+
+      // 1. Try Rust search service first
+      try {
+        const { RustClient } = await import('../../../rust-client.js');
+        const results = await RustClient.search.autocomplete(query);
+        if (results && results.length > 0) return results;
+      } catch (e) {
+        console.warn('[Autocomplete] Rust service failed:', e);
+      }
+
+      // 2. Fallback to Redis Trie (ZSET)
+      // The trie is built nightly in run-workers.ts
+      if (redis) {
+        const results = await redis.zrangebylex('autocomplete_trie', `[${query}`, `[${query}\xff`, 'LIMIT', 0, 8);
+        return results.map((r: string) => r.replace('*', ''));
+      }
+
+      return [];
+    }),
 });
 
 export const catalogRouter = _catalogRouter;

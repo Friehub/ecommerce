@@ -91,6 +91,43 @@ const _sellerRouter = createTRPCRouter({
       });
     }),
 
+  bulkActivateProducts: sellerProcedure
+    .input(z.object({
+      productIds: z.array(z.string())
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({
+        where: { userId: ctx.session.user.id }
+      });
+      if (!seller) throw new Error('NOT_A_SELLER');
+      
+      // Update status to ACTIVE
+      const result = await prisma.product.updateMany({
+        where: {
+          id: { in: input.productIds },
+          sellerId: seller.id
+        },
+        data: {
+          status: 'ACTIVE'
+        }
+      });
+
+      // Sync to search index for each product
+      const products = await prisma.product.findMany({
+        where: { id: { in: input.productIds } },
+        include: { variants: true }
+      });
+
+      const { catalogService } = await import('../../../modules/catalog/services/catalog-service.js');
+      for (const product of products) {
+        for (const variant of product.variants) {
+          await catalogService.syncToSearch(variant.id);
+        }
+      }
+
+      return result;
+    }),
+
   createCoupon: sellerProcedure
     .input(z.object({
       code: z.string().min(3).max(20),

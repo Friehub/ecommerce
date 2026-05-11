@@ -46,6 +46,30 @@ const _paymentRouter = createTRPCRouter({
       include: { transactions: { orderBy: { createdAt: 'desc' }, take: 10 } }
     });
   }),
+
+  verifyPayment: protectedProcedure
+    .input(z.object({
+      reference: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const payment = await prisma.payment.findFirst({
+        where: { providerRef: input.reference, userId: ctx.session.user.id }
+      });
+      if (!payment) throw new TRPCError({ code: "NOT_FOUND", message: "Payment record not found" });
+
+      if (payment.status === 'SUCCESS') return { status: 'SUCCESS' };
+
+      const { getPaymentAdapter } = await import('../adapters/index.js');
+      const adapter = getPaymentAdapter('paystack');
+      const result = await adapter.verifyTransaction(input.reference);
+
+      if (result.status === 'success') {
+        await paymentService.handleWebhook(input.reference, 'success');
+        return { status: 'SUCCESS' };
+      }
+
+      return { status: result.status.toUpperCase() };
+    }),
 });
 
 export const paymentRouter = _paymentRouter;

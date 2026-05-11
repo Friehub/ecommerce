@@ -75,4 +75,6 @@ export interface PaymentAdapter {
     bankCode: string;
     currency: string;
   }): Promise<{ recipientCode: string }>;
+
+  verifyTransaction(reference: string): Promise<WebhookResult>;
 }

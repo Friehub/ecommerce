@@ -168,4 +168,24 @@ export class PaystackAdapter implements PaymentAdapter {
       recipientCode: data.data.recipient_code as string,
     };
   }
+
+  async verifyTransaction(reference: string): Promise<WebhookResult> {
+    const res = await fetch(`${PAYSTACK_BASE}/transaction/verify/${reference}`, {
+      method: 'GET',
+      headers: headers(),
+    });
+
+    const data = await res.json();
+    if (!data.status) {
+      throw new Error(`PAYSTACK_VERIFY_FAILED: ${data.message}`);
+    }
+
+    const tx = data.data;
+    return {
+      orderId: tx.metadata?.orderId ?? '',
+      reference: tx.reference,
+      status: tx.status === 'success' ? 'success' : tx.status === 'failed' ? 'failed' : 'pending',
+      amount: tx.amount / 100,
+    };
+  }
 }

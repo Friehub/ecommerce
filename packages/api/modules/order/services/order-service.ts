@@ -34,15 +34,32 @@ export const orderService: Service = {
     });
     if (!address) throw new Error('ADDRESS_NOT_FOUND_OR_UNAUTHORIZED');
 
-    // 1. Group items by seller
-    const itemsBySeller: Record<string, typeof cart.items> = {};
+    // 1. Group items by (sellerId, warehouseId) for package splitting (C16)
+    // First, pre-fetch stock availability to determine warehouses
+    const fulfillmentGroups: Record<string, { sellerId: string, warehouseId: string, items: any[] }> = {};
     let subtotal = new Decimal(0);
 
     for (const item of cart.items) {
-      if (!itemsBySeller[item.sellerId]) itemsBySeller[item.sellerId] = [];
-      itemsBySeller[item.sellerId].push(item);
-      
-      // Fix BUG-014: Use CURRENT price from database, not stale cart snapshot
+      // Find the best warehouse (one with enough stock)
+      const stockLevel = await prisma.stockLevel.findFirst({
+        where: { 
+          variantId: item.variantId, 
+          sellerId: item.sellerId, 
+          qtyOnHand: { gte: item.quantity } 
+        }
+      });
+
+      if (!stockLevel) throw new Error(`STOCK_EXHAUSTED:${item.variantId}`);
+
+      const groupKey = `${item.sellerId}:${stockLevel.warehouseId}`;
+      if (!fulfillmentGroups[groupKey]) {
+        fulfillmentGroups[groupKey] = { 
+          sellerId: item.sellerId, 
+          warehouseId: stockLevel.warehouseId, 
+          items: [] 
+        };
+      }
+      fulfillmentGroups[groupKey].items.push({ ...item, warehouseId: stockLevel.warehouseId });
       subtotal = subtotal.add(item.variant.price.mul(item.quantity));
     }
 
@@ -70,16 +87,16 @@ export const orderService: Service = {
           total: subtotal.add(500).sub(discount),
           status: 'PENDING_PAYMENT',
           packages: {
-            create: Object.entries(itemsBySeller).map(([sellerId, items]) => ({
-              sellerId,
+            create: Object.values(fulfillmentGroups).map(group => ({
+              sellerId: group.sellerId,
+              warehouseId: group.warehouseId,
               status: 'PENDING',
               lines: {
-    // Fix BUG-014: Ensure lines use current price snapshots
-    create: items.map(item => ({
-      variantId: item.variantId,
-      quantity: item.quantity,
-      unitPrice: item.variant.price, // Current price
-    }))
+                create: group.items.map(item => ({
+                  variantId: item.variantId,
+                  quantity: item.quantity,
+                  unitPrice: item.variant.price,
+                }))
               }
             }))
           }
@@ -89,50 +106,39 @@ export const orderService: Service = {
 
       // 3. Reserve stock for all items
       const now = new Date();
-      for (const item of cart.items) {
-        // B14: Track and enforce Flash Sale limits
-        const flashSale = await tx.flashSale.findFirst({
-          where: {
-            variantId: item.variantId,
-            startTime: { lte: now },
-            endTime: { gte: now }
-          }
-        });
-
-        if (flashSale) {
-          // Fix BUG-003: Atomic flash sale quantity increment with guard
-          const result = await tx.flashSale.updateMany({
+      for (const group of Object.values(fulfillmentGroups)) {
+        for (const item of group.items) {
+          // Flash Sale logic
+          const flashSale = await tx.flashSale.findFirst({
             where: {
-              id: flashSale.id,
-              qtySold: { lte: flashSale.qtyLimit - item.quantity }
-            },
-            data: {
-              qtySold: { increment: item.quantity }
+              variantId: item.variantId,
+              startTime: { lte: now },
+              endTime: { gte: now }
             }
           });
 
-          if (result.count === 0) {
-            throw new Error(`FLASH_SALE_EXHAUSTED:${item.variantId}`);
+          if (flashSale) {
+            const result = await tx.flashSale.updateMany({
+              where: {
+                id: flashSale.id,
+                qtySold: { lte: flashSale.qtyLimit - item.quantity }
+              },
+              data: { qtySold: { increment: item.quantity } }
+            });
+            if (result.count === 0) throw new Error(`FLASH_SALE_EXHAUSTED:${item.variantId}`);
           }
+
+          const reserved = await inventoryService.reserveStock(
+            item.variantId, 
+            item.quantity, 
+            item.sellerId, 
+            item.warehouseId, 
+            newOrder.id, 
+            userId, 
+            tx
+          );
+          if (!reserved) throw new Error(`STOCK_EXHAUSTED:${item.variantId}`);
         }
-
-        // Find a warehouse for this seller/variant
-        const stockLevel = await tx.stockLevel.findFirst({
-          where: { variantId: item.variantId, sellerId: item.sellerId, qtyOnHand: { gte: item.quantity } }
-        });
-
-        if (!stockLevel) throw new Error(`STOCK_EXHAUSTED:${item.variantId}`);
-
-        const reserved = await inventoryService.reserveStock(
-          item.variantId, 
-          item.quantity, 
-          item.sellerId, 
-          stockLevel.warehouseId, 
-          newOrder.id, 
-          userId, 
-          tx
-        );
-        if (!reserved) throw new Error(`STOCK_EXHAUSTED:${item.variantId}`);
       }
 
       // 4. Clear cart

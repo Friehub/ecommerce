@@ -41,6 +41,7 @@ model OrderPackage {
   id                String        @id @default(cuid())
   orderId           String
   sellerId          String
+  warehouseId       String
   status            PackageStatus @default(PENDING)
   trackingNumber    String?
   estimatedDelivery DateTime?
@@ -52,6 +53,7 @@ model OrderPackage {
 
   @@index([orderId])
   @@index([sellerId])
+  @@index([warehouseId])
   @@index([status])
 }
 

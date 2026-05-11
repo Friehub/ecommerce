@@ -5,6 +5,41 @@ import { mediaService } from "../../media/services/media-service.js";
 import { prisma } from "@ecom/db";
 
 const _logisticsRouter = createTRPCRouter({
+  registerAsAgent: protectedProcedure
+    .input(z.object({
+      zone: z.string(),
+      pickupStationId: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return await prisma.$transaction(async (tx) => {
+        const existing = await tx.deliveryAgent.findUnique({
+          where: { userId: ctx.session.user.id }
+        });
+        if (existing) throw new Error('ALREADY_AN_AGENT');
+
+        const agent = await tx.deliveryAgent.create({
+          data: {
+            userId: ctx.session.user.id,
+            zone: input.zone,
+            status: 'ACTIVE'
+          }
+        });
+
+        await tx.user.update({
+          where: { id: ctx.session.user.id },
+          data: { role: 'AGENT' }
+        });
+
+        return agent;
+      });
+    }),
+
+  listPickupStations: publicProcedure.query(async () => {
+    return await prisma.pickupStation.findMany({
+      where: { isActive: true }
+    });
+  }),
+
   getMyShipments: agentProcedure.query(async ({ ctx }) => {
     // We need to get the agent ID for the user
     const agent = await prisma.deliveryAgent.findUnique({

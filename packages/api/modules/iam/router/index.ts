@@ -85,6 +85,12 @@ const _iamRouter = createTRPCRouter({
       return await userService.deleteAddress(input.id, ctx.session.user.id);
     }),
 
+  getPublicProfile: publicProcedure
+    .input(z.object({ idOrSlug: z.string() }))
+    .query(async ({ input }) => {
+      return await sellerService.getPublicProfile(input.idOrSlug);
+    }),
+
   uploadDocument: protectedProcedure
     .input(z.object({
       type: z.enum(['NIN', 'BANK_STATEMENT', 'CAC', 'UTILITY_BILL']),

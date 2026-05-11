@@ -275,6 +275,7 @@ export const catalogService: Service = {
     const where: any = {
       product: {
         status: 'ACTIVE',
+        sellerId: (filters as any).sellerId,
         categoryId: filters.categoryId,
         brandId: filters.brandId,
         isGlobal: (filters as any).isGlobal,

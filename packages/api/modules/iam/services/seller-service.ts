@@ -71,14 +71,40 @@ export const sellerService: Service = {
       }
     }
 
-    return prisma.seller.update({
-      where: { id: seller.id },
-      data: {
-        bankCode: data.bankCode,
-        bankAccountNumber: data.bankAccountNumber,
-        bankAccountName: data.bankAccountName,
-        transferRecipientCode: recipientCode
       }
     });
+  },
+
+  async getPublicProfile(idOrSlug: string) {
+    const seller = await prisma.seller.findFirst({
+      where: {
+        OR: [
+          { id: idOrSlug },
+          { businessName: { equals: idOrSlug, mode: 'insensitive' } }
+        ],
+        status: 'ACTIVE'
+      },
+      select: {
+        id: true,
+        businessName: true,
+        status: true,
+        tier: true,
+        createdAt: true,
+        averageRating: true,
+        reviewCount: true,
+        _count: {
+          select: { products: { where: { status: 'ACTIVE' } } }
+        }
+      }
+    });
+
+    if (!seller) throw new Error('SELLER_NOT_FOUND');
+
+    return {
+      ...seller,
+      memberSince: seller.createdAt,
+      productCount: seller._count.products,
+      rating: seller.averageRating?.toNumber() || 0
+    };
   }
 }

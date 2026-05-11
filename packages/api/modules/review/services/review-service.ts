@@ -14,13 +14,31 @@ export const reviewService: Service = {
 
     if (!delivered) throw new Error('NOT_ELIGIBLE_TO_REVIEW');
 
-    // 2. Create review
+    // 2. Automated Sentiment Analysis (Rust Client)
+    let sentimentData = { score: 0.5, label: 'NEUTRAL', keywords: [] as string[] };
+    try {
+      const { RustClient } = await import('../../../rust-client.js');
+      const analysis = await RustClient.analysis.sentiment(comment);
+      sentimentData = {
+        score: analysis.score,
+        label: analysis.label,
+        keywords: analysis.keywords
+      };
+    } catch (e) {
+      console.warn('Sentiment analysis failed:', e);
+    }
+
+    // 3. Create review
     const review = await prisma.review.create({
       data: {
         userId,
         productId,
         rating,
         comment,
+        sentimentScore: sentimentData.score,
+        sentiment: sentimentData.label,
+        keywords: sentimentData.keywords,
+        status: (sentimentData.score < -0.5) ? 'REJECTED' : 'PENDING', // Auto-reject extremely negative reviews
         media: {
           create: images.map(url => ({ url }))
         }

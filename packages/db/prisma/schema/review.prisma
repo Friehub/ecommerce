@@ -9,6 +9,9 @@ model Review {
   status      ReviewStatus @default(PENDING)
   reviewedAt  DateTime?
   reviewedBy  String?
+  sentimentScore Float? // -1.0 to 1.0
+  sentiment      String? // POSITIVE, NEGATIVE, NEUTRAL
+  keywords       String[]
   createdAt   DateTime @default(now())
 
   product   Product       @relation(fields: [productId], references: [id])

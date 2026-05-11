@@ -100,4 +100,16 @@ export class RustClient {
             return `${SERVICES.IMAGE_PROCESSOR}/process?${params}`;
         }
     };
+
+    // Analysis Service (Mostly Stub for now)
+    static analysis = {
+        sentiment: (text: string) => this.request<any>(SERVICES.FRAUD, '/analysis/sentiment', { // Reusing fraud port as placeholder
+            method: 'POST',
+            body: JSON.stringify({ text }),
+        }).catch(() => ({ 
+            score: text.length > 50 ? 0.8 : 0.5, 
+            label: 'POSITIVE', 
+            keywords: ['placeholder', 'demo'] 
+        })),
+    };
 }

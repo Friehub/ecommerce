@@ -187,7 +187,6 @@ export const inventoryService: Service = {
     }
     return this.syncStockFromDB(variantId);
   },
-
   async syncAllStock() {
     const stockLevels = await prisma.stockLevel.findMany({
       select: {
@@ -210,5 +209,35 @@ export const inventoryService: Service = {
     await pipeline.exec();
 
     return aggregates.size;
+  },
+
+  async updateStockBatch(sellerId: string, warehouseId: string, updates: { variantId: string, quantity: number }[]) {
+    return await prisma.$transaction(async (tx) => {
+      const results = [];
+      for (const update of updates) {
+        const stock = await tx.stockLevel.upsert({
+          where: {
+            variantId_sellerId_warehouseId: {
+              variantId: update.variantId,
+              sellerId,
+              warehouseId
+            }
+          },
+          update: { qtyOnHand: update.quantity },
+          create: {
+            variantId: update.variantId,
+            sellerId,
+            warehouseId,
+            qtyOnHand: update.quantity,
+            qtyReserved: 0
+          }
+        });
+        
+        // Sync to Redis immediately
+        await this.syncStockFromDB(update.variantId);
+        results.push(stock);
+      }
+      return results;
+    });
   }
 };

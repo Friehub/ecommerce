@@ -36,6 +36,25 @@ const _inventoryRouter = createTRPCRouter({
     const syncedCount = await inventoryService.syncAllStock();
     return { success: true, syncedCount };
   }),
+
+  updateStock: sellerProcedure
+    .input(z.object({
+      warehouseId: z.string(),
+      updates: z.array(z.object({
+        variantId: z.string(),
+        quantity: z.number().int().nonnegative()
+      }))
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { prisma } = await import('@ecom/db');
+      const seller = await prisma.seller.findUnique({
+        where: { userId: ctx.session.user.id },
+        select: { id: true }
+      });
+      if (!seller) throw new Error('NOT_A_SELLER');
+
+      return await inventoryService.updateStockBatch(seller.id, input.warehouseId, input.updates);
+    }),
 });
 
 export const inventoryRouter = _inventoryRouter as any;

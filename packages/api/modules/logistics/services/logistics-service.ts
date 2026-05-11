@@ -83,22 +83,44 @@ export const logisticsService: Service = {
     return shipment;
   },
 
-  async getAgentShipments(agentId: string) {
-    return prisma.shipment.findMany({
-      where: { agentId },
-      include: { 
-        package: { 
-          include: { 
-            order: {
-              include: {
-                address: true
-              }
-            },
-            lines: true 
-          } 
-        } 
-      },
       orderBy: { createdAt: 'desc' }
     });
+  },
+
+  async calculateShipping(userId: string, cartId: string, addressId: string) {
+    const cart = await prisma.cart.findUnique({
+      where: { id: cartId },
+      include: { items: { include: { variant: true } } }
+    });
+    if (!cart) throw new Error('CART_NOT_FOUND');
+
+    const address = await prisma.userAddress.findUnique({
+      where: { id: addressId }
+    });
+    if (!address) throw new Error('ADDRESS_NOT_FOUND');
+
+    // Logic: Base fee + Weight-based + State-based multiplier
+    let totalWeightGrams = 0;
+    for (const item of cart.items) {
+      totalWeightGrams += (item.variant.weightGrams || 500) * item.quantity;
+    }
+
+    const baseFee = 500; // NGN
+    const weightFee = Math.ceil(totalWeightGrams / 1000) * 200; // 200 NGN per kg
+    
+    // Remote states cost more
+    const remoteStates = ['Borno', 'Yobe', 'Adamawa', 'Sokoto', 'Kebbi', 'Zamfara'];
+    const stateMultiplier = remoteStates.includes(address.state) ? 1.5 : 1.0;
+
+    const total = (baseFee + weightFee) * stateMultiplier;
+
+    return {
+      baseFee,
+      weightFee,
+      totalWeightGrams,
+      stateMultiplier,
+      total: Math.round(total),
+      currency: 'NGN'
+    };
   }
 };

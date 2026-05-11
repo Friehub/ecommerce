@@ -78,6 +78,16 @@ const _orderRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await orderService.cancelOrder(input.orderId, ctx.session.user.id);
     }),
+
+  calculateShipping: protectedProcedure
+    .input(z.object({
+      cartId: z.string(),
+      addressId: z.string(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const { logisticsService } = await import('../../logistics/services/logistics-service.js');
+      return await logisticsService.calculateShipping(ctx.session.user.id, input.cartId, input.addressId);
+    }),
 });
 
 export const orderRouter = _orderRouter as any;

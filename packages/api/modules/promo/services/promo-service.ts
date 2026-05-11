@@ -28,6 +28,21 @@ export const promoService: Service = {
       throw new Error('COUPON_EXPIRED');
     }
 
+    // Check seller scoping (C05)
+    if (promo.sellerId && userId) {
+      const cart = await prisma.cart.findFirst({
+        where: { userId },
+        include: { items: true }
+      });
+      
+      if (cart) {
+        const hasSellerItem = cart.items.some(item => item.sellerId === promo.sellerId);
+        if (!hasSellerItem) {
+          throw new Error('COUPON_SELLER_MISMATCH');
+        }
+      }
+    }
+
     return promo;
   },
 

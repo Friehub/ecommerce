@@ -23,6 +23,7 @@ model Seller {
   adCampaigns AdCampaign[]
   flashSales  FlashSale[]
   disputes    Dispute[]           @relation("SellerDisputes")
+  promotions  Promotion[]
 }
 
 enum SellerTier {

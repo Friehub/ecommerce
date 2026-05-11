@@ -8,8 +8,10 @@ model Promotion {
   startDate   DateTime
   endDate     DateTime
   isActive    Boolean       @default(true)
+  sellerId    String?
 
   coupons Coupon[]
+  seller  Seller? @relation(fields: [sellerId], references: [id])
 }
 
 enum PromotionType {

@@ -90,6 +90,57 @@ const _sellerRouter = createTRPCRouter({
         }
       });
     }),
+
+  createCoupon: sellerProcedure
+    .input(z.object({
+      code: z.string().min(3).max(20),
+      name: z.string(),
+      description: z.string().optional(),
+      type: z.enum(['PERCENTAGE', 'FIXED_AMOUNT']),
+      value: z.number(),
+      usageLimit: z.number().optional(),
+      startDate: z.string(),
+      endDate: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({
+        where: { userId: ctx.session.user.id }
+      });
+      if (!seller) throw new Error('NOT_A_SELLER');
+
+      return await prisma.promotion.create({
+        data: {
+          name: input.name,
+          description: input.description,
+          type: input.type as any,
+          value: input.value,
+          startDate: new Date(input.startDate),
+          endDate: new Date(input.endDate),
+          sellerId: seller.id,
+          coupons: {
+            create: {
+              code: input.code.toUpperCase(),
+              usageLimit: input.usageLimit,
+            }
+          }
+        },
+        include: { coupons: true }
+      });
+    }),
+
+  listMyCoupons: sellerProcedure
+    .query(async ({ ctx }) => {
+      const seller = await prisma.seller.findUnique({
+        where: { userId: ctx.session.user.id }
+      });
+      if (!seller) throw new Error('NOT_A_SELLER');
+
+      return await prisma.promotion.findMany({
+        where: { sellerId: seller.id },
+        include: { coupons: true },
+        orderBy: { startDate: 'desc' }
+      });
+    }),
 });
 
 export const sellerRouter = _sellerRouter as any;

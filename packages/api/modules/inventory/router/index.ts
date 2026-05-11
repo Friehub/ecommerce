@@ -33,8 +33,8 @@ const _inventoryRouter = createTRPCRouter({
     }),
 
   syncAll: adminProcedure.mutation(async () => {
-    // Logic to sync all stock from DB to Redis
-    return { success: true };
+    const syncedCount = await inventoryService.syncAllStock();
+    return { success: true, syncedCount };
   }),
 });
 

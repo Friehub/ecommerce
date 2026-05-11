@@ -186,5 +186,29 @@ export const inventoryService: Service = {
       return parseInt(cached, 10);
     }
     return this.syncStockFromDB(variantId);
+  },
+
+  async syncAllStock() {
+    const stockLevels = await prisma.stockLevel.findMany({
+      select: {
+        variantId: true,
+        qtyOnHand: true,
+        qtyReserved: true,
+      }
+    });
+
+    const aggregates = new Map<string, number>();
+    for (const sl of stockLevels) {
+      const current = aggregates.get(sl.variantId) || 0;
+      aggregates.set(sl.variantId, current + (sl.qtyOnHand - sl.qtyReserved));
+    }
+
+    const pipeline = redis.pipeline();
+    for (const [variantId, available] of aggregates.entries()) {
+      pipeline.set(`stock:${variantId}`, available);
+    }
+    await pipeline.exec();
+
+    return aggregates.size;
   }
 };

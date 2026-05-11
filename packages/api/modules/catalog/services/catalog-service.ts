@@ -270,7 +270,40 @@ export const catalogService: Service = {
         
         return { results: [], total: 0, facets: {} };
       } catch (e) {
-        console.error('Rust search failed, falling back to Prisma:', e);
+        console.error('Rust search failed, falling back to cached/local logic:', e);
+      }
+    }
+
+    // [Performance] Search Fallback Optimization
+    // Try to serve from Redis result cache if it's a search query
+    const searchKey = filters.search ? `search:v2:${Buffer.from(JSON.stringify(filters)).toString('base64')}` : null;
+    if (searchKey) {
+      const cached = await redis.get(searchKey);
+      if (cached) {
+        const { variantIds, total } = JSON.parse(cached);
+        if (variantIds.length === 0) return { results: [], total, facets: {} };
+
+        const results = await prisma.productVariant.findMany({
+          where: { id: { in: variantIds } },
+          include: { product: { include: { media: true, brand: true, category: true } } }
+        });
+        
+        // Restore order
+        const sorted = variantIds.map((id: string) => results.find(r => r.id === id)).filter(Boolean);
+        return {
+          results: sorted.map(v => ({
+            ...v,
+            title: v.product.title,
+            slug: v.product.slug,
+            media: v.product.media,
+            brand: v.product.brand,
+            category: v.product.category,
+            price: v.price.toNumber(),
+            comparePrice: v.comparePrice?.toNumber()
+          })),
+          total,
+          facets: {}
+        };
       }
     }
 
@@ -323,6 +356,14 @@ export const catalogService: Service = {
       price: v.price.toNumber(),
       comparePrice: v.comparePrice?.toNumber()
     }));
+
+    // [Performance] Cache results for 10 minutes to unblock the database
+    if (searchKey) {
+      await redis.set(searchKey, JSON.stringify({ 
+        variantIds: results.map(v => v.id), 
+        total 
+      }), 'EX', 600);
+    }
 
     return { results: flattenedResults, total, facets: {} };
   },

@@ -1,11 +1,12 @@
 import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
 import type { Service } from '../../../types.js'
 import { currencyService } from './currency-service.js';
+import { reportingService } from './reporting-service.js';
 
 export const ledgerService: Service = {
-  // Explicit return types to avoid TS2742 inference errors
-  async recordSale(orderLineId: string): Promise<any> {
+  ...reportingService,
 
+  async recordSale(orderLineId: string): Promise<any> {
     const line = await prisma.orderLine.findUnique({
       where: { id: orderLineId },
       include: { 
@@ -18,12 +19,10 @@ export const ledgerService: Service = {
 
     const sellerId = line.package.sellerId;
     const grossAmount = line.unitPrice.mul(line.quantity);
-    const commissionRate = line.variant.product.category.commissionRate || new Decimal(10); // Default 10%
-    // Fix BUG-018: Explicit rounding for financial amounts to avoid fractional issues
+    const commissionRate = line.variant.product.category.commissionRate || new Decimal(10);
     const commissionAmount = grossAmount.mul(commissionRate).div(100).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
 
     return await prisma.$transaction(async (tx) => {
-      // 1. Record Gross Sale (PENDING)
       const saleEntry = await tx.sellerLedgerEntry.create({
         data: {
           sellerId,
@@ -34,7 +33,6 @@ export const ledgerService: Service = {
         }
       });
 
-      // 2. Record Platform Commission (PENDING)
       const commissionEntry = await tx.sellerLedgerEntry.create({
         data: {
           sellerId,
@@ -55,7 +53,7 @@ export const ledgerService: Service = {
     });
 
     const releaseDate = new Date();
-    releaseDate.setDate(releaseDate.getDate() + 7); // 7 day return window
+    releaseDate.setDate(releaseDate.getDate() + 7);
 
     await prisma.sellerLedgerEntry.updateMany({
       where: { 
@@ -84,8 +82,6 @@ export const ledgerService: Service = {
 
   async releaseMatureEscrow() {
     const now = new Date();
-    
-    // B05: Use atomic updateMany with inline dispute filtering
     const result = await prisma.sellerLedgerEntry.updateMany({
       where: {
         status: LedgerStatus.PENDING,
@@ -106,9 +102,6 @@ export const ledgerService: Service = {
   },
 
   async releaseEscrowByOrder(orderId: string) {
-    const now = new Date();
-    
-    // B05: Atomic update for specific order
     const result = await prisma.sellerLedgerEntry.updateMany({
       where: {
         orderLine: { 
@@ -130,9 +123,6 @@ export const ledgerService: Service = {
     const decimalAmount = new Decimal(amount);
     
     return await prisma.$transaction(async (tx) => {
-      // B06: Debit first, then verify (prevents TOCTOU)
-      
-      // 1. Create Ledger Entry for the withdrawal (Debit)
       await tx.sellerLedgerEntry.create({
         data: {
           sellerId,
@@ -142,14 +132,12 @@ export const ledgerService: Service = {
         }
       });
 
-      // 2. Recompute balance — if now negative, roll back
       const availableBalance = await this.getSellerBalance(sellerId, LedgerStatus.AVAILABLE, tx as any);
       
       if (availableBalance.lessThan(0)) {
         throw new Error('INSUFFICIENT_FUNDS');
       }
 
-      // 3. Create Payout record
       const payout = await tx.payout.create({
         data: {
           sellerId,
@@ -169,7 +157,7 @@ export const ledgerService: Service = {
         sellerId,
         type: LedgerEntryType.PENALTY,
         amount: new Decimal(amount).negated(),
-        status: LedgerStatus.AVAILABLE // Penalties usually hit the available balance immediately
+        status: LedgerStatus.AVAILABLE
       }
     });
   },
@@ -183,18 +171,12 @@ export const ledgerService: Service = {
       }
     });
 
-    if (existing) {
-      console.log(`Statement already exists for seller ${sellerId} from ${periodStart} to ${periodEnd}. Returning existing statement.`);
-      return existing;
-    }
+    if (existing) return existing;
 
     const entries = await prisma.sellerLedgerEntry.findMany({
       where: {
         sellerId,
-        createdAt: {
-          gte: periodStart,
-          lte: periodEnd
-        }
+        createdAt: { gte: periodStart, lte: periodEnd }
       }
     });
 
@@ -246,11 +228,9 @@ export const ledgerService: Service = {
       nextCursor = nextItem!.id;
     }
 
-    // Determine target currency (seller's default if not provided)
     const seller = entries[0]?.seller || await prisma.seller.findUnique({ where: { id: sellerId } });
     const currency = targetCurrency || seller?.currency || 'NGN';
 
-    // Convert entries if needed (read-time conversion as per gap-88)
     const localizedEntries = await Promise.all(entries.map(async entry => ({
       ...entry,
       amount: await currencyService.convert(entry.amount, 'NGN', currency),
@@ -270,79 +250,5 @@ export const ledgerService: Service = {
         currency
       }
     };
-  },
-
-  async exportStatement(sellerId: string, startDate: Date, endDate: Date) {
-    const entries = await prisma.sellerLedgerEntry.findMany({
-      where: {
-        sellerId,
-        createdAt: { gte: startDate, lte: endDate }
-      },
-      orderBy: { createdAt: 'asc' },
-      include: { orderLine: { include: { package: { include: { order: true } } } } }
-    });
-
-    let runningBalance = new Decimal(0);
-    const rows = [
-      ['Date', 'Type', 'Description', 'Order Ref', 'Amount', 'Balance'].join(',')
-    ];
-
-    for (const entry of entries) {
-      runningBalance = runningBalance.add(entry.amount);
-      const orderRef = entry.orderLine?.package?.order?.id || 'N/A';
-      const row = [
-        entry.createdAt.toISOString(),
-        entry.type,
-        `Ledger entry ${entry.id}`,
-        orderRef,
-        entry.amount.toFixed(2),
-        runningBalance.toFixed(2)
-      ];
-      rows.push(row.map(cell => `"${cell}"`).join(','));
-    }
-
-    return rows.join('\n');
-  },
-
-  async getSettlementReport(startDate: Date, endDate: Date) {
-    const entries = await prisma.sellerLedgerEntry.findMany({
-      where: {
-        createdAt: { gte: startDate, lte: endDate }
-      }
-    });
-
-    const report = {
-      grossSales: new Decimal(0),
-      commissions: new Decimal(0),
-      payouts: new Decimal(0),
-      penalties: new Decimal(0),
-      refunds: new Decimal(0),
-      netPlatform: new Decimal(0)
-    };
-
-    for (const entry of entries) {
-      const amount = entry.amount;
-      switch (entry.type) {
-        case LedgerEntryType.SALE:
-          report.grossSales = report.grossSales.add(amount);
-          break;
-        case LedgerEntryType.COMMISSION:
-          report.commissions = report.commissions.add(amount.abs());
-          break;
-        case LedgerEntryType.WITHDRAWAL:
-          report.payouts = report.payouts.add(amount.abs());
-          break;
-        case LedgerEntryType.PENALTY:
-          report.penalties = report.penalties.add(amount.abs());
-          break;
-        case LedgerEntryType.REFUND:
-          report.refunds = report.refunds.add(amount.abs());
-          break;
-      }
-    }
-
-    report.netPlatform = report.commissions.add(report.penalties).sub(report.refunds);
-    
-    return report;
   }
 };

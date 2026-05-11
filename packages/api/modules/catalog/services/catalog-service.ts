@@ -1,8 +1,9 @@
 import { prisma, Prisma } from '@ecom/db'
-import { publishEvent, cacheService } from '@ecom/shared'
+import { publishEvent } from '@ecom/shared'
 import type { ProductInput, CategoryInput } from '../schemas/index.js'
 import { RustClient } from '../../../rust-client.js'
 import type { Service } from '../../../types.js'
+import { catalogQueryService } from './catalog-query-service.js'
 
 const slugify = (text: string) => 
   text.toString().toLowerCase().trim()
@@ -11,6 +12,9 @@ const slugify = (text: string) =>
     .replace(/--+/g, '-');
 
 export const catalogService: Service = {
+  // Delegate all read operations to catalogQueryService
+  ...catalogQueryService,
+
   async createProduct(sellerId: string, data: ProductInput) {
     const slug = `${slugify(data.title)}-${Date.now()}`;
     
@@ -22,7 +26,7 @@ export const catalogService: Service = {
         brandId: data.brandId,
         categoryId: data.categoryId,
         sellerId,
-        status: 'PENDING_APPROVAL', // C01: Products require admin moderation
+        status: 'PENDING_APPROVAL',
         variants: {
           create: data.variants.map(v => ({
             sku: v.sku,
@@ -44,13 +48,11 @@ export const catalogService: Service = {
 
     await publishEvent('product.created', { productId: product.id, sellerId });
 
-    // B09: Resolve default warehouse instead of hardcoding
     const defaultWarehouse = await prisma.warehouse.findFirst({
       orderBy: { name: 'asc' }
     });
     if (!defaultWarehouse) throw new Error('NO_WAREHOUSE_CONFIGURED');
 
-    // Initialize stock levels for all variants
     for (const variant of product.variants) {
       await prisma.stockLevel.create({
         data: {
@@ -61,8 +63,6 @@ export const catalogService: Service = {
           qtyReserved: 0,
         }
       });
-      
-      // Sync to search index
       await this.syncToSearch(variant.id);
     }
 
@@ -71,7 +71,7 @@ export const catalogService: Service = {
 
   async updateProduct(sellerId: string, productId: string, data: Partial<ProductInput> & { status?: string }) {
     const product = await prisma.product.update({
-      where: { id: productId, sellerId }, // ensure seller owns it
+      where: { id: productId, sellerId },
       data: {
         title: data.title,
         description: data.description,
@@ -82,7 +82,6 @@ export const catalogService: Service = {
 
     await publishEvent('product.updated', { productId, sellerId });
 
-    // Sync to search index for all variants
     for (const variant of product.variants) {
       await this.syncToSearch(variant.id);
     }
@@ -104,13 +103,11 @@ export const catalogService: Service = {
       data: { price: newPrice }
     });
 
-    // Fire price drop alert if new price is lower
     if (newPrice < oldPrice) {
       const { wishlistService } = await import('./wishlist-service.js');
       await wishlistService.notifyPriceDrops(variantId, oldPrice, newPrice);
     }
 
-    // Sync to search index
     await this.syncToSearch(variantId);
 
     return updated;
@@ -167,230 +164,6 @@ export const catalogService: Service = {
     }).catch(e => console.error('Failed to sync search index:', e));
   },
 
-  async getProductBySlug(slug: string) {
-    return cacheService.wrap(`catalog:product:${slug}`, async () => {
-      const product = await prisma.product.findUnique({
-        where: { slug },
-        include: { 
-          variants: true, 
-          brand: true, 
-          category: true,
-          media: true,
-          seller: true 
-        }
-      });
- 
-      if (product) {
-        let recommendations: any[] = [];
-        try {
-          recommendations = await RustClient.recommendations.forProduct(product.id);
-        } catch (e) {
-          console.warn('Rust recommendations failed, using local collaborative filtering:', e.message);
-          // Tier 1: Collaborative Filtering Fallback
-          const relations = await prisma.productRelation.findMany({
-            where: { productId: product.id, relationType: 'CO_PURCHASE' },
-            orderBy: { score: 'desc' },
-            take: 6,
-            include: { 
-              relatedProduct: { 
-                include: { variants: true, media: true, brand: true, category: true } 
-              } 
-            }
-          });
-          recommendations = relations.map(r => r.relatedProduct);
-        }
-
-        // If still no recommendations, fallback to newest in same category
-        if (recommendations.length === 0) {
-          recommendations = await prisma.product.findMany({
-            where: { categoryId: product.categoryId, status: 'ACTIVE', id: { not: product.id } },
-            include: { variants: true, media: true, brand: true, category: true },
-            take: 6,
-            orderBy: { createdAt: 'desc' }
-          });
-        }
-
-        return { ...product, recommendations };
-      }
- 
-      return product;
-    }, 300);
-  },
-
-  async listProducts(filters: { 
-    categoryId?: string, 
-    brandId?: string, 
-    search?: string,
-    minPrice?: number,
-    maxPrice?: number,
-    sortBy?: string,
-    limit?: number,
-    offset?: number,
-    sellerId?: string
-  }) {
-    if (filters.search || filters.sellerId) {
-      try {
-        const { advertisingService } = await import('../../advertising/services/advertising-service.js');
-        const sponsoredProduct = filters.search ? await advertisingService.selectSponsoredResult(filters.search) : null;
-
-        const searchResponse = await RustClient.search.query({
-          q: filters.search || '',
-          category_id: filters.categoryId,
-          seller_id: filters.sellerId,
-          min_price: filters.minPrice,
-          max_price: filters.maxPrice,
-          sort_by: filters.sortBy,
-          limit: filters.limit,
-          offset: filters.offset,
-        });
-
-        if (searchResponse && searchResponse.results.length > 0) {
-           // B10: variant_id is a string, not an array of characters
-           const variantIds = searchResponse.results.map((r: any) => r.variant_id);
-           let results = await prisma.productVariant.findMany({
-             where: { id: { in: variantIds } },
-             include: { 
-               product: { include: { media: true, brand: true, category: true } }
-             }
-           });
-           
-           // Re-sort to match search relevance or requested sort
-           let sortedResults = variantIds.map((id: string) => results.find(r => r.id === id)).filter(Boolean);
-
-           if (sponsoredProduct) {
-             // Fetch the first variant for the sponsored product to match return type
-             const sponsoredVariant = await prisma.productVariant.findFirst({
-               where: { productId: sponsoredProduct.id },
-               include: { product: { include: { media: true, brand: true, category: true } } }
-             });
-
-             if (sponsoredVariant) {
-               (sponsoredVariant as any).isSponsored = true;
-               (sponsoredVariant as any).adGroupId = (sponsoredProduct as any).adGroupId;
-               sortedResults = [sponsoredVariant, ...sortedResults];
-             }
-           }
-
-           const flattenedResults = sortedResults.map(v => ({
-             ...v,
-             title: v.product.title,
-             slug: v.product.slug,
-             media: v.product.media,
-             brand: v.product.brand,
-             category: v.product.category,
-             price: v.price.toNumber(),
-             comparePrice: v.comparePrice?.toNumber(),
-             isSponsored: (v as any).isSponsored,
-             adGroupId: (v as any).adGroupId
-           }));
-
-           return {
-             results: flattenedResults,
-             total: (searchResponse.total || results.length) + (sponsoredProduct ? 1 : 0),
-             facets: searchResponse.facets
-           };
-        }
-        
-        return { results: [], total: 0, facets: {} };
-      } catch (e) {
-        console.error('Rust search failed, falling back to cached/local logic:', e);
-      }
-    }
-
-    // [Performance] Search Fallback Optimization
-    // Try to serve from Redis result cache if it's a search query
-    const searchKey = filters.search ? `search:v2:${Buffer.from(JSON.stringify(filters)).toString('base64')}` : null;
-    if (searchKey) {
-      const cached = await redis.get(searchKey);
-      if (cached) {
-        const { variantIds, total } = JSON.parse(cached);
-        if (variantIds.length === 0) return { results: [], total, facets: {} };
-
-        const results = await prisma.productVariant.findMany({
-          where: { id: { in: variantIds } },
-          include: { product: { include: { media: true, brand: true, category: true } } }
-        });
-        
-        // Restore order
-        const sorted = variantIds.map((id: string) => results.find(r => r.id === id)).filter(Boolean);
-        return {
-          results: sorted.map(v => ({
-            ...v,
-            title: v.product.title,
-            slug: v.product.slug,
-            media: v.product.media,
-            brand: v.product.brand,
-            category: v.product.category,
-            price: v.price.toNumber(),
-            comparePrice: v.comparePrice?.toNumber()
-          })),
-          total,
-          facets: {}
-        };
-      }
-    }
-
-    const where: any = {
-      product: {
-        status: 'ACTIVE',
-        sellerId: filters.sellerId, // C07: Filter by sellerId
-        categoryId: filters.categoryId,
-        brandId: filters.brandId,
-        isGlobal: (filters as any).isGlobal,
-        isOfficial: (filters as any).isOfficial,
-        isExpress: (filters as any).isExpress,
-        ...(filters.search ? {
-          OR: [
-            { title: { contains: filters.search, mode: 'insensitive' } },
-            { description: { contains: filters.search, mode: 'insensitive' } },
-          ]
-        } : {})
-      },
-      price: {
-        gte: filters.minPrice,
-        lte: filters.maxPrice,
-      }
-    };
-
-    const [results, total] = await Promise.all([
-      prisma.productVariant.findMany({
-        where,
-        include: { product: { include: { media: true, brand: true, category: true } } },
-        orderBy: filters.sortBy === 'price_asc' 
-          ? { price: 'asc' } 
-          : filters.sortBy === 'price_desc' 
-          ? { price: 'desc' } 
-          : filters.sortBy === 'popularity'
-          ? { product: { reviewCount: 'desc' } }
-          : { createdAt: 'desc' },
-        take: filters.limit || 20,
-        skip: filters.offset || 0,
-      }),
-      prisma.productVariant.count({ where })
-    ]);
-
-    const flattenedResults = results.map(v => ({
-      ...v,
-      title: v.product.title,
-      slug: v.product.slug,
-      media: v.product.media,
-      brand: v.product.brand,
-      category: v.product.category,
-      price: v.price.toNumber(),
-      comparePrice: v.comparePrice?.toNumber()
-    }));
-
-    // [Performance] Cache results for 10 minutes to unblock the database
-    if (searchKey) {
-      await redis.set(searchKey, JSON.stringify({ 
-        variantIds: results.map(v => v.id), 
-        total 
-      }), 'EX', 600);
-    }
-
-    return { results: flattenedResults, total, facets: {} };
-  },
-
   async createCategory(data: CategoryInput) {
     const createData: Prisma.CategoryCreateInput = {
       name: data.name,
@@ -401,23 +174,6 @@ export const catalogService: Service = {
     };
     return prisma.category.create({
       data: createData
-    });
-  },
-
-  async getCategoryTree() {
-    return cacheService.wrap('catalog:category_tree', async () => {
-      return prisma.category.findMany({
-        where: { parentId: null },
-        take: 50, // Limit root categories
-        include: { children: { include: { children: true } } }
-      });
-    }, 3600); // Cache for 1 hour
-  },
-
-  async getCategoryBySlug(slug: string) {
-    return prisma.category.findUnique({
-      where: { slug },
-      include: { children: true }
     });
   }
 };

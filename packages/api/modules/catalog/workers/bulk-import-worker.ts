@@ -60,48 +60,24 @@ export const bulkImportWorker = new Worker('bulk-import', async (job: Job) => {
 
     try {
       // Create product + variant using catalogService logic
-      const slug = `${title.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
-      const product = await prisma.product.create({
-        data: {
-          title,
-          slug,
-          description,
-          brandId,
-          categoryId,
-          sellerId,
-          status: 'ACTIVE',
-          variants: {
-            create: [{
-              sku,
-              ean: ean || null,
-              price,
-              comparePrice: comparePrice || null,
-              attributes: {},
-              weightGrams: 0
-            }]
-          }
-        },
-        include: { variants: true }
+      const product = await catalogService.createProduct(sellerId, {
+        title,
+        description,
+        brandId,
+        categoryId,
+        images: [], // Images not supported via CSV yet
+        variants: [{
+          sku,
+          price,
+          comparePrice: comparePrice || undefined,
+          stock,
+          attributes: {},
+          weightGrams: 0
+        }]
       });
 
-      // Add inventory level
-      const variant = product.variants[0];
-      if (variant) {
-        if (!warehouseId) throw new Error('MISSING_WAREHOUSE_ID');
-        
-        await prisma.stockLevel.create({
-          data: {
-            variantId: variant.id,
-            sellerId,
-            warehouseId,
-            qtyOnHand: stock,
-            qtyReserved: 0
-          }
-        });
-
-        // Sync to search index
-        await catalogService.syncToSearch(variant.id);
-      }
+      // B09: Inventory and search sync are now handled by catalogService.createProduct
+      // No extra work needed here.
     } catch (err: any) {
       console.error(`[BulkImportWorker] Row ${i + 1} (${sku}) failed:`, err.message);
     }

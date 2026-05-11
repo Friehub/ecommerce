@@ -37,49 +37,8 @@ export const sellerService: Service = {
     const seller = await prisma.seller.findUnique({ where: { userId } });
     if (!seller) throw new Error('SELLER_NOT_FOUND');
 
-    const { config } = await import('../../../config.js');
-    const PAYSTACK_SECRET_KEY = config.PAYSTACK_SECRET_KEY;
-
-    let recipientCode = `SIM_REC_${Math.random().toString(36).substring(7).toUpperCase()}`;
-
-    // Production logic for Paystack Transfer Recipient
-    if (PAYSTACK_SECRET_KEY !== 'sk_test_placeholder') {
-      try {
-        const response = await fetch('https://api.paystack.co/transferrecipient', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            type: 'nuban',
-            name: data.bankAccountName,
-            account_number: data.bankAccountNumber,
-            bank_code: data.bankCode,
-            currency: 'NGN'
-          }),
-        });
-
-        const result = await response.json();
-        if (!result.status) {
-          throw new Error(`Paystack Error: ${result.message}`);
-        }
-        recipientCode = result.data.recipient_code;
-      } catch (err: any) {
-        console.error('Paystack Transfer Recipient creation failed:', err);
-        throw new Error(`FAILED_TO_CREATE_RECIPIENT: ${err.message}`);
-      }
-    }
-
-    return prisma.seller.update({
-      where: { id: seller.id },
-      data: {
-        bankCode: data.bankCode,
-        bankAccountNumber: data.bankAccountNumber,
-        bankAccountName: data.bankAccountName,
-        transferRecipientCode: recipientCode
-      }
-    });
+    const { paymentService } = await import('../../payment/services/payment-service.js');
+    return await paymentService.setupPayoutAccount(seller.id, data);
   },
 
   async getPublicProfile(idOrSlug: string) {

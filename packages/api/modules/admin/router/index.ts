@@ -248,7 +248,7 @@ const _adminRouter = createTRPCRouter({
       const { publishEvent } = await import('@ecom/shared');
       const { catalogService } = await import('../../catalog/services/catalog-service.js');
 
-      const status = input.decision === 'APPROVED' ? 'ACTIVE' : 'INACTIVE';
+      const status = input.decision === 'APPROVED' ? 'ACTIVE' : 'REJECTED';
       
       const product = await prisma.product.update({
         where: { id: input.productId },

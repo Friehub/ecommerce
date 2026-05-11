@@ -22,7 +22,7 @@ export const catalogService: Service = {
         brandId: data.brandId,
         categoryId: data.categoryId,
         sellerId,
-        status: 'ACTIVE', // Auto-activate for demo
+        status: 'PENDING_APPROVAL', // C01: Products require admin moderation
         variants: {
           create: data.variants.map(v => ({
             sku: v.sku,

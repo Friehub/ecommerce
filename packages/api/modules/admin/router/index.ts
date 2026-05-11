@@ -223,6 +223,55 @@ const _adminRouter = createTRPCRouter({
       const { ledgerService } = await import('../../revenue/services/ledger-service.js');
       return await ledgerService.releaseMatureEscrow();
     }),
+
+  getPendingProducts: adminProcedure
+    .query(async () => {
+      return prisma.product.findMany({
+        where: { status: 'PENDING_APPROVAL' },
+        include: { 
+          seller: { select: { businessName: true } },
+          category: { select: { name: true } },
+          brand: { select: { name: true } },
+          media: { take: 1 }
+        },
+        orderBy: { createdAt: 'asc' }
+      });
+    }),
+
+  moderateProduct: adminProcedure
+    .input(z.object({
+      productId: z.string(),
+      decision: z.enum(['APPROVED', 'REJECTED']),
+      rejectionReason: z.string().optional()
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { publishEvent } = await import('@ecom/shared');
+      const { catalogService } = await import('../../catalog/services/catalog-service.js');
+
+      const status = input.decision === 'APPROVED' ? 'ACTIVE' : 'INACTIVE';
+      
+      const product = await prisma.product.update({
+        where: { id: input.productId },
+        data: { status },
+        include: { variants: true }
+      });
+
+      await publishEvent('product.moderated', { 
+        productId: input.productId, 
+        sellerId: product.sellerId,
+        decision: input.decision,
+        reason: input.rejectionReason 
+      });
+
+      // If approved, sync all variants to search
+      if (input.decision === 'APPROVED') {
+        for (const variant of product.variants) {
+          await catalogService.syncToSearch(variant.id);
+        }
+      }
+
+      return product;
+    }),
 });
 
 export const adminRouter = _adminRouter as any;

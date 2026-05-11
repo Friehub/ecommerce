@@ -4,6 +4,7 @@ model Warehouse {
   name        String
   address     String
   type        WarehouseType @default(SELLER_MANAGED)
+  countryCode String        @default("NG")
   stockLevels StockLevel[]
 }
 

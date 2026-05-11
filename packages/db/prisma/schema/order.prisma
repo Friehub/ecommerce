@@ -9,6 +9,8 @@ model Order {
   total         Decimal     @db.Decimal(12, 2)
   paymentMethod String
   addressId     String?
+  countryCode   String      @default("NG")
+  currency      String      @default("NGN")
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 

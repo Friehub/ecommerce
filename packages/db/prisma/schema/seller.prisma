@@ -11,6 +11,8 @@ model Seller {
   bankAccountNumber     String?
   bankAccountName       String?      // Must match Paystack bank resolve response
   transferRecipientCode String?      // Set after successful POST /transferrecipient
+  countryCode           String       @default("NG")
+  currency              String       @default("NGN")
   createdAt             DateTime     @default(now())
 
   user        User                @relation(fields: [userId], references: [id])

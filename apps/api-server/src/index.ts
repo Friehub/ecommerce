@@ -248,6 +248,30 @@ async function start() {
     } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],
   });
 
+  // ── Payment Webhooks ─────────────────────────────────────────────
+  server.post('/api/webhooks/:provider', async (req, reply) => {
+    const { provider } = req.params as { provider: string };
+    const signature = req.headers['x-paystack-signature'] || 
+                     req.headers['verif-hash'] || 
+                     req.headers['monnify-signature'] as string;
+    
+    if (!signature) {
+      return reply.code(400).send({ error: 'Missing signature' });
+    }
+
+    try {
+      const { webhookService } = await import('@ecom/api');
+      // @ts-ignore - rawBody is added by fastify for some plugins or needs to be enabled
+      const rawBody = JSON.stringify(req.body); 
+      
+      await (webhookService as any).processWebhook(provider, rawBody, signature);
+      return { status: 'ok' };
+    } catch (e: any) {
+      server.log.error(e, `Webhook processing failed for ${provider}`);
+      return reply.code(400).send({ error: e.message });
+    }
+  });
+
   // ── Start ─────────────────────────────────────────────────────────
   const PORT = Number(process.env.PORT ?? 4000);
   const HOST = process.env.HOST ?? '0.0.0.0';

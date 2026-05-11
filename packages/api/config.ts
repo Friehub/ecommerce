@@ -36,6 +36,15 @@ const configSchema = z.object({
   TERMII_SENDER_ID: z.string().default('Friehub'),
   AFRICAS_TALKING_USERNAME: z.string().default('sandbox'),
   AFRICAS_TALKING_API_KEY: z.string().default('placeholder'),
+  
+  // Flutterwave
+  FLW_SECRET_KEY: z.string().default('FLWSECK_test_placeholder'),
+  FLW_WEBHOOK_SECRET: z.string().default('flw_whsec_placeholder'),
+
+  // Monnify
+  MONNIFY_API_KEY: z.string().default('MK_TEST_placeholder'),
+  MONNIFY_SECRET_KEY: z.string().default('test_secret_placeholder'),
+  MONNIFY_CONTRACT_CODE: z.string().default('contract_code'),
 });
 
 const parseConfig = () => {
@@ -59,6 +68,11 @@ const parseConfig = () => {
       TERMII_SENDER_ID: process.env.TERMII_SENDER_ID,
       AFRICAS_TALKING_USERNAME: process.env.AFRICAS_TALKING_USERNAME,
       AFRICAS_TALKING_API_KEY: process.env.AFRICAS_TALKING_API_KEY,
+      FLW_SECRET_KEY: process.env.FLW_SECRET_KEY,
+      FLW_WEBHOOK_SECRET: process.env.FLW_WEBHOOK_SECRET,
+      MONNIFY_API_KEY: process.env.MONNIFY_API_KEY,
+      MONNIFY_SECRET_KEY: process.env.MONNIFY_SECRET_KEY,
+      MONNIFY_CONTRACT_CODE: process.env.MONNIFY_CONTRACT_CODE,
     };
 
     return configSchema.parse(envData);

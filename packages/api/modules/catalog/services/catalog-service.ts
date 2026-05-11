@@ -202,16 +202,18 @@ export const catalogService: Service = {
     maxPrice?: number,
     sortBy?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
+    sellerId?: string
   }) {
-    if (filters.search) {
+    if (filters.search || filters.sellerId) {
       try {
         const { advertisingService } = await import('../../advertising/services/advertising-service.js');
-        const sponsoredProduct = await advertisingService.selectSponsoredResult(filters.search);
+        const sponsoredProduct = filters.search ? await advertisingService.selectSponsoredResult(filters.search) : null;
 
         const searchResponse = await RustClient.search.query({
-          q: filters.search,
+          q: filters.search || '',
           category_id: filters.categoryId,
+          seller_id: filters.sellerId,
           min_price: filters.minPrice,
           max_price: filters.maxPrice,
           sort_by: filters.sortBy,
@@ -275,7 +277,7 @@ export const catalogService: Service = {
     const where: any = {
       product: {
         status: 'ACTIVE',
-        sellerId: (filters as any).sellerId,
+        sellerId: filters.sellerId, // C07: Filter by sellerId
         categoryId: filters.categoryId,
         brandId: filters.brandId,
         isGlobal: (filters as any).isGlobal,

@@ -59,13 +59,7 @@ const _catalogRouter = createTRPCRouter({
       offset: z.number().default(0),
     }))
     .query(async ({ input }) => {
-      // Reuse listProducts logic with a fixed sellerId filter
-      return await catalogService.listProducts({
-        ...input,
-        // We need to pass sellerId to listProducts, but it doesn't support it in the filters object yet.
-        // Actually, catalogService.listProducts uses filters.search etc.
-        // I should check if catalogService.listProducts supports sellerId.
-      } as any);
+      return await catalogService.listProducts(input);
     }),
 
   getProduct: publicProcedure

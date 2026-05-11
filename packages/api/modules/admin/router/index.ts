@@ -217,6 +217,12 @@ const _adminRouter = createTRPCRouter({
         where: { id: input.id }
       });
     }),
+
+  releaseMatureEscrow: adminProcedure
+    .mutation(async () => {
+      const { ledgerService } = await import('../../revenue/services/ledger-service.js');
+      return await ledgerService.releaseMatureEscrow();
+    }),
 });
 
 export const adminRouter = _adminRouter as any;

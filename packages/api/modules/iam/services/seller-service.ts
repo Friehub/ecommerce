@@ -43,7 +43,7 @@ export const sellerService: Service = {
     let recipientCode = `SIM_REC_${Math.random().toString(36).substring(7).toUpperCase()}`;
 
     // Production logic for Paystack Transfer Recipient
-    if (PAYSTACK_SECRET_KEY !== 'sk_test_placeholder' && process.env.NODE_ENV === 'production') {
+    if (PAYSTACK_SECRET_KEY !== 'sk_test_placeholder') {
       try {
         const response = await fetch('https://api.paystack.co/transferrecipient', {
           method: 'POST',

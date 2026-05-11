@@ -27,6 +27,7 @@ model User {
   resolvedDisputes DisputeResolution[]
   questions     ProductQuestion[]
   answers       ProductAnswer[]
+  devices       UserDevice[]
 }
 
 enum UserRole {

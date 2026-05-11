@@ -1,4 +1,4 @@
-// notifications.prisma
+// packages/db/prisma/schema/notifications.prisma
 model NotificationPreference {
   id     String  @id @default(cuid())
   userId String
@@ -25,4 +25,17 @@ model NotificationLog {
 
   @@index([userId])
   @@index([userId, isRead])
+}
+
+model UserDevice {
+  id        String   @id @default(cuid())
+  userId    String
+  fcmToken  String   @unique
+  platform  String   // "web", "android", "ios"
+  lastUsed  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }

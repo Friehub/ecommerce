@@ -35,7 +35,8 @@ export type EventType =
   | 'payout.failed'
   | 'dispute.escalated'
   | 'seller.suspended'
-  | 'seller.status_updated';
+  | 'seller.status_updated'
+  | 'seller.tier_changed';
 
 export interface BaseEvent<T = any> {
   id: string;

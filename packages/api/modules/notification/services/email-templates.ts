@@ -34,5 +34,9 @@ export const emailTemplates = {
   REFUND_PROCESSED: (payload: { orderId: string; amount: number; reason?: string }) => ({
     subject: `Refund Processed #${payload.orderId}`,
     html: `<p>A refund of <strong>₦${payload.amount}</strong> for order <strong>#${payload.orderId}</strong> has been processed to your wallet.${payload.reason ? ` Reason: ${payload.reason}` : ''}</p>`
+  }),
+  SELLER_TIER_CHANGED: (payload: { sellerId: string; oldTier: string; newTier: string }) => ({
+    subject: `Seller Tier Updated: Welcome to ${payload.newTier}!`,
+    html: `<p>Congratulations! Your seller tier has been updated from <strong>${payload.oldTier}</strong> to <strong>${payload.newTier}</strong>. Your account metrics met the criteria for this upgrade.</p>`
   })
 } satisfies Record<string, (p: any) => { subject: string; html: string }>;

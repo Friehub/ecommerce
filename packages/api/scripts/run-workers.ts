@@ -5,6 +5,8 @@ import { ledgerService } from '../modules/revenue/services/ledger-service.js';
 import { prisma } from '@ecom/db';
 import { affiliateService } from '../modules/affiliate/services/affiliate-service.js';
 import { orderService } from '../modules/order/services/order-service.js';
+import { sellerDashboardService } from '../modules/seller/services/seller-dashboard-service.js';
+import { publishEvent } from '@ecom/shared';
 import * as cron from 'node-cron';
 
 console.log('🚀 Starting System Workers...');
@@ -64,6 +66,46 @@ cron.schedule('0 * * * *', async () => {
     console.log(`✅ Affiliate commission confirmation complete. Confirmed ${result.count} commissions.`);
   } catch (error) {
     console.error('❌ Affiliate commission confirmation failed:', error);
+  }
+});
+
+// Weekly Seller Tier Upgrade (runs at 01:30 UTC every Sunday)
+cron.schedule('30 1 * * 0', async () => {
+  console.log('⏳ Running weekly seller tier upgrade evaluation...');
+  try {
+    const activeSellers = await prisma.seller.findMany({ 
+      where: { status: 'ACTIVE' },
+      select: { id: true, tier: true }
+    });
+
+    for (const seller of activeSellers) {
+      const metrics = await sellerDashboardService.getMetrics(seller.id);
+      let targetTier = 'STANDARD';
+
+      if (metrics.gmv >= 5000000 && metrics.performanceScore >= 4.5) {
+        targetTier = 'BRAND';
+      } else if (metrics.gmv >= 1000000 && metrics.performanceScore >= 4.0) {
+        targetTier = 'EXPRESS';
+      }
+
+      if (seller.tier !== targetTier) {
+        await prisma.seller.update({
+          where: { id: seller.id },
+          data: { tier: targetTier as any }
+        });
+
+        await publishEvent('seller.tier_changed', {
+          sellerId: seller.id,
+          oldTier: seller.tier,
+          newTier: targetTier
+        });
+        
+        console.log(`[TierUpgrade] Seller ${seller.id} updated: ${seller.tier} -> ${targetTier}`);
+      }
+    }
+    console.log(`✅ Seller tier evaluation complete for ${activeSellers.length} sellers.`);
+  } catch (error) {
+    console.error('❌ Seller tier upgrade failed:', error);
   }
 });
 

@@ -81,6 +81,16 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         }
         break;
       }
+      case 'seller.tier_changed': {
+        const seller = await prisma.seller.findUnique({
+          where: { id: payload.sellerId }
+        });
+        if (seller) {
+          const template = emailTemplates.SELLER_TIER_CHANGED(payload);
+          await notificationService.sendNotification(seller.userId, 'SELLER_UPDATE', template.subject, template.html);
+        }
+        break;
+      }
     }
   } catch (err: any) {
     console.error(`[NotificationWorker] Failed to process event ${eventType}:`, err.message);

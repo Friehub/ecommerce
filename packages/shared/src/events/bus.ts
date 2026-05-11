@@ -22,6 +22,7 @@ const NOTIFICATION_EVENTS: EventType[] = [
   'seller.approved',
   'seller.suspended',
   'seller.status_updated',
+  'seller.tier_changed',
   'seller.document_rejected',
   'dispute.resolved'
 ];

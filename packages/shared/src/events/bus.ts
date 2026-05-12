@@ -18,6 +18,8 @@ const NOTIFICATION_EVENTS: EventType[] = [
   'order.created',
   'payment.confirmed',
   'order.status_updated',
+  'order.delivered',
+  'order.completed',
   'refund.processed',
   'seller.approved',
   'seller.suspended',

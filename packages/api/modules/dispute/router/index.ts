@@ -1,7 +1,9 @@
 import { createTRPCRouter, protectedProcedure } from '../../../trpc.js';
 import { OpenDisputeSchema, RespondDisputeSchema, UploadEvidenceSchema, GetDisputeSchema } from '../schemas/index.js';
 import { disputeService } from '../services/dispute-service.js';
+import { paymentService } from '../../payment/services/payment-service.js';
 import { prisma } from '@ecom/db';
+import { publishEvent } from '@ecom/shared';
 import { z } from 'zod';
 
 const _disputeRouter = createTRPCRouter({
@@ -90,23 +92,43 @@ const _disputeRouter = createTRPCRouter({
 
       const dispute = await prisma.dispute.findUnique({
         where: { id: input.disputeId },
-        select: { id: true, status: true }
+        select: { id: true, status: true, buyerId: true }
       });
       if (!dispute) throw new Error('DISPUTE_NOT_FOUND');
 
-      await prisma.dispute.update({
-        where: { id: input.disputeId },
-        data: { status: input.status }
+      const resolution = await prisma.$transaction(async (tx) => {
+        // 1. Update status
+        await tx.dispute.update({
+          where: { id: input.disputeId },
+          data: { status: input.status }
+        });
+
+        // 2. Create resolution record
+        const res = await tx.disputeResolution.create({
+          data: {
+            disputeId: input.disputeId,
+            resolvedById: ctx.session.user.id,
+            resolution: input.resolution,
+            refundAmount: input.refundAmount || 0
+          }
+        });
+
+        // 3. Process actual refund if amount > 0
+        if (input.status === 'RESOLVED' && input.refundAmount && input.refundAmount > 0) {
+          console.log(`[Dispute] Processing refund of ₦${input.refundAmount} for dispute ${input.disputeId}`);
+          await paymentService.fundWallet(dispute.buyerId, input.refundAmount, tx);
+        }
+
+        return res;
       });
 
-      return prisma.disputeResolution.create({
-        data: {
-          disputeId: input.disputeId,
-          resolvedById: ctx.session.user.id,
-          resolution: input.resolution,
-          refundAmount: input.refundAmount || 0
-        }
+      await publishEvent('dispute.resolved', {
+        disputeId: input.disputeId,
+        status: input.status,
+        resolution: input.resolution
       });
+
+      return resolution;
     }),
 });
 

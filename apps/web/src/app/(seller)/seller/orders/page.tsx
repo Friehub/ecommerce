@@ -14,9 +14,13 @@ const tabs = [
 
 export default function SellerOrdersPage() {
   const [activeTab, setActiveTab] = useState('All');
+  const [trackingNumbers, setTrackingNumbers] = useState<Record<string, string>>({});
   const { data: packages, isLoading, refetch } = api.order.listSellerPackages.useQuery();
   const updateStatus = api.order.updatePackageStatus.useMutation({
-    onSuccess: () => refetch()
+    onSuccess: () => {
+      refetch();
+      setTrackingNumbers({});
+    }
   });
 
   if (isLoading) {
@@ -150,7 +154,31 @@ export default function SellerOrdersPage() {
                       </button>
                     )}
                     {pkg.status === 'PICKED_UP' && (
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50/80 border border-gray-100 px-2 py-1 rounded">Dispatched</span>
+                      <div className="flex items-center gap-2 justify-end">
+                        <input 
+                          type="text" 
+                          placeholder="Tracking #" 
+                          value={trackingNumbers[pkg.id] || ''}
+                          onChange={(e) => setTrackingNumbers(prev => ({ ...prev, [pkg.id]: e.target.value }))}
+                          className="text-[10px] font-bold border border-gray-200 rounded-lg px-2 py-1.5 w-24 focus:border-[#F68B1E] outline-none"
+                        />
+                        <button 
+                          onClick={() => updateStatus.mutate({ 
+                            packageId: pkg.id, 
+                            status: 'SHIPPED',
+                            trackingNumber: trackingNumbers[pkg.id]
+                          })}
+                          disabled={updateStatus.isLoading || !trackingNumbers[pkg.id]}
+                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider disabled:opacity-50 transition-all active:scale-95"
+                        >
+                          SHIP
+                        </button>
+                      </div>
+                    )}
+                    {(pkg.status === 'SHIPPED' || pkg.status === 'IN_TRANSIT') && (
+                      <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest bg-green-50 border border-green-100 px-2 py-1 rounded flex items-center gap-1 justify-end ml-auto w-fit">
+                        <CheckCircle2 size={12} /> In Transit
+                      </span>
                     )}
                   </td>
                 </tr>

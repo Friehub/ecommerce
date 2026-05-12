@@ -20,6 +20,16 @@ export default function AdminReturnsPage() {
   const approveReturn = api.return.approve.useMutation({
     onSuccess: () => refetch()
   });
+  const rejectReturn = api.return.reject.useMutation({
+    onSuccess: () => refetch()
+  });
+
+  const handleReject = (returnId: string) => {
+    const reason = window.prompt('Enter rejection reason:');
+    if (reason) {
+      rejectReturn.mutate({ returnId, reason });
+    }
+  };
 
   if (isLoading) return <div className="p-12 text-center text-xs font-black uppercase tracking-widest text-gray-400">Loading Return Requests...</div>;
 
@@ -93,7 +103,11 @@ export default function AdminReturnsPage() {
                   >
                     <CheckCircle2 size={20} />
                   </button>
-                  <button className="w-12 h-12 bg-red-50 text-red-500 rounded-2xl border border-red-100 flex items-center justify-center hover:bg-red-100 active:scale-95 transition-all">
+                  <button 
+                    onClick={() => handleReject(req.id)}
+                    disabled={rejectReturn.isPending}
+                    className="w-12 h-12 bg-red-50 text-red-500 rounded-2xl border border-red-100 flex items-center justify-center hover:bg-red-100 active:scale-95 transition-all disabled:opacity-50"
+                  >
                     <XCircle size={20} />
                   </button>
                 </div>

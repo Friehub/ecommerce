@@ -16,7 +16,7 @@ export default function SellerInsightsPage() {
   }
 
   const gmv = metrics?.gmv || 0;
-  const revenue = metrics?.revenue || 0;
+  const netRevenue = metrics?.netRevenue || 0;
   const pendingOrders = metrics?.pendingOrders || 0;
   const deliveredOrders = metrics?.deliveredOrders || 0;
   const totalOrders = pendingOrders + deliveredOrders;
@@ -40,17 +40,27 @@ export default function SellerInsightsPage() {
       </div>
 
       {/* Summary KPI grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:border-gray-200/80 duration-300 transition-all">
           <div className="flex items-center gap-3 mb-3 text-[#F68B1E]">
             <DollarSign size={20} className="p-1 rounded-lg bg-orange-50 border border-orange-100 shrink-0" />
-            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Gross Revenues</h3>
+            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Gross Sales (GMV)</h3>
           </div>
           <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">₦ {gmv.toLocaleString()}</p>
           <div className="flex items-center gap-1.5 mt-2">
             <TrendingUp size={14} className="text-green-500" />
-            <span className="text-xs font-extrabold text-green-500 bg-green-50/50 px-1.5 py-0.5 rounded border border-green-100/40">Active</span>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Live tracking</span>
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Total volume</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:border-gray-200/80 duration-300 transition-all border-emerald-100/50">
+          <div className="flex items-center gap-3 mb-3 text-emerald-500">
+            <TrendingUp size={20} className="p-1 rounded-lg bg-emerald-50 border border-emerald-100 shrink-0" />
+            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-emerald-500">Net Revenue</h3>
+          </div>
+          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">₦ {netRevenue.toLocaleString()}</p>
+          <div className="flex items-center gap-1.5 mt-2">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">After Commission</span>
           </div>
         </div>
 

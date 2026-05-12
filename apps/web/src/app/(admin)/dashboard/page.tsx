@@ -48,13 +48,14 @@ export default function AdminDashboard() {
           </div>
           <p className="text-3xl font-bold text-gray-900">{metrics?.activeSellers || 0}</p>
         </div>
-        <div className="bg-red-50 p-6 rounded shadow-sm border border-red-100">
+        <Link href="/admin/disputes" className="bg-red-50 p-6 rounded shadow-sm border border-red-100 hover:shadow-md transition-all group block">
           <div className="flex items-center gap-3 mb-2 text-red-600">
             <AlertTriangle size={18} />
             <h3 className="text-[10px] font-bold uppercase tracking-widest">Open Disputes</h3>
+            <ArrowRight size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <p className="text-3xl font-bold text-red-600">{metrics?.openDisputes || 0}</p>
-        </div>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

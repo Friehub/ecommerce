@@ -23,7 +23,7 @@ export const sellerDashboardService: Service = {
     const ledgerEntries = await prisma.sellerLedgerEntry.findMany({
       where: { sellerId, type: { in: ['SALE', 'COMMISSION'] } }
     });
-    const revenue = ledgerEntries.reduce((acc, entry) => acc.add(entry.amount), new Decimal(0));
+    const netRevenue = ledgerEntries.reduce((acc, entry) => acc.add(entry.amount), new Decimal(0));
 
     // Low stock alerts
     const lowStockCount = await prisma.stockLevel.count({
@@ -56,7 +56,7 @@ export const sellerDashboardService: Service = {
       pendingOrders,
       deliveredOrders,
       gmv: gmv.toNumber(),
-      revenue: revenue.toNumber(),
+      netRevenue: netRevenue.toNumber(),
       lowStockCount,
       performanceScore
     };

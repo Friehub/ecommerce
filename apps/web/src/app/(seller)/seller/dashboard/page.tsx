@@ -21,13 +21,13 @@ export default function SellerDashboard() {
 
   const stats = [
     { 
-      name: 'Revenue', 
-      value: `₦${(metrics?.revenue || 0).toLocaleString()}`, 
+      name: 'Net Revenue', 
+      value: `₦${(metrics?.netRevenue || 0).toLocaleString()}`, 
       change: '+12.5%', 
       icon: TrendingUp, 
       color: 'text-emerald-500',
       badge: 'bg-green-50 text-green-600',
-      description: 'THIS MONTH EARNINGS'
+      description: 'AFTER COMMISSION'
     },
     { 
       name: 'Orders', 

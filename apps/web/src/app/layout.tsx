@@ -16,6 +16,7 @@ import { Providers } from "../components/Providers";
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { CartDrawer } from "../components/cart/CartDrawer";
+import { ReferralTracker } from "../components/affiliate/ReferralTracker";
 
 export default function RootLayout({
   children,
@@ -26,6 +27,7 @@ export default function RootLayout({
     <html lang="en" className={urbanist.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen bg-background antialiased">
         <Providers>
+          <ReferralTracker />
           <Navbar />
           <CartDrawer />
           <main className="flex-1">

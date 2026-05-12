@@ -9,19 +9,19 @@ export async function setupCronJobs() {
   // 1. Daily Affiliate Commission Confirmation (3.3)
   // Runs every day at midnight
   await cronQueue.add('confirm-commissions', {}, {
-    repeat: { cron: '0 0 * * *' }
+    repeat: { pattern: '0 0 * * *' }
   });
 
   // 2. Daily Escrow Release (3.4)
   // Runs every day at 1 AM
   await cronQueue.add('release-escrow', {}, {
-    repeat: { cron: '0 1 * * *' }
+    repeat: { pattern: '0 1 * * *' }
   });
 
   // 3. Fraud Queue Cleanup (Blocker 4)
   // Runs every hour to check for stale fraud reviews
   await cronQueue.add('fraud-review-cleanup', {}, {
-    repeat: { cron: '0 * * * *' }
+    repeat: { pattern: '0 * * * *' }
   });
 
   console.log('📅 Cron jobs scheduled');

@@ -19,20 +19,38 @@ import {
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { NotificationInbox } from '../../components/layout/NotificationInbox';
+import { api } from "../../trpc/react";
 
 export const Navbar = () => {
   const { totalItems, setIsOpen } = useCart();
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
-  const handleSearch = (e?: React.FormEvent) => {
+  // Debounce search query
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const { data: suggestions } = api.catalog.autocomplete.useQuery(
+    { query: debouncedQuery },
+    { enabled: debouncedQuery.length >= 2 }
+  );
+
+  const handleSearch = (e?: React.FormEvent, overrideQuery?: string) => {
     e?.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    const query = overrideQuery || searchQuery;
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
       setMobileMenuOpen(false);
+      setShowSuggestions(false);
     }
   };
 
@@ -54,24 +72,50 @@ export const Navbar = () => {
           </div>
 
           {/* Desktop Search Bar */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl relative">
-            <div className="flex items-center bg-surface-container-low rounded-lg px-4 py-2 border border-outline-variant focus-within:border-primary-container transition-all w-full">
-              <Search size={20} className="text-on-surface-variant mr-2" />
-              <input 
-                type="text" 
-                placeholder="Search products, brands and categories" 
-                className="bg-transparent border-none focus:ring-0 w-full text-body-md text-on-surface"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button 
-                type="submit"
-                className="bg-primary-container text-on-primary font-bold px-6 py-1.5 rounded-lg hover:opacity-90 transition-all scale-95 active:opacity-80"
-              >
-                SEARCH
-              </button>
-            </div>
-          </form>
+          <div className="hidden md:flex flex-1 max-w-2xl relative group">
+            <form onSubmit={handleSearch} className="w-full">
+              <div className={`flex items-center bg-surface-container-low rounded-lg px-4 py-2 border transition-all w-full ${
+                showSuggestions && suggestions && suggestions.length > 0 
+                  ? 'border-primary-container ring-2 ring-primary-container/10 rounded-b-none' 
+                  : 'border-outline-variant focus-within:border-primary-container'
+              }`}>
+                <Search size={20} className="text-on-surface-variant mr-2" />
+                <input 
+                  type="text" 
+                  placeholder="Search products, brands and categories" 
+                  className="bg-transparent border-none focus:ring-0 w-full text-body-md text-on-surface"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                />
+                <button 
+                  type="submit"
+                  className="bg-primary-container text-on-primary font-bold px-6 py-1.5 rounded-lg hover:opacity-90 transition-all scale-95 active:opacity-80"
+                >
+                  SEARCH
+                </button>
+              </div>
+            </form>
+
+            {/* Autocomplete Dropdown */}
+            {showSuggestions && suggestions && suggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 bg-white border border-t-0 border-outline-variant rounded-b-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="py-2">
+                  {suggestions.map((suggestion: string, idx: number) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSearch(undefined, suggestion)}
+                      className="w-full text-left px-4 py-2.5 hover:bg-surface-variant transition-colors flex items-center gap-3 group"
+                    >
+                      <Search size={16} className="text-gray-300 group-hover:text-primary transition-colors" />
+                      <span className="text-sm font-medium text-on-surface">{suggestion}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-6">

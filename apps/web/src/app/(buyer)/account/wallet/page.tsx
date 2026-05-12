@@ -21,8 +21,37 @@ import { api } from '@/trpc/react';
 export default function WalletPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const utils = api.useContext();
+  
+  const [isTopUpOpen, setIsTopUpOpen] = React.useState(false);
+  const [isWithdrawOpen, setIsWithdrawOpen] = React.useState(false);
+  const [amount, setAmount] = React.useState('');
+
   const { data: wallet, isLoading: walletLoading } = api.payment.getWallet.useQuery(undefined, {
     enabled: !!session
+  });
+
+  const fundWallet = api.payment.fundWallet.useMutation({
+    onSuccess: (data: any) => {
+      if (data.authorization_url) {
+        window.location.href = data.authorization_url;
+      }
+    },
+    onError: (err) => {
+      alert(err.message);
+    }
+  });
+
+  const withdraw = api.payment.withdraw.useMutation({
+    onSuccess: () => {
+      setIsWithdrawOpen(false);
+      setAmount('');
+      alert('Withdrawal request submitted successfully.');
+      utils.payment.getWallet.invalidate();
+    },
+    onError: (err) => {
+      alert(err.message);
+    }
   });
 
   if (status === 'loading' || walletLoading) {
@@ -39,6 +68,26 @@ export default function WalletPage() {
   }
 
   const transactions = (wallet as any)?.transactions || [];
+
+  const handleTopUp = (e: React.FormEvent) => {
+    e.preventDefault();
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount) || numAmount < 100) {
+      alert('Minimum top up amount is ₦100');
+      return;
+    }
+    fundWallet.mutate({ amount: numAmount });
+  };
+
+  const handleWithdraw = (e: React.FormEvent) => {
+    e.preventDefault();
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount) || numAmount < 1000) {
+      alert('Minimum withdrawal amount is ₦1,000');
+      return;
+    }
+    withdraw.mutate({ amount: numAmount });
+  };
 
   return (
     <div className="bg-[#F9F9FA] min-h-screen py-8">
@@ -76,10 +125,16 @@ export default function WalletPage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <button className="flex-1 bg-[#F68B1E] hover:bg-[#E07A1A] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                  <button 
+                    onClick={() => setIsTopUpOpen(true)}
+                    className="flex-1 bg-[#F68B1E] hover:bg-[#E07A1A] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all transform active:scale-95 flex items-center justify-center gap-2"
+                  >
                     <Plus size={18} /> Top Up
                   </button>
-                  <button className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all transform active:scale-95">
+                  <button 
+                    onClick={() => setIsWithdrawOpen(true)}
+                    className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all transform active:scale-95"
+                  >
                     Withdraw
                   </button>
                 </div>
@@ -153,6 +208,68 @@ export default function WalletPage() {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      {(isTopUpOpen || isWithdrawOpen) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-[32px] w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-lg font-black text-gray-900 uppercase tracking-widest">
+                  {isTopUpOpen ? 'Wallet Top Up' : 'Request Withdrawal'}
+                </h3>
+                <button 
+                  onClick={() => {
+                    setIsTopUpOpen(false);
+                    setIsWithdrawOpen(false);
+                    setAmount('');
+                  }}
+                  className="text-gray-400 hover:text-gray-900"
+                >
+                  <Plus size={24} className="rotate-45" />
+                </button>
+              </div>
+
+              <form onSubmit={isTopUpOpen ? handleTopUp : handleWithdraw} className="space-y-6">
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-2">
+                    Enter Amount (₦)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-gray-400">₦</span>
+                    <input 
+                      type="number"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder="0.00"
+                      className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl py-4 pl-10 pr-4 font-black text-xl focus:border-[#F68B1E] focus:outline-none transition-all"
+                      autoFocus
+                    />
+                  </div>
+                </div>
+
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  {isTopUpOpen 
+                    ? 'You will be redirected to our secure payment gateway to complete your transaction.' 
+                    : 'Withdrawals are processed within 24-48 business hours to your registered bank account.'}
+                </p>
+
+                <button 
+                  type="submit"
+                  disabled={fundWallet.isLoading || withdraw.isLoading}
+                  className="w-full bg-[#F68B1E] hover:bg-[#E07A1A] disabled:bg-gray-200 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2"
+                >
+                  {(fundWallet.isLoading || withdraw.isLoading) ? (
+                    <Loader2 className="animate-spin" size={18} />
+                  ) : (
+                    <>Confirm {isTopUpOpen ? 'Payment' : 'Withdrawal'}</>
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

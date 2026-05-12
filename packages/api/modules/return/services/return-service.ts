@@ -100,6 +100,17 @@ export const returnService: Service = {
     });
   },
 
+  async rejectReturn(returnId: string, reason: string) {
+    return prisma.returnShipment.update({
+      where: { id: returnId },
+      data: { 
+        status: 'REJECTED',
+        qcResult: 'FAIL',
+        note: reason
+      }
+    });
+  },
+
   async listForSeller(sellerId: string) {
     return prisma.returnShipment.findMany({
       where: {

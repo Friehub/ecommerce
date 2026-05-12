@@ -23,6 +23,12 @@ const _returnRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await returnService.approveReturn(input.returnId, ctx.session.user.id);
     }),
+  
+  reject: adminProcedure
+    .input(z.object({ returnId: z.string(), reason: z.string() }))
+    .mutation(async ({ input }) => {
+      return await returnService.rejectReturn(input.returnId, input.reason);
+    }),
 
   listPending: adminProcedure.query(async () => {
     return await prisma.returnShipment.findMany({

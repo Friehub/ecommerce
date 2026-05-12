@@ -23,6 +23,26 @@ const _paymentRouter = createTRPCRouter({
       );
     }),
 
+  initializePayment: protectedProcedure
+    .input(z.object({
+      orderId: z.string(),
+      provider: z.enum(['paystack', 'flutterwave', 'monnify'])
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const order = await prisma.order.findUnique({
+        where: { id: input.orderId, userId: ctx.session.user.id }
+      });
+      if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "Order not found" });
+
+      return await paymentService.initializeTransaction(
+        input.provider,
+        input.orderId,
+        ctx.session.user.id,
+        ctx.session.user.email!,
+        Number(order.total)
+      );
+    }),
+
   payWithWallet: protectedProcedure
     .input(z.object({
       orderId: z.string(),

@@ -25,6 +25,23 @@ export const contentService: Service = {
     const cacheKey = userId ? `content:recommendations:${userId}` : 'content:recommendations:guest';
     
     return cacheService.wrap(cacheKey, async () => {
+      // 1. Try Rust recommendations service (Fix 3.2)
+      if (userId) {
+        try {
+          const { RustClient } = await import('../../../rust-client.js');
+          const recs = await RustClient.recommendations.forUser(userId);
+          if (recs && recs.length > 0) {
+            return prisma.product.findMany({
+              where: { id: { in: recs.map((r: any) => r.id || r) }, status: 'ACTIVE' },
+              include: { variants: true, brand: true, category: true, media: true },
+            });
+          }
+        } catch (e) {
+          console.warn('[Recommendations] Rust service failed, falling back to recent products:', e);
+        }
+      }
+
+      // 2. Fallback to recent active products
       return prisma.product.findMany({
         where: { status: 'ACTIVE' },
         include: { variants: true, brand: true, category: true, media: true },

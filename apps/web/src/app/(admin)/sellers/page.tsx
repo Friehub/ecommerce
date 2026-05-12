@@ -7,8 +7,18 @@ import { format } from 'date-fns';
 
 export default function AdminSellersPage() {
   const utils = api.useUtils();
+  const [search, setSearch] = React.useState('');
+  const [statusFilter, setStatusFilter] = React.useState('All');
+
   const { data: sellers, isLoading } = api.admin.listAllSellers.useQuery();
   
+  const filteredSellers = sellers?.filter(s => {
+    const matchesSearch = s.businessName.toLowerCase().includes(search.toLowerCase()) || 
+                         s.user.email.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === 'All' || s.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   const updateStatus = api.admin.updateSellerStatus.useMutation({
     onSuccess: () => utils.admin.listAllSellers.invalidate()
   });
@@ -36,14 +46,20 @@ export default function AdminSellersPage() {
             <input 
               type="text" 
               placeholder="Search by business name or email..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded focus:outline-none focus:border-[#f68b1e] text-sm"
             />
           </div>
-          <select className="bg-white border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#f68b1e]">
-            <option>All Statuses</option>
-            <option>Active</option>
-            <option>Pending</option>
-            <option>Suspended</option>
+          <select 
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-white border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#f68b1e]"
+          >
+            <option value="All">All Statuses</option>
+            <option value="ACTIVE">Active</option>
+            <option value="PENDING_VERIFICATION">Pending</option>
+            <option value="SUSPENDED">Suspended</option>
           </select>
         </div>
 
@@ -65,7 +81,7 @@ export default function AdminSellersPage() {
                     <td colSpan={5} className="px-6 py-8"><div className="h-4 bg-gray-100 rounded w-full" /></td>
                   </tr>
                 ))
-              ) : sellers?.map((seller) => (
+              ) : filteredSellers?.map((seller) => (
                 <tr key={seller.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="font-bold text-gray-900">{seller.businessName}</div>
@@ -94,13 +110,22 @@ export default function AdminSellersPage() {
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       {seller.status === 'PENDING_VERIFICATION' && (
-                        <button 
-                          onClick={() => approveKYC.mutate({ sellerId: seller.id })}
-                          className="p-1.5 text-green-600 hover:bg-green-50 rounded"
-                          title="Approve KYC"
-                        >
-                          <CheckCircle2 size={18} />
-                        </button>
+                        <>
+                          <Link 
+                            href={`/admin/kyc?sellerId=${seller.id}`}
+                            className="p-1.5 text-[#f68b1e] hover:bg-orange-50 rounded"
+                            title="Review KYC Documents"
+                          >
+                            <Shield size={18} />
+                          </Link>
+                          <button 
+                            onClick={() => approveKYC.mutate({ sellerId: seller.id })}
+                            className="p-1.5 text-green-600 hover:bg-green-50 rounded"
+                            title="Quick Approve"
+                          >
+                            <CheckCircle2 size={18} />
+                          </button>
+                        </>
                       )}
                       {seller.status === 'ACTIVE' ? (
                         <button 

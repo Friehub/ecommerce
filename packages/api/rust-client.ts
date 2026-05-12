@@ -50,7 +50,7 @@ export class RustClient {
 
     // Search Service
     static search = {
-        query: (params: { q: string, limit?: number, offset?: number, category_id?: string, brand?: string, min_price?: number, max_price?: number, sort_by?: string }) => {
+        query: (params: { q: string, limit?: number, offset?: number, category_id?: string, brand?: string, min_price?: number, max_price?: number, sort_by?: string, seller_id?: string }) => {
             const searchParams = new URLSearchParams();
             Object.entries(params).forEach(([key, value]) => {
                 if (value !== undefined) searchParams.append(key, value.toString());
@@ -61,6 +61,7 @@ export class RustClient {
             method: 'POST',
             body: JSON.stringify(doc),
         }),
+        autocomplete: (query: string) => this.request<any[]>(SERVICES.SEARCH, `/autocomplete?q=${encodeURIComponent(query)}`),
         health: () => this.request(SERVICES.SEARCH, '/health'),
     };
 
@@ -99,6 +100,15 @@ export class RustClient {
             const params = new URLSearchParams(options as any).toString();
             return `${SERVICES.IMAGE_PROCESSOR}/process?${params}`;
         }
+    };
+
+    // Auction Service
+    static auction = {
+        bid: (query: string, availableAds: any[]) =>
+            this.request<any>(SERVICES.AUCTION, '/auction', {
+                method: 'POST',
+                body: JSON.stringify({ query, candidates: availableAds }),
+            }),
     };
 
     // Analysis Service (Mostly Stub for now)

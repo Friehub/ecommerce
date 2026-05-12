@@ -2,20 +2,39 @@
 
 import React, { Suspense, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { api } from '@/trpc/react';
 import { ProductCard } from '../../../components/ui/ProductCard';
 import { Filter, SortAsc, Search as SearchIcon, X, SlidersHorizontal, Loader2 } from 'lucide-react';
 
 function SearchResults() {
   const searchParams = useSearchParams();
-  const query = searchParams.get('q') || '';
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const [minPrice, setMinPrice] = useState<string>('');
-  const [maxPrice, setMaxPrice] = useState<string>('');
-  const [brandId, setBrandId] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('newest');
+  const query = searchParams.get('q') || '';
+  const minPriceParam = searchParams.get('minPrice') || '';
+  const maxPriceParam = searchParams.get('maxPrice') || '';
+  const brandIdParam = searchParams.get('brandId') || '';
+  const sortByParam = searchParams.get('sortBy') || 'newest';
+
+  const [minPrice, setMinPrice] = useState<string>(minPriceParam);
+  const [maxPrice, setMaxPrice] = useState<string>(maxPriceParam);
+  const [brandId, setBrandId] = useState<string>(brandIdParam);
+  const [sortBy, setSortBy] = useState<string>(sortByParam);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const updateFilters = (updates: Record<string, string | undefined>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === undefined || value === '') {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   const { data: brands } = api.catalog.getBrands.useQuery();
 
@@ -40,7 +59,10 @@ function SearchResults() {
             placeholder="Min" 
             className="w-full border border-gray-100 bg-gray-50 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 outline-none focus:border-[#F68B1E] focus:ring-1 focus:ring-[#F68B1E] transition-all" 
             value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
+            onChange={(e) => {
+              setMinPrice(e.target.value);
+              updateFilters({ minPrice: e.target.value });
+            }}
           />
           <span className="text-gray-300">—</span>
           <input 
@@ -48,7 +70,10 @@ function SearchResults() {
             placeholder="Max" 
             className="w-full border border-gray-100 bg-gray-50 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 outline-none focus:border-[#F68B1E] focus:ring-1 focus:ring-[#F68B1E] transition-all" 
             value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
+            onChange={(e) => {
+              setMaxPrice(e.target.value);
+              updateFilters({ maxPrice: e.target.value });
+            }}
           />
         </div>
       </div>
@@ -62,7 +87,10 @@ function SearchResults() {
                 type="radio" 
                 name="brand"
                 checked={!brandId}
-                onChange={() => setBrandId('')}
+                onChange={() => {
+                  setBrandId('');
+                  updateFilters({ brandId: '' });
+                }}
                 className="w-4 h-4 rounded-full border-gray-300 text-[#F68B1E] focus:ring-[#F68B1E]" 
               />
               <span className="group-hover:text-[#F68B1E] font-bold text-gray-600 uppercase text-xs tracking-tight transition-colors">All Brands</span>
@@ -73,7 +101,10 @@ function SearchResults() {
                   type="radio" 
                   name="brand"
                   checked={brandId === b.id}
-                  onChange={() => setBrandId(b.id)}
+                  onChange={() => {
+                    setBrandId(b.id);
+                    updateFilters({ brandId: b.id });
+                  }}
                   className="w-4 h-4 rounded-full border-gray-300 text-[#F68B1E] focus:ring-[#F68B1E]" 
                 />
                 <span className="group-hover:text-[#F68B1E] font-bold text-gray-600 uppercase text-xs tracking-tight transition-colors">{b.name}</span>
@@ -107,7 +138,11 @@ function SearchResults() {
           <div className="flex-1 relative">
             <select 
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              value={sortBy}
+              onChange={(e) => {
+                setSortBy(e.target.value);
+                updateFilters({ sortBy: e.target.value });
+              }}
               className="w-full bg-white border border-gray-200 py-3.5 px-4 rounded-xl text-sm font-black uppercase tracking-widest text-gray-700 outline-none appearance-none shadow-sm"
             >
               <option value="newest">Newest</option>
@@ -162,7 +197,11 @@ function SearchResults() {
               <span className="uppercase tracking-widest text-[10px] text-gray-400">Sort By</span>
               <select 
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value);
+                  updateFilters({ sortBy: e.target.value });
+                }}
                 className="border-none bg-transparent font-black focus:ring-0 text-xs cursor-pointer outline-none text-gray-900 uppercase tracking-widest"
               >
                 <option value="newest">Newest Arrivals</option>

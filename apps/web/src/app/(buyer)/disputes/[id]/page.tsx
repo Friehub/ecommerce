@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 export default function DisputeThreadPage() {
   const { id } = useParams() as { id: string };
@@ -35,6 +36,16 @@ export default function DisputeThreadPage() {
     onSuccess: () => {
       utils.dispute.getThread.invalidate({ disputeId: id });
       alert('Dispute escalated to support!');
+    }
+  });
+
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === 'ADMIN';
+
+  const resolveDispute = api.admin.resolveDispute.useMutation({
+    onSuccess: () => {
+      utils.dispute.getThread.invalidate({ disputeId: id });
+      alert('Dispute resolved!');
     }
   });
 
@@ -143,7 +154,49 @@ export default function DisputeThreadPage() {
                  <AlertCircle size={16} className="text-[#F68B1E]" /> Dispute Actions
                </h3>
                
-               {dispute.status === 'OPEN' && (
+               {isAdmin && dispute.status !== 'RESOLVED' && (
+                 <div className="space-y-4">
+                    <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                      <p className="text-[10px] font-black text-blue-700 uppercase tracking-tight mb-3">Admin Panel</p>
+                      <div className="space-y-3">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black uppercase text-gray-400">Refund Amount (Optional)</label>
+                          <input 
+                            type="number" 
+                            placeholder="0.00"
+                            id="refundAmount"
+                            className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold focus:border-blue-400 outline-none"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => {
+                              const amount = (document.getElementById('refundAmount') as HTMLInputElement)?.value;
+                              resolveDispute.mutate({ 
+                                disputeId: id, 
+                                resolution: 'RESOLVED', 
+                                refundAmount: amount ? parseFloat(amount) : undefined 
+                              });
+                            }}
+                            disabled={resolveDispute.isLoading}
+                            className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-colors"
+                          >
+                            Approve Refund
+                          </button>
+                          <button 
+                            onClick={() => resolveDispute.mutate({ disputeId: id, resolution: 'REJECTED' })}
+                            disabled={resolveDispute.isLoading}
+                            className="flex-1 bg-red-600 text-white py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-colors"
+                          >
+                            Reject Claim
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                 </div>
+               )}
+
+               {dispute.status === 'OPEN' && !isAdmin && (
                  <div className="space-y-4">
                     <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl">
                       <p className="text-[10px] font-bold text-gray-600 leading-relaxed uppercase tracking-tight">
@@ -160,7 +213,7 @@ export default function DisputeThreadPage() {
                  </div>
                )}
 
-               {dispute.status === 'ESCALATED' && (
+               {dispute.status === 'ESCALATED' && !isAdmin && (
                  <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-3">
                     <Clock size={18} className="text-[#264996] shrink-0" />
                     <div>
@@ -176,6 +229,16 @@ export default function DisputeThreadPage() {
                     <div>
                       <p className="text-[10px] font-black text-green-700 uppercase tracking-tight">Case Resolved</p>
                       <p className="text-[10px] font-medium text-gray-600 mt-1">This dispute has been closed.</p>
+                    </div>
+                 </div>
+               )}
+
+               {dispute.status === 'REJECTED' && (
+                 <div className="p-4 bg-red-50 border border-red-100 rounded-xl flex gap-3">
+                    <AlertCircle size={18} className="text-red-600 shrink-0" />
+                    <div>
+                      <p className="text-[10px] font-black text-red-700 uppercase tracking-tight">Claim Rejected</p>
+                      <p className="text-[10px] font-medium text-gray-600 mt-1">The resolution was in favor of the seller.</p>
                     </div>
                  </div>
                )}

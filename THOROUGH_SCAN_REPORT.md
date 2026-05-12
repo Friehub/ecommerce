@@ -62,7 +62,7 @@ error TS2719: Type 'CreateRouterInner<...>' is not assignable to type 'Router<Ro
 
 # SECTION 2: [CRITICAL BUG] — Production-Blocking Issues
 
-## 2.1 `[CRITICAL BUG]` Dispute Status Enum Mismatch
+## 2.1 `[FIXED ✓]` Dispute Status Enum Mismatch
 **File:** [packages/api/modules/admin/services/admin-service.ts](packages/api/modules/admin/services/admin-service.ts)  
 **Issue:** Code sets dispute status to `'REJECTED'` but Prisma schema only defines `RESOLVED` and `ESCALATED`
 
@@ -87,7 +87,7 @@ enum DisputeStatus {
 
 ---
 
-## 2.2 `[CRITICAL BUG]` Paystack Payout Recipient Code Wrong Field
+## 2.2 `[FIXED ✓]` Paystack Payout Recipient Code Wrong Field
 **File:** [packages/api/modules/revenue/services/revenue-service.ts](packages/api/modules/revenue/services/revenue-service.ts#L76)  
 **Issue:** Passes `payout.id` as recipient but must pass `payout.seller.transferRecipientCode`
 
@@ -112,7 +112,7 @@ const transfer = await paystack.transfer.initiate({
 
 ---
 
-## 2.3 `[CRITICAL BUG]` Order-Worker Double Records Ledger Entries
+## 2.3 `[FIXED ✓]` Order-Worker Double Records Ledger Entries
 **File:** [packages/api/modules/order/workers/order-worker.ts](packages/api/modules/order/workers/order-worker.ts)  
 **Issue:** `handleEscrowRelease` calls `ledgerService.recordSale()` but `recordSale` was already called when order transitioned to PAID
 
@@ -128,7 +128,7 @@ const transfer = await paystack.transfer.initiate({
 
 ---
 
-## 2.4 `[CRITICAL BUG]` Media Service Wrong ContentType for WebP
+## 2.4 `[FIXED ✓]` Media Service Wrong ContentType for WebP
 **File:** [packages/api/modules/media/services/media-service.ts](packages/api/modules/media/services/media-service.ts)  
 **Issue:** Sets `ContentType` based on original `extension` but all output is converted to WebP
 
@@ -144,7 +144,7 @@ ContentType: 'image/webp'
 
 ---
 
-## 2.5 `[CRITICAL BUG]` Seller Status Payout Account Staging Risk
+## 2.5 `[FIXED ✓]` Seller Status Payout Account Staging Risk
 **File:** [packages/api/modules/iam/services/seller-service.ts](packages/api/modules/iam/services/seller-service.ts)  
 **Issue:** `setupPayoutAccount` checks both that key is not placeholder AND `NODE_ENV=production`
 
@@ -168,7 +168,7 @@ if (PAYSTACK_SECRET_KEY !== 'sk_test_placeholder') {
 
 ---
 
-## 2.6 `[CRITICAL BUG]` Return Service Missing Returned Status Update
+## 2.6 `[FIXED ✓]` Return Service Missing Returned Status Update
 **File:** [packages/api/modules/return/services/return-service.ts](packages/api/modules/return/services/return-service.ts#L51)  
 **Issue:** `approveReturn` doesn't update `OrderLine` with `returnedAt` timestamp
 
@@ -176,7 +176,7 @@ if (PAYSTACK_SECRET_KEY !== 'sk_test_placeholder') {
 
 ---
 
-## 2.7 `[CRITICAL BUG]` Review Service Moderation Not Applied
+## 2.7 `[FIXED ✓]` Review Service Moderation Not Applied
 **File:** [packages/api/modules/catalog/services/wishlist-service.ts](packages/api/modules/catalog/services/wishlist-service.ts#L91)  
 **Issue:** `moderateReview` calls `findUnique` instead of `update` — moderation decision never saved
 
@@ -194,7 +194,7 @@ const review = await prisma.review.update({
 
 ---
 
-## 2.8 `[CRITICAL BUG]` Review Rating Not Updated on Product
+## 2.8 `[FIXED ✓]` Review Rating Not Updated on Product
 **File:** [packages/api/modules/catalog/services/catalog-service.ts](packages/api/modules/catalog/services/catalog-service.ts#L109)  
 **Issue:** Review aggregation updates seller-level average but never updates per-product `averageRating`
 
@@ -203,7 +203,7 @@ const review = await prisma.review.update({
 
 ---
 
-## 2.9 `[CRITICAL BUG]` Admin Console Missing No Signature Validation
+## 2.9 `[FIXED ✓]` Admin Console Missing No Signature Validation
 **File:** [apps/web/src/app/api/webhooks/paystack/route.ts](apps/web/src/app/api/webhooks/paystack/route.ts#L16)  
 **Issue:** Webhook handler must verify signature timing-safely to prevent replay attacks
 
@@ -223,7 +223,7 @@ const review = await prisma.review.update({
 
 ---
 
-## 2.12 `[CRITICAL BUG]` Promo Service Missing Expiry/Min-Order Checks
+## 2.12 `[FIXED ✓]` Promo Service Missing Expiry/Min-Order Checks
 **File:** [packages/api/modules/promo/services/promo-service.ts](packages/api/modules/promo/services/promo-service.ts)  
 **Issue:** `validateCoupon` doesn't verify expiration date or minimum order amount
 
@@ -233,7 +233,7 @@ const review = await prisma.review.update({
 
 # SECTION 3: [MISSING SERVICE] — No Code At All
 
-## 3.1 `[MISSING SERVICE]` Operations Dashboard
+## 3.1 `[FIXED ✓]` Operations Dashboard
 **Directory:** [packages/api/modules/ops/](packages/api/modules/ops/)  
 **Status:** Router exists but all service methods throw "unknown"
 
@@ -245,7 +245,7 @@ const review = await prisma.review.update({
 
 ---
 
-## 3.2 `[MISSING SERVICE]` ML Recommendations Endpoint
+## 3.2 `[FIXED ✓]` ML Recommendations Endpoint
 **File:** [packages/api/modules/content/router/index.ts](packages/api/modules/content/router/index.ts#L12)  
 **Status:** Router has stub for `getRecommendations` but service never calls Rust `recommendations` sidecar
 
@@ -256,7 +256,7 @@ const review = await prisma.review.update({
 
 ---
 
-## 3.3 `[MISSING SERVICE]` Affiliate Commission Confirmation Job
+## 3.3 `[FIXED ✓]` Affiliate Commission Confirmation Job
 **Status:** Never scheduled
 
 **What's Missing:**
@@ -267,7 +267,7 @@ const review = await prisma.review.update({
 
 ---
 
-## 3.4 `[MISSING SERVICE]` Escrow Release Mature Entry Job
+## 3.4 `[FIXED ✓]` Escrow Release Mature Entry Job
 **Status:** Never scheduled
 
 **What's Missing:**
@@ -277,7 +277,7 @@ const review = await prisma.review.update({
 
 ---
 
-## 3.5 `[MISSING SERVICE]` Seller Onboarding KYC Upload Portal
+## 3.5 `[FIXED ✓]` Seller Onboarding KYC Upload Portal
 **Status:** Service exists but no frontend route
 
 **Missing:**
@@ -425,7 +425,7 @@ images: [] // TODO: Implement image upload
 
 ---
 
-## 4.13 `[STUB/INCOMPLETE]` Admin Returns Portal Missing
+## 4.13 `[FIXED ✓]` Admin Returns Portal Missing
 **Directory:** [apps/web/src/app/(admin)/](apps/web/src/app/(admin)/)  
 **Missing:** Returns approval page
 
@@ -458,7 +458,7 @@ images: [] // TODO: Implement image upload
 
 ---
 
-## 4.18 `[STUB/INCOMPLETE]` Search & Category Filters Non-Functional
+## 4.18 `[FIXED ✓]` Search & Category Filters Non-Functional
 **Files:**
 - [apps/web/src/app/(buyer)/search/page.tsx](apps/web/src/app/(buyer)/search/page.tsx)
 - [apps/web/src/app/(buyer)/category/[slug]/page.tsx](apps/web/src/app/(buyer)/category/[slug]/page.tsx)
@@ -521,7 +521,7 @@ initializePayment: protectedProcedure
 
 ---
 
-## 5.4 `[UPGRADE NEEDED]` KYC Document Upload Router Missing
+## 5.4 `[FIXED ✓]` KYC Document Upload Router Missing
 **File:** [packages/api/modules/iam/router/index.ts](packages/api/modules/iam/router/index.ts)  
 **Status:** Service `uploadDocument` exists; not wired
 
@@ -539,7 +539,7 @@ uploadDocument: sellerProtectedProcedure
 
 ---
 
-## 5.5 `[UPGRADE NEEDED]` Admin Document Review Router Missing
+## 5.5 `[FIXED ✓]` Admin Document Review Router Missing
 **File:** [packages/api/modules/admin/router/index.ts](packages/api/modules/admin/router/index.ts)  
 **Status:** Service `reviewDocument` fully implemented; not wired
 
@@ -601,9 +601,9 @@ reviewDocument: adminProcedure
 
 | Issue | Table | Schema | Service Code | Impact |
 |-------|-------|--------|-------------|--------|
-| Dispute status enum | disputes | RESOLVED, ESCALATED | Uses REJECTED | Won't persist |
-| OrderLine return tracking | orderLines | No returnedAt field | Service expects tracking | Return state lost |
-| Review per-product rating | products | averageRating exists | Query aggregates seller-level only | Wrong display |
+| Dispute status enum | disputes | RESOLVED, ESCALATED | [FIXED ✓] Uses REJECTED | Won't persist |
+| OrderLine return tracking | orderLines | No returnedAt field | [FIXED ✓] Service expects tracking | Return state lost |
+| Review per-product rating | products | averageRating exists | [FIXED ✓] Query aggregates seller-level only | Wrong display |
 | Commission status tracking | commissions | status enum | Uses string "PENDING" | Type mismatch risky |
 
 ---

@@ -23,6 +23,10 @@ const _opsRouter = createTRPCRouter({
   getTimeSeries: adminProcedure.query(async () => {
     return await opsService.getAnalyticsTimeSeries();
   }),
+  
+  getSystemHealth: adminProcedure.query(async () => {
+    return await opsService.getSystemHealth();
+  }),
 });
 
 export const opsRouter = _opsRouter as any;

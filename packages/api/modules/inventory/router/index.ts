@@ -33,8 +33,19 @@ const _inventoryRouter = createTRPCRouter({
     }),
 
   syncAll: adminProcedure.mutation(async () => {
-    const syncedCount = await inventoryService.syncAllStock();
-    return { success: true, syncedCount };
+    const { prisma } = await import('@ecom/db');
+    const { redis } = await import('@ecom/shared');
+    const levels = await prisma.stockLevel.findMany();
+    
+    for (const level of levels) {
+      const available = level.qtyOnHand - level.qtyReserved;
+      await redis.set(
+        `stock:${level.variantId}`,
+        available.toString()
+      );
+    }
+    
+    return { synced: levels.length };
   }),
 
   updateStock: sellerProcedure

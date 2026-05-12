@@ -13,7 +13,8 @@ import {
   LogOut,
   Store,
   Menu,
-  X
+  X,
+  ShieldCheck
 } from 'lucide-react';
 
 const navItems = [
@@ -21,6 +22,7 @@ const navItems = [
   { name: 'Orders', href: '/seller/orders', icon: ShoppingCart },
   { name: 'Inventory', href: '/seller/inventory', icon: Package },
   { name: 'Finance', href: '/seller/finance', icon: Wallet },
+  { name: 'KYC Verification', href: '/seller/kyc', icon: ShieldCheck },
   { name: 'Insights', href: '/seller/insights', icon: BarChart3 },
 ];
 

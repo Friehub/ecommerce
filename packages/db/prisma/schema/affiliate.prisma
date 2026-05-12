@@ -44,11 +44,18 @@ model Commission {
   agentId   String
   orderId   String
   amount    Decimal  @db.Decimal(12, 2)
-  status    String   @default("PENDING") // PENDING, CONFIRMED, PAID
+  status    CommissionStatus @default(PENDING)
   createdAt DateTime @default(now())
 
   agent AffiliateAgent @relation(fields: [agentId], references: [id])
   order Order          @relation(fields: [orderId], references: [id])
 
   @@unique([agentId, orderId])
+}
+
+enum CommissionStatus {
+  PENDING
+  CONFIRMED
+  PAID
+  CANCELLED
 }

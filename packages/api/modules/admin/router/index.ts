@@ -81,11 +81,25 @@ const _adminRouter = createTRPCRouter({
       userId: z.string(),
       status: z.enum(['ACTIVE', 'SUSPENDED'])
     }))
-    .mutation(async ({ input }) => {
-      return prisma.user.update({
+    .mutation(async ({ ctx, input }) => {
+      const { publishEvent } = await import('@ecom/shared');
+      const user = await prisma.user.update({
         where: { id: input.userId },
         data: { isActive: input.status === 'ACTIVE' }
       });
+
+      if (input.status === 'SUSPENDED') {
+        await publishEvent('seller.suspended', { userId: input.userId }); // Generic user suspension event
+      }
+
+      await prisma.eventLog.create({
+        data: {
+          topic: 'ADMIN_ACTION',
+          payload: { adminId: ctx.session.user.id, action: 'UPDATE_USER_STATUS', targetId: input.userId, status: input.status }
+        }
+      });
+
+      return user;
     }),
 
   getFraudQueue: adminProcedure
@@ -122,6 +136,11 @@ const _adminRouter = createTRPCRouter({
         },
         orderBy: { createdAt: 'asc' }
       });
+    }),
+
+  getPendingKYCQueue: adminProcedure
+    .query(async () => {
+      return adminService.getPendingKYCQueue();
     }),
 
   resolveDispute: adminProcedure
@@ -254,7 +273,7 @@ const _adminRouter = createTRPCRouter({
         where: { id: input.productId },
         data: { status },
         include: { variants: true }
-      });
+      }) as any;
 
       await publishEvent('product.moderated', { 
         productId: input.productId, 
@@ -283,7 +302,7 @@ const _adminRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const { cacheService } = await import('@ecom/shared');
       const banner = await prisma.banner.create({ data: input });
-      await cacheService.del('content:banners');
+      await cacheService.delete('content:banners');
       return banner;
     }),
 
@@ -303,7 +322,7 @@ const _adminRouter = createTRPCRouter({
         where: { id },
         data
       });
-      await cacheService.del('content:banners');
+      await cacheService.delete('content:banners');
       return banner;
     }),
 
@@ -312,8 +331,28 @@ const _adminRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const { cacheService } = await import('@ecom/shared');
       await prisma.banner.delete({ where: { id: input.id } });
-      await cacheService.del('content:banners');
+      await cacheService.delete('content:banners');
       return { success: true };
+    }),
+
+  listPendingPayouts: adminProcedure
+    .query(async () => {
+      const { ledgerService } = await import('../../revenue/services/ledger-service.js');
+      return await ledgerService.listPendingPayouts();
+    }),
+
+  reviewPayout: adminProcedure
+    .input(z.object({
+      payoutId: z.string(),
+      decision: z.enum(['APPROVED', 'REJECTED'])
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { ledgerService } = await import('../../revenue/services/ledger-service.js');
+      if (input.decision === 'APPROVED') {
+        return await ledgerService.approvePayout(input.payoutId, ctx.session.user.id);
+      } else {
+        return await ledgerService.rejectPayout(input.payoutId, ctx.session.user.id);
+      }
     }),
 });
 

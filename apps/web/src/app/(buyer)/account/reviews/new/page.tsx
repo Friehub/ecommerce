@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { api } from '@/trpc/react';
-import { Star, Camera, ChevronLeft, Send, Loader2 } from 'lucide-react';
+import { Star, Camera, ChevronLeft, Send, Loader2, X } from 'lucide-react';
 import Link from 'next/link';
 
 function ReviewFormContent() {
@@ -32,6 +32,36 @@ function ReviewFormContent() {
     }
   });
 
+  const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  const getUploadUrl = api.media.getUploadUrl.useMutation();
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const { url, key } = await getUploadUrl.mutateAsync({
+        path: file.name,
+        contentType: file.type
+      });
+
+      await fetch(url, {
+        method: 'PUT',
+        body: file,
+        headers: { 'Content-Type': file.type }
+      });
+
+      setImages(prev => [...prev, key]);
+    } catch (err: any) {
+      alert(`Upload failed: ${err.message}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (rating === 0) return alert('Please select a rating');
@@ -43,7 +73,7 @@ function ReviewFormContent() {
       productId,
       rating,
       comment,
-      images: [] // TODO: Implement image upload
+      images
     });
   };
 
@@ -117,14 +147,36 @@ function ReviewFormContent() {
               />
             </div>
 
-            {/* Photo Upload (Placeholder UI) */}
+            {/* Photo Upload */}
             <div className="space-y-4">
               <label className="text-xs font-black text-gray-400 uppercase tracking-widest block">Add Photos</label>
-              <div className="flex gap-4">
-                <button type="button" className="w-24 h-24 border-2 border-dashed border-gray-100 rounded-2xl flex flex-col items-center justify-center gap-2 text-gray-300 hover:border-orange-200 hover:text-orange-300 transition-all">
-                  <Camera size={24} />
-                  <span className="text-[8px] font-black uppercase tracking-widest">Add Photo</span>
-                </button>
+              <div className="flex flex-wrap gap-4">
+                {images.map((img, idx) => (
+                  <div key={idx} className="w-24 h-24 bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden group/img relative">
+                    <img src={`${process.env.NEXT_PUBLIC_R2_URL || ''}/${img}`} className="w-full h-full object-cover" />
+                    <button 
+                      type="button"
+                      onClick={() => setImages(prev => prev.filter((_, i) => i !== idx))}
+                      className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                ))}
+                
+                {images.length < 5 && (
+                  <label className="w-24 h-24 border-2 border-dashed border-gray-100 rounded-2xl flex flex-col items-center justify-center gap-2 text-gray-300 hover:border-orange-200 hover:text-orange-300 transition-all cursor-pointer">
+                    {uploading ? (
+                      <Loader2 size={24} className="animate-spin" />
+                    ) : (
+                      <>
+                        <Camera size={24} />
+                        <span className="text-[8px] font-black uppercase tracking-widest">Add Photo</span>
+                      </>
+                    )}
+                    <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+                  </label>
+                )}
               </div>
             </div>
 

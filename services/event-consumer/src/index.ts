@@ -4,6 +4,7 @@ import { catalogService, ledgerService, orderService } from '@ecom/api';
 import { prisma } from '@ecom/db';
 import * as dotenv from 'dotenv';
 import { startMetricsServer, orderProcessingLatency } from './metrics.js';
+import { setupCronJobs } from './cron.js';
 
 dotenv.config();
 
@@ -11,6 +12,9 @@ console.log('🚀 Event Consumer Service starting...');
 
 // Start metrics server
 startMetricsServer(Number(process.env.METRICS_PORT) || 9090);
+
+// Setup cron jobs
+setupCronJobs().catch(console.error);
 
 const eventWorker = new Worker('system-events', async job => {
   const event = job.data;
@@ -35,6 +39,21 @@ const eventWorker = new Worker('system-events', async job => {
         const variantId = event.payload.variantId;
         console.log(`[SearchSync] Syncing variant ${variantId} due to inventory update`);
         await catalogService.syncToSearch(variantId);
+        break;
+      }
+
+      case 'shipment.status_updated': {
+        const { shipmentId, status } = event.payload;
+        if (status === 'FAILED') {
+          console.log(`[Logistics] Shipment ${shipmentId} FAILED. Notifying admin.`);
+          // Escalation logic: Create an admin notification/audit log
+          await prisma.eventLog.create({
+            data: {
+              topic: 'LOGISTICS_FAILURE',
+              payload: { shipmentId, status, severity: 'HIGH' }
+            }
+          });
+        }
         break;
       }
 
@@ -142,6 +161,8 @@ eventWorker.on('completed', job => {
 
 process.on('SIGTERM', async () => {
   console.log('Gracefully shutting down...');
+  const { cronWorker } = await import('./cron.js');
   await eventWorker.close();
   await orderWorker.close();
+  await cronWorker.close();
 });

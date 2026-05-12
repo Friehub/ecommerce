@@ -75,7 +75,28 @@ const parseConfig = () => {
       MONNIFY_CONTRACT_CODE: process.env.MONNIFY_CONTRACT_CODE,
     };
 
-    return configSchema.parse(envData);
+    const validated = configSchema.parse(envData);
+
+    // B12: Production Assertions - prevent placeholder keys in prod
+    if (validated.NODE_ENV === 'production') {
+      const placeholders = [
+        'sk_placeholder', 'whsec_placeholder', 're_placeholder', 'test_secret_placeholder',
+        'FLWSECK_test_placeholder', 'MK_TEST_placeholder', 'placeholder'
+      ];
+      
+      const configEntries = Object.entries(validated);
+      const invalidEntries = configEntries.filter(([key, value]) => 
+        typeof value === 'string' && placeholders.includes(value)
+      );
+
+      if (invalidEntries.length > 0) {
+        const keys = invalidEntries.map(([k]) => k).join(', ');
+        console.error(`❌ Production Safety Error: Placeholder values detected for production: ${keys}`);
+        process.exit(1);
+      }
+    }
+
+    return validated;
   } catch (error) {
     if (error instanceof z.ZodError) {
       if (process.env.SKIP_ENV_VALIDATION === 'true' || process.env.NEXT_PHASE === 'phase-production-build') {

@@ -65,6 +65,7 @@ enum ProductStatus {
   ACTIVE
   INACTIVE
   DELETED
+  REJECTED
 }
 
 model ProductVariant {

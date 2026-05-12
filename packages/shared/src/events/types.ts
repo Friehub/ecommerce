@@ -39,7 +39,8 @@ export type EventType =
   | 'seller.tier_changed'
   | 'wallet.funded'
   | 'wallet.withdrawal_requested'
-  | 'payout.completed';
+  | 'payout.completed'
+  | 'product.moderated';
 
 export interface BaseEvent<T = any> {
   id: string;

@@ -27,9 +27,14 @@ export default function SellerOrdersPage() {
     );
   }
 
-  const filteredPackages = packages?.filter(p => 
-    activeTab === 'All' || p.status.toLowerCase() === activeTab.toLowerCase()
-  );
+  const filteredPackages = packages?.filter(p => {
+    if (activeTab === 'All') return true;
+    if (activeTab === 'Pending') return p.status === 'PENDING';
+    if (activeTab === 'Processing') return ['READY_FOR_PICKUP', 'PICKED_UP'].includes(p.status);
+    if (activeTab === 'Shipped') return p.status === 'IN_TRANSIT' || p.status === 'SHIPPED';
+    if (activeTab === 'Delivered') return p.status === 'DELIVERED';
+    return p.status.toLowerCase() === activeTab.toLowerCase();
+  });
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 select-none bg-[#F9F9FA] min-h-screen">

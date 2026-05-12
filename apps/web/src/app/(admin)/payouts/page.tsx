@@ -7,8 +7,14 @@ import { format } from 'date-fns';
 
 export default function AdminPayoutsPage() {
   const utils = api.useUtils();
+  const [search, setSearch] = React.useState('');
   const { data: payouts, isLoading } = api.revenue.listAllPayouts.useQuery();
   
+  const filteredPayouts = payouts?.filter(p => 
+    p.seller.businessName.toLowerCase().includes(search.toLowerCase()) ||
+    p.id.toLowerCase().includes(search.toLowerCase())
+  );
+
   const approvePayout = api.revenue.approvePayout.useMutation({
     onSuccess: () => {
       utils.revenue.listAllPayouts.invalidate();
@@ -38,6 +44,8 @@ export default function AdminPayoutsPage() {
             <input 
               type="text" 
               placeholder="Search by business name..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded focus:outline-none focus:border-[#f68b1e] text-sm"
             />
           </div>
@@ -61,7 +69,7 @@ export default function AdminPayoutsPage() {
                     <td colSpan={5} className="px-6 py-8"><div className="h-4 bg-gray-100 rounded w-full" /></td>
                   </tr>
                 ))
-              ) : payouts?.map((payout) => (
+              ) : filteredPayouts?.map((payout) => (
                 <tr key={payout.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="font-bold text-gray-900">{payout.seller.businessName}</div>

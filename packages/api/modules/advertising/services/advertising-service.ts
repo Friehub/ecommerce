@@ -127,8 +127,8 @@ export const advertisingService: Service = {
   async selectSponsoredResult(query: string) {
     if (!query) return null;
     
-    // Find highest bidder for matching keywords
-    const matchingGroups = await prisma.adGroup.findMany({
+    // 1. Fetch candidates from DB
+    const candidates = await prisma.adGroup.findMany({
       where: {
         campaign: { status: 'ACTIVE' },
         keywords: {
@@ -148,21 +148,38 @@ export const advertisingService: Service = {
         },
         campaign: { select: { sellerId: true } }
       },
-      orderBy: { bid: 'desc' },
-      take: 1
     });
 
-    const group = matchingGroups[0];
-    if (!group) return null;
+    if (candidates.length === 0) return null;
 
-    // Record an implicit impression when selected for search
-    await this.recordImpression(group.id);
+    // 2. Run real-time auction via Rust (Fix 3.4)
+    let selectedAd = candidates[0]; // Fallback to first candidate (highest bid usually, if sorted)
+    try {
+      const { RustClient } = await import('../../../rust-client.js');
+      const auctionResult = await RustClient.auction.bid(query, candidates.map(c => ({
+        id: c.id,
+        bid: c.bid.toNumber(),
+        seller_id: c.campaign.sellerId,
+        relevance_score: 0.9 // Placeholder for real relevance logic
+      })));
+
+      if (auctionResult && auctionResult.winner_id) {
+        selectedAd = candidates.find(c => c.id === auctionResult.winner_id) || selectedAd;
+      }
+    } catch (e) {
+      console.warn('[AdAuction] Rust service failed, using highest bid fallback:', e);
+      // Fallback: sort by bid descending
+      selectedAd = candidates.sort((a, b) => b.bid.sub(a.bid).toNumber())[0];
+    }
+
+    // 3. Record an implicit impression when selected for search
+    await this.recordImpression(selectedAd.id);
 
     return {
-      ...group.product,
-      adGroupId: group.id,
+      ...selectedAd.product,
+      adGroupId: selectedAd.id,
       isSponsored: true,
-      bid: group.bid
+      bid: selectedAd.bid
     };
   }
 };

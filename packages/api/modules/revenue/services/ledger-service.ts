@@ -256,5 +256,70 @@ export const ledgerService: Service = {
         currency
       }
     };
+  },
+
+  async listPendingPayouts() {
+    return prisma.payout.findMany({
+      where: { status: 'PENDING' },
+      include: { seller: { select: { businessName: true, user: { select: { email: true } } } } },
+      orderBy: { createdAt: 'asc' }
+    });
+  },
+
+  async approvePayout(payoutId: string, adminId: string) {
+    const payout = await prisma.payout.findUnique({
+      where: { id: payoutId },
+      include: { seller: true }
+    });
+
+    if (!payout) throw new Error('PAYOUT_NOT_FOUND');
+    if (payout.status !== 'PENDING') throw new Error('PAYOUT_NOT_PENDING');
+
+    const { paymentService } = await import('../../payment/services/payment-service.js');
+    
+    // 1. Move to PROCESSING in DB
+    await prisma.payout.update({
+      where: { id: payoutId },
+      data: { status: 'PROCESSING' }
+    });
+
+    // 2. Trigger Bank Transfer via Payment Service
+    try {
+      await paymentService.processPayout(payoutId);
+    } catch (err) {
+      console.error(`[Ledger] Payout approval failed for ${payoutId}:`, err);
+      // Revert status if possible or leave for manual intervention
+      throw err;
+    }
+
+    return { success: true };
+  },
+
+  async rejectPayout(payoutId: string, adminId: string) {
+    const payout = await prisma.payout.findUnique({
+      where: { id: payoutId }
+    });
+
+    if (!payout) throw new Error('PAYOUT_NOT_FOUND');
+    if (payout.status !== 'PENDING') throw new Error('PAYOUT_NOT_PENDING');
+
+    return prisma.$transaction(async (tx) => {
+      // 1. Refund the ledger entry
+      await tx.sellerLedgerEntry.create({
+        data: {
+          sellerId: payout.sellerId,
+          type: LedgerEntryType.WITHDRAWAL,
+          amount: payout.amount, // Positive amount to refund
+          status: LedgerStatus.AVAILABLE,
+          orderLineId: null // Not related to an order
+        }
+      });
+
+      // 2. Update Payout status
+      return await tx.payout.update({
+        where: { id: payoutId },
+        data: { status: 'FAILED' }
+      });
+    });
   }
 };

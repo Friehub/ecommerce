@@ -10,6 +10,7 @@
     "db:migrate": "pnpm --filter @ecom/db migrate",
     "db:seed": "pnpm --filter @ecom/db seed",
     "db:studio": "pnpm --filter @ecom/db studio",
+    "test": "pnpm -r --if-present test",
     "test:e2e": "npx playwright test -c apps/e2e/playwright.config.ts",
     "test:e2e:ui": "npx playwright test -c apps/e2e/playwright.config.ts --ui"
   },

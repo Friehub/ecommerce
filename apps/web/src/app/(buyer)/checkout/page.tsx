@@ -35,6 +35,7 @@ export default function CheckoutPage() {
   
   const [selectedAddressId, setSelectedAddressId] = React.useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = React.useState<'CARD' | 'POD' | 'WALLET'>('POD');
+  const [paymentProvider, setPaymentProvider] = React.useState<'paystack' | 'flutterwave' | 'monnify'>('paystack');
   const [isPlacingOrder, setIsPlacingOrder] = React.useState(false);
 
   const [couponCode, setCouponCode] = React.useState('');
@@ -111,8 +112,9 @@ export default function CheckoutPage() {
   const createOrder = api.order.create.useMutation({
     onSuccess: (order) => {
       if (paymentMethod === 'CARD') {
-        initializePaystack.mutate({
+        initializePayment.mutate({
           orderId: order.id,
+          provider: paymentProvider,
         });
       } else {
         router.push(`/checkout/success?orderId=${order.id}`);
@@ -124,7 +126,7 @@ export default function CheckoutPage() {
     }
   });
 
-  const initializePaystack = api.payment.initializePaystack.useMutation({
+  const initializePayment = api.payment.initializePayment.useMutation({
     onSuccess: (data) => {
       window.location.href = data.authorization_url;
     },
@@ -416,32 +418,55 @@ export default function CheckoutPage() {
                 </div>
               </div>
               <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   {[
-                    { id: 'CARD', label: 'Cards / Transfer / USSD', icon: <CreditCard size={20} />, sub: 'Pay with Paystack' },
                     { id: 'POD', label: 'Cash on Delivery', icon: <ShoppingBag size={20} />, sub: 'Pay at your door' },
+                    { id: 'CARD', label: 'Cards / Transfer / USSD', icon: <CreditCard size={20} />, sub: 'Online Secure Payment' },
                   ].map((method) => (
-                    <div 
-                      key={method.id}
-                      onClick={() => setPaymentMethod(method.id as any)}
-                      className={`p-5 border-2 rounded-[20px] cursor-pointer transition-all flex items-center gap-4 ${
-                        paymentMethod === method.id ? 'border-[#F68B1E] bg-orange-50/10' : 'border-gray-50 hover:border-gray-200'
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                        paymentMethod === method.id ? 'bg-[#F68B1E] text-white' : 'bg-gray-50 text-gray-400'
-                      }`}>
-                        {method.icon}
+                    <div key={method.id}>
+                      <div 
+                        onClick={() => setPaymentMethod(method.id as any)}
+                        className={`p-5 border-2 rounded-[20px] cursor-pointer transition-all flex items-center gap-4 ${
+                          paymentMethod === method.id ? 'border-[#F68B1E] bg-orange-50/10' : 'border-gray-50 hover:border-gray-200'
+                        }`}
+                      >
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                          paymentMethod === method.id ? 'bg-[#F68B1E] text-white' : 'bg-gray-50 text-gray-400'
+                        }`}>
+                          {method.icon}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-black text-xs text-gray-900 uppercase tracking-tight">{method.label}</p>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{method.sub}</p>
+                        </div>
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                          paymentMethod === method.id ? 'border-[#F68B1E]' : 'border-gray-300'
+                        }`}>
+                          {paymentMethod === method.id && <div className="w-2 h-2 bg-[#F68B1E] rounded-full" />}
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="font-black text-xs text-gray-900 uppercase tracking-tight">{method.label}</p>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{method.sub}</p>
-                      </div>
-                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                        paymentMethod === method.id ? 'border-[#F68B1E]' : 'border-gray-300'
-                      }`}>
-                        {paymentMethod === method.id && <div className="w-2 h-2 bg-[#F68B1E] rounded-full" />}
-                      </div>
+
+                      {method.id === 'CARD' && paymentMethod === 'CARD' && (
+                        <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 pl-4 animate-in slide-in-from-top-2 duration-200">
+                          {[
+                            { id: 'paystack', name: 'Paystack' },
+                            { id: 'flutterwave', name: 'Flutterwave' },
+                            { id: 'monnify', name: 'Monnify' }
+                          ].map((p) => (
+                            <button
+                              key={p.id}
+                              onClick={() => setPaymentProvider(p.id as any)}
+                              className={`p-3 rounded-xl border-2 text-[10px] font-black uppercase tracking-wider transition-all ${
+                                paymentProvider === p.id 
+                                  ? 'border-[#F68B1E] bg-[#F68B1E] text-white' 
+                                  : 'border-gray-100 text-gray-400 hover:border-gray-200'
+                              }`}
+                            >
+                              {p.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -509,7 +534,7 @@ export default function CheckoutPage() {
                 </button>
                 
                 <p className="text-[9px] text-center font-bold text-white/30 uppercase tracking-widest leading-relaxed">
-                  Secured by Paystack / SSL Encryption
+                  Secured by Multi-Gateway Encryption
                 </p>
               </div>
             </div>

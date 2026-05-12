@@ -9,6 +9,7 @@ import { FlashSales } from '../components/home/FlashSales';
 import { ProductSection } from '../components/home/ProductSection';
 import { TrendingNow } from '../components/home/TrendingNow';
 import { Package, ShieldCheck, RotateCcw } from 'lucide-react';
+import { api } from '@/trpc/react';
 
 export default function Home() {
   return (
@@ -71,15 +72,39 @@ export default function Home() {
         {/* Trending Categories */}
         <TrendingNow />
 
-        {/* Product Sections with Premium Styling */}
+        {/* Dynamic Product Sections from Live Category Tree */}
         <div className="flex flex-col gap-stack-lg mt-stack-lg">
-          <ProductSection title="Phone Deals" categoryId="phones-tablets" />
-          <ProductSection title="Computing Essentials" categoryId="computing" />
-          <ProductSection title="Fashion Picks" categoryId="fashion" />
-          <ProductSection title="Health & Beauty" categoryId="health-beauty" />
-          <ProductSection title="Baby Essentials" categoryId="baby-products" />
+          <HomepageDynamicSections />
         </div>
       </div>
     </main>
+  );
+}
+
+function HomepageDynamicSections() {
+  const { data: categories, isLoading } = api.catalog.getCategories.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-stack-lg">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="bg-surface rounded-xl border border-outline-variant/20 animate-pulse h-[400px]" />
+        ))}
+      </div>
+    );
+  }
+
+  // We only show top-level categories that have products (ProductSection handles empty check)
+  // Limit to 6 categories to avoid overwhelming the homepage
+  return (
+    <>
+      {categories?.slice(0, 6).map((category: any) => (
+        <ProductSection 
+          key={category.id} 
+          title={category.name} 
+          categoryId={category.id} 
+        />
+      ))}
+    </>
   );
 }

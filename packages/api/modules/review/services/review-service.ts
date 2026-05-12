@@ -86,8 +86,11 @@ export const reviewService: Service = {
 
   async getProductReviews(productId: string) {
     return prisma.review.findMany({
-      where: { productId },
-      include: { user: true },
+      where: { productId, status: 'APPROVED' }, // Only show approved reviews to public
+      include: { 
+        user: { select: { firstName: true, lastName: true } },
+        media: true 
+      },
       orderBy: { createdAt: 'desc' }
     });
   },
@@ -113,7 +116,10 @@ export const reviewService: Service = {
   async getUserReviews(userId: string) {
     return prisma.review.findMany({
       where: { userId },
-      include: { product: true },
+      include: { 
+        product: { include: { media: true } },
+        media: true
+      },
       orderBy: { createdAt: 'desc' }
     });
   }

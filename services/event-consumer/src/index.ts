@@ -1,6 +1,6 @@
 import { Worker } from 'bullmq';
 import { redis } from '@ecom/shared';
-import { catalogService, ledgerService, orderService } from '@ecom/api';
+import { catalogService, ledgerService, orderService, affiliateService, notificationService } from '@ecom/api';
 import { prisma } from '@ecom/db';
 import * as dotenv from 'dotenv';
 import { startMetricsServer, orderProcessingLatency } from './metrics.js';
@@ -22,6 +22,20 @@ const eventWorker = new Worker('system-events', async job => {
 
   try {
     switch (event.type) {
+      case 'order.created': {
+        const { orderId, total, referralLinkId } = event.payload;
+        if (referralLinkId) {
+          const link = await prisma.referralLink.findUnique({
+            where: { id: referralLinkId }
+          });
+          if (link) {
+            console.log(`[Affiliate] Recording commission for order ${orderId} (Link: ${referralLinkId})`);
+            await affiliateService.recordCommission(link.agentId, orderId, total);
+          }
+        }
+        break;
+      }
+
       case 'product.created':
       case 'product.updated': {
         const productId = event.payload.productId;
@@ -46,13 +60,29 @@ const eventWorker = new Worker('system-events', async job => {
         const { shipmentId, status } = event.payload;
         if (status === 'FAILED') {
           console.log(`[Logistics] Shipment ${shipmentId} FAILED. Notifying admin.`);
-          // Escalation logic: Create an admin notification/audit log
+          
+          // 1. Log to DB
           await prisma.eventLog.create({
             data: {
               topic: 'LOGISTICS_FAILURE',
               payload: { shipmentId, status, severity: 'HIGH' }
             }
           });
+
+          // 2. Notify Admins (Fix BUG-020: Missing escalation)
+          const admins = await prisma.user.findMany({
+            where: { role: 'ADMIN' },
+            select: { id: true }
+          });
+
+          for (const admin of admins) {
+            await notificationService.sendNotification(
+              admin.id,
+              'ADMIN_ALERT',
+              'Critical Logistics Failure',
+              `Shipment ${shipmentId} has failed. Manual intervention required.`
+            );
+          }
         }
         break;
       }

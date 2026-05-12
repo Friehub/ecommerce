@@ -203,10 +203,20 @@ export const inventoryService: Service = {
     }
 
     const pipeline = redis.pipeline();
+    const rustLevels: { sku: string, quantity: number }[] = [];
+    
     for (const [variantId, available] of aggregates.entries()) {
       pipeline.set(`stock:${variantId}`, available);
+      rustLevels.push({ sku: variantId, quantity: available });
     }
     await pipeline.exec();
+
+    // Push to Rust Inventory Service (Fix BUG-019: Missing sync with high-perf layer)
+    try {
+      await RustClient.inventory.sync(rustLevels);
+    } catch (e) {
+      console.warn('[InventoryService] Failed to sync with Rust service:', e);
+    }
 
     return aggregates.size;
   },

@@ -117,7 +117,7 @@ const _adminRouter = createTRPCRouter({
       action: z.enum(['ALLOW', 'BLOCK'])
     }))
     .mutation(async ({ input }) => {
-      const targetStatus: OrderStatus = input.action === 'ALLOW' ? 'PAID' : 'CANCELLED';
+      const targetStatus: OrderStatus = input.action === 'ALLOW' ? 'PROCESSING' : 'CANCELLED';
       return await orderService.updateStatus(input.orderId, targetStatus);
     }),
 

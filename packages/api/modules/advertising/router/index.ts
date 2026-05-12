@@ -95,6 +95,30 @@ const _advertisingRouter = createTRPCRouter({
         input.status
       );
     }),
+
+  pauseCampaign: sellerProcedure
+    .input(z.object({ campaignId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new TRPCError({ code: 'NOT_FOUND' });
+      return advertisingService.updateCampaignStatus(seller.id, input.campaignId, 'PAUSED');
+    }),
+
+  resumeCampaign: sellerProcedure
+    .input(z.object({ campaignId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new TRPCError({ code: 'NOT_FOUND' });
+      return advertisingService.updateCampaignStatus(seller.id, input.campaignId, 'ACTIVE');
+    }),
+
+  stopCampaign: sellerProcedure
+    .input(z.object({ campaignId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      if (!seller) throw new TRPCError({ code: 'NOT_FOUND' });
+      return advertisingService.updateCampaignStatus(seller.id, input.campaignId, 'ENDED');
+    }),
 });
 
 export const advertisingRouter = _advertisingRouter as any;

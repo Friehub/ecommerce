@@ -77,6 +77,11 @@ export class RustClient {
                 method: 'POST',
                 body: JSON.stringify({ sku, reservation_id: reservationId }),
             }),
+        sync: (levels: { sku: string, quantity: number }[]) =>
+            this.request<any>(SERVICES.INVENTORY, '/sync', {
+                method: 'POST',
+                body: JSON.stringify({ levels }),
+            }),
     };
 
     // Fraud Service

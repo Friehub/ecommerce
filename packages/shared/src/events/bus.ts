@@ -36,11 +36,19 @@ export async function publishEvent<T>(type: EventType, payload: T, metadata?: Re
     metadata,
   }
 
-  // Route to notifications if it's a notification event
-  if (NOTIFICATION_EVENTS.includes(type)) {
-    await notificationQueue.add(type, event);
+  // Route to the appropriate queues
+  const isNotificationEvent = NOTIFICATION_EVENTS.includes(type);
+  
+  if (isNotificationEvent) {
+    // Broadcast notification events to both queues. 
+    // This ensures Notification workers get it for emails, 
+    // AND System workers (Fraud, Logistics, etc.) get it for backend logic.
+    await Promise.all([
+      notificationQueue.add(type, event),
+      systemQueue.add(type, event)
+    ]);
   } else {
-    // Everything else goes to system queue (Search sync, etc.)
+    // Pure system events (e.g. search sync, internal housekeeping) go only to system queue
     await systemQueue.add(type, event);
   }
   

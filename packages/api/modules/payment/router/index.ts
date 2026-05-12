@@ -103,7 +103,12 @@ const _paymentRouter = createTRPCRouter({
       if (payment.status === 'SUCCESS') return { status: 'SUCCESS' };
 
       const { getPaymentAdapter } = await import('../adapters/index.js');
-      const adapter = getPaymentAdapter('paystack');
+      // Use the method from the payment record (lowercase to match adapters record)
+      // Fallback 'CARD' to 'paystack' for legacy support
+      let provider = (payment.method || 'paystack').toLowerCase();
+      if (provider === 'card') provider = 'paystack';
+      
+      const adapter = getPaymentAdapter(provider);
       const result = await adapter.verifyTransaction(input.reference);
 
       if (result.status === 'success') {

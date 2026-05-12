@@ -13,7 +13,7 @@ const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   CANCELLED: [],
   RETURN_REQUESTED: ['RETURNED', 'DELIVERED'],
   RETURNED: [],
-  FRAUD_REVIEW: ['PAID', 'CANCELLED']
+  FRAUD_REVIEW: ['PAID', 'CANCELLED', 'PROCESSING']
 };
 
 import { promoService } from '../../promo/services/promo-service.js';
@@ -151,18 +151,6 @@ export const orderService = {
       // 4. Clear cart
       await tx.cartItem.deleteMany({ where: { cartId } });
 
-      // 5. Record Affiliate Commission if referral exists
-      if (referralLinkId) {
-        const { affiliateService } = await import('../../affiliate/services/affiliate-service.js');
-        const link = await tx.referralLink.findUnique({
-          where: { id: referralLinkId }
-        });
-        
-        if (link) {
-          await affiliateService.recordCommission(link.agentId, newOrder.id, newOrder.total.toNumber());
-        }
-      }
-
       return newOrder;
     });
 
@@ -170,7 +158,8 @@ export const orderService = {
     await publishEvent('order.created', { 
       orderId: order.id, 
       userId, 
-      total: order.total.toNumber() 
+      total: order.total.toNumber(),
+      referralLinkId // Pass this for background attribution
     });
 
     if (paymentMethod === 'POD' || paymentMethod === 'PAY_ON_DELIVERY') {

@@ -161,11 +161,20 @@ export default function CheckoutPage() {
       showToast('Please select a delivery address', 'error');
       return;
     }
+    
+    // Read referral link ID from cookie if present
+    const referralLinkId = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('referralLinkId='))
+      ?.split('=')[1];
+
     setIsPlacingOrder(true);
     createOrder.mutate({
       cartId: cart?.id || sessionId,
       paymentMethod,
       addressId: selectedAddressId,
+      referralLinkId,
+      couponCode: appliedCoupon || undefined,
     });
   };
 

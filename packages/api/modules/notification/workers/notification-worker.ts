@@ -49,26 +49,6 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         }
         break;
       }
-      case 'order.delivered': {
-        const order = await prisma.order.findUnique({
-          where: { id: payload.orderId }
-        });
-        if (order) {
-          const template = emailTemplates.ORDER_DELIVERED(payload);
-          await notificationService.sendNotification(order.userId, 'ORDER_UPDATE', template.subject, template.html);
-        }
-        break;
-      }
-      case 'order.completed': {
-        const order = await prisma.order.findUnique({
-          where: { id: payload.orderId }
-        });
-        if (order) {
-          const template = emailTemplates.ORDER_COMPLETED(payload);
-          await notificationService.sendNotification(order.userId, 'ORDER_UPDATE', template.subject, template.html);
-        }
-        break;
-      }
       case 'refund.processed': {
         const template = emailTemplates.REFUND_PROCESSED(payload);
         await notificationService.sendNotification(payload.userId, 'BILLING_UPDATE', template.subject, template.html);
@@ -80,6 +60,16 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         });
         if (seller) {
           const template = emailTemplates.SELLER_APPROVED(payload);
+          await notificationService.sendNotification(seller.userId, 'SELLER_UPDATE', template.subject, template.html);
+        }
+        break;
+      }
+      case 'seller.suspended': {
+        const seller = await prisma.seller.findUnique({
+          where: { id: payload.sellerId }
+        });
+        if (seller) {
+          const template = emailTemplates.SELLER_SUSPENDED(payload);
           await notificationService.sendNotification(seller.userId, 'SELLER_UPDATE', template.subject, template.html);
         }
         break;
@@ -101,6 +91,17 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         if (dispute) {
           const template = emailTemplates.DISPUTE_RESOLVED(payload);
           await notificationService.sendNotification(dispute.buyerId, 'DISPUTE_UPDATE', template.subject, template.html);
+        }
+        break;
+      }
+      case 'dispute.opened': {
+        const dispute = await prisma.dispute.findUnique({
+          where: { id: payload.disputeId },
+          include: { seller: true }
+        });
+        if (dispute && dispute.seller) {
+          const template = emailTemplates.DISPUTE_OPENED(payload);
+          await notificationService.sendNotification(dispute.seller.userId, 'DISPUTE_UPDATE', template.subject, template.html);
         }
         break;
       }

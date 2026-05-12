@@ -30,26 +30,49 @@ export const sellerDashboardService: Service = {
       where: { sellerId, qtyOnHand: { lte: 10 } }
     });
 
-    // Dynamic Performance Score Calculation
+    // 1. Buyer Review Score (50%)
     const seller = await prisma.seller.findUnique({
       where: { id: sellerId },
       select: { rating: true }
     });
-    
-    // Penalize score based on unresolved or rejected disputes
-    const recentDisputes = await prisma.dispute.count({
+    let rating = seller?.rating ? seller.rating.toNumber() : 5.0;
+    if (rating === 0) rating = 5.0; // Default for new sellers
+
+    // 2. On-time Shipment Rate (25%)
+    // Consider packages that have been handed over to logistics
+    const shippedPackages = await prisma.orderPackage.findMany({
       where: { 
         sellerId, 
-        status: { in: ['OPEN', 'UNDER_REVIEW', 'RESOLVED'] }, // RESOLVED means resolved in buyer's favor usually
-        createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
-      }
+        status: { in: ['READY_FOR_PICKUP', 'PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'] } 
+      },
+      include: { shipments: { take: 1, orderBy: { createdAt: 'asc' } } }
     });
+    const onTimeShipments = shippedPackages.filter(pkg => {
+      if (!pkg.estimatedDelivery || pkg.shipments.length === 0) return true;
+      return pkg.shipments[0].createdAt <= pkg.estimatedDelivery;
+    }).length;
+    const onTimeRate = shippedPackages.length > 0 ? onTimeShipments / shippedPackages.length : 1.0;
 
-    let baseRating = seller?.rating ? seller.rating.toNumber() : 5.0;
-    if (baseRating === 0) baseRating = 5.0; // new sellers start at 5.0
+    // 3. Cancellation Rate (15%) - Lower is better
+    const totalPackages = await prisma.orderPackage.count({ where: { sellerId } });
+    const cancelledPackages = await prisma.orderPackage.count({ 
+      where: { sellerId, status: 'CANCELLED' } 
+    });
+    const cancellationRate = totalPackages > 0 ? cancelledPackages / totalPackages : 0.0;
 
-    // Deduct 0.1 per dispute
-    let performanceScore = Math.max(0, baseRating - (recentDisputes * 0.1));
+    // 4. Dispute Loss Rate (10%) - Lower is better
+    const totalDisputes = await prisma.dispute.count({ where: { sellerId } });
+    const lostDisputes = await prisma.dispute.count({ 
+      where: { sellerId, status: 'RESOLVED' } 
+    });
+    const disputeLossRate = totalDisputes > 0 ? lostDisputes / totalDisputes : 0.0;
+
+    // Weighted Formula (0-5 scale)
+    let performanceScore = (rating * 0.5) + 
+                           (onTimeRate * 5 * 0.25) + 
+                           ((1 - cancellationRate) * 5 * 0.15) + 
+                           ((1 - disputeLossRate) * 5 * 0.10);
+
     performanceScore = Math.round(performanceScore * 10) / 10;
 
     return {

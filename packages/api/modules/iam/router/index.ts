@@ -117,6 +117,21 @@ const _iamRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await userService.verifyPhoneOTP(ctx.session.user.id, input.otp);
     }),
+
+  forgotPassword: publicProcedure
+    .input(z.object({ email: z.string().email() }))
+    .mutation(async ({ input }) => {
+      return await userService.requestPasswordReset(input.email);
+    }),
+
+  resetPassword: publicProcedure
+    .input(z.object({ 
+      token: z.string(), 
+      newPassword: z.string().min(8) 
+    }))
+    .mutation(async ({ input }) => {
+      return await userService.resetPassword(input.token, input.newPassword);
+    }),
 });
 
 export const iamRouter = _iamRouter;

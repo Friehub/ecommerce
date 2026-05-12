@@ -6,10 +6,15 @@ import authConfig from "./auth.config"
 // auth.ts — server-only. Contains the real authorize() which uses bcrypt + Prisma.
 // The JWT/session callbacks and session strategy are defined in auth.config.ts
 // so they are shared with the edge-compatible middleware.
+import Google from 'next-auth/providers/google'
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  // Override the stub provider with the real one that validates credentials.
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
@@ -23,8 +28,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             credentials.password as string
           );
           if (!user) return null;
-          // Return id, email, and role — the jwt() callback in authConfig
-          // will persist these into the JWT token.
           return {
             id: user.id,
             email: user.email,
@@ -37,5 +40,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     })
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        if (!profile?.email) return false;
+        
+        try {
+          const dbUser = await userService.upsertOAuthAccount(
+            account.provider,
+            account.providerAccountId,
+            {
+              email: profile.email,
+              firstName: (profile as any).given_name,
+              lastName: (profile as any).family_name,
+            }
+          );
+          
+          user.id = dbUser.id;
+          (user as any).role = dbUser.role;
+          return true;
+        } catch (error) {
+          console.error("OAuth error:", error);
+          return false;
+        }
+      }
+      return true;
+    }
+  }
 })
 

@@ -111,4 +111,84 @@ export const userService: Service = {
     await redis.del(`otp:phone:${userId}`);
     return { success: true };
   },
+
+  async requestPasswordReset(email: string) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return { success: true };
+
+    const { nanoid } = await import('nanoid');
+    const token = nanoid(32);
+    const expires = new Date(Date.now() + 3600000); // 1 hour
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { resetToken: token, resetTokenExpiresAt: expires }
+    });
+
+    const { notificationService } = await import('../../notification/services/notification-service.js');
+    const { emailTemplates } = await import('../../notification/services/email-templates.js');
+
+    const template = (emailTemplates as any).PASSWORD_RESET({ 
+      email: user.email, 
+      token, 
+      baseUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000' 
+    });
+
+    await notificationService.sendNotification(
+      user.id,
+      'SYSTEM',
+      template.subject,
+      template.html
+    );
+
+    return { success: true };
+  },
+
+  async resetPassword(token: string, newPassword: string) {
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpiresAt: { gte: new Date() }
+      }
+    });
+
+    if (!user) throw new Error('INVALID_OR_EXPIRED_TOKEN');
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash,
+        resetToken: null,
+        resetTokenExpiresAt: null
+      }
+    });
+
+    return { success: true };
+  },
+
+  async upsertOAuthAccount(provider: string, providerAccountId: string, profile: { email: string; firstName?: string; lastName?: string }) {
+    let user = await prisma.user.findUnique({ where: { email: profile.email } });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: profile.email,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          role: 'BUYER'
+        }
+      });
+      await publishEvent('user.created', { userId: user.id, email: user.email, role: 'BUYER' });
+    }
+
+    await prisma.oauthAccount.upsert({
+      where: { provider_providerAccountId: { provider, providerAccountId } },
+      update: { userId: user.id },
+      create: { provider, providerAccountId, userId: user.id }
+    });
+
+    return user;
+  }
 }

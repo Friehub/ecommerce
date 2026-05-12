@@ -38,7 +38,7 @@ export const reviewService: Service = {
         sentimentScore: sentimentData.score,
         sentiment: sentimentData.label,
         keywords: sentimentData.keywords,
-        status: (sentimentData.score < -0.5) ? 'REJECTED' : 'PENDING', // Auto-reject extremely negative reviews
+        status: 'PENDING', // All reviews go through moderation, preventing auto-rejection bias
         media: {
           create: images.map(url => ({ url }))
         }

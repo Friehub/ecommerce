@@ -48,15 +48,38 @@ export const promoService: Service = {
       }
     }
 
+    // Check per-user limit
+    if (promo.usageLimitPerUser && userId) {
+      const userRedemptions = await prisma.couponRedemption.count({
+        where: { couponId: coupon.id, userId }
+      });
+      if (userRedemptions >= promo.usageLimitPerUser) {
+        throw new Error('COUPON_USER_LIMIT_EXCEEDED');
+      }
+    }
+
     return promo;
   },
 
-  async markCouponUsed(code: string, tx?: any) {
+  async markCouponUsed(code: string, userId?: string, orderId?: string, tx?: any) {
     const db = tx || prisma;
+    const coupon = await db.coupon.findUnique({ where: { code } });
+    if (!coupon) return;
+
     await db.coupon.update({
       where: { code },
       data: { usedCount: { increment: 1 } }
     });
+
+    if (userId && orderId) {
+      await db.couponRedemption.create({
+        data: {
+          couponId: coupon.id,
+          userId,
+          orderId
+        }
+      });
+    }
   },
 
   async getActiveFlashSales() {

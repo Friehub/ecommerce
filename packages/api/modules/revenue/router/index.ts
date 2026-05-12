@@ -38,6 +38,13 @@ const _revenueRouter = createTRPCRouter({
       if (!seller) throw new Error('NOT_A_SELLER');
       return await ledgerService.getLedger(seller.id, input.limit, input.cursor);
     }),
+  
+  exportLedger: sellerProcedure.query(async ({ ctx }) => {
+    const { ledgerService } = await import('../services/ledger-service.js');
+    const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+    if (!seller) throw new Error('NOT_A_SELLER');
+    return await ledgerService.exportLedger(seller.id);
+  }),
 
   getPayoutAccount: sellerProcedure.query(async ({ ctx }) => {
     const seller = await prisma.seller.findUnique({ 

@@ -258,6 +258,27 @@ export const ledgerService: Service = {
     };
   },
 
+  async exportLedger(sellerId: string, targetCurrency?: string) {
+    const entries = await prisma.sellerLedgerEntry.findMany({
+      where: { sellerId },
+      orderBy: { createdAt: 'desc' },
+      include: { seller: true }
+    });
+
+    const seller = entries[0]?.seller || await prisma.seller.findUnique({ where: { id: sellerId } });
+    const currency = targetCurrency || seller?.currency || 'NGN';
+
+    return await Promise.all(entries.map(async entry => ({
+      id: entry.id,
+      date: entry.createdAt,
+      type: entry.type,
+      amount: await currencyService.convert(entry.amount, 'NGN', currency),
+      currency,
+      status: entry.status,
+      reference: entry.orderLineId || 'N/A'
+    })));
+  },
+
   async listPendingPayouts() {
     return prisma.payout.findMany({
       where: { status: 'PENDING' },

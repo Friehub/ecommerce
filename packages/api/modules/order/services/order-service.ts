@@ -72,7 +72,6 @@ export const orderService = {
         } else if (promo.type === 'FIXED_AMOUNT') {
           discount = promo.value;
         }
-        await promoService.markCouponUsed(couponCode, tx);
       }
 
       const { logisticsService } = await import('../../logistics/services/logistics-service.js');
@@ -110,6 +109,10 @@ export const orderService = {
         },
         include: { packages: { include: { lines: true } } }
       });
+
+      if (couponCode) {
+        await promoService.markCouponUsed(couponCode, userId, newOrder.id, tx);
+      }
 
       // 3. Reserve stock for all items
       const now = new Date();

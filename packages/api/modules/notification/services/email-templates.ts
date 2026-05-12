@@ -15,9 +15,17 @@ export const emailTemplates = {
     subject: `Seller Approved`,
     html: `<p>Congratulations! Your seller profile (${payload.sellerId}) has been approved. You can now sell on our platform.</p>`
   }),
+  SELLER_SUSPENDED: (payload: { sellerId: string; reason?: string }) => ({
+    subject: `Seller Account Suspended`,
+    html: `<p>Your seller account (${payload.sellerId}) has been suspended.${payload.reason ? ` Reason: ${payload.reason}` : ''} Please contact support for more information.</p>`
+  }),
   SELLER_DOCUMENT_REJECTED: (payload: { documentType: string; reason: string }) => ({
     subject: `Seller Document Rejected`,
     html: `<p>Your ${payload.documentType} document was rejected. Reason: ${payload.reason}</p>`
+  }),
+  DISPUTE_OPENED: (payload: { disputeId: string; reason: string }) => ({
+    subject: `New Dispute Opened #${payload.disputeId}`,
+    html: `<p>A new dispute has been opened for one of your orders. Dispute ID: <strong>#${payload.disputeId}</strong>. Reason: ${payload.reason}</p>`
   }),
   DISPUTE_RESOLVED: (payload: { disputeId: string; resolution: string }) => ({
     subject: `Dispute Resolved #${payload.disputeId}`,
@@ -42,5 +50,15 @@ export const emailTemplates = {
   ORDER_COMPLETED: (payload: { orderId: string }) => ({
     subject: `Order Completed #${payload.orderId}`,
     html: `<p>Your order <strong>#${payload.orderId}</strong> is now complete. Thank you for shopping with us! Don't forget to leave a review.</p>`
+  }),
+  PASSWORD_RESET: (payload: { email: string; token: string; baseUrl: string }) => ({
+    subject: `Reset Your Password`,
+    html: `
+      <p>Hello,</p>
+      <p>You requested to reset your password. Please click the link below to set a new password:</p>
+      <p><a href="${payload.baseUrl}/auth/reset-password?token=${payload.token}" style="display:inline-block;padding:12px 24px;background-color:#F68B1E;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">Reset Password</a></p>
+      <p>This link will expire in 1 hour.</p>
+      <p>If you did not request this, please ignore this email.</p>
+    `
   })
 } satisfies Record<string, (p: any) => { subject: string; html: string }>;

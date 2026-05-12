@@ -17,6 +17,9 @@ export default function SellerFinance() {
   const { data: payouts, isLoading: payoutsLoading } = api.revenue.listMyPayouts.useQuery();
   const { data: account } = api.revenue.getPayoutAccount.useQuery();
   
+  const { data: ledger, isLoading: ledgerLoading } = api.revenue.getLedger.useQuery({ limit: 10 });
+  const { refetch: fetchExportData } = api.revenue.exportLedger.useQuery(undefined, { enabled: false });
+
   const utils = api.useUtils();
   const requestPayout = api.revenue.requestPayout.useMutation({
     onSuccess: () => {
@@ -38,6 +41,33 @@ export default function SellerFinance() {
     }
   });
 
+  const handleExport = async () => {
+    const { data } = await fetchExportData();
+    if (!data) return;
+    
+    const headers = ['ID', 'Date', 'Type', 'Amount', 'Currency', 'Status', 'Reference'];
+    const rows = data.map(e => [
+      e.id,
+      new Date(e.date).toLocaleString(),
+      e.type,
+      e.amount,
+      e.currency,
+      e.status,
+      e.reference
+    ]);
+    
+    const csvContent = [headers, ...rows].map(r => r.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `finance-statement-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const handleWithdraw = () => {
     const amountStr = prompt('Enter amount to withdraw (₦):');
     if (!amountStr) return;
@@ -48,7 +78,7 @@ export default function SellerFinance() {
     requestPayout.mutate({ amount });
   };
 
-  if (statsLoading || payoutsLoading) {
+  if (statsLoading || payoutsLoading || ledgerLoading) {
     return (
       <div className="flex items-center justify-center h-64 select-none">
         <Loader2 className="animate-spin text-[#F68B1E]" size={32} />
@@ -113,12 +143,68 @@ export default function SellerFinance() {
         ))}
       </div>
 
+      {/* Transaction History (Ledger) */}
+      <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all shadow-md overflow-hidden">
+        <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/60">
+          <h3 className="text-xs font-extrabold text-gray-800 uppercase tracking-wide select-none">Transaction History</h3>
+          <button 
+            onClick={handleExport}
+            className="text-gray-400 hover:text-[#F68B1E] transition-all duration-200 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
+          >
+            <Download size={18} />
+            Export CSV
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[700px]">
+            <thead>
+              <tr className="border-b border-gray-100 text-gray-400 text-xs font-extrabold uppercase tracking-wide bg-gray-50/30">
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">Type</th>
+                <th className="px-6 py-4">Reference</th>
+                <th className="px-6 py-4 text-right">Amount</th>
+                <th className="px-6 py-4">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {ledger?.entries.map((entry) => (
+                <tr key={entry.id} className="hover:bg-gray-50/40 transition-all duration-150">
+                  <td className="px-6 py-5 text-gray-400 text-xs font-medium">
+                    {new Date(entry.createdAt).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-5">
+                    <span className="text-xs font-extrabold text-gray-900 uppercase tracking-tight">{entry.type}</span>
+                  </td>
+                  <td className="px-6 py-5 text-gray-400 text-xs font-medium">
+                    {entry.orderLineId ? `#${entry.orderLineId.slice(-8).toUpperCase()}` : '—'}
+                  </td>
+                  <td className={`px-6 py-5 text-right font-black text-sm tracking-tight ${Number(entry.amount) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {Number(entry.amount) >= 0 ? '+' : ''}₦{Number(entry.amount).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-5">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-tight ${
+                      entry.status === 'AVAILABLE' ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-500'
+                    }`}>
+                      {entry.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {(!ledger?.entries || ledger.entries.length === 0) && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-gray-400 text-xs font-medium italic">
+                    No transactions found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all shadow-md overflow-hidden">
         <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/60">
           <h3 className="text-xs font-extrabold text-gray-800 uppercase tracking-wide select-none">Payout Requests</h3>
-          <button className="text-gray-400 hover:text-[#F68B1E] transition-all duration-200">
-            <Download size={18} />
-          </button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[600px]">

@@ -11,6 +11,8 @@ model User {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  resetToken          String?   @unique
+  resetTokenExpiresAt DateTime?
 
   sessions      Session[]
   addresses     UserAddress[]

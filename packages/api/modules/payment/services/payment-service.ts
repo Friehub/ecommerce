@@ -277,7 +277,7 @@ export const paymentService = {
     });
   },
   
-  async requestWalletFunding(userId: string, email: string, amount: number) {
+  async requestWalletFunding(userId: string, email: string, amount: number, provider: string = 'paystack') {
      const reference = `WALLET-FUND-${userId}-${Date.now()}`;
      
      // Create a payment record to track the funding attempt
@@ -286,13 +286,13 @@ export const paymentService = {
          orderId: 'WALLET_FUND', // Sentinel for wallet funding
          userId,
          amount: new Decimal(amount),
-         method: 'CARD',
+         method: provider.toUpperCase(),
          status: 'PENDING',
          providerRef: reference,
        }
      });
 
-     const adapter = getPaymentAdapter('paystack');
+     const adapter = getPaymentAdapter(provider);
      const initResult = await adapter.initializeTransaction({
        orderId: 'WALLET_FUND',
        userId,

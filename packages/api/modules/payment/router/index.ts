@@ -63,12 +63,14 @@ const _paymentRouter = createTRPCRouter({
   fundWallet: protectedProcedure
     .input(z.object({
       amount: z.number().min(100),
+      provider: z.enum(['paystack', 'flutterwave', 'monnify']).default('paystack')
     }))
     .mutation(async ({ ctx, input }) => {
       return await paymentService.requestWalletFunding(
         ctx.session.user.id,
         ctx.session.user.email!,
-        input.amount
+        input.amount,
+        input.provider
       );
     }),
 

@@ -371,6 +371,8 @@ export const paymentService: Service = {
         }
       });
     });
+
+    await publishEvent('payment.confirmed', { orderId, amount });
   },
 
   async setupPayoutAccount(sellerId: string, params: { bankCode: string, accountNumber: string, accountName: string }) {

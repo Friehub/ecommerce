@@ -321,6 +321,7 @@ async function main() {
         packages: {
           create: {
             sellerId: createdSellers[Math.floor(Math.random() * createdSellers.length)].id,
+            warehouseId: warehouse.id,
             status: (status === 'DELIVERED' || status === 'COMPLETED') ? 'DELIVERED' as any : 'PENDING' as any,
             lines: {
               create: {

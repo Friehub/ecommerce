@@ -38,5 +38,9 @@ export const emailTemplates = {
   SELLER_TIER_CHANGED: (payload: { sellerId: string; oldTier: string; newTier: string }) => ({
     subject: `Seller Tier Updated: Welcome to ${payload.newTier}!`,
     html: `<p>Congratulations! Your seller tier has been updated from <strong>${payload.oldTier}</strong> to <strong>${payload.newTier}</strong>. Your account metrics met the criteria for this upgrade.</p>`
+  }),
+  ORDER_COMPLETED: (payload: { orderId: string }) => ({
+    subject: `Order Completed #${payload.orderId}`,
+    html: `<p>Your order <strong>#${payload.orderId}</strong> is now complete. Thank you for shopping with us! Don't forget to leave a review.</p>`
   })
 } satisfies Record<string, (p: any) => { subject: string; html: string }>;

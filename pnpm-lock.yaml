@@ -4,6 +4,12 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@trpc/server': ^10.45.2
+  '@trpc/client': ^10.45.2
+  '@trpc/react-query': ^10.45.2
+  '@trpc/next': ^10.45.2
+
 importers:
 
   .:
@@ -1757,14 +1763,14 @@ packages:
   '@trpc/client@10.45.4':
     resolution: {integrity: sha512-ItpH5FMIJFt862kbAgC8hf5NJnDLo0FwEvMEX6zSLCenzWD0UH6H/fvAX1suFo1e0wcAmMhiEU1Tl6xKk/Pd1g==, tarball: https://registry.npmjs.org/@trpc/client/-/client-10.45.4.tgz}
     peerDependencies:
-      '@trpc/server': 10.45.4
+      '@trpc/server': ^10.45.2
 
   '@trpc/react-query@10.45.4':
     resolution: {integrity: sha512-/JfbkFMztsYbpl94P9TWritMjbHqWxeHz4uwjHM3W2zUcIKT88FiFXVmD/jLitPLrKhi4yAONoaRks5SUm12fQ==, tarball: https://registry.npmjs.org/@trpc/react-query/-/react-query-10.45.4.tgz}
     peerDependencies:
       '@tanstack/react-query': ^4.18.0
-      '@trpc/client': 10.45.4
-      '@trpc/server': 10.45.4
+      '@trpc/client': ^10.45.2
+      '@trpc/server': ^10.45.2
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
@@ -4134,7 +4140,7 @@ packages:
   trpc-openapi@1.2.0:
     resolution: {integrity: sha512-pfYoCd/3KYXWXvUPZBKJw455OOwngKN/6SIcj7Yit19OMLJ+8yVZkEvGEeg5wUSwfsiTdRsKuvqkRPXVSwV7ew==, tarball: https://registry.npmjs.org/trpc-openapi/-/trpc-openapi-1.2.0.tgz}
     peerDependencies:
-      '@trpc/server': ^10.0.0
+      '@trpc/server': ^10.45.2
       zod: ^3.14.4
 
   ts-api-utils@2.5.0:

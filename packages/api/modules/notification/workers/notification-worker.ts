@@ -43,6 +43,29 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         } else if (payload.status === 'DELIVERED') {
           const template = emailTemplates.ORDER_DELIVERED(payload);
           await notificationService.sendNotification(order.userId, 'ORDER_UPDATE', template.subject, template.html);
+        } else if (payload.status === 'COMPLETED') {
+          const template = emailTemplates.ORDER_COMPLETED(payload);
+          await notificationService.sendNotification(order.userId, 'ORDER_UPDATE', template.subject, template.html);
+        }
+        break;
+      }
+      case 'order.delivered': {
+        const order = await prisma.order.findUnique({
+          where: { id: payload.orderId }
+        });
+        if (order) {
+          const template = emailTemplates.ORDER_DELIVERED(payload);
+          await notificationService.sendNotification(order.userId, 'ORDER_UPDATE', template.subject, template.html);
+        }
+        break;
+      }
+      case 'order.completed': {
+        const order = await prisma.order.findUnique({
+          where: { id: payload.orderId }
+        });
+        if (order) {
+          const template = emailTemplates.ORDER_COMPLETED(payload);
+          await notificationService.sendNotification(order.userId, 'ORDER_UPDATE', template.subject, template.html);
         }
         break;
       }

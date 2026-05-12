@@ -20,5 +20,13 @@
   },
   "dependencies": {
     "bullmq": "^5.76.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "@trpc/server": "^10.45.2",
+      "@trpc/client": "^10.45.2",
+      "@trpc/react-query": "^10.45.2",
+      "@trpc/next": "^10.45.2"
+    }
   }
 }

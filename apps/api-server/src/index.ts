@@ -18,6 +18,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { nanoid } from 'nanoid';
 
 import { Redis } from 'ioredis';
+import { register, httpRequestsTotal, httpRequestDurationSeconds } from '@ecom/api';
 
 const server = Fastify({
   logger: {
@@ -92,6 +93,31 @@ async function start() {
       origin: allowedOrigins,
       credentials: true,
     }
+  });
+
+  // ── Metrics ─────────────────────────────────────────────────────
+  server.addHook('onRequest', async (request) => {
+    (request as any).startTime = process.hrtime();
+  });
+
+  server.addHook('onResponse', async (request, reply) => {
+    const diff = process.hrtime((request as any).startTime);
+    const duration = diff[0] + diff[1] / 1e9;
+    
+    const route = (request as any).routeOptions?.url || 'unknown';
+    const labels = {
+      method: request.method,
+      route,
+      status: reply.statusCode.toString(),
+    };
+
+    httpRequestsTotal.inc(labels);
+    httpRequestDurationSeconds.observe(labels, duration);
+  });
+
+  server.get('/metrics', async (request, reply) => {
+    reply.header('Content-Type', register.contentType);
+    return register.metrics();
   });
 
   server.ready(err => {

@@ -4,6 +4,12 @@ import type { ProductInput, CategoryInput } from '../schemas/index.js'
 import { RustClient } from '../../../rust-client.js'
 import type { Service } from '../../../types.js'
 import { catalogQueryService } from './catalog-query-service.js'
+import { createBreaker } from '../../../utils/resilience.js'
+
+const searchUpsertBreaker = createBreaker(
+  (data: any) => RustClient.search.upsert(data),
+  'search-upsert'
+);
 
 const slugify = (text: string) => 
   text.toString().toLowerCase().trim()
@@ -137,7 +143,7 @@ export const catalogService: Service = {
 
     const qty = (stock._sum.qtyOnHand || 0) - (stock._sum.qtyReserved || 0);
 
-    await RustClient.search.upsert({
+    await searchUpsertBreaker.fire({
       variant_id: variant.id,
       product_id: variant.productId,
       title: variant.product.title,

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  postgres-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ecom_test
+      POSTGRES_USER: ecom_test
+      POSTGRES_PASSWORD: ecom_test
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecom_test -d ecom_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

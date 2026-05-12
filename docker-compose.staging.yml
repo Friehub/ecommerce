@@ -13,6 +13,8 @@ volumes:
   postgres_data:
   redis_data:
   search_index:
+  prometheus_data:
+  grafana_data:
 
 services:
   postgres:
@@ -316,6 +318,36 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    restart: always
+    volumes:
+      - ./infra/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks: [app-net]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  grafana:
+    image: grafana/grafana:10.0.3
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks: [edge-net, app-net]
+    depends_on:
+      - prometheus
     deploy:
       resources:
         limits:

@@ -37,7 +37,7 @@ jobs:
         run: pnpm lint
         
       - name: Security Audit
-        run: pnpm audit --audit-level high || true # Warn but don't block yet until clean
+        run: pnpm audit --audit-level critical
 
   rust:
     name: Rust Check
@@ -66,4 +66,4 @@ jobs:
         run: cargo install cargo-audit
         
       - name: Cargo Audit
-        run: cargo audit --manifest-path services/Cargo.toml --deny warnings || true
+        run: cargo audit --manifest-path services/Cargo.toml --deny warnings

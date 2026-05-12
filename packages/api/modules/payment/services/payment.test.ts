@@ -4,9 +4,9 @@ import { prisma, Decimal } from '@ecom/db';
 import { orderService } from '../../order/services/order-service.js';
 
 // Mock Dependencies
-vi.mock('@ecom/db', () => ({
-  prisma: {
-    $transaction: vi.fn((cb) => cb(prisma)),
+vi.mock('@ecom/db', () => {
+  const mockPrisma = {
+    $transaction: vi.fn((cb) => cb(mockPrisma)),
     wallet: {
       findUnique: vi.fn(),
       update: vi.fn(),
@@ -18,15 +18,18 @@ vi.mock('@ecom/db', () => ({
     payment: {
       create: vi.fn(),
     },
-  },
-  Decimal: class {
-    val: number;
-    constructor(v: any) { this.val = Number(v); }
-    lt(v: any) { return this.val < (v.val ?? Number(v)); }
-    gte(v: any) { return this.val >= (v.val ?? Number(v)); }
-    toNumber() { return this.val; }
-  }
-}));
+  };
+  return {
+    prisma: mockPrisma,
+    Decimal: class {
+      val: number;
+      constructor(v: any) { this.val = Number(v); }
+      lt(v: any) { return this.val < (v.val ?? Number(v)); }
+      gte(v: any) { return this.val >= (v.val ?? Number(v)); }
+      toNumber() { return this.val; }
+    }
+  };
+});
 
 vi.mock('../../order/services/order-service.js', () => ({
   orderService: {

@@ -19,6 +19,7 @@ vi.mock('@ecom/db', () => ({
     },
     userAddress: {
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
     },
     cart: {
       findUnique: vi.fn(),
@@ -150,6 +151,7 @@ describe('orderService', () => {
       });
 
       (prisma.userAddress.findFirst as any).mockResolvedValue({ id: addressId, userId });
+      (prisma.userAddress.findUnique as any).mockResolvedValue({ id: addressId, userId, state: 'Lagos' });
       
       (prisma.order.create as any).mockResolvedValue({ 
         id: 'o1', 

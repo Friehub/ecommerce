@@ -2,6 +2,17 @@ import { prisma } from '@ecom/db'
 import { redis } from '@ecom/shared'
 import { RustClient } from '../../../rust-client.js'
 import type { Service } from '../../../types.js'
+import { createBreaker } from '../../../utils/resilience.js'
+
+const inventoryReserveBreaker = createBreaker(
+  (variantId: string, quantity: number, userId: string) => RustClient.inventory.reserve(variantId, quantity, userId),
+  'inventory-reserve'
+);
+
+const inventorySyncBreaker = createBreaker(
+  (levels: any[]) => RustClient.inventory.sync(levels),
+  'inventory-sync'
+);
 
 const RESERVE_STOCK_LUA = `
 local key = KEYS[1]
@@ -25,7 +36,7 @@ export const inventoryService: Service = {
     const db = tx || prisma;
     // Attempt to use Rust Inventory Service for high-performance atomic reservation
     try {
-      const response = await RustClient.inventory.reserve(variantId, quantity, userId);
+      const response = await inventoryReserveBreaker.fire(variantId, quantity, userId);
       if (response && response.reservation_id) {
         // Record reservation in local DB for persistence and sync
         await db.stockReservation.create({
@@ -213,7 +224,7 @@ export const inventoryService: Service = {
 
     // Push to Rust Inventory Service (Fix BUG-019: Missing sync with high-perf layer)
     try {
-      await RustClient.inventory.sync(rustLevels);
+      await inventorySyncBreaker.fire(rustLevels);
     } catch (e) {
       console.warn('[InventoryService] Failed to sync with Rust service:', e);
     }

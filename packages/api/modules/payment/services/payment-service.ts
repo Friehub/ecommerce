@@ -4,6 +4,29 @@ import { RustClient } from '../../../rust-client.js'
 import type { Service } from '../../../types.js'
 import * as crypto from 'crypto'
 import { orderService } from '../../order/services/order-service.js'
+import { createBreaker } from '../../../utils/resilience.js'
+
+const fraudCheckBreaker = createBreaker(
+  (data: any) => RustClient.fraud.check(data),
+  'fraud-check'
+);
+
+const paystackInitBreaker = createBreaker(
+  async (params: any) => {
+    const response = await fetch('https://api.paystack.co/transaction/initialize', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${params.secretKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params.body),
+    });
+    const data = await response.json();
+    if (!data.status) throw new Error(data.message);
+    return data;
+  },
+  'paystack-init'
+);
 
 import { config } from '../../../config.js';
 
@@ -16,7 +39,7 @@ export const paymentService: Service = {
   async initializeTransaction(provider: string, orderId: string, userId: string, email: string, amount: number, ipAddress: string = 'unknown') {
     // 1. Perform Fraud Check via Rust Fraud Service
     try {
-      const fraudCheck = await RustClient.fraud.check({
+      const fraudCheck = await fraudCheckBreaker.fire({
         user_id: userId,
         amount,
         currency: 'NGN',
@@ -68,7 +91,7 @@ export const paymentService: Service = {
   async initializePaystack(orderId: string, userId: string, email: string, amount: number, ipAddress: string = 'unknown') {
     // 1. Perform Fraud Check via Rust Fraud Service
     try {
-      const fraudCheck = await RustClient.fraud.check({
+      const fraudCheck = await fraudCheckBreaker.fire({
         user_id: userId,
         amount,
         currency: 'NGN',
@@ -100,14 +123,10 @@ export const paymentService: Service = {
       }
     });
 
-    // Call Paystack API
-    const response = await fetch('https://api.paystack.co/transaction/initialize', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    // Call Paystack API via breaker
+    const data = await paystackInitBreaker.fire({
+      secretKey: PAYSTACK_SECRET_KEY,
+      body: {
         email,
         amount: amountInKobo,
         reference,
@@ -122,14 +141,8 @@ export const paymentService: Service = {
             }
           ]
         }
-      }),
+      }
     });
-
-    const data = await response.json();
-    if (!data.status) {
-      // Note: We leave the PENDING record for manual reconciliation or cleanup
-      throw new Error(`PAYSTACK_INIT_FAILED: ${data.message}`);
-    }
 
     return {
       authorization_url: data.data.authorization_url,

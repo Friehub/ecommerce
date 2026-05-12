@@ -40,6 +40,8 @@ const server = Fastify({
     ],
   },
   trustProxy: true, // behind Nginx
+  requestIdHeader: 'x-request-id',
+  genReqId: (req) => (req.headers['x-request-id'] as string) || nanoid(),
 });
 
 // ── Security & middleware ─────────────────────────────────────────
@@ -232,6 +234,42 @@ async function start() {
 
   // ── Health check ──────────────────────────────────────────────────
   server.get('/health', async () => ({ status: 'ok', uptime: process.uptime() }));
+
+  // ── Metrics ──────────────────────────────────────────────────────
+  const { register, collectDefaultMetrics, Counter, Histogram } = await import('prom-client');
+  collectDefaultMetrics({ register });
+
+  const httpRequestDuration = new Histogram({
+    name: 'http_request_duration_seconds',
+    help: 'Duration of HTTP requests in seconds',
+    labelNames: ['method', 'route', 'status_code'],
+    buckets: [0.1, 0.3, 0.5, 0.7, 1, 3, 5, 10],
+  });
+
+  const httpRequestCounter = new Counter({
+    name: 'http_requests_total',
+    help: 'Total number of HTTP requests',
+    labelNames: ['method', 'route', 'status_code'],
+  });
+
+  server.addHook('onResponse', async (req, reply) => {
+    if (req.routeOptions.url) {
+      httpRequestDuration.labels(req.method, req.routeOptions.url, reply.statusCode.toString()).observe(reply.elapsedTime / 1000);
+      httpRequestCounter.labels(req.method, req.routeOptions.url, reply.statusCode.toString()).inc();
+    }
+  });
+
+  server.get('/metrics', async (req, reply) => {
+    const internalToken = process.env.INTERNAL_API_TOKEN;
+    const clientToken = req.headers['x-internal-token'] || req.headers['authorization'];
+    
+    if (process.env.NODE_ENV === 'production' && (!internalToken || clientToken !== `Bearer ${internalToken}`)) {
+      return reply.code(401).send({ error: 'Unauthorized metrics request' });
+    }
+
+    reply.header('Content-Type', register.contentType);
+    return register.metrics();
+  });
 
   // ── tRPC ──────────────────────────────────────────────────────────
   await server.register(fastifyTRPCPlugin, {

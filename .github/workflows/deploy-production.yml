@@ -57,6 +57,13 @@ jobs:
         working-directory: services
         run: cargo check --workspace
 
+      - name: Run TypeScript Tests
+        run: pnpm test
+
+      - name: Run Rust Tests
+        working-directory: services
+        run: cargo test --workspace
+
 
   # ── Job 2: Deploy to production VPS ───────────────────────────────
   deploy:
@@ -82,12 +89,19 @@ jobs:
             --exclude='.env*' \
             $GITHUB_WORKSPACE/ /opt/jumia/
 
+      - name: Harden secrets permissions
+        run: |
+          if [ -f /etc/jumia/secrets.conf ]; then
+            sudo chmod 600 /etc/jumia/secrets.conf
+            sudo chown $USER:$USER /etc/jumia/secrets.conf
+          fi
+
       # Migrations run BEFORE any service restarts to avoid downtime gaps
       - name: Run database migrations
         working-directory: /opt/jumia
         run: |
-          docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
-            run --rm --no-deps api \
+          TAG=${{ github.sha }} docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
+            run --rm api \
             sh -c "npx prisma migrate deploy"
 
       - name: Clear stale Docker build cache
@@ -97,8 +111,8 @@ jobs:
       - name: Deploy services
         working-directory: /opt/jumia
         run: |
-          docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
-            up -d --build --no-deps \
+          TAG=${{ github.sha }} docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
+            up -d --build \
             web api workers event-consumer search inventory fraud recommendations auction image-processor
 
       # Hot-reload Nginx config without dropping connections
@@ -109,6 +123,10 @@ jobs:
             exec -T nginx nginx -t && \
           docker compose -f docker-compose.prod.yml \
             exec -T nginx nginx -s reload
+
+      # Store the successful SHA for future rollbacks
+      - name: Update last successful SHA
+        run: echo "${{ github.sha }}" > /opt/jumia/logs/last_success_sha.txt
 
       # Log the deployed commit SHA for audit trail
       - name: Record deployment
@@ -143,8 +161,10 @@ jobs:
       - name: Cleanup build artifacts
         if: always()
         run: |
-          # Keep 15GB of build cache to ensure fast subsequent builds
+          # Keep 5GB of build cache to ensure fast subsequent builds
           docker builder prune --keep-storage 5GB -f
+          # Prune images but EXCLUDE the current tag to ensure rollback works
+          # This is a bit complex with just 'prune', but we'll prune dangling ones
           docker image prune -f
 
   # ── Job 3: Auto-rollback if deploy failed ─────────────────────────
@@ -160,9 +180,10 @@ jobs:
         working-directory: /opt/jumia
         run: |
           echo "Deploy failed — rolling back to previous image..."
-          # Restart without --build: Docker Compose reuses the last successfully built image
-          docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
-            up -d web api workers event-consumer
+          PREV_SHA=$(cat /opt/jumia/logs/last_success_sha.txt || echo "latest")
+          echo "Restoring version: $PREV_SHA"
+          TAG=$PREV_SHA docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
+            up -d web api workers event-consumer search inventory fraud recommendations auction image-processor
           echo "Rollback complete."
 
       - name: Notify rollback

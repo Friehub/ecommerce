@@ -37,57 +37,53 @@ RUN cargo build --release \
     --bin auction \
     --bin image-processor
 
-# ── Runtime base (reused by all service stages) ───────────────────────────────
-FROM alpine:3.19 AS base-runner
-RUN apk add --no-cache ca-certificates tzdata libpq libgcc libstdc++
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-WORKDIR /app
-
 # ── Stage 5a: search ──────────────────────────────────────────────────────────
-FROM base-runner AS search-runner
-RUN mkdir -p /data/index && chown -R appuser:appgroup /app /data
+FROM gcr.io/distroless/cc-debian12:nonroot AS search-runner
+WORKDIR /app
+# Note: Data index directory must be handled via volumes/init containers in k8s/compose
+# since we can't 'mkdir' or 'chown' in a shell-less distroless image easily without a sidecar.
+# For Docker Compose, the volume mount will handle directory creation.
 COPY --from=builder /app/target/release/search /app/search
-USER appuser
 EXPOSE 3001
 ENV RUST_LOG=info
 CMD ["/app/search"]
 
 # ── Stage 5b: inventory ───────────────────────────────────────────────────────
-FROM base-runner AS inventory-runner
+FROM gcr.io/distroless/cc-debian12:nonroot AS inventory-runner
+WORKDIR /app
 COPY --from=builder /app/target/release/inventory /app/inventory
-USER appuser
 EXPOSE 3002
 ENV RUST_LOG=info
 CMD ["/app/inventory"]
 
 # ── Stage 5c: fraud ───────────────────────────────────────────────────────────
-FROM base-runner AS fraud-runner
+FROM gcr.io/distroless/cc-debian12:nonroot AS fraud-runner
+WORKDIR /app
 COPY --from=builder /app/target/release/fraud /app/fraud
-USER appuser
 EXPOSE 3004
 ENV RUST_LOG=info
 CMD ["/app/fraud"]
 
 # ── Stage 5d: recommendations ─────────────────────────────────────────────────
-FROM base-runner AS recommendations-runner
+FROM gcr.io/distroless/cc-debian12:nonroot AS recommendations-runner
+WORKDIR /app
 COPY --from=builder /app/target/release/recommendations /app/recommendations
-USER appuser
 EXPOSE 3005
 ENV RUST_LOG=info
 CMD ["/app/recommendations"]
 
 # ── Stage 5e: auction ─────────────────────────────────────────────────────────
-FROM base-runner AS auction-runner
+FROM gcr.io/distroless/cc-debian12:nonroot AS auction-runner
+WORKDIR /app
 COPY --from=builder /app/target/release/auction /app/auction
-USER appuser
 EXPOSE 50051
 ENV RUST_LOG=info
 CMD ["/app/auction"]
 
 # ── Stage 5f: image-processor ────────────────────────────────────────────────
-FROM base-runner AS image-processor-runner
+FROM gcr.io/distroless/cc-debian12:nonroot AS image-processor-runner
+WORKDIR /app
 COPY --from=builder /app/target/release/image-processor /app/image-processor
-USER appuser
 EXPOSE 3006
 ENV RUST_LOG=info
 CMD ["/app/image-processor"]

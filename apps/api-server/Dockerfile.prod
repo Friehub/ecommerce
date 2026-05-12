@@ -4,9 +4,19 @@ RUN apk add --no-cache libc6-compat
 RUN npm install -g pnpm
 WORKDIR /app
 
-COPY . .
+# Copy root manifests
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copy package manifests for all workspace members to allow pnpm to resolve them
+COPY packages/api/package.json ./packages/api/
+COPY packages/db/package.json ./packages/db/
+COPY packages/shared/package.json ./packages/shared/
+COPY apps/api-server/package.json ./apps/api-server/
 
 RUN pnpm install --frozen-lockfile
+
+# Copy full source and build
+COPY . .
+
 RUN pnpm --filter @ecom/db generate
 RUN pnpm --filter @ecom/db exec tsc -b --force
 RUN pnpm --filter @ecom/shared exec tsc -b --force
@@ -14,23 +24,23 @@ RUN pnpm --filter @ecom/api exec tsc -b --force
 RUN pnpm --filter @ecom/api-server exec tsc -b --force
 
 # ── Stage 3: Production runner ─────────────────────────────────
-FROM node:20-alpine AS runner
+FROM gcr.io/distroless/nodejs20-debian12:nonroot AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 apiuser
-
+# Copy only what is needed for production
 COPY --from=builder /app/node_modules /app/node_modules
-COPY --from=builder /app/packages /app/packages
-COPY --from=builder /app/apps /app/apps
-
-WORKDIR /app
-
-USER apiuser
+COPY --from=builder /app/packages/db/dist /app/packages/db/dist
+COPY --from=builder /app/packages/db/package.json /app/packages/db/package.json
+COPY --from=builder /app/packages/shared/dist /app/packages/shared/dist
+COPY --from=builder /app/packages/shared/package.json /app/packages/shared/package.json
+COPY --from=builder /app/packages/api/dist /app/packages/api/dist
+COPY --from=builder /app/packages/api/package.json /app/packages/api/package.json
+COPY --from=builder /app/apps/api-server/dist /app/apps/api-server/dist
+COPY --from=builder /app/apps/api-server/package.json /app/apps/api-server/package.json
 
 EXPOSE 4000
 
-# Use node --import tsx for robust TS execution without shell wrappers
-CMD ["node", "--import", "tsx", "apps/api-server/src/index.ts"]
+# Run the compiled code
+CMD ["apps/api-server/dist/index.js"]

@@ -82,6 +82,7 @@ services:
       start_period: 10s
 
   web:
+    image: jumia-web:${TAG:-latest}
     build:
       context: .
       dockerfile: apps/web/Dockerfile.prod
@@ -99,11 +100,13 @@ services:
       retries: 5
       start_period: 30s
     deploy:
+      replicas: 2
       resources:
         limits:
           memory: 512M
 
   api:
+    image: jumia-api:${TAG:-latest}
     build:
       context: .
       dockerfile: apps/api-server/Dockerfile.prod
@@ -135,11 +138,13 @@ services:
       retries: 5
       start_period: 30s
     deploy:
+      replicas: 2
       resources:
         limits:
           memory: 512M
 
   search:
+    image: jumia-search:${TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
@@ -150,12 +155,18 @@ services:
     volumes:
       - search_index:/data/index
     networks: [app-net]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     deploy:
       resources:
         limits:
           memory: 512M
 
   inventory:
+    image: jumia-inventory:${TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
@@ -165,12 +176,18 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       RUST_LOG: info
     networks: [app-net]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     deploy:
       resources:
         limits:
           memory: 64M
 
   fraud:
+    image: jumia-fraud:${TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
@@ -179,12 +196,18 @@ services:
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
     networks: [app-net, db-net]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     deploy:
       resources:
         limits:
           memory: 64M
 
   recommendations:
+    image: jumia-recommendations:${TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
@@ -193,6 +216,11 @@ services:
     environment:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
     networks: [app-net, db-net]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3005/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     depends_on:
       postgres:
         condition: service_healthy
@@ -202,18 +230,25 @@ services:
           memory: 64M
 
   auction:
+    image: jumia-auction:${TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
       target: auction-runner
     restart: always
     networks: [app-net]
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep auction || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     deploy:
       resources:
         limits:
           memory: 64M
 
   image-processor:
+    image: jumia-image-processor:${TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
@@ -225,12 +260,18 @@ services:
       R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
       R2_BUCKET: ${R2_BUCKET}
     networks: [app-net]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3006/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     deploy:
       resources:
         limits:
           memory: 128M
 
   workers:
+    image: jumia-workers:${TAG:-latest}
     build:
       context: .
       dockerfile: packages/api/Dockerfile.workers
@@ -248,6 +289,11 @@ services:
       RECOMMENDATIONS_SERVICE_URL: http://recommendations:3005
       IMAGE_PROCESSOR_SERVICE_URL: http://image-processor:3006  # N06: Add missing image-processor URL
     networks: [app-net, db-net]
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep node || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     depends_on:
       postgres:
         condition: service_healthy
@@ -259,6 +305,7 @@ services:
           memory: 256M
 
   event-consumer:
+    image: jumia-event-consumer:${TAG:-latest}
     build:
       context: .
       dockerfile: services/event-consumer/Dockerfile
@@ -267,6 +314,11 @@ services:
       DATABASE_URL: postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
     networks: [app-net, db-net]
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep node || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     depends_on:
       postgres:
         condition: service_healthy

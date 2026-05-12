@@ -1,7 +1,6 @@
 import { prisma } from '@ecom/db'
-import type { Service } from '../../../types.js'
 
-export const sellerService: Service = {
+export const sellerService = {
   async onboard(userId: string, data: { businessName: string }) {
     const existing = await prisma.seller.findUnique({ where: { userId } })
     if (existing) throw new Error('SELLER_PROFILE_EXISTS')

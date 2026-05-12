@@ -1,7 +1,6 @@
 import { prisma } from '@ecom/db'
 import { redis } from '@ecom/shared'
 import { RustClient } from '../../../rust-client.js'
-import type { Service } from '../../../types.js'
 import { createBreaker } from '../../../utils/resilience.js'
 
 const inventoryReserveBreaker = createBreaker(
@@ -27,7 +26,7 @@ else
 end
 `;
 
-export const inventoryService: Service = {
+export const inventoryService = {
   /**
    * Stub for the Rust Inventory Service.
    * Uses Redis DECR for high-concurrency safety during the contest.

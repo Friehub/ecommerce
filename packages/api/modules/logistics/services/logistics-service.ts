@@ -1,6 +1,5 @@
 import { prisma } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
-import type { Service } from '../../../types.js'
 
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   'PENDING': ['PICKED_UP', 'FAILED'],
@@ -11,7 +10,7 @@ const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   'DELIVERED': [] // Terminal state
 };
 
-export const logisticsService: Service = {
+export const logisticsService = {
   async createShipment(packageId: string) {
     const existing = await prisma.shipment.findFirst({ where: { packageId } });
     if (existing) return existing;

@@ -1,7 +1,6 @@
 import { prisma, Decimal } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
 import { RustClient } from '../../../rust-client.js'
-import type { Service } from '../../../types.js'
 import * as crypto from 'crypto'
 import { orderService } from '../../order/services/order-service.js'
 import { createBreaker } from '../../../utils/resilience.js'
@@ -35,7 +34,7 @@ const PAYSTACK_WEBHOOK_SECRET = config.PAYSTACK_WEBHOOK_SECRET;
 
 import { getPaymentAdapter } from '../adapters/index.js'
 
-export const paymentService: Service = {
+export const paymentService = {
   async initializeTransaction(provider: string, orderId: string, userId: string, email: string, amount: number, ipAddress: string = 'unknown') {
     // 1. Perform Fraud Check via Rust Fraud Service
     try {

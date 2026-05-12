@@ -1,8 +1,6 @@
 import { prisma } from '@ecom/db';
 import { redis } from '@ecom/shared';
-import type { Service } from '../../../types.js'
-
-export const notificationService: Service = {
+export const notificationService = {
   async sendNotification(userId: string, type: string, title: string, message: string) {
     // 1. Get preferences
     const pref = await prisma.notificationPreference.findUnique({

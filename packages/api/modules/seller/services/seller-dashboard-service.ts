@@ -1,7 +1,5 @@
 import { prisma, Decimal } from '@ecom/db'
-import type { Service } from '../../../types.js'
-
-export const sellerDashboardService: Service = {
+export const sellerDashboardService = {
   async getMetrics(sellerId: string) {
     const packages = await prisma.orderPackage.findMany({
       where: { sellerId },

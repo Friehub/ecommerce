@@ -1,8 +1,7 @@
 import { prisma } from '@ecom/db'
 import { cacheService } from '@ecom/shared'
-import type { Service } from '../../../types.js'
 
-export const contentService: Service = {
+export const contentService = {
   async getBanners() {
     return cacheService.wrap('content:banners', async () => {
       const banners = await prisma.banner.findMany({

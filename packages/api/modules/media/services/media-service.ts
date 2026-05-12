@@ -2,11 +2,10 @@ import { s3 } from '@ecom/shared'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
 import { generateId } from '@ecom/shared'
-import type { Service } from '../../../types.js'
 
 const BUCKET = process.env.R2_BUCKET || 'ecom-media';
 
-export const mediaService: Service = {
+export const mediaService = {
   async getUploadUrl(path: string, contentType: string) {
     const { getSignedUrl } = await import('@aws-sdk/s3-request-presigner');
     const key = `uploads/${generateId()}-${path}`;

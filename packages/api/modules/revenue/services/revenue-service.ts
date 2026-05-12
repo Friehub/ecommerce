@@ -1,8 +1,7 @@
 import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
-import type { Service } from '../../../types.js'
 import { ledgerService } from './ledger-service.js'
 
-export const revenueService: Service = {
+export const revenueService = {
   async calculateCommission(packageId: string) {
     const pkg = await prisma.orderPackage.findUnique({
       where: { id: packageId },

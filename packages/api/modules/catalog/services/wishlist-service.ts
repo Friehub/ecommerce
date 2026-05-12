@@ -1,9 +1,8 @@
 import { prisma } from '@ecom/db';
 import { notificationService } from '../../notification/services/notification-service.js';
 import { emailTemplates } from '../../notification/services/email-templates.js';
-import type { Service } from '../../../types.js'
 
-export const wishlistService: Service = {
+export const wishlistService = {
   async addItem(userId: string, variantId: string) {
     let wishlist = await prisma.wishlist.findUnique({
       where: { userId }

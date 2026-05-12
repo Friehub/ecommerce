@@ -1,9 +1,8 @@
 import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
-import type { Service } from '../../../types.js'
 import { currencyService } from './currency-service.js';
 import { reportingService } from './reporting-service.js';
 
-export const ledgerService: Service = {
+export const ledgerService = {
   ...reportingService,
 
   async recordSale(orderLineId: string): Promise<any> {

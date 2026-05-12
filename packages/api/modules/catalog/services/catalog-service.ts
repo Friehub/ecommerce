@@ -2,7 +2,6 @@ import { prisma, Prisma } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
 import type { ProductInput, CategoryInput } from '../schemas/index.js'
 import { RustClient } from '../../../rust-client.js'
-import type { Service } from '../../../types.js'
 import { catalogQueryService } from './catalog-query-service.js'
 import { createBreaker } from '../../../utils/resilience.js'
 
@@ -15,9 +14,7 @@ const slugify = (text: string) =>
   text.toString().toLowerCase().trim()
     .replace(/\s+/g, '-')
     .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-');
-
-export const catalogService: Service = {
+export const catalogService = {
   // Delegate all read operations to catalogQueryService
   ...catalogQueryService,
 

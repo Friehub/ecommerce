@@ -1,7 +1,6 @@
 import { prisma, Decimal } from '@ecom/db'
-import type { Service } from '../../../types.js'
 
-export const promoService: Service = {
+export const promoService = {
   async validateCoupon(code: string, userId?: string, orderTotal?: number) {
     const coupon = await prisma.coupon.findUnique({
       where: { code },

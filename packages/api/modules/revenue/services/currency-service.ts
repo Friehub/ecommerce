@@ -1,14 +1,13 @@
 // packages/api/modules/revenue/services/currency-service.ts
 import { Decimal } from '@ecom/db';
 import { redis } from '@ecom/shared';
-import type { Service } from '../../../types.js';
 
 /**
  * Currency Service
  * Handles exchange rate management and read-time conversion.
  * Base currency is NGN (Naira).
  */
-export const currencyService: Service = {
+export const currencyService = {
   // Hardcoded initial rates for West African markets
   // In production, these would be updated daily from an FX API (e.g. fixer.io, currencyapi)
   async getRates(): Promise<Record<string, number>> {

@@ -167,6 +167,12 @@ export const paymentService: Service = {
       });
 
       if (!payout) return;
+      
+      // Idempotency guard: Skip if already COMPLETED or FAILED (Fix BUG-2.10)
+      if (payout.status === 'COMPLETED' || payout.status === 'FAILED') {
+        console.log(`[PaymentService] Payout ${payout.id} already processed with status ${payout.status}, skipping.`);
+        return;
+      }
 
       await prisma.payout.update({
         where: { id: payout.id },

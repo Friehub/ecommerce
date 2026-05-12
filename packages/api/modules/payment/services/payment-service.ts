@@ -149,11 +149,26 @@ export const paymentService = {
     };
   },
 
-  verifyWebhookSignature(rawBody: string, signature: string): boolean {
-    const hash = crypto.createHmac('sha512', PAYSTACK_WEBHOOK_SECRET).update(rawBody).digest('hex');
+  verifyWebhookSignature(rawBody: string, signature: string, provider: string): boolean {
     try {
-      return crypto.timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(signature, 'hex'));
-    } catch {
+      if (provider === 'paystack') {
+        const hash = crypto.createHmac('sha512', config.PAYSTACK_WEBHOOK_SECRET).update(rawBody).digest('hex');
+        return crypto.timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(signature, 'hex'));
+      }
+      
+      if (provider === 'flutterwave') {
+        // Flutterwave uses a direct string comparison for the verif-hash
+        return signature === config.FLW_WEBHOOK_SECRET;
+      }
+
+      if (provider === 'monnify') {
+        const hash = crypto.createHmac('sha512', config.MONNIFY_SECRET_KEY).update(rawBody).digest('hex');
+        return crypto.timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(signature, 'hex'));
+      }
+
+      return false;
+    } catch (e) {
+      console.error(`[PaymentService] Error verifying ${provider} signature:`, e);
       return false;
     }
   },

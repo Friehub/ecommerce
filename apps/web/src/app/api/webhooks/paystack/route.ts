@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     // Verify signature (Fix BUG-004 & BUG-017: Delegation to service with timing-safe check)
-    if (!paymentService.verifyWebhookSignature(body, signature)) {
+    if (!paymentService.verifyWebhookSignature(body, signature, 'paystack')) {
       console.warn('[Paystack Webhook] Invalid signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }

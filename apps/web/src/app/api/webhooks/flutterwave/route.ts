@@ -1,32 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getPaymentAdapter } from '@ecom/api/modules/payment/adapters';
+import { NextResponse } from 'next/server';
 import { paymentService } from '@ecom/api/modules/payment/services/payment-service';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
+    const body = await req.text();
     const signature = req.headers.get('verif-hash');
-    const bodyText = await req.text();
-    
+
     if (!signature) {
       return NextResponse.json({ error: 'No signature' }, { status: 400 });
     }
 
-    const adapter = getPaymentAdapter('flutterwave');
-    if (!adapter.verifyWebhookSignature(bodyText, signature)) {
+    if (!paymentService.verifyWebhookSignature(body, signature, 'flutterwave')) {
       console.warn('[Flutterwave Webhook] Invalid signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
-    
-    const body = JSON.parse(bodyText);
-    const event = adapter.parseWebhookEvent(body);
-    
-    if (event && event.status === 'success') {
-      await paymentService.handleWebhook(event.reference, 'success', 'charge.completed');
-    } else if (event && event.status === 'failed') {
-      await paymentService.handleWebhook(event.reference, 'failed', 'charge.failed');
+
+    const event = JSON.parse(body);
+    console.log(`[Flutterwave Webhook] Received event: ${event.event}`);
+
+    // Flutterwave payload structure differs from Paystack
+    // Success: event: "charge.completed", data.status: "successful"
+    if (event.event === 'charge.completed') {
+      const { tx_ref, status } = event.data;
+      await paymentService.handleWebhook(tx_ref, status === 'successful' ? 'success' : 'failed', event.event);
     }
-    
-    return NextResponse.json({ status: 'ok' });
+
+    return NextResponse.json({ received: true });
   } catch (err) {
     console.error('[Flutterwave Webhook] Error:', err);
     return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });

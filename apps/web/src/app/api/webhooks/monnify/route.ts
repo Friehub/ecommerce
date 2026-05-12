@@ -1,32 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getPaymentAdapter } from '@ecom/api/modules/payment/adapters';
+import { NextResponse } from 'next/server';
 import { paymentService } from '@ecom/api/modules/payment/services/payment-service';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
+    const body = await req.text();
     const signature = req.headers.get('monnify-signature');
-    const bodyText = await req.text();
-    
+
     if (!signature) {
       return NextResponse.json({ error: 'No signature' }, { status: 400 });
     }
 
-    const adapter = getPaymentAdapter('monnify');
-    if (!adapter.verifyWebhookSignature(bodyText, signature)) {
+    if (!paymentService.verifyWebhookSignature(body, signature, 'monnify')) {
       console.warn('[Monnify Webhook] Invalid signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
-    
-    const body = JSON.parse(bodyText);
-    const event = adapter.parseWebhookEvent(body);
-    
-    if (event && event.status === 'success') {
-      await paymentService.handleWebhook(event.reference, 'success', body.eventType);
-    } else if (event && event.status === 'failed') {
-      await paymentService.handleWebhook(event.reference, 'failed', body.eventType);
+
+    const event = JSON.parse(body);
+    console.log(`[Monnify Webhook] Received event: ${event.eventType}`);
+
+    // Monnify payload structure
+    // eventType: "SUCCESSFUL_TRANSACTION", eventData.paymentReference
+    if (event.eventType === 'SUCCESSFUL_TRANSACTION') {
+      const { paymentReference } = event.eventData;
+      await paymentService.handleWebhook(paymentReference, 'success', event.eventType);
+    } else if (event.eventType === 'FAILED_TRANSACTION') {
+      const { paymentReference } = event.eventData;
+      await paymentService.handleWebhook(paymentReference, 'failed', event.eventType);
     }
-    
-    return NextResponse.json({ status: 'ok' });
+
+    return NextResponse.json({ received: true });
   } catch (err) {
     console.error('[Monnify Webhook] Error:', err);
     return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });

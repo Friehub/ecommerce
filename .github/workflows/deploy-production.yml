@@ -64,6 +64,12 @@ jobs:
         working-directory: services
         run: cargo test --workspace
 
+      - name: Security Audit
+        run: pnpm audit --audit-level critical
+
+      - name: Validate Docker Build
+        run: docker compose -f docker-compose.prod.yml build
+
 
   # ── Job 2: Deploy to production VPS ───────────────────────────────
   deploy:
@@ -112,7 +118,7 @@ jobs:
         working-directory: /opt/jumia
         run: |
           TAG=${{ github.sha }} docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
-            up -d --build \
+            up -d --build --scale api=2 --scale web=2 \
             web api workers event-consumer search inventory fraud recommendations auction image-processor
 
       # Hot-reload Nginx config without dropping connections
@@ -127,6 +133,17 @@ jobs:
       # Store the successful SHA for future rollbacks
       - name: Update last successful SHA
         run: echo "${{ github.sha }}" > /opt/jumia/logs/last_success_sha.txt
+
+      # ── Smoke Test ───────────────────────────────────────────────────
+      - name: Post-Deploy Smoke Test
+        run: |
+          echo "Verifying deployment health..."
+          # Give Nginx and apps a few seconds to stabilize
+          sleep 15
+          # Attempt to reach the health endpoint (adjust domain if needed)
+          curl --fail --silent --show-error --max-time 10 https://staging.friehub.cloud/api/health || \
+          (echo "Smoke test FAILED - Site unreachable" && exit 1)
+          echo "Deployment verified!"
 
       # Log the deployed commit SHA for audit trail
       - name: Record deployment
@@ -183,7 +200,7 @@ jobs:
           PREV_SHA=$(cat /opt/jumia/logs/last_success_sha.txt || echo "latest")
           echo "Restoring version: $PREV_SHA"
           TAG=$PREV_SHA docker compose -f docker-compose.prod.yml --env-file /etc/jumia/secrets.conf \
-            up -d web api workers event-consumer search inventory fraud recommendations auction image-processor
+            up -d --scale api=2 --scale web=2 web api workers event-consumer search inventory fraud recommendations auction image-processor
           echo "Rollback complete."
 
       - name: Notify rollback

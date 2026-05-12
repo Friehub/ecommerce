@@ -1,9 +1,6 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { api } from '@/trpc/react';
+import Image from 'next/image';
 import { 
   ChevronLeft, 
   ChevronRight,
@@ -14,81 +11,112 @@ import {
   CheckCircle2, 
   Truck, 
   AlertCircle,
-  ExternalLink
+  ExternalLink,
+  ShieldCheck,
+  RefreshCcw,
+  XCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/useToast';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function OrderDetailPage() {
   const utils = api.useUtils();
+  const { toast } = useToast();
   const { id } = useParams() as { id: string };
   const { data: order, isLoading } = api.order.get.useQuery({ orderId: id });
+  
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [selectedLineId, setSelectedLineId] = useState<string | null>(null);
 
   const initiateReturn = api.return.initiate.useMutation({
     onSuccess: () => {
       utils.order.get.invalidate({ orderId: id });
-      alert('Return request initiated successfully!');
+      toast({ title: 'Return Initiated', message: 'Your return request has been submitted.', type: 'success' });
+      setIsReturnModalOpen(false);
     }
   });
 
   const cancelOrder = api.order.cancel.useMutation({
     onSuccess: () => {
       utils.order.get.invalidate({ orderId: id });
-      alert('Order cancelled successfully!');
+      toast({ title: 'Order Cancelled', message: 'Your order has been cancelled successfully.', type: 'success' });
+      setIsCancelModalOpen(false);
     },
     onError: (err) => {
-      alert(`Cancellation failed: ${err.message}`);
+      toast({ title: 'Cancellation Failed', message: err.message, type: 'error' });
     }
   });
 
   if (isLoading) {
-    return <div className="container py-20 text-center font-extrabold text-gray-500">Loading order details...</div>;
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-12 space-y-8">
+        <Skeleton className="h-4 w-48 rounded-lg" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <Skeleton className="h-64 w-full rounded-[40px]" />
+            <Skeleton className="h-96 w-full rounded-[40px]" />
+          </div>
+          <div className="space-y-6">
+            <Skeleton className="h-48 w-full rounded-[40px]" />
+            <Skeleton className="h-64 w-full rounded-[40px]" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!order) {
     return (
-      <div className="container py-20 text-center select-none">
-        <h2 className="text-xl font-extrabold mb-4 text-gray-900 leading-tight">Order not found</h2>
-        <Link href="/account/orders" className="text-[#F68B1E] font-extrabold text-sm hover:underline">Back to My Orders</Link>
+      <div className="max-w-6xl mx-auto px-4 py-24 text-center">
+        <h2 className="text-3xl font-black text-on-surface uppercase tracking-tighter mb-4">Order Not Found</h2>
+        <Link href="/account/orders" className="text-primary-container font-black uppercase tracking-widest hover:underline">Back to My Orders</Link>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-12">
-      <div className="container mx-auto px-4 py-8">
-        <Link href="/account/orders" className="inline-flex items-center gap-2 text-gray-400 hover:text-[#F68B1E] transition-all font-black text-[10px] uppercase tracking-widest mb-8 group">
-          <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          Back to My Orders
-        </Link>
+    <div className="min-h-screen pb-24 bg-surface-container-lowest/50">
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        {/* Breadcrumb with Fade Mask */}
+        <div className="relative mb-10 overflow-hidden">
+          <div className="flex items-center gap-2 whitespace-nowrap overflow-x-auto scrollbar-hide pr-12">
+            <Link href="/account/orders" className="inline-flex items-center gap-2 text-on-surface-variant hover:text-primary-container transition-all font-black text-[10px] uppercase tracking-[0.2em] group">
+              <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+              Back to My Orders
+            </Link>
+            <span className="text-on-surface-variant/20">/</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-40 italic">Order Details</span>
+          </div>
+          <div className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-surface-container-lowest/50 to-transparent pointer-events-none" />
+        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-[32px] border border-gray-100 shadow-xl shadow-black/[0.02] overflow-hidden">
-                <div className="p-6 md:p-10 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-gray-50/30">
-                <div>
-                  <h1 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight mb-1 uppercase">Order #{order.id.substring(0, 12).toUpperCase()}</h1>
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Placed on {format(new Date(order.createdAt), 'MMMM dd, yyyy')}</p>
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-surface-container-low rounded-[48px] border-4 border-surface-container-lowest shadow-soft overflow-hidden">
+                <div className="p-8 md:p-12 border-b-2 border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-8 bg-surface-container-low/50">
+                <div className="flex flex-col gap-2">
+                  <h1 className="text-2xl md:text-3xl font-black text-on-surface tracking-tighter uppercase leading-none">Order #{order.id.substring(0, 12).toUpperCase()}</h1>
+                  <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em] opacity-60 italic">Committed on {format(new Date(order.createdAt), 'MMMM dd, yyyy')}</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-4">
                   {(order.status === 'PENDING' || order.status === 'PAID') && (
                     <button 
-                      onClick={() => {
-                        if (confirm('Are you sure you want to cancel this order?')) {
-                          cancelOrder.mutate({ orderId: order.id });
-                        }
-                      }}
-                      disabled={cancelOrder.isLoading}
-                      className="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-100 text-red-500 hover:bg-red-50 transition-all disabled:opacity-50 active:scale-95"
+                      onClick={() => setIsCancelModalOpen(true)}
+                      className="px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border-2 border-error/20 text-error hover:bg-error/10 transition-all active:scale-95 flex items-center gap-2 group"
                     >
-                      {cancelOrder.isLoading ? 'Processing...' : 'Cancel Order'}
+                      <XCircle size={14} className="group-hover:rotate-90 transition-transform" />
+                      Abort Order
                     </button>
                   )}
-                  <span className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                  <span className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] border-2 ${
                     order.status === 'DELIVERED' || order.status === 'COMPLETED' 
-                      ? 'bg-green-50 text-green-600 border-green-100' 
+                      ? 'bg-success-container/10 text-success border-success/20' 
                       : order.status === 'CANCELLED'
-                      ? 'bg-red-50 text-red-600 border-red-100'
-                      : 'bg-orange-50 text-[#F68B1E] border-orange-100'
+                      ? 'bg-error-container/10 text-error border-error/20'
+                      : 'bg-primary-container/10 text-primary-container border-primary-container/20'
                   }`}>
                     {order.status.replace('_', ' ')}
                   </span>
@@ -96,81 +124,82 @@ export default function OrderDetailPage() {
               </div>
 
               {/* Package List */}
-              <div className="p-6 md:p-10 space-y-12">
+              <div className="p-8 md:p-12 space-y-16">
                 {order.packages.map((pkg, idx) => (
-                  <div key={pkg.id} className="space-y-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-white border border-gray-100 text-[#F68B1E] rounded-2xl flex items-center justify-center shadow-sm">
-                        <Package size={24} />
+                  <div key={pkg.id} className="space-y-8">
+                    <div className="flex items-center gap-6">
+                      <div className="w-14 h-14 bg-surface-container rounded-[20px] text-primary-container flex items-center justify-center border-2 border-outline-variant/30 shadow-lg">
+                        <Package size={28} />
                       </div>
-                      <div>
-                        <h3 className="font-black text-sm uppercase tracking-widest text-gray-900">Package {idx + 1} of {order.packages.length}</h3>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Handled by Jumia Express</p>
+                      <div className="flex flex-col">
+                        <h3 className="text-lg font-black uppercase tracking-tighter text-on-surface leading-none">Package {idx + 1} of {order.packages.length}</h3>
+                        <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] mt-1 opacity-60">Verified Logistics Hub</p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                       {/* Tracking Timeline */}
-                      <div className="bg-gray-50/50 rounded-[24px] p-6 border border-gray-100/50">
-                        <h4 className="text-[10px] font-black uppercase text-gray-400 mb-6 tracking-[0.2em] flex items-center gap-2">
-                          <Truck size={14} className="text-[#F68B1E]" /> Timeline
-                        </h4>
+                      <div className="bg-surface-container-lowest/50 rounded-[32px] p-8 border-2 border-outline-variant/30 relative">
+                        <div className="flex items-center gap-3 mb-8">
+                          <Truck size={18} className="text-primary-container" />
+                          <h4 className="text-[10px] font-black uppercase text-on-surface tracking-[0.3em]">Logistic Timeline</h4>
+                        </div>
                         {pkg.shipments?.[0]?.events?.length ? (
-                          <div className="space-y-6 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[2px] before:bg-white">
+                          <div className="space-y-8 relative before:absolute before:left-[9px] before:top-2 before:bottom-2 before:w-[2px] before:bg-outline-variant/20">
                             {pkg.shipments[0].events.map((event, eIdx) => (
-                              <div key={event.id} className="relative pl-8">
-                                <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center transition-all duration-500 ${eIdx === 0 ? 'bg-[#F68B1E] scale-125 ring-4 ring-orange-500/10' : 'bg-gray-200'}`} />
-                                <div className={`text-[11px] font-black uppercase tracking-widest ${eIdx === 0 ? 'text-[#F68B1E]' : 'text-gray-900'}`}>{event.status.replace('_', ' ')}</div>
-                                <div className="text-[10px] font-bold text-gray-400 mt-1">{format(new Date(event.createdAt), 'MMM dd, HH:mm')}</div>
-                                {event.note && <div className="text-[10px] font-medium text-gray-400 mt-2 italic bg-white/50 p-2 rounded-lg">{event.note}</div>}
+                              <div key={event.id} className="relative pl-10 animate-in fade-in slide-in-from-left-2" style={{ animationDelay: `${eIdx * 100}ms` }}>
+                                <div className={`absolute left-0 top-1 w-[20px] h-[20px] rounded-full border-4 border-surface-container-lowest flex items-center justify-center transition-all duration-700 ${eIdx === 0 ? 'bg-primary-container scale-125 shadow-lg shadow-primary-container/30' : 'bg-outline-variant opacity-40'}`} />
+                                <div className={`text-[11px] font-black uppercase tracking-[0.2em] ${eIdx === 0 ? 'text-primary-container' : 'text-on-surface-variant'}`}>{event.status.replace('_', ' ')}</div>
+                                <div className="text-[9px] font-black text-on-surface-variant/40 mt-1 uppercase tracking-widest">{format(new Date(event.createdAt), 'MMM dd • HH:mm')}</div>
+                                {event.note && <div className="text-[10px] font-medium text-on-surface-variant mt-3 italic bg-surface-container-low p-3 rounded-xl border border-outline-variant/10">{event.note}</div>}
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <div className="flex flex-col items-center justify-center py-8 text-center">
-                            <Clock size={32} className="text-gray-200 mb-3" />
-                            <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Awaiting Fulfillment</p>
+                          <div className="flex flex-col items-center justify-center py-12 text-center opacity-40">
+                            <Clock size={40} className="text-on-surface-variant mb-4" />
+                            <p className="text-[10px] font-black uppercase text-on-surface-variant tracking-[0.3em]">Awaiting Processing</p>
                           </div>
                         )}
                       </div>
 
                       {/* Items in Package */}
-                      <div className="space-y-4">
-                        {pkg.lines.map((line) => (
-                          <div key={line.id} className="flex gap-4 bg-white border border-gray-50 p-4 rounded-2xl hover:border-orange-100 transition-all group">
-                            <div className="w-20 h-20 bg-gray-50 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden p-2">
-                              <img 
-                                src={(line.variant?.product as any)?.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'}
-                                alt={line.variant?.product?.title}
-                                className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                      <div className="space-y-6">
+                        {pkg.lines.map((line, lIdx) => (
+                          <div key={line.id} className="flex gap-5 bg-surface-container-lowest p-5 rounded-[28px] border-2 border-outline-variant/30 hover:border-primary-container/30 transition-all group/item shadow-soft animate-in fade-in slide-in-from-right-2" style={{ animationDelay: `${lIdx * 100}ms` }}>
+                            <div className="w-24 h-24 bg-surface-container-low rounded-[20px] flex-shrink-0 relative overflow-hidden p-4 border border-outline-variant/10">
+                              <Image 
+                                src={(line.variant?.product as any)?.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400'}
+                                alt={line.variant?.product?.title || 'Product'}
+                                fill
+                                sizes="100px"
+                                className="object-contain p-4 group-hover/item:scale-110 transition-transform duration-700"
                               />
                             </div>
                             <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
                               <div>
-                                <h5 className="text-[11px] font-black text-gray-900 leading-tight uppercase tracking-tight line-clamp-2 mb-1">{line.variant?.product?.title}</h5>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[9px] font-black uppercase bg-gray-50 text-gray-400 px-2 py-0.5 rounded-md border border-gray-100">QTY: {line.quantity}</span>
+                                <h5 className="text-[11px] font-black text-on-surface leading-tight uppercase tracking-tight line-clamp-2 mb-2">{line.variant?.product?.title}</h5>
+                                <div className="flex items-center gap-3">
+                                  <span className="text-[8px] font-black uppercase bg-surface-container-low text-on-surface-variant px-2.5 py-1 rounded-lg border border-outline-variant/20 tracking-widest">Units: {line.quantity}</span>
                                 </div>
                               </div>
-                              <div className="flex justify-between items-center">
-                                <p className="font-black text-xs text-[#F68B1E]">₦ {Number(line.unitPrice).toLocaleString()}</p>
+                              <div className="flex justify-between items-center mt-4">
+                                <p className="font-black text-sm text-primary-container tracking-tighter">₦ {Number(line.unitPrice).toLocaleString()}</p>
                                 
                                 {pkg.status === 'DELIVERED' && !line.isReturned && (
-                                  <div className="flex gap-2">
-                                    <button 
-                                      onClick={() => {
-                                        if (confirm('Initiate return?')) {
-                                          initiateReturn.mutate({ orderLineId: line.id, reason: 'CUSTOMER_REQUEST' });
-                                        }
-                                      }}
-                                      className="text-[9px] font-black uppercase text-[#264996] hover:bg-blue-50 px-2 py-1 rounded-lg border border-blue-50 transition-colors"
-                                    >
-                                      Return
-                                    </button>
-                                  </div>
+                                  <button 
+                                    onClick={() => {
+                                      setSelectedLineId(line.id);
+                                      setIsReturnModalOpen(true);
+                                    }}
+                                    className="flex items-center gap-2 text-[9px] font-black uppercase text-primary-container hover:bg-primary-container/10 px-4 py-2 rounded-xl border-2 border-primary-container/10 transition-all group/btn"
+                                  >
+                                    <RefreshCcw size={12} className="group-hover/btn:rotate-180 transition-transform duration-700" />
+                                    Recall Item
+                                  </button>
                                 )}
                                 {line.isReturned && (
-                                  <span className="text-[9px] font-black uppercase text-green-600 bg-green-50 px-2 py-1 rounded-lg">Returned</span>
+                                  <span className="text-[9px] font-black uppercase text-success bg-success-container/10 px-3 py-1.5 rounded-xl border border-success/20">Archived</span>
                                 )}
                               </div>
                             </div>
@@ -185,72 +214,107 @@ export default function OrderDetailPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Delivery Details */}
-            <div className="bg-white rounded-[32px] border border-gray-100 shadow-xl shadow-black/[0.02] p-8">
-              <h2 className="font-black text-[10px] uppercase mb-6 tracking-[0.2em] flex items-center gap-3 text-gray-900">
-                <MapPin size={18} className="text-[#F68B1E]" /> Delivery Address
+            <div className="bg-surface-container-low rounded-[40px] border-4 border-surface-container-lowest shadow-soft p-8">
+              <h2 className="text-[10px] font-black uppercase mb-8 tracking-[0.3em] flex items-center gap-4 text-on-surface">
+                <MapPin size={20} className="text-primary-container" /> Distribution
               </h2>
               <div className="space-y-4">
-                <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100/50">
-                  <p className="text-[10px] font-black uppercase text-gray-400 mb-1 tracking-widest">Shipping to</p>
-                  <p className="text-xs font-black text-gray-900 uppercase tracking-tight">Main Delivery Hub</p>
-                  <p className="text-[11px] font-bold text-gray-500 mt-2 leading-relaxed italic">Default dropoff specified at checkout.</p>
+                <div className="bg-surface-container-lowest/50 p-6 rounded-[28px] border-2 border-outline-variant/30 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-primary-container/5 rounded-full blur-2xl" />
+                  <p className="text-[9px] font-black uppercase text-on-surface-variant mb-2 tracking-[0.2em] opacity-60 italic">Dropoff Point</p>
+                  <p className="text-xs font-black text-on-surface uppercase tracking-tight">Main Distribution Center</p>
+                  <p className="text-[10px] font-bold text-on-surface-variant mt-3 leading-relaxed opacity-70">Strategic hub fulfillment for ultra-fast delivery.</p>
                 </div>
               </div>
             </div>
 
             {/* Payment Summary */}
-            <div className="bg-[#1A1A1A] text-white rounded-[32px] shadow-2xl shadow-black/20 overflow-hidden">
-              <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                <h2 className="font-black text-[10px] uppercase tracking-[0.2em]">Summary</h2>
-                <CreditCard size={18} className="text-[#F68B1E]" />
+            <div className="bg-on-surface text-white rounded-[40px] shadow-2xl border-4 border-surface-container-low relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-primary-container/10 rounded-full blur-[80px]" />
+              <div className="p-8 border-b-2 border-white/10 flex items-center justify-between relative z-10">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">Financial Invoice</h2>
+                <CreditCard size={20} className="text-primary-container" />
               </div>
-              <div className="p-8 space-y-6">
-                <div className="space-y-4">
-                  <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white/40">
-                    <span>Subtotal</span>
+              <div className="p-8 space-y-8 relative z-10">
+                <div className="space-y-5">
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                    <span>Base Value</span>
                     <span className="text-white">₦ {Number(order.subtotal).toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white/40">
-                    <span>Delivery</span>
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                    <span>Logistics Fee</span>
                     <span className="text-white">₦ {Number(order.shippingFee).toLocaleString()}</span>
                   </div>
                 </div>
                 
-                <div className="pt-6 border-t border-white/10 flex justify-between items-end">
+                <div className="pt-8 border-t-2 border-white/10 flex justify-between items-end">
                   <div>
-                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40 mb-1">Total Paid</p>
-                    <span className="text-2xl font-black tracking-tighter">₦ {Number(order.total).toLocaleString()}</span>
+                    <p className="text-[9px] font-black uppercase tracking-[0.4em] text-primary-container mb-2 italic">Gross Settlement</p>
+                    <span className="text-3xl font-black tracking-tighter">₦ {Number(order.total).toLocaleString()}</span>
                   </div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
-                  <CheckCircle2 size={16} className="text-green-400" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Paid via {order.paymentMethod}</span>
+                <div className="bg-white/5 border-2 border-white/10 rounded-[24px] p-5 flex items-center gap-4">
+                  <div className="w-10 h-10 bg-success/20 rounded-xl flex items-center justify-center">
+                    <CheckCircle2 size={20} className="text-success" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Secured via {order.paymentMethod}</span>
+                    <span className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em] mt-0.5 italic">Transaction Authenticated</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Help Section */}
-            <div className="bg-white rounded-[32px] border border-gray-100 p-8">
-              <h2 className="font-black text-[10px] uppercase mb-6 tracking-[0.2em] flex items-center gap-3 text-gray-300">
-                <AlertCircle size={18} /> Need Help?
+            <div className="bg-surface-container-low rounded-[40px] border-4 border-surface-container-lowest p-8 shadow-soft">
+              <h2 className="text-[10px] font-black uppercase mb-8 tracking-[0.3em] flex items-center gap-4 text-on-surface-variant opacity-40">
+                <AlertCircle size={20} /> Resolution Hub
               </h2>
-              <div className="space-y-3">
-                <Link href={`/disputes/new?orderId=${order.id}`} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-2xl group hover:bg-orange-50 transition-colors">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-900">Open a dispute</span>
-                  <ChevronRight size={14} className="text-gray-300 group-hover:text-[#F68B1E] transition-colors" />
+              <div className="space-y-4">
+                <Link href={`/disputes/new?orderId=${order.id}`} className="flex items-center justify-between p-5 bg-surface-container-lowest/50 rounded-[24px] group/btn hover:bg-primary-container/10 border-2 border-transparent hover:border-primary-container/20 transition-all">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface">Initiate Dispute</span>
+                  <div className="w-8 h-8 rounded-xl bg-surface-container flex items-center justify-center group-hover/btn:bg-primary-container transition-all">
+                    <ChevronRight size={14} className="text-on-surface-variant group-hover/btn:text-white transition-colors" />
+                  </div>
                 </Link>
-                <Link href="/help" className="flex items-center justify-between p-4 bg-gray-50/50 rounded-2xl group hover:bg-gray-100 transition-colors">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Help center</span>
-                  <ChevronRight size={14} className="text-gray-300" />
+                <Link href="/help" className="flex items-center justify-between p-5 bg-surface-container-lowest/50 rounded-[24px] group/btn hover:bg-surface-container-high transition-all border-2 border-transparent">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-60">Help Center</span>
+                  <ChevronRight size={14} className="text-on-surface-variant opacity-20" />
                 </Link>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <ConfirmModal 
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={() => cancelOrder.mutate({ orderId: order.id })}
+        title="Abort Transaction?"
+        message="Are you certain you want to terminate this order? This action will halt logistics immediately."
+        confirmLabel="Confirm Abortion"
+        type="danger"
+      />
+
+      <ConfirmModal 
+        isOpen={isReturnModalOpen}
+        onClose={() => setIsReturnModalOpen(false)}
+        onConfirm={() => {
+          if (selectedLineId) {
+            initiateReturn.mutate({ orderLineId: selectedLineId, reason: 'CUSTOMER_REQUEST' });
+          }
+        }}
+        title="Recall Item?"
+        message="Initiate an official return request for this asset? Our logistics team will contact you for pickup."
+        confirmLabel="Initiate Recall"
+        type="warning"
+      />
     </div>
   );
 }
+

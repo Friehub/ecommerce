@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw, Plus, Minus } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { api } from '../../trpc/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/context/ToastContext';
 
 interface ProductActionsProps {
   product: any;
@@ -15,6 +16,7 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
   const [quantity, setQuantity] = useState(1);
   const { data: session } = useSession();
+  const { showToast } = useToast();
   const router = useRouter();
 
   const price = selectedVariant?.price || 0;
@@ -32,13 +34,17 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
   const addToWishlist = api.catalog.addToWishlist.useMutation({
     onSuccess: () => {
       utils.catalog.getWishlist.invalidate();
-    }
+      showToast('Item added to wishlist');
+    },
+    onError: (err) => showToast(err.message, 'error')
   });
 
   const removeFromWishlist = api.catalog.removeFromWishlist.useMutation({
     onSuccess: () => {
       utils.catalog.getWishlist.invalidate();
-    }
+      showToast('Item removed from wishlist', 'info');
+    },
+    onError: (err) => showToast(err.message, 'error')
   });
 
   const isInWishlist = wishlist?.items?.some((item: any) => item.variantId === selectedVariant.id);
@@ -57,43 +63,55 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
   };
 
   const handleAddToCart = async () => {
-    await addToCart(selectedVariant.id, quantity);
+    try {
+      await addToCart(selectedVariant.id, quantity);
+      showToast('Successfully added to cart!');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to add to cart', 'error');
+    }
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Price Section */}
-      <div className="border-b pb-4">
-        <div className="flex items-center gap-3">
-          <span className="text-3xl font-semibold text-gray-900">₦ {price.toLocaleString()}</span>
+      <div className="border-b border-outline-variant pb-6">
+        <div className="flex items-center gap-4">
+          <span className="text-4xl font-black text-on-surface tracking-tighter">₦ {price.toLocaleString()}</span>
           {discount > 0 && (
-            <span className="bg-[#FEE2E2] text-[#DF3131] text-xs font-bold px-2 py-1 rounded">
-              -{discount}%
+            <span className="bg-error-container text-error text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wider">
+              -{discount}% OFF
             </span>
           )}
         </div>
         {comparePrice && (
-          <div className="text-gray-400 line-through text-sm mt-1">₦ {comparePrice.toLocaleString()}</div>
+          <div className="text-on-surface-variant line-through text-sm mt-1 opacity-60">₦ {comparePrice.toLocaleString()}</div>
         )}
-        <p className="text-[10px] text-gray-500 mt-2">In stock</p>
-        <p className="text-[10px] text-gray-400">+ shipping from ₦ 600 to Lagos</p>
+        
+        <div className="flex items-center gap-3 mt-4">
+          <div className={`w-2.5 h-2.5 rounded-full ${selectedVariant.inventory > 0 ? 'bg-success' : 'bg-error'} animate-pulse shadow-sm`} />
+          <p className="text-[10px] font-black text-on-surface uppercase tracking-[0.3em]">
+            {selectedVariant.inventory > 10 ? 'Market Ready' : selectedVariant.inventory > 0 ? `Limited Availability (${selectedVariant.inventory})` : 'Sold Out'}
+          </p>
+        </div>
+        <p className="text-[10px] text-on-surface-variant mt-2 font-black uppercase tracking-[0.2em] opacity-40 italic">+ Delivery estimation: ₦ 600 (Lagos Metropolis)</p>
       </div>
 
       {/* Variants Section */}
       {product.variants.length > 1 && (
-        <div className="space-y-3">
-          <h4 className="text-sm font-bold uppercase text-gray-600">Select Variation</h4>
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-4">
+          <h4 className="text-[10px] font-black uppercase text-on-surface-variant tracking-[0.4em] opacity-40">Configuration Matrix</h4>
+          <div className="flex flex-wrap gap-3">
             {product.variants.map((v: any) => {
-              const label = Object.values(v.attributes as any).join(' / ');
+              const label = Object.values(v.attributes as any).join(' • ');
+              const isSelected = selectedVariant.id === v.id;
               return (
                 <button
                   key={v.id}
                   onClick={() => setSelectedVariant(v)}
-                  className={`px-4 py-2 text-sm border rounded transition-all ${
-                    selectedVariant.id === v.id
-                      ? 'border-[#F68B1E] text-[#F68B1E] bg-[#F68B1E]/5 font-medium'
-                      : 'border-gray-200 text-gray-700 hover:border-gray-400'
+                  className={`px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] border-2 rounded-2xl transition-all duration-500 touch-manipulation ${
+                    isSelected
+                      ? 'border-primary-container text-primary-container bg-primary-container/5 shadow-lg shadow-primary-container/5 -translate-y-1'
+                      : 'border-surface-container-low text-on-surface-variant hover:border-outline-variant hover:bg-surface-container-low/50'
                   }`}
                 >
                   {label}
@@ -105,76 +123,66 @@ export const ProductActions = ({ product }: ProductActionsProps) => {
       )}
 
       {/* Quantity & Add to Cart */}
-      <div className="flex flex-col gap-3 pt-2">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center border rounded-lg h-12">
+      <div className="flex flex-col gap-6 pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch gap-4">
+          <div className="flex items-center bg-surface-container-low rounded-2xl border-4 border-surface-container-lowest h-16 overflow-hidden shadow-soft">
             <button 
               onClick={() => setQuantity(q => Math.max(1, q - 1))}
-              className="px-4 hover:bg-gray-100 h-full transition-colors font-bold"
+              className="w-16 h-full flex items-center justify-center hover:bg-surface-container transition-colors touch-manipulation text-on-surface"
               disabled={isCartLoading}
             >
-              -
+              <Minus size={20} strokeWidth={2.5} />
             </button>
-            <span className="w-12 text-center font-bold">{quantity}</span>
+            <span className="w-14 text-center font-black text-xl text-on-surface">{quantity}</span>
             <button 
               onClick={() => setQuantity(q => q + 1)}
-              className="px-4 hover:bg-gray-100 h-full transition-colors font-bold"
+              className="w-16 h-full flex items-center justify-center hover:bg-surface-container transition-colors touch-manipulation text-on-surface"
               disabled={isCartLoading}
             >
-              +
+              <Plus size={20} strokeWidth={2.5} />
             </button>
           </div>
+          
           <button 
             onClick={handleAddToCart}
-            disabled={isCartLoading}
-            className="flex-1 bg-[#F68B1E] text-white h-12 rounded-lg font-bold shadow-md hover:bg-[#e07b14] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+            disabled={isCartLoading || selectedVariant.inventory === 0}
+            className="flex-1 bg-on-surface text-white h-16 rounded-2xl font-black text-[11px] uppercase tracking-[0.4em] shadow-2xl hover:opacity-90 active:scale-[0.98] disabled:bg-surface-container-low disabled:text-on-surface-variant disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4 group"
           >
-            <ShoppingCart size={20} />
-            {isCartLoading ? 'ADDING...' : 'ADD TO CART'}
+            <ShoppingCart size={22} strokeWidth={1.5} className="group-hover:rotate-12 transition-transform" />
+            {isCartLoading ? 'Processing...' : selectedVariant.inventory === 0 ? 'Out of Stock' : 'Add to Acquisition'}
           </button>
         </div>
         
         <button 
           onClick={handleWishlistToggle}
-          className={`flex items-center justify-center gap-2 text-sm font-medium transition-colors py-2 ${
-            isInWishlist ? 'text-[#DF3131]' : 'text-gray-600 hover:text-[#F68B1E]'
+          className={`flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] transition-all py-4 rounded-2xl hover:bg-surface-container-low border-2 border-transparent hover:border-surface-container-lowest ${
+            isInWishlist ? 'text-error' : 'text-on-surface-variant hover:text-primary-container'
           }`}
         >
-          <Heart size={18} fill={isInWishlist ? '#DF3131' : 'none'} />
-          {isInWishlist ? 'REMOVE FROM WISHLIST' : 'ADD TO WISHLIST'}
+          <Heart size={20} fill={isInWishlist ? 'currentColor' : 'none'} strokeWidth={1.5} className="transition-transform duration-500 active:scale-150" />
+          {isInWishlist ? 'Purge from Wishlist' : 'Archive to Wishlist'}
         </button>
       </div>
 
-      {/* Service Info */}
-      <div className="bg-white rounded-lg border p-4 space-y-4">
-        <div className="flex gap-3">
-          <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center flex-shrink-0">
-            <Truck size={20} className="text-gray-600" />
+      {/* Service Info Cards */}
+      <div className="grid grid-cols-1 gap-4">
+        {[
+          { icon: Truck, title: 'Express Logistics', desc: 'Secure transit enabled. Delivery verified within 24–48 operational hours.' },
+          { icon: RotateCcw, title: 'Protection Period', desc: '15-day sovereign return window for all certified official store items.' },
+          { icon: ShieldCheck, title: 'Warranty Lock', desc: 'Comprehensive 12-month official manufacturer coverage included.' }
+        ].map((service, i) => (
+          <div key={i} className="flex gap-5 p-6 bg-surface-container-lowest border-4 border-surface-container-low rounded-[32px] shadow-soft hover:shadow-2xl transition-all duration-500 group">
+            <div className="w-14 h-14 bg-surface-container-low rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-primary-container/10 border-2 border-surface-container-lowest transition-all">
+              <service.icon size={26} strokeWidth={1.5} className="text-on-surface-variant group-hover:text-primary-container transition-colors" />
+            </div>
+            <div className="flex flex-col justify-center">
+              <h5 className="text-[10px] font-black text-on-surface uppercase tracking-[0.3em] mb-1.5">{service.title}</h5>
+              <p className="text-[11px] text-on-surface-variant leading-relaxed font-medium italic opacity-70">{service.desc}</p>
+            </div>
           </div>
-          <div>
-            <h5 className="text-sm font-bold">Door Delivery</h5>
-            <p className="text-xs text-gray-500">Delivery ₦ 600. Ready for delivery between 02 May & 04 May when you order within next 10hrs 22mins</p>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center flex-shrink-0">
-            <RotateCcw size={20} className="text-gray-600" />
-          </div>
-          <div>
-            <h5 className="text-sm font-bold">Return Policy</h5>
-            <p className="text-xs text-gray-500">Free return within 15 days for Official Store items and 7 days for other items.</p>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center flex-shrink-0">
-            <ShieldCheck size={20} className="text-gray-600" />
-          </div>
-          <div>
-            <h5 className="text-sm font-bold">Warranty</h5>
-            <p className="text-xs text-gray-500">1 Year Warranty included for this item.</p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
 };
+

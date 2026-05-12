@@ -2,15 +2,59 @@
 
 import React from 'react';
 import { api } from '@/trpc/react';
-import { TrendingUp, Award, BarChart3, Users, DollarSign, Calendar, Flame, FlameKindling, Loader2, Package, AlertTriangle } from 'lucide-react';
+import { 
+  TrendingUp, 
+  Award, 
+  BarChart3, 
+  Users, 
+  DollarSign, 
+  Calendar, 
+  Flame, 
+  FlameKindling, 
+  Loader2, 
+  Package, 
+  AlertTriangle,
+  CheckCircle2,
+  Percent,
+  LineChart,
+  ShieldCheck,
+  Zap,
+  ArrowUpRight,
+  TrendingDown,
+  Sparkles,
+  SearchCode,
+  Box,
+  Binary
+} from 'lucide-react';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { format } from 'date-fns';
 
 export default function SellerInsightsPage() {
   const { data: metrics, isLoading } = api.seller.getDashboardMetrics.useQuery();
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[60vh] select-none">
-        <Loader2 className="animate-spin text-[#F68B1E]" size={40} />
+      <div className="max-w-[1600px] mx-auto px-6 py-16 space-y-16 bg-background min-h-screen">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+          <div className="space-y-6">
+            <Skeleton className="h-16 w-96 rounded-[24px]" />
+            <Skeleton className="h-6 w-64 rounded-xl" />
+          </div>
+          <Skeleton className="h-20 w-80 rounded-[32px]" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-44 w-full rounded-[40px]" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-7">
+            <Skeleton className="h-[600px] w-full rounded-[64px]" />
+          </div>
+          <div className="lg:col-span-5">
+            <Skeleton className="h-[600px] w-full rounded-[64px]" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -22,147 +66,190 @@ export default function SellerInsightsPage() {
   const totalOrders = pendingOrders + deliveredOrders;
   const conversionRate = totalOrders > 0 ? (deliveredOrders / totalOrders) * 100 : 0;
 
+  const kpis = [
+    { 
+      label: 'Gross Volume', 
+      val: `₦${gmv.toLocaleString()}`, 
+      icon: DollarSign, 
+      color: 'text-primary-container',
+      bg: 'bg-primary-container/10',
+      trend: '+12%',
+      isPositive: true
+    },
+    { 
+      label: 'Net Revenue', 
+      val: `₦${netRevenue.toLocaleString()}`, 
+      icon: TrendingUp, 
+      color: 'text-success',
+      bg: 'bg-success-container/10',
+      trend: '+8%',
+      isPositive: true
+    },
+    { 
+      label: 'Performance', 
+      val: (metrics?.performanceScore || 5.0).toFixed(1), 
+      icon: Award, 
+      color: 'text-secondary',
+      bg: 'bg-secondary-container/10',
+      trend: 'ELITE',
+      isPositive: true
+    },
+    { 
+      label: 'Total Orders', 
+      val: totalOrders.toString(), 
+      icon: Package, 
+      color: 'text-on-surface',
+      bg: 'bg-surface-container-low',
+      trend: `${pendingOrders} PENDING`,
+      isPositive: false
+    },
+    { 
+      label: 'Conversions', 
+      val: `${conversionRate.toFixed(1)}%`, 
+      icon: Zap, 
+      color: 'text-error',
+      bg: 'bg-error-container/10',
+      trend: 'OPTIMAL',
+      isPositive: true
+    },
+  ];
+
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8 select-none bg-[#F9F9FA] min-h-screen">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight uppercase flex items-center gap-2">
-            <BarChart3 className="text-[#F68B1E]" /> SELLER INSIGHTS & ANALYTICS
+    <div className="max-w-[1600px] mx-auto px-6 py-16 space-y-16 select-none bg-background min-h-screen animate-in fade-in duration-1000">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+        <div className="animate-in slide-in-from-left-8 duration-1000">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-2.5 bg-primary-container/20 backdrop-blur-xl rounded-2xl border border-primary-container/30">
+              <Binary size={24} className="text-primary-container" />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary-container italic">Neural Market Analysis Nexus</span>
+          </div>
+          <h1 className="text-5xl md:text-8xl font-black text-on-surface uppercase tracking-tighter leading-[0.85]">
+            Market <br />
+            <span className="text-primary-container italic">Intelligence.</span>
           </h1>
-          <p className="text-gray-500 text-xs font-medium tracking-wide mt-1">
-            Track business metrics, analytics trends, and growth metrics.
-          </p>
+          <p className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.4em] mt-8 opacity-40 italic border-l-4 border-primary-container pl-8">Real-time Advanced Analytics • Multi-Sector Pulse Synchronization</p>
         </div>
-        <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-gray-200/80 shadow-sm">
-          <Calendar className="text-gray-400" size={16} />
-          <span className="text-xs font-extrabold text-gray-700 uppercase tracking-widest">Real-time Data</span>
-        </div>
-      </div>
-
-      {/* Summary KPI grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:border-gray-200/80 duration-300 transition-all">
-          <div className="flex items-center gap-3 mb-3 text-[#F68B1E]">
-            <DollarSign size={20} className="p-1 rounded-lg bg-orange-50 border border-orange-100 shrink-0" />
-            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Gross Sales (GMV)</h3>
-          </div>
-          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">₦ {gmv.toLocaleString()}</p>
-          <div className="flex items-center gap-1.5 mt-2">
-            <TrendingUp size={14} className="text-green-500" />
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Total volume</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:border-gray-200/80 duration-300 transition-all border-emerald-100/50">
-          <div className="flex items-center gap-3 mb-3 text-emerald-500">
-            <TrendingUp size={20} className="p-1 rounded-lg bg-emerald-50 border border-emerald-100 shrink-0" />
-            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-emerald-500">Net Revenue</h3>
-          </div>
-          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">₦ {netRevenue.toLocaleString()}</p>
-          <div className="flex items-center gap-1.5 mt-2">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">After Commission</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:border-gray-200/80 duration-300 transition-all">
-          <div className="flex items-center gap-3 mb-3 text-[#F68B1E]">
-            <Award size={20} className="p-1 rounded-lg bg-orange-50 border border-orange-100 shrink-0" />
-            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Performance Score</h3>
-          </div>
-          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">{(metrics?.performanceScore || 5.0).toFixed(1)}</p>
-          <div className="flex items-center gap-1.5 mt-2">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Out of 5.0</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:border-gray-200/80 duration-300 transition-all">
-          <div className="flex items-center gap-3 mb-3 text-blue-500">
-            <Package size={20} className="p-1 rounded-lg bg-blue-50 border border-blue-100 shrink-0" />
-            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Total Orders</h3>
-          </div>
-          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">{totalOrders}</p>
-          <div className="flex items-center gap-1.5 mt-2 text-blue-500">
-            <span className="text-xs font-extrabold uppercase tracking-widest">{pendingOrders} pending</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:border-gray-200/80 duration-300 transition-all">
-          <div className="flex items-center gap-3 mb-3 text-red-500">
-            <Flame size={20} className="p-1 rounded-lg bg-red-50 border border-red-100 shrink-0" />
-            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500">Items Sold</h3>
-          </div>
-          <p className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">{deliveredOrders}</p>
-          <div className="flex items-center gap-1.5 mt-2">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Verified deliveries</span>
+        <div className="flex items-center gap-8 bg-surface-container-low/30 backdrop-blur-xl p-6 rounded-[32px] border-4 border-surface-container-lowest shadow-soft animate-in slide-in-from-right-8 duration-1000">
+          <Calendar className="text-primary-container opacity-40" size={20} />
+          <div className="text-right">
+            <p className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] mb-1 italic">Active Intelligence Cycle</p>
+            <p className="text-xs font-black text-on-surface uppercase tracking-[0.2em] italic">{format(new Date(), 'MMMM yyyy')}</p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Performance details */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-md p-5 md:p-7">
-          <h3 className="text-xs md:text-sm font-extrabold text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
-            <FlameKindling size={16} className="text-[#F68B1E]" /> Performance Metrics
-          </h3>
-          <div className="space-y-5">
+      {/* KPI Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+        {kpis.map((kpi, idx) => (
+          <div key={kpi.label} className="bg-surface-container-lowest p-10 rounded-[48px] border-4 border-surface-container-low flex flex-col justify-between h-[220px] hover:translate-y-[-12px] transition-all duration-700 shadow-soft group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${idx * 150}ms` }}>
+            <div className="flex justify-between items-start">
+              <div className={`w-14 h-14 rounded-[24px] bg-surface-container-low flex items-center justify-center border-2 border-outline-variant/5 group-hover:scale-110 group-hover:border-primary-container/20 transition-all duration-1000 shadow-inner`}>
+                <kpi.icon className={kpi.color} size={28} strokeWidth={2.5} />
+              </div>
+              <span className={`text-[9px] font-black px-5 py-2 rounded-full uppercase tracking-widest border-2 italic shadow-sm ${kpi.isPositive ? 'bg-success-container/10 text-success border-success/20' : 'bg-surface-container-low text-on-surface-variant/40 border-outline-variant/10'}`}>
+                {kpi.trend}
+              </span>
+            </div>
+            <div>
+              <p className="text-on-surface-variant/40 text-[9px] font-black uppercase tracking-[0.4em] mb-3 italic">{kpi.label}</p>
+              <h3 className="text-3xl font-black text-on-surface tracking-tighter leading-none">{kpi.val}</h3>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Deep Insights */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* Vitality Meters */}
+        <div className="lg:col-span-7 bg-surface-container-lowest rounded-[64px] border-4 border-surface-container-low shadow-soft p-14 space-y-16 animate-in fade-in slide-in-from-left-8 duration-1000">
+          <div className="flex items-center gap-6">
+            <div className="w-12 h-12 bg-primary-container/10 text-primary-container rounded-2xl flex items-center justify-center border-2 border-primary-container/20 shadow-inner">
+              <FlameKindling size={24} />
+            </div>
+            <div>
+              <h3 className="text-sm font-black text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Operations Vitality</h3>
+              <p className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Operational Efficiency Telemetry</p>
+            </div>
+          </div>
+
+          <div className="space-y-16">
             {[
-              { label: 'Fulfillment Rate', val: `${conversionRate.toFixed(1)}%`, progress: conversionRate, color: 'bg-[#F68B1E]' },
-              { label: 'Inventory Health', val: metrics?.lowStockCount === 0 ? 'Optimal' : `${metrics?.lowStockCount} Low`, progress: metrics?.lowStockCount === 0 ? 100 : 50, color: 'bg-blue-500' },
-              { label: 'Customer Satisfaction', val: `${((metrics?.performanceScore || 5.0) * 20).toFixed(0)}%`, progress: (metrics?.performanceScore || 5.0) * 20, color: 'bg-green-500' },
+              { label: 'Fulfillment Velocity', val: `${conversionRate.toFixed(1)}%`, progress: conversionRate, icon: Zap, color: 'bg-primary-container' },
+              { label: 'Inventory Elasticity', val: metrics?.lowStockCount === 0 ? 'OPTIMAL' : `${metrics?.lowStockCount} CRITICAL`, progress: metrics?.lowStockCount === 0 ? 100 : 40, icon: Box, color: 'bg-secondary' },
+              { label: 'Merchant Authority', val: `${((metrics?.performanceScore || 5.0) * 20).toFixed(0)}%`, progress: (metrics?.performanceScore || 5.0) * 20, icon: ShieldCheck, color: 'bg-success' },
             ].map((item, idx) => (
-              <div key={idx} className="space-y-1.5">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="font-extrabold text-gray-700 tracking-tight">{item.label}</span>
-                  <span className="font-black text-gray-900">{item.val}</span>
+              <div key={idx} className="space-y-6 group">
+                <div className="flex justify-between items-end px-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center border-2 border-outline-variant/5">
+                      <item.icon size={16} className="text-on-surface-variant opacity-40 group-hover:opacity-100 group-hover:text-primary-container transition-all duration-500" />
+                    </div>
+                    <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em] italic">{item.label}</span>
+                  </div>
+                  <span className="text-2xl font-black text-on-surface tracking-tighter leading-none">{item.val}</span>
                 </div>
-                <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden flex">
-                  <div className={`${item.color} h-full rounded-full transition-all duration-500`} style={{ width: `${item.progress}%` }} />
+                <div className="h-4 bg-surface-container-low rounded-full overflow-hidden p-1 shadow-inner relative">
+                  <div className={`${item.color} h-full rounded-full shadow-2xl transition-all duration-1000 ease-out relative overflow-hidden`} style={{ width: `${item.progress}%` }}>
+                    <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Low Stock Alerts */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-md p-5 md:p-7 overflow-hidden">
-          <h3 className="text-xs md:text-sm font-extrabold text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
-            <AlertTriangle size={16} className="text-orange-500" /> Stock Alerts
-          </h3>
-          {metrics?.lowStockCount && metrics.lowStockCount > 0 ? (
-            <div className="p-8 text-center bg-orange-50 rounded-2xl border border-orange-100">
-               <Package className="mx-auto text-orange-200 mb-2" size={32} />
-               <p className="text-sm font-bold text-orange-800">You have {metrics.lowStockCount} items running low on stock.</p>
-               <p className="text-[10px] uppercase font-black text-orange-400 mt-1 tracking-widest">Replenish soon to avoid losing sales</p>
+        {/* Intelligence Alerts */}
+        <div className="lg:col-span-5 bg-on-surface rounded-[64px] shadow-2xl p-14 flex flex-col justify-between border-4 border-surface-container-low animate-in fade-in slide-in-from-right-8 duration-1000 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary-container/10 rounded-full blur-[100px] group-hover:bg-primary-container/20 transition-all duration-1000" />
+          <div className="relative z-10">
+            <div className="flex items-center gap-6 mb-16">
+              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border-2 border-white/10 backdrop-blur-xl">
+                <LineChart size={24} className="text-primary-container" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-white uppercase tracking-[0.4em] leading-none mb-2">Asset Alerts</h3>
+                <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] italic">Predictive Threat Intelligence</p>
+              </div>
             </div>
-          ) : (
-            <div className="p-8 text-center bg-green-50 rounded-2xl border border-green-100">
-               <CheckCircle2 className="mx-auto text-green-200 mb-2" size={32} />
-               <p className="text-sm font-bold text-green-800">Inventory levels are healthy.</p>
-               <p className="text-[10px] uppercase font-black text-green-400 mt-1 tracking-widest">All active products have sufficient stock</p>
+
+            <div className="flex-1 flex flex-col items-center justify-center text-center space-y-12 py-10">
+              {metrics?.lowStockCount && metrics.lowStockCount > 0 ? (
+                <>
+                  <div className="w-32 h-32 bg-error-container/10 rounded-full flex items-center justify-center border-4 border-error/20 animate-pulse relative">
+                    <AlertTriangle className="text-error" size={56} strokeWidth={1} />
+                    <div className="absolute inset-0 bg-error/20 rounded-full blur-2xl animate-ping" />
+                  </div>
+                  <div className="space-y-6">
+                    <p className="text-3xl font-black text-white tracking-tighter uppercase leading-none">Resource Depletion</p>
+                    <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em] opacity-80 leading-relaxed italic max-w-[280px] mx-auto">
+                      {metrics.lowStockCount} Assets detected below safety threshold. Replenish to sustain market presence.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-32 h-32 bg-success-container/10 rounded-full flex items-center justify-center border-4 border-success/20 relative shadow-2xl">
+                    <ShieldCheck className="text-success" size={56} strokeWidth={1} />
+                    <div className="absolute inset-0 bg-success/10 rounded-full blur-2xl group-hover:blur-3xl transition-all duration-1000" />
+                  </div>
+                  <div className="space-y-6">
+                    <p className="text-3xl font-black text-white tracking-tighter uppercase leading-none">Operations Secure</p>
+                    <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em] opacity-80 leading-relaxed italic max-w-[280px] mx-auto">
+                      Inventory levels remain synchronized and healthy. All asset nodes are reporting optimal operational status.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
-          )}
+          </div>
+
+          <button className="w-full mt-16 bg-white text-on-surface py-6 rounded-[24px] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-primary-container hover:text-white transition-all duration-500 flex items-center justify-center gap-4 active:scale-95 shadow-2xl group relative z-10 overflow-hidden">
+            Optimize Catalog <ArrowUpRight size={20} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-500" />
+          </button>
         </div>
       </div>
     </div>
-  );
-}
-
-function CheckCircle2({ className, size }: { className?: string, size?: number }) {
-  return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width={size} 
-      height={size} 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      className={className}
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="m9 12 2 2 4-4" />
-    </svg>
   );
 }

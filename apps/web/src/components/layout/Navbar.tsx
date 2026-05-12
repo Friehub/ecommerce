@@ -15,7 +15,9 @@ import {
   ChevronDown, 
   Menu, 
   X,
-  Bell
+  Bell,
+  Star,
+  Settings
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { NotificationInbox } from '../../components/layout/NotificationInbox';
@@ -31,7 +33,6 @@ export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
-  // Debounce search query
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery);
@@ -55,35 +56,35 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="bg-surface sticky top-0 z-50 shadow-sm border-b border-outline-variant">
-      <div className="container py-base">
-        <div className="flex items-center justify-between gap-gutter py-2">
+    <header className="bg-surface sticky top-0 z-50 shadow-soft border-b border-outline-variant">
+      <div className="container mx-auto px-4 lg:px-8">
+        <div className="flex items-center justify-between gap-8 py-4">
           {/* Mobile: Hamburger & Logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <button 
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden text-on-surface hover:text-primary transition-colors"
+              className="lg:hidden text-on-surface hover:text-primary-container p-1 transition-colors"
             >
               <Menu size={24} />
             </button>
-            <Link href="/" className="text-2xl font-black text-primary flex items-center shrink-0">
-              JUMIA <span className="text-primary-container ml-1">★</span>
+            <Link href="/" className="text-2xl font-black text-on-surface flex items-center shrink-0 tracking-tighter group">
+              JUMIA <span className="text-primary-container ml-1 group-hover:rotate-12 transition-transform">★</span>
             </Link>
           </div>
 
           {/* Desktop Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-2xl relative group">
+          <div className="hidden lg:flex flex-1 max-w-2xl relative group">
             <form onSubmit={handleSearch} className="w-full">
-              <div className={`flex items-center bg-surface-container-low rounded-lg px-4 py-2 border transition-all w-full ${
+              <div className={`flex items-center bg-surface-container-low rounded-2xl px-5 py-1.5 border-2 transition-all w-full ${
                 showSuggestions && suggestions && suggestions.length > 0 
-                  ? 'border-primary-container ring-2 ring-primary-container/10 rounded-b-none' 
+                  ? 'border-primary-container ring-4 ring-primary-container/5 rounded-b-none' 
                   : 'border-outline-variant focus-within:border-primary-container'
               }`}>
-                <Search size={20} className="text-on-surface-variant mr-2" />
+                <Search size={20} className="text-on-surface-variant mr-3" />
                 <input 
                   type="text" 
                   placeholder="Search products, brands and categories" 
-                  className="bg-transparent border-none focus:ring-0 w-full text-body-md text-on-surface"
+                  className="bg-transparent border-none focus:ring-0 w-full text-sm font-medium text-on-surface placeholder:text-on-surface-variant/50 h-10"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setShowSuggestions(true)}
@@ -91,25 +92,27 @@ export const Navbar = () => {
                 />
                 <button 
                   type="submit"
-                  className="bg-primary-container text-on-primary font-bold px-6 py-1.5 rounded-lg hover:opacity-90 transition-all scale-95 active:opacity-80"
+                  className="bg-primary-container text-white font-black text-[10px] tracking-widest px-8 py-2.5 rounded-xl hover:opacity-90 transition-all uppercase shadow-lg shadow-primary-container/20 active:scale-95"
                 >
-                  SEARCH
+                  Search
                 </button>
               </div>
             </form>
 
             {/* Autocomplete Dropdown */}
             {showSuggestions && suggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 bg-white border border-t-0 border-outline-variant rounded-b-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+              <div className="absolute top-full left-0 right-0 bg-surface-container-lowest border-2 border-t-0 border-primary-container rounded-b-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
                 <div className="py-2">
                   {suggestions.map((suggestion: string, idx: number) => (
                     <button
                       key={idx}
                       onClick={() => handleSearch(undefined, suggestion)}
-                      className="w-full text-left px-4 py-2.5 hover:bg-surface-variant transition-colors flex items-center gap-3 group"
+                      className="w-full text-left px-6 py-3.5 hover:bg-surface-container-low transition-colors flex items-center gap-4 group"
                     >
-                      <Search size={16} className="text-gray-300 group-hover:text-primary transition-colors" />
-                      <span className="text-sm font-medium text-on-surface">{suggestion}</span>
+                      <div className="w-8 h-8 rounded-xl bg-surface-container-low flex items-center justify-center group-hover:bg-primary-container/10 transition-colors">
+                        <Search size={14} className="text-on-surface-variant group-hover:text-primary-container" />
+                      </div>
+                      <span className="text-sm font-black text-on-surface uppercase tracking-tight">{suggestion}</span>
                     </button>
                   ))}
                 </div>
@@ -118,57 +121,75 @@ export const Navbar = () => {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-6">
-            <div className="hidden md:block relative">
+          <div className="flex items-center gap-4 lg:gap-8">
+            <div className="hidden lg:block relative">
               <button 
+                onMouseEnter={() => setShowAccountMenu(true)}
                 onClick={() => setShowAccountMenu(!showAccountMenu)}
-                className="flex items-center gap-1 text-on-surface hover:text-primary transition-colors group"
+                className="flex items-center gap-2 text-on-surface hover:text-primary-container transition-all group py-2"
               >
-                <User size={24} />
-                <span className="text-label-sm font-medium">
-                  {session ? `Hi, ${session.user?.email?.split('@')[0]}` : 'Account'}
-                </span>
-                <ChevronDown size={18} className={`transition-transform ${showAccountMenu ? 'rotate-180' : ''}`} />
+                <div className="w-10 h-10 bg-surface-container-low rounded-2xl flex items-center justify-center border border-outline-variant group-hover:border-primary-container transition-colors shadow-sm">
+                  <User size={20} className="group-hover:scale-110 transition-transform" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Account</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-black uppercase tracking-tighter max-w-[100px] truncate">
+                      {session ? (session.user?.name || session.user?.email?.split('@')[0]) : 'Sign In'}
+                    </span>
+                    <ChevronDown size={14} className={`transition-transform duration-300 ${showAccountMenu ? 'rotate-180' : ''}`} />
+                  </div>
+                </div>
               </button>
 
               {showAccountMenu && (
-                <div className="absolute top-full right-0 mt-2 w-56 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg py-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-1">
+                <div 
+                  onMouseLeave={() => setShowAccountMenu(false)}
+                  className="absolute top-full right-0 mt-2 w-64 bg-surface-container-lowest border-2 border-outline-variant rounded-[32px] shadow-2xl py-4 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300"
+                >
                   {session ? (
-                    <>
-                      <Link href="/account" className="flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-variant transition-colors">
-                        <User size={18} /> My Account
+                    <div className="flex flex-col">
+                      <div className="px-6 py-4 border-b border-outline-variant mb-2">
+                        <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Authenticated As</p>
+                        <p className="text-sm font-black text-on-surface truncate">{session.user?.email}</p>
+                      </div>
+                      <Link href="/account" className="flex items-center gap-4 px-6 py-3.5 text-xs font-black uppercase tracking-widest text-on-surface hover:bg-surface-container-low transition-all">
+                        <User size={18} className="text-primary-container" /> My Profile
                       </Link>
-                      <Link href="/account/orders" className="flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-variant transition-colors">
-                        <Package size={18} /> Orders
+                      <Link href="/account/orders" className="flex items-center gap-4 px-6 py-3.5 text-xs font-black uppercase tracking-widest text-on-surface hover:bg-surface-container-low transition-all">
+                        <Package size={18} className="text-primary-container" /> Order History
                       </Link>
-                      <Link href="/wishlist" className="flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-variant transition-colors">
-                        <Heart size={18} /> Saved Items
+                      <Link href="/wishlist" className="flex items-center gap-4 px-6 py-3.5 text-xs font-black uppercase tracking-widest text-on-surface hover:bg-surface-container-low transition-all">
+                        <Heart size={18} className="text-primary-container" /> Saved Items
                       </Link>
-                      <div className="border-t border-outline-variant my-1"></div>
+                      <div className="border-t border-outline-variant my-2 mx-4"></div>
                       <button 
                         onClick={() => signOut()}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-error font-bold hover:bg-error/5"
+                        className="flex items-center gap-4 px-6 py-3.5 text-xs font-black uppercase tracking-widest text-error hover:bg-error/5 transition-all"
                       >
-                        <LogOut size={18} /> Logout
+                        <LogOut size={18} /> Logout Session
                       </button>
-                    </>
+                    </div>
                   ) : (
-                    <div className="p-4">
+                    <div className="p-6">
                       <Link 
                         href="/login" 
-                        className="block w-full bg-primary-container text-on-primary text-center py-3 rounded-lg font-bold text-sm uppercase hover:opacity-90 transition-all"
+                        className="block w-full bg-primary-container text-white text-center py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-primary-container/20 hover:opacity-90 active:scale-95 transition-all"
                       >
-                        Sign In
+                        Sign In Now
                       </Link>
+                      <p className="text-[9px] text-center mt-4 text-on-surface-variant font-black uppercase tracking-widest">New Customer? <Link href="/register" className="text-primary-container hover:underline">Join Us</Link></p>
                     </div>
                   )}
                 </div>
               )}
             </div>
             
-            <button className="hidden md:flex items-center gap-1 text-on-surface hover:text-primary transition-colors">
-              <HelpCircle size={24} />
-              <span className="text-label-sm font-medium">Help</span>
+            <button className="hidden lg:flex items-center gap-2 text-on-surface hover:text-primary-container transition-all group">
+               <div className="w-10 h-10 bg-surface-container-low rounded-2xl flex items-center justify-center border border-outline-variant group-hover:border-primary-container transition-colors shadow-sm">
+                <HelpCircle size={20} />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest">Help</span>
             </button>
 
             <div className="hidden sm:block">
@@ -177,25 +198,42 @@ export const Navbar = () => {
 
             <button 
               onClick={() => setIsOpen(true)}
-              className="flex items-center gap-2 text-on-surface hover:text-primary transition-colors relative group"
+              className="flex items-center gap-2 text-on-surface hover:text-primary-container transition-all relative group"
             >
-              <ShoppingCart size={24} />
-              <span className="hidden md:inline text-label-sm font-medium">Cart</span>
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-primary-container text-on-primary text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-surface font-bold">
-                  {totalItems}
-                </span>
-              )}
+              <div className="w-12 h-12 bg-primary-container text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary-container/20 group-hover:scale-105 transition-all relative">
+                <ShoppingCart size={24} />
+                {totalItems > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-error text-white text-[10px] w-6 h-6 rounded-full flex items-center justify-center border-4 border-surface font-black">
+                    {totalItems}
+                  </span>
+                )}
+              </div>
+              <div className="hidden lg:flex flex-col items-start leading-tight">
+                <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Cart</span>
+                <span className="text-sm font-black uppercase tracking-tighter">My Items</span>
+              </div>
             </button>
           </div>
         </div>
 
-        {/* Sub-Nav / Mobile Search */}
-        <nav className="flex items-center gap-8 pt-2 pb-1 overflow-x-auto whitespace-nowrap hide-scrollbar">
-          <Link href="/flash-sales" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-label-sm">FLASH SALES</Link>
-          <Link href="/official-stores" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-label-sm">OFFICIAL STORES</Link>
-          <Link href="/jumia-global" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-label-sm">JUMIA GLOBAL</Link>
-          <Link href="/best-sellers" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-label-sm">BEST SELLERS</Link>
+        {/* Sub-Nav */}
+        <nav className="flex items-center gap-10 py-3 overflow-x-auto whitespace-nowrap hide-scrollbar border-t border-outline-variant/30">
+          {[
+            { label: 'Flash Sales', href: '/flash-sales' },
+            { label: 'Official Stores', href: '/official-stores' },
+            { label: 'Jumia Global', href: '/jumia-global' },
+            { label: 'Best Sellers', href: '/best-sellers' },
+            { label: 'Sell on Jumia', href: '/seller/login' }
+          ].map((link) => (
+            <Link 
+              key={link.href} 
+              href={link.href} 
+              className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant hover:text-primary-container transition-colors flex items-center gap-2 group"
+            >
+              {link.label}
+              <div className="w-1 h-1 rounded-full bg-primary-container opacity-0 group-hover:opacity-100 transition-opacity" />
+            </Link>
+          ))}
         </nav>
       </div>
 
@@ -203,73 +241,78 @@ export const Navbar = () => {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-[100] flex">
           <div 
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="relative w-72 max-w-[85vw] bg-white h-full flex flex-col shadow-2xl animate-in slide-in-from-left duration-300">
-            <div className="p-4 border-b flex items-center justify-between">
-              <span className="text-xl font-bold text-gray-900">
-                JUMIA<span className="text-[#F68B1E]">★</span>
+          <div className="relative w-80 max-w-[85vw] bg-surface-container-lowest h-full flex flex-col shadow-2xl animate-in slide-in-from-left duration-500 rounded-r-[32px] overflow-hidden">
+            <div className="p-6 border-b border-outline-variant flex items-center justify-between bg-surface">
+              <span className="text-2xl font-black text-on-surface tracking-tighter">
+                JUMIA<span className="text-primary-container">★</span>
               </span>
-              <button onClick={() => setMobileMenuOpen(false)} className="text-gray-500">
-                <X size={24} />
+              <button 
+                onClick={() => setMobileMenuOpen(false)} 
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-error transition-colors"
+              >
+                <X size={20} />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto">
-              <div className="p-4 bg-gray-50 border-b">
+            <div className="flex-1 overflow-y-auto py-6">
+              <div className="px-6 mb-8">
                 {session ? (
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#F68B1E] text-white rounded-full flex items-center justify-center font-bold">
+                  <div className="flex items-center gap-4 p-5 bg-surface-container-low rounded-3xl border border-outline-variant shadow-sm">
+                    <div className="w-14 h-14 bg-primary-container text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-primary-container/20">
                       {session.user?.email?.[0].toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-bold text-sm text-gray-900">Hi, {session.user?.email?.split('@')[0]}</p>
-                      <p className="text-[10px] text-gray-500 uppercase font-bold">Premium Member</p>
+                      <p className="font-black text-on-surface uppercase tracking-tight">Hi, {session.user?.name || session.user?.email?.split('@')[0]}</p>
+                      <p className="text-[9px] text-on-surface-variant uppercase font-black tracking-widest mt-0.5 bg-surface-container px-2 py-0.5 rounded-lg border border-outline-variant inline-block">Premium Account</p>
                     </div>
                   </div>
                 ) : (
                   <Link 
                     href="/login" 
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block w-full bg-[#F68B1E] text-white text-center py-2.5 rounded-lg font-black text-xs uppercase tracking-widest shadow-lg shadow-orange-500/20"
+                    className="block w-full bg-primary-container text-white text-center py-5 rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary-container/20 active:scale-[0.98] transition-all"
                   >
                     Login / Register
                   </Link>
                 )}
               </div>
 
-              <div className="py-4">
-                <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">My Profile</p>
-                <Link href="/account" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-4 px-4 py-3 text-gray-700 hover:bg-orange-50 font-bold text-sm">
-                  <User size={20} className="text-[#F68B1E]" /> My Account
-                </Link>
-                <Link href="/account/orders" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-4 px-4 py-3 text-gray-700 hover:bg-orange-50 font-bold text-sm">
-                  <Package size={20} className="text-[#F68B1E]" /> Orders
-                </Link>
-                <Link href="/wishlist" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-4 px-4 py-3 text-gray-700 hover:bg-orange-50 font-bold text-sm">
-                  <Heart size={20} className="text-[#F68B1E]" /> Saved Items
-                </Link>
-                <Link href="/notifications" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-4 px-4 py-3 text-gray-700 hover:bg-orange-50 font-bold text-sm">
-                  <Bell size={20} className="text-[#F68B1E]" /> Notifications
-                </Link>
-              </div>
-
-              <div className="border-t pt-4">
-                <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Categories</p>
-                <Link href="/flash-sales" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-700 font-bold text-sm uppercase">Flash Sales</Link>
-                <Link href="/official-stores" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-700 font-bold text-sm uppercase">Official Stores</Link>
-                <Link href="/jumia-global" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-700 font-bold text-sm uppercase">Jumia Global</Link>
+              <div className="space-y-2">
+                <p className="px-8 text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em] mb-4">Navigation</p>
+                {[
+                  { icon: User, label: 'My Profile', href: '/account' },
+                  { icon: Package, label: 'Order History', href: '/account/orders' },
+                  { icon: Heart, label: 'Saved Items', href: '/wishlist' },
+                  { icon: Bell, label: 'Notifications', href: '/notifications' },
+                  { icon: Star, label: 'Flash Sales', href: '/flash-sales' },
+                  { icon: HelpCircle, label: 'Support Center', href: '/help' },
+                  { icon: Settings, label: 'Settings', href: '/account/settings' }
+                ].map((item) => (
+                  <Link 
+                    key={item.href}
+                    href={item.href} 
+                    onClick={() => setMobileMenuOpen(false)} 
+                    className="flex items-center gap-5 px-8 py-4 text-on-surface hover:bg-surface-container-low transition-all group"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center group-hover:bg-primary-container/10 transition-colors">
+                      <item.icon size={20} className="text-on-surface-variant group-hover:text-primary-container transition-colors" />
+                    </div>
+                    <span className="font-black text-xs uppercase tracking-widest">{item.label}</span>
+                  </Link>
+                ))}
               </div>
             </div>
 
             {session && (
-              <div className="p-4 border-t">
+              <div className="p-6 border-t border-outline-variant bg-surface-container-low">
                 <button 
                   onClick={() => { signOut(); setMobileMenuOpen(false); }}
-                  className="w-full flex items-center justify-center gap-2 py-3 text-red-600 font-black text-xs uppercase tracking-widest bg-red-50 rounded-lg"
+                  className="w-full flex items-center justify-center gap-3 py-4 text-error font-black text-xs uppercase tracking-widest bg-error-container/10 rounded-2xl hover:bg-error-container/20 transition-all border border-error/10"
                 >
-                  <LogOut size={18} /> Logout
+                  <LogOut size={18} /> Terminate Session
                 </button>
               </div>
             )}
@@ -279,4 +322,5 @@ export const Navbar = () => {
     </header>
   );
 };
+
 

@@ -2,15 +2,42 @@
 
 import { useState } from 'react';
 import { api } from '@/trpc/react';
-import { ShieldCheck, Calendar, DollarSign, Trash, Plus } from 'lucide-react';
+import { 
+  ShieldCheck, 
+  Calendar, 
+  DollarSign, 
+  Trash, 
+  Plus, 
+  Zap, 
+  Search, 
+  Target, 
+  Clock, 
+  Box, 
+  BarChart3,
+  ChevronRight,
+  TrendingUp,
+  AlertCircle,
+  MoreVertical,
+  Loader2,
+  Fingerprint
+} from 'lucide-react';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AdminFlashSalesPage() {
   const utils = api.useUtils();
+  const { toast } = useToast();
   const [variantSearch, setVariantSearch] = useState('');
   const { data: flashSales, isLoading: loadingSales } = api.admin.listFlashSales.useQuery();
   const { data: variants, isLoading: loadingVariants } = api.admin.listAllVariants.useQuery(
     variantSearch ? { search: variantSearch } : undefined
   );
+
+  const [variantId, setVariantId] = useState('');
+  const [salePrice, setSalePrice] = useState('');
+  const [qtyLimit, setQtyLimit] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
 
   const createFlashSaleMutation = api.admin.createFlashSale.useMutation({
     onSuccess: () => {
@@ -20,36 +47,55 @@ export default function AdminFlashSalesPage() {
       setQtyLimit('');
       setStartTime('');
       setEndTime('');
-      alert('Flash Sale created successfully!');
+      toast({
+        title: 'STRATEGY DEPLOYED',
+        description: 'Flash sale campaign has been successfully scheduled and synchronized.',
+      });
     },
     onError: (err) => {
-      alert('Error creating flash sale: ' + err.message);
+      toast({
+        title: 'DEPLOYMENT FAILED',
+        description: err.message || 'System failed to finalize campaign parameters.',
+        variant: 'destructive',
+      });
     }
   });
 
   const deleteFlashSaleMutation = api.admin.deleteFlashSale.useMutation({
     onSuccess: () => {
       utils.admin.listFlashSales.invalidate();
-      alert('Flash Sale deleted!');
+      toast({
+        title: 'STRATEGY TERMINATED',
+        description: 'Flash sale campaign has been purged from the registry.',
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: 'TERMINATION FAILED',
+        description: err.message || 'System failed to finalize campaign deletion.',
+        variant: 'destructive',
+      });
     }
   });
-
-  const [variantId, setVariantId] = useState('');
-  const [salePrice, setSalePrice] = useState('');
-  const [qtyLimit, setQtyLimit] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!variantId || !salePrice || !qtyLimit || !startTime || !endTime) {
-      alert('Please fill out all fields');
+      toast({
+        title: 'INCOMPLETE DATA',
+        description: 'Please ensure all campaign parameters are defined before deployment.',
+        variant: 'destructive',
+      });
       return;
     }
 
     const selectedVariant = variants?.find(v => v.id === variantId);
     if (!selectedVariant) {
-      alert('Selected variant not found');
+      toast({
+        title: 'ENTITY NOT FOUND',
+        description: 'Selected variant could not be located in the inventory registry.',
+        variant: 'destructive',
+      });
       return;
     }
 
@@ -63,40 +109,81 @@ export default function AdminFlashSalesPage() {
     });
   };
 
+  if (loadingSales) {
+    return (
+      <div className="max-w-[1400px] mx-auto px-6 py-16 space-y-12 animate-pulse bg-background min-h-screen">
+        <div className="flex justify-between items-end mb-16">
+          <div className="space-y-4">
+            <div className="h-4 w-48 bg-surface-container-low rounded-full" />
+            <div className="h-16 w-96 bg-surface-container-low rounded-2xl" />
+          </div>
+          <div className="h-12 w-48 bg-surface-container-low rounded-xl" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div className="h-[600px] bg-surface-container-low rounded-[48px] border-4 border-surface-container-lowest" />
+          <div className="h-[600px] lg:col-span-2 bg-surface-container-low rounded-[48px] border-4 border-surface-container-lowest" />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="container py-8 space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-tight flex items-center gap-2">
-          <ShieldCheck className="text-[#f68b1e]" /> Admin Flash Sales Management
-        </h1>
-        <p className="text-gray-500 text-sm mt-1">Create, view, and delete platform flash sales.</p>
+    <div className="max-w-[1400px] mx-auto px-6 py-16 space-y-16 select-none bg-background min-h-screen animate-in fade-in duration-1000">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+        <div className="animate-in slide-in-from-left-8 duration-1000">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-2.5 bg-primary-container/20 backdrop-blur-xl rounded-2xl border border-primary-container/30 shadow-inner">
+              <ShieldCheck size={24} className="text-primary-container" />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary-container italic">Promotional Strategy & Flash Liquidity Control</span>
+          </div>
+          <h1 className="text-5xl md:text-7xl font-black text-on-surface uppercase tracking-tighter leading-[0.85]">
+            Flash <br />
+            <span className="text-primary-container italic">Strategy.</span>
+          </h1>
+        </div>
+
+        <div className="flex flex-col items-end gap-3 animate-in slide-in-from-right-8 duration-1000">
+          <div className="flex items-center gap-4 px-6 py-3 bg-on-surface border-4 border-surface-container-low rounded-2xl shadow-3xl group">
+            <Zap size={16} className="text-primary-container animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-white">Active Campaigns: {flashSales?.length || 0}</span>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Create Flash Sale Form */}
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200 h-fit">
-          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <Plus className="text-[#f68b1e]" /> Create Flash Sale
-          </h2>
-          <form onSubmit={handleCreate} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">
-                Search & Select Variant
+        <div className="bg-surface-container-lowest p-10 rounded-[48px] border-4 border-surface-container-low shadow-soft h-fit sticky top-8 group">
+          <div className="flex items-center gap-4 mb-10 pb-6 border-b-4 border-surface-container-low">
+            <div className="p-3 bg-primary-container/10 text-primary-container rounded-2xl border-2 border-primary-container/20 shadow-inner">
+              <Plus size={20} />
+            </div>
+            <h2 className="text-sm font-black text-on-surface uppercase tracking-[0.3em] italic">Deploy Strategy</h2>
+          </div>
+          
+          <form onSubmit={handleCreate} className="space-y-8">
+            <div className="space-y-4">
+              <label className="block text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+                Inventory Target
               </label>
-              <input
-                type="text"
-                placeholder="Search variant or SKU..."
-                value={variantSearch}
-                onChange={(e) => setVariantSearch(e.target.value)}
-                className="w-full border border-gray-300 rounded p-2 text-sm bg-white mb-2"
-              />
+              <div className="relative group/search">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant/20 group-focus-within/search:text-primary-container transition-colors" size={16} />
+                <input
+                  type="text"
+                  placeholder="SEARCH SKU OR PRODUCT IDENTITY..."
+                  value={variantSearch}
+                  onChange={(e) => setVariantSearch(e.target.value)}
+                  className="w-full pl-12 pr-5 py-4 bg-surface-container-low border-2 border-surface-container-lowest rounded-2xl focus:outline-none focus:border-primary-container/20 text-[10px] font-black text-on-surface placeholder:text-on-surface-variant/10 uppercase tracking-widest transition-all shadow-inner"
+                />
+              </div>
               <select
                 value={variantId}
                 onChange={(e) => setVariantId(e.target.value)}
-                className="w-full border border-gray-300 rounded p-2 text-sm bg-white"
+                className="w-full bg-surface-container-low border-2 border-surface-container-lowest rounded-2xl px-5 py-4 text-[10px] font-black focus:outline-none focus:border-primary-container/20 text-on-surface appearance-none cursor-pointer uppercase tracking-widest shadow-inner"
                 required
               >
-                <option value="">Choose variant</option>
+                <option value="">SELECT TARGET VARIANT</option>
                 {variants?.map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.product.title} - {v.sku} (₦{Number(v.price).toLocaleString()})
@@ -105,114 +192,176 @@ export default function AdminFlashSalesPage() {
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">
-                  Sale Price (₦)
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <label className="block text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+                  Sale Capital (₦)
                 </label>
                 <input
                   type="number"
                   step="0.01"
                   value={salePrice}
                   onChange={(e) => setSalePrice(e.target.value)}
-                  placeholder="e.g. 1500"
-                  className="w-full border border-gray-300 rounded p-2 text-sm"
+                  placeholder="PRICE"
+                  className="w-full bg-surface-container-low border-2 border-surface-container-lowest rounded-2xl px-5 py-4 text-[10px] font-black focus:outline-none focus:border-primary-container/20 text-on-surface placeholder:text-on-surface-variant/10 shadow-inner"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">
-                  Limit Quantity
+              <div className="space-y-4">
+                <label className="block text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+                  Unit Ceiling
                 </label>
                 <input
                   type="number"
                   value={qtyLimit}
                   onChange={(e) => setQtyLimit(e.target.value)}
-                  placeholder="e.g. 50"
-                  className="w-full border border-gray-300 rounded p-2 text-sm"
+                  placeholder="LIMIT"
+                  className="w-full bg-surface-container-low border-2 border-surface-container-lowest rounded-2xl px-5 py-4 text-[10px] font-black focus:outline-none focus:border-primary-container/20 text-on-surface placeholder:text-on-surface-variant/10 shadow-inner"
                   required
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">
-                Start Time
-              </label>
-              <input
-                type="datetime-local"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full border border-gray-300 rounded p-2 text-sm"
-                required
-              />
-            </div>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <label className="block text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+                  Activation Timestamp
+                </label>
+                <div className="relative">
+                  <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant/20" size={16} />
+                  <input
+                    type="datetime-local"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="w-full pl-12 pr-5 py-4 bg-surface-container-low border-2 border-surface-container-lowest rounded-2xl focus:outline-none focus:border-primary-container/20 text-[10px] font-black text-on-surface shadow-inner appearance-none"
+                    required
+                  />
+                </div>
+              </div>
 
-            <div>
-              <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">
-                End Time
-              </label>
-              <input
-                type="datetime-local"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="w-full border border-gray-300 rounded p-2 text-sm"
-                required
-              />
+              <div className="space-y-4">
+                <label className="block text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+                  Termination Timestamp
+                </label>
+                <div className="relative">
+                  <Clock className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant/20" size={16} />
+                  <input
+                    type="datetime-local"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full pl-12 pr-5 py-4 bg-surface-container-low border-2 border-surface-container-lowest rounded-2xl focus:outline-none focus:border-primary-container/20 text-[10px] font-black text-on-surface shadow-inner appearance-none"
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
             <button
               type="submit"
-              disabled={createFlashSaleMutation.isLoading}
-              className="w-full bg-[#f68b1e] text-white py-2 rounded text-xs font-bold uppercase tracking-wider hover:bg-[#e07b12] transition disabled:opacity-50"
+              disabled={createFlashSaleMutation.isPending}
+              className="w-full bg-on-surface text-white py-6 rounded-[24px] text-[11px] font-black uppercase tracking-[0.4em] italic hover:bg-primary-container transition-all duration-700 shadow-3xl disabled:opacity-50 flex items-center justify-center gap-3 group/submit"
             >
-              {createFlashSaleMutation.isLoading ? 'Creating...' : 'Create Flash Sale'}
+              {createFlashSaleMutation.isPending ? (
+                <>
+                  <Loader2 size={18} className="animate-spin text-primary-container" />
+                  Synchronizing...
+                </>
+              ) : (
+                <>
+                  <Zap size={18} className="group-hover/submit:scale-110 transition-transform text-primary-container" />
+                  Deploy Strategy
+                </>
+              )}
             </button>
           </form>
         </div>
 
         {/* List of Flash Sales */}
-        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden lg:col-span-2">
-          <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-            <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest">Active & Upcoming Flash Sales</h3>
-            <span className="bg-[#f68b1e] text-white px-2 py-0.5 rounded-full text-[10px] font-bold">
-              {flashSales?.length || 0}
-            </span>
+        <div className="lg:col-span-2 space-y-8 animate-in slide-in-from-bottom-8 duration-1000">
+          <div className="flex items-center justify-between px-4">
+            <h3 className="text-xs font-black text-on-surface uppercase tracking-[0.4em] italic opacity-40">Campaign Matrix Registry</h3>
+            <div className="flex items-center gap-2 text-primary-container bg-primary-container/10 px-3 py-1 rounded-full border border-primary-container/20">
+              <BarChart3 size={12} />
+              <span className="text-[10px] font-black uppercase tracking-widest">{flashSales?.length || 0} SECTORS</span>
+            </div>
           </div>
-          <div className="divide-y divide-gray-100">
+
+          <div className="grid gap-6">
             {flashSales?.map((sale) => (
-              <div key={sale.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                <div>
-                  <h4 className="font-bold text-gray-900">{sale.variant.product.title}</h4>
-                  <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">
-                    SKU: {sale.variant.sku} • Seller: {sale.variant.product.seller.businessName}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-gray-700">
-                    <span className="flex items-center gap-1 font-bold">
-                      <DollarSign size={14} className="text-[#f68b1e]" />
-                      ₦{Number(sale.salePrice).toLocaleString()}
-                    </span>
-                    <span className="bg-gray-100 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
-                      Limit: {sale.qtySold} / {sale.qtyLimit} sold
-                    </span>
-                    <span className="flex items-center gap-1 text-[10px] uppercase text-gray-500">
-                      <Calendar size={12} />
-                      {new Date(sale.startTime).toLocaleString()} - {new Date(sale.endTime).toLocaleString()}
-                    </span>
+              <div key={sale.id} className="bg-surface-container-lowest p-10 rounded-[48px] border-4 border-surface-container-low shadow-soft group hover:border-primary-container/20 hover:translate-x-4 transition-all duration-700 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/5 rounded-full blur-[40px] pointer-events-none group-hover:scale-150 transition-transform duration-[2000ms]" />
+                
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                  <div className="space-y-6 flex-1">
+                    <div className="flex items-center gap-5">
+                      <div className="w-14 h-14 bg-surface-container-low rounded-[20px] border-2 border-surface-container-lowest flex items-center justify-center text-on-surface-variant group-hover:bg-primary-container/10 group-hover:text-primary-container transition-all duration-700 shadow-inner">
+                        <Box size={24} />
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-black text-on-surface uppercase tracking-tighter italic leading-none mb-2">{sale.variant.product.title}</h4>
+                        <div className="flex flex-wrap items-center gap-4 text-[9px] font-black text-on-surface-variant/30 uppercase tracking-[0.2em] italic">
+                          <span className="flex items-center gap-1.5"><Fingerprint size={10} /> {sale.variant.sku}</span>
+                          <span className="flex items-center gap-1.5"><Target size={10} /> {sale.variant.product.seller.businessName}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-4 border-t-2 border-surface-container-low">
+                      <div className="space-y-1">
+                        <p className="text-[8px] font-black text-on-surface-variant/20 uppercase tracking-[0.4em] italic">Unit Liquidity</p>
+                        <div className="flex items-center gap-2 text-on-surface font-black text-sm tracking-tight italic">
+                          <DollarSign size={14} className="text-primary-container" />
+                          ₦{Number(sale.salePrice).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[8px] font-black text-on-surface-variant/20 uppercase tracking-[0.4em] italic">Absorption Rate</p>
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 h-1.5 bg-surface-container-low rounded-full overflow-hidden border border-surface-container-lowest max-w-[100px]">
+                            <div className="h-full bg-primary-container transition-all duration-1000 ease-out" style={{ width: `${Math.min((sale.qtySold / sale.qtyLimit) * 100, 100)}%` }} />
+                          </div>
+                          <span className="text-[10px] font-black text-on-surface tracking-widest">{sale.qtySold} / {sale.qtyLimit}</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1 md:col-span-1 col-span-2">
+                        <p className="text-[8px] font-black text-on-surface-variant/20 uppercase tracking-[0.4em] italic">Operational Window</p>
+                        <div className="flex items-center gap-2 text-on-surface-variant/60 font-black text-[9px] uppercase tracking-widest italic">
+                          <Clock size={10} />
+                          {new Date(sale.startTime).toLocaleDateString()} - {new Date(sale.endTime).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => deleteFlashSaleMutation.mutate({ id: sale.id })}
+                      disabled={deleteFlashSaleMutation.isPending}
+                      className="bg-error/5 text-error hover:bg-error hover:text-white border-4 border-error/10 p-5 rounded-[24px] duration-500 transition-all cursor-pointer shadow-soft group/delete disabled:opacity-50"
+                      title="TERMINATE STRATEGY"
+                    >
+                      <Trash size={20} className="group-hover/delete:rotate-12 transition-transform" />
+                    </button>
+                    <button className="p-5 bg-surface-container-low text-on-surface-variant/40 hover:text-on-surface hover:bg-surface-container-lowest rounded-[24px] border-4 border-surface-container-lowest transition-all duration-500 shadow-soft">
+                      <MoreVertical size={20} />
+                    </button>
                   </div>
                 </div>
-                <button
-                  onClick={() => deleteFlashSaleMutation.mutate({ id: sale.id })}
-                  disabled={deleteFlashSaleMutation.isLoading}
-                  className="bg-red-50 text-red-600 hover:bg-red-100 px-3 py-2 rounded text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 transition-colors disabled:opacity-50"
-                >
-                  <Trash size={14} /> Delete
-                </button>
               </div>
             ))}
             {(!flashSales || flashSales.length === 0) && (
-              <div className="p-8 text-center text-gray-400 text-xs font-bold uppercase tracking-widest">
-                No flash sales scheduled
+              <div className="bg-surface-container-lowest p-32 rounded-[56px] border-4 border-surface-container-low text-center select-none space-y-8 group">
+                <div className="w-24 h-24 bg-surface-container-low rounded-[40px] border-4 border-surface-container-lowest flex items-center justify-center mx-auto text-on-surface-variant/10 group-hover:scale-110 transition-transform duration-700">
+                  <TrendingUp size={48} />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-[12px] font-black uppercase tracking-[0.6em] text-on-surface-variant/20 italic">
+                    Campaign matrix clear.
+                  </p>
+                  <p className="text-[9px] font-black uppercase tracking-[0.4em] text-on-surface-variant/10 italic">
+                    No flash strategies currently deployed.
+                  </p>
+                </div>
               </div>
             )}
           </div>

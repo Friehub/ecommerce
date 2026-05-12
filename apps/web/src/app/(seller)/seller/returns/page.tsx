@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { 
   RotateCcw, 
   Package, 
@@ -11,120 +12,163 @@ import {
   AlertCircle,
   CheckCircle2,
   XCircle,
-  Search
+  Search,
+  SearchCode,
+  ArrowUpRight,
+  History,
+  ShieldCheck,
+  UserCheck,
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 import { api } from '@/trpc/react';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { format } from 'date-fns';
 
 export default function SellerReturnsPage() {
   const { data: returns, isLoading } = api.return.listForSeller.useQuery();
 
   if (isLoading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="animate-spin text-[#f68b1e]" size={32} />
+      <div className="max-w-[1600px] mx-auto px-6 py-16 space-y-16 bg-background min-h-screen">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+          <div className="space-y-6">
+            <Skeleton className="h-16 w-96 rounded-[24px]" />
+            <Skeleton className="h-6 w-64 rounded-xl" />
+          </div>
+          <Skeleton className="h-20 w-80 rounded-[32px]" />
+        </div>
+        <div className="space-y-8">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-40 w-full rounded-[48px]" />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 select-none">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-gray-900 uppercase tracking-tight flex items-center gap-2">
-            <RotateCcw className="text-[#f68b1e]" /> Return Management
+    <div className="max-w-[1600px] mx-auto px-6 py-16 space-y-16 select-none bg-background min-h-screen animate-in fade-in duration-1000">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+        <div className="animate-in slide-in-from-left-8 duration-1000">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-2.5 bg-primary-container/20 backdrop-blur-xl rounded-2xl border border-primary-container/30">
+              <RotateCcw size={24} className="text-primary-container" />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary-container italic">Reverse Logistics Protocol</span>
+          </div>
+          <h1 className="text-5xl md:text-8xl font-black text-on-surface uppercase tracking-tighter leading-[0.85]">
+            Asset <br />
+            <span className="text-primary-container italic">Reclamation.</span>
           </h1>
-          <p className="text-sm text-gray-500 font-medium mt-1">Manage customer return requests and quality control.</p>
+          <p className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.4em] mt-8 opacity-40 italic border-l-4 border-primary-container pl-8">Client Ingestion & Quality Assurance Authorization</p>
         </div>
         
-        <div className="relative w-full md:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+        <div className="relative group w-full md:w-96 animate-in slide-in-from-right-8 duration-1000">
+          <SearchCode className="absolute left-8 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-20 group-focus-within:opacity-100 transition-all duration-500" size={24} />
           <input 
             type="text" 
-            placeholder="Search Order ID..." 
-            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-100 rounded-xl text-xs font-bold focus:outline-none focus:border-[#f68b1e] transition-all"
+            placeholder="LOCATE RECLAMATION ID..."
+            className="w-full pl-20 pr-8 py-6 bg-surface-container-low border-4 border-surface-container-lowest rounded-[32px] focus:outline-none focus:border-primary-container/50 focus:ring-8 focus:ring-primary-container/5 text-xs font-black text-on-surface placeholder:text-on-surface-variant/20 tracking-[0.3em] transition-all shadow-soft"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="space-y-8">
         {returns && returns.length > 0 ? (
-          returns.map((req: any) => (
-            <div key={req.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:border-[#f68b1e]/30 transition-all group">
-              <div className="flex flex-col md:flex-row">
-                {/* Product Image */}
-                <div className="w-full md:w-32 h-32 bg-gray-50 border-r border-gray-50 shrink-0">
-                  <img 
-                    src={req.orderLine.variant.product.media[0]?.url || 'https://via.placeholder.com/128'} 
-                    alt="" 
-                    className="w-full h-full object-contain p-2"
-                  />
-                </div>
-
-                {/* Info */}
-                <div className="p-4 md:p-6 flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Product & Order</p>
-                    <h4 className="font-bold text-gray-900 text-sm line-clamp-1">{req.orderLine.variant.product.title}</h4>
-                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
-                      Ord #{req.orderLine.package.order.id.slice(-8).toUpperCase()}
-                    </p>
+          returns.map((req: any, idx: number) => (
+            <div key={req.id} className="bg-surface-container-lowest rounded-[48px] border-4 border-surface-container-low shadow-soft overflow-hidden hover:translate-y-[-8px] transition-all duration-700 group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${idx * 150}ms` }}>
+              <div className="flex flex-col lg:flex-row">
+                {/* Product Section */}
+                <div className="p-10 lg:w-[35%] flex items-center gap-10 border-r-4 border-surface-container-low">
+                  <div className="w-28 h-28 bg-surface-container-low rounded-[32px] flex items-center justify-center border-2 border-outline-variant/5 shrink-0 group-hover:scale-105 transition-transform duration-1000 overflow-hidden shadow-inner relative">
+                    <Image 
+                      src={req.orderLine.variant.product.media[0]?.url || ''} 
+                      alt={req.orderLine.variant.product.title}
+                      fill
+                      sizes="112px"
+                      className="object-contain p-4"
+                    />
                   </div>
-
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Reason for Return</p>
-                    <p className="text-xs font-bold text-gray-700 italic">"{req.reason}"</p>
-                    <div className="flex items-center gap-1 mt-1">
-                      <Calendar size={12} className="text-gray-300" />
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                        {new Date(req.createdAt).toLocaleDateString()}
-                      </span>
+                  <div className="min-w-0">
+                    <h4 className="font-black text-on-surface text-lg leading-none uppercase truncate mb-4 tracking-tighter group-hover:text-primary-container transition-colors duration-500">{req.orderLine.variant.product.title}</h4>
+                    <div className="flex items-center gap-4">
+                      <span className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] bg-surface-container-low px-3 py-1.5 rounded-xl italic">ORD #{req.orderLine.package.order.id.slice(-12).toUpperCase()}</span>
+                      <History size={16} className="text-on-surface-variant opacity-20" />
                     </div>
                   </div>
+                </div>
 
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Customer</p>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-orange-50 rounded-full flex items-center justify-center text-[#f68b1e]">
-                        <User size={12} />
+                {/* Logistics Detail */}
+                <div className="p-10 lg:w-[30%] border-r-4 border-surface-container-low flex flex-col justify-center">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Sparkles size={14} className="text-primary-container" />
+                    <p className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] italic leading-none">Reclamation Payload</p>
+                  </div>
+                  <p className="text-sm font-black text-on-surface uppercase tracking-tighter italic mb-4 leading-relaxed line-clamp-2 opacity-80">"{req.reason}"</p>
+                  <div className="flex items-center gap-3">
+                    <Calendar size={14} className="text-on-surface-variant opacity-20" />
+                    <span className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] italic">
+                      {format(new Date(req.createdAt), 'MMM dd, yyyy')}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Client Intelligence */}
+                <div className="p-10 lg:w-[20%] border-r-4 border-surface-container-low flex flex-col justify-center">
+                  <p className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] mb-6 italic">Origin Consumer</p>
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 bg-on-surface text-white rounded-[20px] flex items-center justify-center border-4 border-surface-container-low shadow-2xl transition-transform duration-700 group-hover:-rotate-12">
+                      <UserCheck size={24} />
+                    </div>
+                    <div>
+                      <span className="text-sm font-black text-on-surface uppercase tracking-tight leading-none block mb-2">
+                        {req.orderLine.package.order.user.firstName} {req.orderLine.package.order.user.lastName.charAt(0)}.
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-success rounded-full animate-pulse" />
+                        <p className="text-[9px] font-black text-success uppercase tracking-[0.3em] italic">Node Verified</p>
                       </div>
-                      <span className="text-xs font-bold text-gray-700">
-                        {req.orderLine.package.order.user.firstName} {req.orderLine.package.order.user.lastName}
-                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Status & Actions */}
-                <div className="p-4 md:p-6 bg-gray-50/50 border-l border-gray-50 flex items-center justify-between md:flex-col md:justify-center md:gap-4 md:w-48">
-                  <div className="flex items-center gap-2">
+                {/* Operational State */}
+                <div className="p-10 lg:flex-1 bg-surface-container-low/20 flex items-center justify-between lg:flex-col lg:justify-center lg:gap-8">
+                  <div className="flex items-center gap-4">
                     {req.status === 'PENDING' ? (
-                      <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
-                        <AlertCircle size={12} /> Pending QC
+                      <span className="bg-primary-container/10 text-primary-container px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.4em] border-2 border-primary-container/20 shadow-sm flex items-center gap-3 italic">
+                        <AlertCircle size={16} className="animate-pulse" /> PENDING QA
                       </span>
                     ) : req.status === 'APPROVED' ? (
-                      <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
-                        <CheckCircle2 size={12} /> Approved
+                      <span className="bg-success-container/10 text-success px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.4em] border-2 border-success/20 shadow-sm flex items-center gap-3 italic">
+                        <CheckCircle2 size={16} /> AUTHORIZED
                       </span>
                     ) : (
-                      <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
-                        <XCircle size={12} /> Rejected
+                      <span className="bg-error-container/10 text-error px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.4em] border-2 border-error/20 shadow-sm flex items-center gap-3 italic">
+                        <XCircle size={16} /> REJECTED
                       </span>
                     )}
                   </div>
                   
-                  <button className="text-[10px] font-black uppercase tracking-widest text-[#f68b1e] hover:underline flex items-center gap-1">
-                    View Details <ChevronRight size={14} />
+                  <button className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-on-surface-variant hover:text-primary-container transition-all duration-500 group/inspect">
+                    INSPECT NODE <ArrowRight size={18} className="group-hover/inspect:translate-x-2 transition-transform duration-500" />
                   </button>
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <div className="bg-white rounded-3xl border border-dashed border-gray-200 p-20 text-center">
-            <RotateCcw className="mx-auto text-gray-100 mb-4" size={48} />
-            <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight">No Return Requests</h3>
-            <p className="text-sm text-gray-400 font-medium italic">You're all caught up! No customers have requested returns for your products yet.</p>
+          <div className="bg-surface-container-low/30 rounded-[64px] border-4 border-dashed border-outline-variant/30 p-40 text-center animate-in fade-in zoom-in-95 duration-1000">
+            <div className="w-32 h-32 bg-surface-container-low border-4 border-surface-container-lowest rounded-[48px] flex items-center justify-center mx-auto mb-10 shadow-inner group">
+              <ShieldCheck size={64} strokeWidth={1} className="text-on-surface-variant opacity-10 group-hover:scale-110 transition-transform duration-1000" />
+            </div>
+            <h3 className="text-4xl font-black text-on-surface uppercase tracking-tighter leading-none mb-6">Logistics Integrity High</h3>
+            <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.4em] max-w-md mx-auto italic leading-relaxed opacity-40">
+              No reclamation requests detected in the current cycle. All consumer nodes reporting successful fulfillment telemetry.
+            </p>
           </div>
         )}
       </div>

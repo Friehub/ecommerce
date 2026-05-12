@@ -14,16 +14,19 @@ import {
   Store,
   Menu,
   X,
-  ShieldCheck
+  ShieldCheck,
+  ChevronRight,
+  TrendingUp,
+  Box
 } from 'lucide-react';
 
 const navItems = [
-  { name: 'Dashboard', href: '/seller/dashboard', icon: LayoutDashboard },
-  { name: 'Orders', href: '/seller/orders', icon: ShoppingCart },
-  { name: 'Inventory', href: '/seller/inventory', icon: Package },
+  { name: 'Console', href: '/seller/dashboard', icon: LayoutDashboard },
+  { name: 'Logistics', href: '/seller/orders', icon: ShoppingCart },
+  { name: 'Inventory', href: '/seller/products', icon: Box },
   { name: 'Finance', href: '/seller/finance', icon: Wallet },
-  { name: 'KYC Verification', href: '/seller/kyc', icon: ShieldCheck },
-  { name: 'Insights', href: '/seller/insights', icon: BarChart3 },
+  { name: 'Compliance', href: '/seller/kyc', icon: ShieldCheck },
+  { name: 'Intelligence', href: '/seller/insights', icon: BarChart3 },
 ];
 
 export function SellerSidebar() {
@@ -31,18 +34,19 @@ export function SellerSidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-white select-none">
-      <div className="p-8 flex items-center gap-4">
-        <div className="w-10 h-10 bg-[#f68b1e] rounded-xl flex items-center justify-center text-white shrink-0">
-          <Store size={22} strokeWidth={2.5} />
+    <div className="flex flex-col h-full bg-surface-container-low select-none">
+      <div className="p-10 flex items-center gap-5">
+        <div className="w-12 h-12 bg-on-surface text-white rounded-[18px] flex items-center justify-center shrink-0 shadow-2xl border-2 border-surface-container-lowest">
+          <Store size={24} strokeWidth={2.5} />
         </div>
         <div>
-          <h1 className="text-gray-900 font-extrabold text-sm uppercase tracking-tight leading-none">Seller Center</h1>
-          <p className="text-gray-400 text-[9px] font-bold mt-1 uppercase tracking-widest">Vendor Portal</p>
+          <h1 className="text-on-surface font-black text-sm uppercase tracking-tighter leading-none">Seller Core</h1>
+          <p className="text-on-surface-variant text-[9px] font-black mt-2 uppercase tracking-[0.3em] opacity-40">System Node v1.0</p>
         </div>
       </div>
 
-      <nav className="flex-1 px-4 space-y-1 mt-4">
+      <nav className="flex-1 px-6 space-y-2 mt-8">
+        <p className="px-4 text-[9px] font-black text-on-surface-variant uppercase tracking-[0.4em] opacity-30 mb-4">Operations Hub</p>
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -50,25 +54,39 @@ export function SellerSidebar() {
               key={item.name}
               href={item.href}
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-300 group ${
+              className={`flex items-center justify-between px-6 py-4 rounded-[20px] transition-all duration-500 group border-2 ${
                 isActive 
-                  ? 'bg-[#f68b1e]/10 text-[#f68b1e]' 
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-on-surface text-white border-on-surface shadow-xl translate-x-2' 
+                  : 'text-on-surface-variant border-transparent hover:bg-surface-container-lowest hover:border-outline-variant/10 hover:translate-x-2'
               }`}
             >
-              <item.icon className={`w-5 h-5 ${isActive ? 'text-[#f68b1e]' : 'text-gray-400 group-hover:text-gray-900'} transition-colors`} strokeWidth={isActive ? 2.5 : 2} />
-              <span className={`text-[11px] font-black uppercase tracking-widest ${isActive ? 'text-[#f68b1e]' : 'text-gray-500 group-hover:text-gray-900'}`}>{item.name}</span>
+              <div className="flex items-center gap-4">
+                <item.icon className={`w-5 h-5 transition-transform duration-500 ${isActive ? 'scale-110' : 'opacity-40 group-hover:opacity-100 group-hover:rotate-6'}`} strokeWidth={isActive ? 2.5 : 2} />
+                <span className={`text-[11px] font-black uppercase tracking-[0.2em] transition-all ${isActive ? 'opacity-100' : 'opacity-60 group-hover:opacity-100'}`}>{item.name}</span>
+              </div>
+              {isActive && <ChevronRight size={14} className="opacity-40" />}
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-50 mt-auto">
+      <div className="p-8 border-t-2 border-surface-container-lowest mt-auto bg-surface-container-lowest/50">
+        <div className="mb-8 p-6 bg-on-surface rounded-[28px] text-white relative overflow-hidden group">
+          <div className="relative z-10">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-2 opacity-60">Revenue Pulse</p>
+            <div className="flex items-center gap-3">
+              <TrendingUp size={16} className="text-success" />
+              <span className="text-lg font-black tracking-tighter">LIVE FEED</span>
+            </div>
+          </div>
+          <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-white/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000" />
+        </div>
+        
         <button
-          className="w-full flex items-center gap-4 px-5 py-4 rounded-xl text-red-500 hover:bg-red-50 transition-all group"
+          className="w-full flex items-center justify-center gap-4 px-6 py-4 rounded-[20px] text-error bg-error-container/5 border-2 border-transparent hover:border-error/20 hover:bg-error-container/10 transition-all group font-black text-[11px] uppercase tracking-[0.3em]"
         >
-          <LogOut size={20} />
-          <span className="font-black text-[11px] uppercase tracking-widest">Logout</span>
+          <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
+          Terminate Session
         </button>
       </div>
     </div>
@@ -79,24 +97,24 @@ export function SellerSidebar() {
       {/* Mobile Toggle Button */}
       <button 
         onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#f68b1e] text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform"
+        className="lg:hidden fixed bottom-8 right-8 z-[110] w-16 h-16 bg-on-surface text-white rounded-full flex items-center justify-center shadow-3xl active:scale-95 transition-all hover:rotate-90"
       >
-        <Menu size={24} />
+        <Menu size={28} />
       </button>
 
       {/* Mobile Drawer Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden">
+        <div className="fixed inset-0 z-[120] lg:hidden">
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-on-surface/90 backdrop-blur-md transition-opacity duration-500"
             onClick={() => setIsOpen(false)}
           />
-          <div className="relative w-72 max-w-[85vw] bg-white h-full flex flex-col shadow-2xl animate-in slide-in-from-left duration-500">
+          <div className="relative w-80 max-w-[85vw] bg-surface-container-low h-full flex flex-col shadow-2xl animate-in slide-in-from-left duration-700 ease-out">
             <button 
               onClick={() => setIsOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 p-2"
+              className="absolute top-10 right-8 text-on-surface-variant hover:text-on-surface p-2 transition-colors z-[130]"
             >
-              <X size={24} />
+              <X size={28} />
             </button>
             <SidebarContent />
           </div>
@@ -104,10 +122,9 @@ export function SellerSidebar() {
       )}
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex w-72 bg-white border-r border-gray-100 h-screen sticky top-0 flex-col">
+      <div className="hidden lg:flex w-80 bg-surface-container-low border-r-4 border-surface-container-lowest h-screen sticky top-0 flex-col shadow-soft">
         <SidebarContent />
       </div>
     </>
   );
 }
-

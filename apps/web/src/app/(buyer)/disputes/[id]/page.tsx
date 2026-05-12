@@ -12,15 +12,19 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  FileText
+  FileText,
+  ShieldCheck
 } from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { useToast } from '@/hooks/useToast';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function DisputeThreadPage() {
   const { id } = useParams() as { id: string };
   const utils = api.useUtils();
+  const { toast } = useToast();
   const [message, setMessage] = useState('');
 
   const { data: dispute, isLoading } = api.dispute.getThread.useQuery({ disputeId: id });
@@ -29,13 +33,14 @@ export default function DisputeThreadPage() {
     onSuccess: () => {
       setMessage('');
       utils.dispute.getThread.invalidate({ disputeId: id });
+      toast({ title: 'Message Sent', message: 'Your response has been recorded.', type: 'success' });
     }
   });
 
   const escalate = api.dispute.escalate.useMutation({
     onSuccess: () => {
       utils.dispute.getThread.invalidate({ disputeId: id });
-      alert('Dispute escalated to support!');
+      toast({ title: 'Dispute Escalated', message: 'This case is now under support review.', type: 'warning' });
     }
   });
 
@@ -45,19 +50,31 @@ export default function DisputeThreadPage() {
   const resolveDispute = api.admin.resolveDispute.useMutation({
     onSuccess: () => {
       utils.dispute.getThread.invalidate({ disputeId: id });
-      alert('Dispute resolved!');
+      toast({ title: 'Case Resolved', message: 'The dispute has been officially closed.', type: 'success' });
     }
   });
 
   if (isLoading) {
-    return <div className="container py-20 text-center font-bold text-gray-500 uppercase tracking-widest text-xs">Loading Thread...</div>;
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-12 space-y-8">
+        <Skeleton className="h-4 w-48 rounded-lg" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <Skeleton className="h-48 w-full rounded-[32px]" />
+            <Skeleton className="h-24 w-2/3 rounded-[24px]" />
+            <Skeleton className="h-24 w-2/3 ml-auto rounded-[24px]" />
+          </div>
+          <Skeleton className="h-64 w-full rounded-[32px]" />
+        </div>
+      </div>
+    );
   }
 
   if (!dispute) {
     return (
-      <div className="container py-20 text-center">
-        <h2 className="text-xl font-bold mb-4">Dispute not found</h2>
-        <Link href="/disputes" className="text-[#F68B1E] font-bold hover:underline">Back to Dispute Center</Link>
+      <div className="max-w-5xl mx-auto px-4 py-24 text-center">
+        <h2 className="text-3xl font-black text-on-surface uppercase tracking-tighter mb-4">Dispute Not Found</h2>
+        <Link href="/disputes" className="text-primary-container font-black uppercase tracking-widest hover:underline">Back to Dispute Center</Link>
       </div>
     );
   }
@@ -69,58 +86,68 @@ export default function DisputeThreadPage() {
   };
 
   return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-20">
-      <div className="container py-12 max-w-4xl space-y-8">
-        <Link href="/disputes" className="flex items-center gap-1 text-gray-500 hover:text-[#F68B1E] transition-colors font-bold text-xs mb-4 select-none">
-          <ChevronLeft size={16} />
+    <div className="min-h-screen pb-32 bg-surface-container-lowest/50">
+      <div className="max-w-5xl mx-auto px-4 py-12 space-y-8">
+        <Link href="/disputes" className="inline-flex items-center gap-2 text-on-surface-variant hover:text-primary-container transition-all font-black text-[10px] uppercase tracking-[0.2em] group">
+          <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           Back to Dispute Center
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* Header / Info */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-               <div className="flex items-center justify-between mb-4">
-                 <span className={`px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
-                   dispute.status === 'OPEN' ? 'bg-red-50 text-red-600 border-red-100' :
-                   dispute.status === 'UNDER_REVIEW' ? 'bg-orange-50 text-orange-600 border-orange-100' :
-                   'bg-green-50 text-green-600 border-green-100'
-                 }`}>
-                   {dispute.status.replace('_', ' ')}
-                 </span>
-                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                   Order #{dispute.orderId.slice(-8).toUpperCase()}
-                 </span>
-               </div>
-               <h1 className="text-xl font-black text-gray-900 tracking-tight leading-tight mb-2 uppercase">{dispute.reason}</h1>
-               <div className="flex items-center gap-4 text-xs font-bold text-gray-500">
-                  <div className="flex items-center gap-1.5">
-                    <User size={14} className="text-[#F68B1E]" />
-                    {dispute.buyer.firstName} {dispute.buyer.lastName}
-                  </div>
-                  <div className="w-1 h-1 bg-gray-300 rounded-full" />
-                  <div className="flex items-center gap-1.5">
-                    <Store size={14} className="text-[#264996]" />
-                    {dispute.seller.businessName}
-                  </div>
+            <div className="bg-surface-container-low rounded-[40px] border-4 border-surface-container-lowest shadow-soft p-8 relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/5 rounded-full blur-3xl" />
+               <div className="relative z-10">
+                 <div className="flex items-center justify-between mb-6">
+                   <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border-2 ${
+                     dispute.status === 'OPEN' ? 'bg-error-container/10 text-error border-error/20' :
+                     dispute.status === 'UNDER_REVIEW' ? 'bg-warning-container/10 text-warning border-warning/20' :
+                     'bg-success-container/10 text-success border-success/20'
+                   }`}>
+                     {dispute.status.replace('_', ' ')}
+                   </span>
+                   <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em] opacity-60">
+                     Reference #{dispute.orderId.slice(-8).toUpperCase()}
+                   </span>
+                 </div>
+                 <h1 className="text-2xl md:text-3xl font-black text-on-surface tracking-tighter leading-none mb-6 uppercase">{dispute.reason}</h1>
+                 <div className="flex flex-wrap items-center gap-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-surface-container rounded-xl flex items-center justify-center border border-outline-variant/30">
+                        <User size={14} className="text-primary-container" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-on-surface">{dispute.buyer.firstName} {dispute.buyer.lastName}</span>
+                    </div>
+                    <div className="w-1.5 h-1.5 bg-outline-variant rounded-full opacity-30" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-surface-container rounded-xl flex items-center justify-center border border-outline-variant/30">
+                        <Store size={14} className="text-secondary" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-on-surface">{dispute.seller.businessName}</span>
+                    </div>
+                 </div>
                </div>
             </div>
 
             {/* Message Thread */}
-            <div className="space-y-4">
-               {dispute.messages.map((msg: any) => {
+            <div className="space-y-6">
+               {dispute.messages.map((msg: any, idx: number) => {
                  const isMe = msg.senderId === dispute.buyerId;
                  return (
-                   <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[80%] rounded-2xl p-4 shadow-sm border ${
+                   <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2`} style={{ animationDelay: `${idx * 100}ms` }}>
+                      <div className={`max-w-[85%] rounded-[28px] p-6 shadow-soft border-2 ${
                         isMe 
-                          ? 'bg-[#282828] text-white border-transparent rounded-tr-none' 
-                          : 'bg-white text-gray-800 border-gray-100 rounded-tl-none'
+                          ? 'bg-on-surface text-white border-transparent rounded-tr-none shadow-on-surface/10' 
+                          : 'bg-surface-container-low text-on-surface border-surface-container-lowest rounded-tl-none'
                       }`}>
-                        <p className="text-sm font-medium leading-relaxed">{msg.content}</p>
-                        <p className={`text-[9px] font-bold uppercase mt-2 tracking-widest ${isMe ? 'text-gray-400' : 'text-gray-400'}`}>
-                          {format(new Date(msg.createdAt), 'HH:mm • dd MMM')}
-                        </p>
+                        <p className="text-sm font-medium leading-relaxed opacity-90">{msg.content}</p>
+                        <div className="flex items-center justify-between mt-4 border-t border-white/10 pt-3">
+                          <p className={`text-[8px] font-black uppercase tracking-[0.2em] ${isMe ? 'text-white/40' : 'text-on-surface-variant'}`}>
+                            {format(new Date(msg.createdAt), 'HH:mm • dd MMM yyyy')}
+                          </p>
+                          {isMe ? <CheckCircle size={10} className="text-primary-container" /> : <Clock size={10} className="text-on-surface-variant opacity-40" />}
+                        </div>
                       </div>
                    </div>
                  );
@@ -129,46 +156,46 @@ export default function DisputeThreadPage() {
 
             {/* Reply Area */}
             {dispute.status !== 'RESOLVED' && (
-              <form onSubmit={handleSend} className="bg-white rounded-2xl border border-gray-100 shadow-md p-4 flex gap-3 items-end">
+              <form onSubmit={handleSend} className="bg-surface-container-lowest rounded-[32px] border-4 border-surface-container-low shadow-2xl p-4 flex gap-4 items-end">
                 <textarea 
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Type your message to the seller..."
+                  placeholder="Elaborate on your case..."
                   rows={2}
-                  className="flex-1 bg-gray-50 border border-transparent focus:border-[#F68B1E] focus:bg-white rounded-xl p-3 text-sm font-medium transition-all outline-none resize-none"
+                  className="flex-1 bg-surface-container-low border-2 border-transparent focus:border-primary-container/30 focus:bg-surface-container-lowest rounded-[24px] p-4 text-sm font-medium transition-all outline-none resize-none placeholder:text-[10px] placeholder:font-black placeholder:uppercase placeholder:tracking-widest"
                 />
                 <button 
                   type="submit"
                   disabled={sendMessage.isLoading || !message.trim()}
-                  className="bg-[#F68B1E] hover:bg-[#e07a1a] text-white p-3 rounded-xl shadow-lg shadow-orange-100 transition-all active:scale-95 disabled:opacity-50 flex-shrink-0"
+                  className="bg-primary-container text-white w-16 h-16 rounded-[24px] shadow-2xl shadow-primary-container/40 flex items-center justify-center hover:-translate-y-1 hover:shadow-primary-container/60 transition-all active:scale-90 disabled:opacity-50 flex-shrink-0"
                 >
-                  <Send size={20} />
+                  <Send size={24} className="-rotate-12" />
                 </button>
               </form>
             )}
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 select-none">
-               <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
-                 <AlertCircle size={16} className="text-[#F68B1E]" /> Dispute Actions
+          <div className="space-y-8">
+            <div className="bg-surface-container-low rounded-[40px] border-4 border-surface-container-lowest shadow-soft p-8">
+               <h3 className="text-[10px] font-black text-on-surface uppercase tracking-[0.3em] mb-8 flex items-center gap-3">
+                 <ShieldAlert size={18} className="text-primary-container" /> Strategic Control
                </h3>
                
                {isAdmin && dispute.status !== 'RESOLVED' && (
-                 <div className="space-y-4">
-                    <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                      <p className="text-[10px] font-black text-blue-700 uppercase tracking-tight mb-3">Admin Panel</p>
-                      <div className="space-y-3">
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-black uppercase text-gray-400">Refund Amount (Optional)</label>
+                 <div className="space-y-6">
+                    <div className="p-6 bg-primary-container/5 border-2 border-primary-container/20 rounded-[28px]">
+                      <p className="text-[9px] font-black text-primary-container uppercase tracking-[0.2em] mb-6 italic">Authority Console</p>
+                      <div className="space-y-5">
+                        <div className="space-y-2">
+                          <label className="text-[8px] font-black uppercase text-on-surface-variant tracking-widest opacity-60 px-2">Resolution Amount</label>
                           <input 
                             type="number" 
                             placeholder="0.00"
                             id="refundAmount"
-                            className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold focus:border-blue-400 outline-none"
+                            className="w-full bg-surface-container-lowest border-2 border-outline-variant/30 rounded-2xl p-4 text-sm font-black focus:border-primary-container outline-none transition-all"
                           />
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-3">
                           <button 
                             onClick={() => {
                               const amount = (document.getElementById('refundAmount') as HTMLInputElement)?.value;
@@ -179,16 +206,16 @@ export default function DisputeThreadPage() {
                               });
                             }}
                             disabled={resolveDispute.isLoading}
-                            className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-colors"
+                            className="w-full bg-primary-container text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary-container/30 hover:-translate-y-1 transition-all"
                           >
-                            Approve Refund
+                            Authorize Refund
                           </button>
                           <button 
                             onClick={() => resolveDispute.mutate({ disputeId: id, resolution: 'REJECTED' })}
                             disabled={resolveDispute.isLoading}
-                            className="flex-1 bg-red-600 text-white py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-colors"
+                            className="w-full bg-error text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-error/30 hover:-translate-y-1 transition-all"
                           >
-                            Reject Claim
+                            Dismiss Claim
                           </button>
                         </div>
                       </div>
@@ -196,73 +223,57 @@ export default function DisputeThreadPage() {
                  </div>
                )}
 
-               {dispute.status === 'OPEN' && !isAdmin && (
-                 <div className="space-y-4">
-                    <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl">
-                      <p className="text-[10px] font-bold text-gray-600 leading-relaxed uppercase tracking-tight">
-                        Has the seller stopped responding? You can escalate this to support for manual intervention.
-                      </p>
-                      <button 
-                        onClick={() => escalate.mutate({ disputeId: id })}
-                        disabled={escalate.isLoading}
-                        className="mt-3 w-full bg-[#282828] text-white py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
-                      >
-                        Escalate to Support
-                      </button>
-                    </div>
-                 </div>
-               )}
+               <div className="space-y-4">
+                 {dispute.status === 'OPEN' && !isAdmin && (
+                   <div className="p-6 bg-warning-container/10 border-2 border-warning/20 rounded-[28px]">
+                     <p className="text-[9px] font-black text-warning uppercase tracking-[0.2em] leading-relaxed italic">
+                       Communication stalled? Escalate to Support for immediate intervention.
+                     </p>
+                     <button 
+                       onClick={() => escalate.mutate({ disputeId: id })}
+                       disabled={escalate.isLoading}
+                       className="mt-6 w-full bg-on-surface text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl active:scale-95"
+                     >
+                       Escalate Now
+                     </button>
+                   </div>
+                 )}
 
-               {dispute.status === 'ESCALATED' && !isAdmin && (
-                 <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-3">
-                    <Clock size={18} className="text-[#264996] shrink-0" />
-                    <div>
-                      <p className="text-[10px] font-black text-[#264996] uppercase tracking-tight">Under Support Review</p>
-                      <p className="text-[10px] font-medium text-gray-600 mt-1">An agent is reviewing the logs and evidence.</p>
-                    </div>
-                 </div>
-               )}
+                 {dispute.status === 'ESCALATED' && (
+                   <div className="p-6 bg-primary-container/10 border-2 border-primary-container/20 rounded-[28px] flex gap-4">
+                      <Clock size={24} className="text-primary-container shrink-0" />
+                      <div>
+                        <p className="text-[10px] font-black text-primary-container uppercase tracking-[0.2em]">Priority Review</p>
+                        <p className="text-[9px] font-medium text-on-surface-variant mt-1 leading-relaxed italic">An elite moderator is auditing this transaction thread.</p>
+                      </div>
+                   </div>
+                 )}
 
-               {dispute.status === 'RESOLVED' && (
-                 <div className="p-4 bg-green-50 border border-green-100 rounded-xl flex gap-3">
-                    <CheckCircle size={18} className="text-green-600 shrink-0" />
-                    <div>
-                      <p className="text-[10px] font-black text-green-700 uppercase tracking-tight">Case Resolved</p>
-                      <p className="text-[10px] font-medium text-gray-600 mt-1">This dispute has been closed.</p>
-                    </div>
-                 </div>
-               )}
-
-               {dispute.status === 'REJECTED' && (
-                 <div className="p-4 bg-red-50 border border-red-100 rounded-xl flex gap-3">
-                    <AlertCircle size={18} className="text-red-600 shrink-0" />
-                    <div>
-                      <p className="text-[10px] font-black text-red-700 uppercase tracking-tight">Claim Rejected</p>
-                      <p className="text-[10px] font-medium text-gray-600 mt-1">The resolution was in favor of the seller.</p>
-                    </div>
-                 </div>
-               )}
+                 {dispute.status === 'RESOLVED' && (
+                   <div className="p-6 bg-success-container/10 border-2 border-success/20 rounded-[28px] flex gap-4">
+                      <CheckCircle size={24} className="text-success shrink-0" />
+                      <div>
+                        <p className="text-[10px] font-black text-success uppercase tracking-[0.2em]">Case Finalized</p>
+                        <p className="text-[9px] font-medium text-on-surface-variant mt-1 italic">Resolution has been successfully implemented.</p>
+                      </div>
+                   </div>
+                 )}
+               </div>
             </div>
 
-            <div className="bg-[#282828] rounded-2xl p-6 text-white select-none">
-               <h3 className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2 opacity-80">
-                 <FileText size={16} /> Buyer Protection
+            <div className="bg-on-surface rounded-[40px] p-8 text-white relative overflow-hidden shadow-2xl border-4 border-surface-container-low">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/10 rounded-full blur-3xl" />
+               <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-6 flex items-center gap-3 opacity-60">
+                 <ShieldCheck size={20} className="text-primary-container" /> Jumia Guarantee
                </h3>
-               <p className="text-[11px] font-medium opacity-70 leading-relaxed">
-                 You are protected by the Jumia Guarantee. If the item is not as described or never arrived, you will get a full refund.
+               <p className="text-[11px] font-medium opacity-70 leading-relaxed italic">
+                 Your purchase is protected. If the item deviates from the description or fails to arrive, a full reconciliation is guaranteed.
                </p>
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 16px;
-        }
-      `}</style>
     </div>
   );
 }
+

@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Urbanist', 'Inter', 'system-ui', 'sans-serif'],
+      },
       colors: {
         'jumia-orange': '#f68b1e',
         "primary": "#914d00",

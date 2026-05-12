@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useCart } from '../../context/CartContext';
-import { X, ShoppingBag, Trash2, Plus, Minus } from 'lucide-react';
+import Image from 'next/image';
+import { useCart } from '@/hooks/useCart';
+import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export const CartDrawer = () => {
@@ -18,162 +19,134 @@ export const CartDrawer = () => {
     <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/60 z-[60] transition-opacity"
+        className="fixed inset-0 bg-on-surface/80 backdrop-blur-sm z-[100] transition-opacity animate-in fade-in duration-500"
         onClick={() => setIsOpen(false)}
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl flex flex-col animate-slide-in">
-        <div className="p-4 border-b flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ShoppingBag size={20} className="text-[#F68B1E]" />
-            <h2 className="font-bold text-lg">Cart ({totalItems})</h2>
+      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-surface-container-lowest z-[110] shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 border-l border-surface-container-low">
+        <div className="p-8 border-b border-surface-container-low flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="bg-primary-container/10 p-3 rounded-[20px] border border-primary-container/20">
+              <ShoppingBag size={24} className="text-primary-container" />
+            </div>
+            <div>
+              <h2 className="font-black text-on-surface uppercase tracking-widest text-sm leading-none mb-1">Logistics Hub</h2>
+              <p className="text-[9px] font-black text-on-surface-variant uppercase tracking-widest opacity-40 italic">{totalItems} Assets Identified</p>
+            </div>
           </div>
           <button 
             onClick={() => setIsOpen(false)}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-3 hover:bg-surface-container-low rounded-2xl transition-all touch-manipulation group active:scale-90"
           >
-            <X size={24} />
+            <X size={24} className="text-on-surface-variant group-hover:rotate-90 transition-transform duration-500" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-8 space-y-8 hide-scrollbar">
           {cart?.items?.length > 0 ? (
-            cart.items.map((item: any) => (
-              <div key={item.id} className="flex gap-4 border-b pb-4 last:border-0">
-                <div className="w-20 h-20 bg-gray-50 rounded border overflow-hidden flex-shrink-0">
-                  <img 
-                    src={item.variant.product.media[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'} 
+            cart.items.map((item: any, idx: number) => (
+              <div 
+                key={item.id} 
+                className="flex gap-6 group animate-in fade-in slide-in-from-right-8 duration-700"
+                style={{ animationDelay: `${idx * 100}ms` }}
+              >
+                <div className="w-24 h-24 bg-surface-container-low rounded-[24px] border-2 border-surface-container-lowest overflow-hidden flex-shrink-0 relative shadow-inner">
+                  <Image 
+                    src={item.variant.product.media[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400'} 
                     alt={item.variant.product.title}
-                    className="w-full h-full object-contain"
+                    fill
+                    sizes="96px"
+                    className="object-contain p-4 group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium line-clamp-1">{item.variant.product.title}</h3>
-                    <p className="text-xs text-gray-400 mt-1 uppercase">
-                      {Object.values(item.variant.attributes as any).join(' / ')}
-                    </p>
+                <div className="flex-1 flex flex-col py-1">
+                  <div className="flex justify-between items-start gap-4 mb-2">
+                    <h3 className="text-[11px] font-black text-on-surface uppercase tracking-tight line-clamp-2 leading-tight flex-1 group-hover:text-primary-container transition-colors">
+                      {item.variant.product.title}
+                    </h3>
+                    <button 
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-on-surface-variant/40 hover:text-error transition-all p-2 bg-surface-container-low/50 rounded-xl active:scale-90"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center border rounded">
+                  
+                  <p className="text-[8px] font-black text-on-surface-variant uppercase tracking-[0.2em] mb-4 opacity-40 italic">
+                    {Object.values(item.variant.attributes as any).join(' / ')}
+                  </p>
+
+                  <div className="flex items-center justify-between mt-auto">
+                    <div className="flex items-center bg-surface-container-low rounded-2xl border-2 border-surface-container-lowest p-1">
                       <button 
                         onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                        className="px-2 py-1 hover:bg-gray-100 transition-colors"
+                        className="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all touch-manipulation active:scale-90"
                       >
                         <Minus size={14} />
                       </button>
-                      <span className="px-3 text-sm font-bold">{item.quantity}</span>
+                      <span className="w-8 text-center text-xs font-black">{item.quantity}</span>
                       <button 
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="px-2 py-1 hover:bg-gray-100 transition-colors"
+                        className="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all touch-manipulation active:scale-90"
                       >
                         <Plus size={14} />
                       </button>
                     </div>
-                    <div className="text-sm font-semibold text-[#F68B1E]">
+                    <div className="text-sm font-black text-on-surface tracking-tighter">
                       ₦ {((Number(item.priceSnapshot ?? item.variant?.price ?? 0)) * item.quantity).toLocaleString()}
                     </div>
                   </div>
                 </div>
-                <button 
-                  onClick={() => removeFromCart(item.id)}
-                  className="text-gray-400 hover:text-red-500 transition-colors self-start"
-                >
-                  <Trash2 size={18} />
-                </button>
               </div>
             ))
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-center">
-              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                <ShoppingBag size={40} className="text-gray-300" />
+            <div className="h-full flex flex-col items-center justify-center text-center px-4">
+              <div className="w-32 h-32 bg-surface-container-low rounded-[40px] flex items-center justify-center mb-10 border-4 border-surface-container-lowest shadow-inner group">
+                <ShoppingBag size={48} className="text-on-surface-variant opacity-20 group-hover:scale-110 transition-transform duration-700" />
               </div>
-              <h3 className="font-bold text-lg">Your cart is empty</h3>
-              <p className="text-gray-500 text-sm mt-1">Browse our categories and discover our best deals!</p>
+              <h3 className="font-black text-on-surface text-xl uppercase tracking-tighter leading-none mb-4">Registry Clear</h3>
+              <p className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.3em] mt-2 max-w-[280px] opacity-40 italic leading-relaxed">
+                Logistics hub is awaiting asset ingestion commands.
+              </p>
               <button 
                 onClick={() => setIsOpen(false)}
-                className="mt-6 bg-[#F68B1E] text-white px-8 py-3 rounded-lg font-bold shadow-md hover:bg-[#e07b14] transition-all"
+                className="mt-12 bg-on-surface text-white px-12 py-5 rounded-[24px] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-on-surface/20 hover:bg-primary-container active:scale-95 transition-all flex items-center gap-4 group"
               >
-                START SHOPPING
+                Discover Assets
+                <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-500" />
               </button>
             </div>
           )}
         </div>
 
         {cart?.items?.length > 0 && (
-          <div className="p-4 border-t bg-gray-50 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-500 font-medium">Subtotal</span>
-              <span className="text-xl font-semibold">₦ {cartTotal.toLocaleString()}</span>
+          <div className="p-8 border-t-4 border-surface-container-low bg-surface-container-lowest space-y-8 shadow-[0_-12px_40px_rgba(0,0,0,0.08)]">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Sparkles size={16} className="text-primary-container" />
+                  <span className="text-on-surface-variant font-black text-[10px] uppercase tracking-[0.3em] italic opacity-60">Aggregate Value</span>
+                </div>
+                <span className="text-3xl font-black text-on-surface tracking-tighter leading-none">₦ {cartTotal.toLocaleString()}</span>
+              </div>
+              <div className="h-1 bg-surface-container-low rounded-full overflow-hidden">
+                <div className="h-full bg-primary-container w-2/3 animate-pulse" />
+              </div>
             </div>
+            
             <Link 
               href="/cart"
               onClick={() => setIsOpen(false)}
-              className="w-full bg-[#F68B1E] text-white py-4 rounded-lg font-bold shadow-md hover:bg-[#e07b14] transition-all flex items-center justify-center gap-2"
+              className="w-full bg-primary-container text-white py-6 rounded-[28px] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-primary-container/40 hover:bg-on-surface active:scale-[0.96] transition-all flex items-center justify-center gap-4 group"
             >
-              CHECKOUT NOW
+              Initialize Settlement
+              <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-500" />
             </Link>
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes slideIn {
-          from { transform: translateX(100%); }
-          to { transform: translateX(0); }
-        }
-        .animate-slide-in {
-          animation: slideIn 0.3s ease-out forwards;
-        }
-        .line-clamp-1 {
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .fixed { position: fixed; }
-        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
-        .right-0 { right: 0; }
-        .top-0 { top: 0; }
-        .h-full { height: 100%; }
-        .w-full { width: 100%; }
-        .max-w-md { max-width: 28rem; }
-        .bg-white { background-color: #ffffff; }
-        .bg-black\/60 { background-color: rgba(0, 0, 0, 0.6); }
-        .bg-gray-50 { background-color: #f9fafb; }
-        .bg-gray-100 { background-color: #f3f4f6; }
-        .z-\[60\] { z-index: 60; }
-        .z-\[70\] { z-index: 70; }
-        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .p-4 { padding: 1rem; }
-        .border-b { border-bottom: 1px solid #e5e7eb; }
-        .border-t { border-top: 1px solid #e5e7eb; }
-        .font-bold { font-weight: 700; }
-        .text-lg { font-size: 1.125rem; }
-        .text-sm { font-size: 0.875rem; }
-        .text-xs { font-size: 0.75rem; }
-        .text-xl { font-size: 1.25rem; }
-        .text-gray-500 { color: #6b7280; }
-        .text-gray-400 { color: #9ca3af; }
-        .text-gray-300 { color: #d1d5db; }
-        .text-\[#F68B1E\] { color: #f68b1e; }
-        .overflow-y-auto { overflow-y: auto; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-4 { gap: 1rem; }
-        .rounded-full { border-radius: 9999px; }
-        .rounded { border-radius: 4px; }
-        .rounded-lg { border-radius: 8px; }
-        .transition-colors { transition: background-color 0.2s, color 0.2s; }
-        .transition-all { transition: all 0.2s; }
-        .w-20 { width: 5rem; }
-        .h-20 { height: 5rem; }
-        .object-contain { object-fit: contain; }
-      `}</style>
     </>
   );
 };
+

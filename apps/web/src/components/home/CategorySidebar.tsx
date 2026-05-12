@@ -2,82 +2,55 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { 
-  Smartphone, 
-  Home, 
-  ChefHat, 
-  Tv, 
-  Laptop, 
-  Baby, 
-  ShoppingBag, 
-  Gamepad2, 
-  Dumbbell, 
-  Car,
-  MoreHorizontal,
-  ShieldCheck,
-  Globe,
-  TrendingUp
-} from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { api } from '../../trpc/react';
-
-const categoryIcons: Record<string, any> = {
-  'Phones & Tablets': Smartphone,
-  'Home & Office': Home,
-  'Appliances': ChefHat,
-  'Electronics': Tv,
-  'Computing': Laptop,
-  'Baby Products': Baby,
-  'Fashion': ShoppingBag,
-  'Gaming': Gamepad2,
-  'Sporting Goods': Dumbbell,
-  'Automobile': Car,
-};
+import { categoryIcons, DefaultCategoryIcon } from '../../constants/categoryIcons';
+import { Skeleton } from '../ui/Skeleton';
 
 export const CategorySidebar = () => {
   const { data: categories, isLoading } = api.catalog.getCategories.useQuery();
 
   if (isLoading) {
     return (
-      <aside className="col-span-12 md:col-span-3 lg:col-span-2 bg-surface rounded-lg shadow-sm p-stack-sm flex flex-col gap-base border border-outline-variant/30 h-[480px] animate-pulse">
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="h-10 bg-surface-variant rounded-lg" />
+      <div className="bg-surface-container-lowest rounded-3xl border-2 border-surface-container-low shadow-soft p-6 space-y-4">
+        {[...Array(10)].map((_, i) => (
+          <Skeleton key={i} className="h-10 w-full rounded-xl" />
         ))}
-      </aside>
+      </div>
     );
   }
 
   return (
-    <aside className="col-span-12 md:col-span-3 lg:col-span-2 bg-surface rounded-lg shadow-sm p-stack-sm flex flex-col gap-base border border-outline-variant/30">
-      <div className="flex flex-col gap-1">
-        {categories?.map((category: any) => {
-          const Icon = categoryIcons[category.name] || MoreHorizontal;
-          return (
-            <Link 
-              key={category.id} 
-              href={`/category/${category.slug}`}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group"
-            >
-              <Icon size={20} className="text-on-surface-variant group-hover:text-primary transition-colors" />
-              <span className="font-body-md text-sm text-on-surface-variant group-hover:text-primary truncate">{category.name}</span>
+                  <Icon size={16} className="text-on-surface-variant group-hover:text-primary-container transition-colors" />
+                </div>
+                <span className="font-black text-[10px] uppercase tracking-widest text-on-surface-variant group-hover:text-on-surface transition-colors truncate max-w-[120px]">{category.name}</span>
+              </div>
+              <ChevronRight size={12} className="text-outline-variant opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
             </Link>
           );
         })}
       </div>
-      <div className="border-t border-outline-variant my-2"></div>
-      <div className="flex flex-col gap-1">
-        <Link href="/official-stores" className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group">
-          <ShieldCheck size={20} className="text-on-surface-variant group-hover:text-primary transition-colors" />
-          <span className="font-body-md text-sm text-on-surface-variant group-hover:text-primary">Official Stores</span>
-        </Link>
-        <Link href="/jumia-global" className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group">
-          <Globe size={20} className="text-on-surface-variant group-hover:text-primary transition-colors" />
-          <span className="font-body-md text-sm text-on-surface-variant group-hover:text-primary">Jumia Global</span>
-        </Link>
-        <Link href="/best-sellers" className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-variant transition-all duration-200 group">
-          <TrendingUp size={20} className="text-on-surface-variant group-hover:text-primary transition-colors" />
-          <span className="font-body-md text-sm text-on-surface-variant group-hover:text-primary">Best Sellers</span>
-        </Link>
+      
+      <div className="p-2 space-y-1">
+        <div className="border-t-2 border-outline-variant/30 my-2 mx-2"></div>
+        {[
+          { label: 'Official Stores', href: '/official-stores', icon: ShieldCheck },
+          { label: 'Jumia Global', href: '/jumia-global', icon: Globe },
+          { label: 'Best Sellers', href: '/best-sellers', icon: TrendingUp }
+        ].map((item) => (
+          <Link 
+            key={item.href}
+            href={item.href} 
+            className="flex items-center gap-3 p-3 rounded-2xl hover:bg-surface-container-low transition-all duration-300 group"
+          >
+            <div className="w-8 h-8 bg-surface-container-low rounded-xl flex items-center justify-center border border-outline-variant group-hover:border-primary-container transition-all">
+              <item.icon size={16} className="text-on-surface-variant group-hover:text-primary-container transition-colors" />
+            </div>
+            <span className="font-black text-[10px] uppercase tracking-widest text-on-surface-variant group-hover:text-on-surface transition-colors">{item.label}</span>
+          </Link>
+        ))}
       </div>
     </aside>
   );
 };
+

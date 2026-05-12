@@ -186,53 +186,97 @@ function SearchResults() {
         <main className="flex-1">
           <div className="hidden lg:flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-black text-gray-900 leading-tight tracking-tighter uppercase">
+              <h1 className="text-3xl font-black text-on-surface leading-tight tracking-tighter uppercase">
                 {query ? query : 'All Collections'}
               </h1>
-              <p className="text-xs font-bold text-gray-400 mt-1 uppercase tracking-widest">{products?.results?.length || 0} items found</p>
+              <p className="text-[10px] font-black text-on-surface-variant mt-1 uppercase tracking-[0.3em] opacity-40">
+                {products?.results?.length || 0} units identified
+              </p>
             </div>
             
-            <div className="flex items-center gap-3 text-sm font-black bg-white px-5 py-3 rounded-2xl border border-gray-100 shadow-sm text-gray-800">
-              <SortAsc size={18} className="text-[#F68B1E]" />
-              <span className="uppercase tracking-widest text-[10px] text-gray-400">Sort By</span>
+            <div className="flex items-center gap-4 text-sm font-black bg-surface-container-lowest px-6 py-4 rounded-[20px] border border-outline-variant shadow-soft text-on-surface group">
+              <SortAsc size={18} className="text-primary-container" />
+              <span className="uppercase tracking-[0.2em] text-[10px] text-on-surface-variant opacity-40">Sort Protocol</span>
               <select 
-                value={sortBy}
                 value={sortBy}
                 onChange={(e) => {
                   setSortBy(e.target.value);
                   updateFilters({ sortBy: e.target.value });
                 }}
-                className="border-none bg-transparent font-black focus:ring-0 text-xs cursor-pointer outline-none text-gray-900 uppercase tracking-widest"
+                className="border-none bg-transparent font-black focus:ring-0 text-xs cursor-pointer outline-none text-on-surface uppercase tracking-widest appearance-none pr-8 relative"
               >
-                <option value="newest">Newest Arrivals</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
+                <option value="newest">Chronological</option>
+                <option value="price_asc">Value: Low-High</option>
+                <option value="price_desc">Value: High-Low</option>
               </select>
             </div>
           </div>
 
+          {/* Active Filter Chips */}
+          {(minPrice || maxPrice || brandId) && (
+            <div className="flex flex-wrap items-center gap-3 mb-8 animate-in fade-in slide-in-from-left-4 duration-500">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-40 mr-2">Active Refinements:</span>
+              {minPrice && (
+                <button 
+                  onClick={() => { setMinPrice(''); updateFilters({ minPrice: '' }); }}
+                  className="bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-on-surface hover:border-primary-container transition-all"
+                >
+                  Min: ₦{parseInt(minPrice).toLocaleString()}
+                  <X size={12} className="text-primary-container" />
+                </button>
+              )}
+              {maxPrice && (
+                <button 
+                  onClick={() => { setMaxPrice(''); updateFilters({ maxPrice: '' }); }}
+                  className="bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-on-surface hover:border-primary-container transition-all"
+                >
+                  Max: ₦{parseInt(maxPrice).toLocaleString()}
+                  <X size={12} className="text-primary-container" />
+                </button>
+              )}
+              {brandId && brands && (
+                <button 
+                  onClick={() => { setBrandId(''); updateFilters({ brandId: '' }); }}
+                  className="bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-on-surface hover:border-primary-container transition-all"
+                >
+                  Brand: {brands.find((b: any) => b.id === brandId)?.name}
+                  <X size={12} className="text-primary-container" />
+                </button>
+              )}
+              <button 
+                onClick={() => {
+                  setMinPrice(''); setMaxPrice(''); setBrandId('');
+                  updateFilters({ minPrice: '', maxPrice: '', brandId: '' });
+                }}
+                className="text-[10px] font-black uppercase tracking-widest text-error hover:underline ml-2"
+              >
+                Reset All
+              </button>
+            </div>
+          )}
+
           {isLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="aspect-[3/4] bg-gray-100 rounded-2xl animate-pulse" />
+                <div key={i} className="aspect-[3/4] bg-surface-container-low rounded-[32px] animate-pulse border border-outline-variant/30" />
               ))}
             </div>
           ) : products?.results && products.results.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
               {products.results.map((product: any) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-[32px] border border-gray-100 shadow-2xl shadow-black/5 py-24 text-center px-6">
-              <div className="w-20 h-20 bg-orange-50 text-[#F68B1E] rounded-[24px] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-orange-500/10">
-                <SearchIcon size={32} />
+            <div className="bg-surface-container-lowest rounded-[48px] border-4 border-surface-container-low shadow-soft py-32 text-center px-10 animate-in fade-in zoom-in-95 duration-700">
+              <div className="w-24 h-24 bg-primary-container/10 text-primary-container rounded-[32px] flex items-center justify-center mx-auto mb-8 border-4 border-primary-container/5 shadow-xl shadow-primary-container/10">
+                <SearchIcon size={40} />
               </div>
-              <h3 className="font-black text-2xl text-gray-900 leading-tight uppercase tracking-tight">No results matched</h3>
-              <p className="text-gray-400 font-bold text-sm mt-3 max-w-xs mx-auto uppercase tracking-wide leading-relaxed">
-                Adjust your filters or try a different search term.
+              <h3 className="font-black text-3xl text-on-surface leading-none uppercase tracking-tighter">Zero Correlation Found</h3>
+              <p className="text-on-surface-variant font-black text-[11px] mt-4 max-w-xs mx-auto uppercase tracking-[0.2em] opacity-40 leading-relaxed italic">
+                Adjust your refinement parameters or initialize a new search vector.
               </p>
-              <Link href="/" className="mt-10 inline-flex px-10 py-5 bg-[#F68B1E] text-white rounded-2xl font-black text-xs tracking-[0.2em] uppercase transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/40 hover:-translate-y-1 active:scale-95 shadow-xl shadow-orange-500/20">
+              <Link href="/" className="mt-12 inline-flex px-12 py-6 bg-primary-container text-white rounded-[24px] font-black text-xs tracking-[0.3em] uppercase transition-all duration-500 hover:shadow-2xl hover:shadow-primary-container/40 hover:-translate-y-1 active:scale-95 shadow-xl shadow-primary-container/20">
                 Back to Discovery
               </Link>
             </div>
@@ -245,11 +289,11 @@ function SearchResults() {
 
 export default function SearchPage() {
   return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-20">
+    <div className="bg-background min-h-screen pb-20">
       <Suspense fallback={
-        <div className="container mx-auto px-4 py-32 text-center">
-          <Loader2 className="animate-spin text-[#F68B1E] mx-auto mb-4" size={40} />
-          <p className="font-black text-xs uppercase tracking-[0.3em] text-gray-400">Synchronizing Inventory...</p>
+        <div className="container mx-auto px-4 py-32 text-center animate-in fade-in duration-700">
+          <div className="w-16 h-16 border-4 border-primary-container/20 border-t-primary-container rounded-full animate-spin mx-auto mb-8 shadow-xl shadow-primary-container/10" />
+          <p className="font-black text-[10px] uppercase tracking-[0.4em] text-on-surface-variant opacity-40">Synchronizing Global Inventory...</p>
         </div>
       }>
         <SearchResults />

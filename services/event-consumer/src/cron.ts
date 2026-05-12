@@ -27,7 +27,7 @@ export async function setupCronJobs() {
   console.log('📅 Cron jobs scheduled');
 }
 
-export const cronWorker = new Worker('cron-jobs', async job => {
+export async function handleCronJob(job: { name: string }) {
   console.log(`[CronWorker] Running: ${job.name}`);
   
   try {
@@ -73,4 +73,6 @@ export const cronWorker = new Worker('cron-jobs', async job => {
     console.error(`[CronWorker] Error in job ${job.name}:`, error);
     throw error;
   }
-}, { connection: redis });
+}
+
+export const cronWorker = new Worker('cron-jobs', handleCronJob, { connection: redis });

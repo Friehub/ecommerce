@@ -2,62 +2,52 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { MoreHorizontal, ChevronRight, TrendingUp } from 'lucide-react';
 import { api } from '../../trpc/react';
-import { MoreHorizontal, Smartphone, Home as HomeIcon, ChefHat, Tv, Laptop, Baby, ShoppingBag, Gamepad2, Dumbbell, Car } from 'lucide-react';
-
-const categoryIcons: Record<string, any> = {
-  'Phones & Tablets': Smartphone,
-  'Home & Office': HomeIcon,
-  'Appliances': ChefHat,
-  'Electronics': Tv,
-  'Computing': Laptop,
-  'Baby Products': Baby,
-  'Fashion': ShoppingBag,
-  'Gaming': Gamepad2,
-  'Sporting Goods': Dumbbell,
-  'Automobile': Car,
-};
+import { categoryIcons, DefaultCategoryIcon } from '../../constants/categoryIcons';
+import { Skeleton } from '../ui/Skeleton';
 
 export const TrendingNow = () => {
   const { data: categories, isLoading } = api.catalog.getCategories.useQuery();
 
   if (isLoading) {
     return (
-      <section className="mt-stack-lg">
-        <div className="h-8 w-48 bg-surface-variant rounded mb-6 animate-pulse"></div>
-        <div className="flex gap-8 overflow-x-auto pb-4 hide-scrollbar">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="flex flex-col items-center gap-3 animate-pulse">
-              <div className="w-20 h-20 bg-surface-variant rounded-full"></div>
-              <div className="h-4 w-16 bg-surface-variant rounded"></div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <div className="flex gap-6 overflow-x-auto pb-4 hide-scrollbar">
+        {[...Array(8)].map((_, i) => (
+          <Skeleton key={i} className="w-32 h-32 rounded-full shrink-0" />
+        ))}
+      </div>
     );
   }
 
   return (
-    <section className="mt-stack-lg bg-surface p-8 rounded-xl border border-outline-variant/20 shadow-sm">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="font-inter text-xl font-bold uppercase tracking-tight text-on-surface">Trending Now</h2>
-        <Link href="/categories" className="text-primary font-bold text-xs uppercase tracking-widest hover:underline">
-          View All
-        </Link>
+    <section className="mt-16 group/trending">
+      <div className="flex items-center justify-between mb-10 px-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-primary-container text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary-container/20 group-hover/trending:scale-110 transition-transform">
+            <TrendingUp size={24} />
+          </div>
+          <div>
+            <h2 className="text-2xl font-black text-on-surface uppercase tracking-tighter leading-none">Trending Now</h2>
+            <p className="text-[10px] text-on-surface-variant font-black uppercase tracking-[0.4em] mt-1 opacity-40">Market Velocity Leaders</p>
+          </div>
+        </div>
       </div>
-      <div className="flex gap-8 overflow-x-auto pb-2 hide-scrollbar">
-        {categories?.slice(0, 8).map((category: any) => {
-          const Icon = categoryIcons[category.name] || MoreHorizontal;
+
+      <div className="flex gap-8 overflow-x-auto pb-8 px-4 hide-scrollbar -mx-4 snap-x">
+        {categories?.map((category: any, idx: number) => {
+          const Icon = categoryIcons[category.name] || DefaultCategoryIcon;
           return (
             <Link 
               key={category.id} 
               href={`/category/${category.slug}`}
-              className="flex flex-col items-center gap-4 group min-w-[80px]"
+              className="flex flex-col items-center gap-5 group min-w-[96px] animate-in fade-in slide-in-from-bottom-4 duration-500"
+              style={{ animationDelay: `${idx * 100}ms` }}
             >
-              <div className="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center text-on-surface-variant group-hover:bg-primary-container group-hover:text-on-primary transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:scale-110">
-                <Icon size={32} />
+              <div className="w-24 h-24 bg-surface-container-low rounded-full flex items-center justify-center text-on-surface-variant group-hover:bg-primary-container group-hover:text-white transition-all duration-500 border-4 border-surface-container-lowest shadow-lg group-hover:shadow-primary-container/30 group-hover:scale-110 group-hover:-translate-y-2">
+                <Icon size={40} strokeWidth={1.5} />
               </div>
-              <span className="font-inter text-[10px] font-bold uppercase tracking-tight text-on-surface-variant text-center group-hover:text-primary transition-colors">
+              <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-center group-hover:text-primary-container transition-colors max-w-[100px] leading-tight opacity-80 group-hover:opacity-100">
                 {category.name}
               </span>
             </Link>
@@ -67,3 +57,4 @@ export const TrendingNow = () => {
     </section>
   );
 };
+

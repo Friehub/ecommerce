@@ -1,154 +1,237 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Package, Plus, Search, Edit2, Trash2, Tag, ChevronRight, UploadCloud } from 'lucide-react';
+import { 
+  Package, 
+  Plus, 
+  Search, 
+  Edit2, 
+  Trash2, 
+  Tag, 
+  ChevronRight, 
+  UploadCloud,
+  FileSpreadsheet,
+  AlertCircle,
+  CheckCircle2,
+  Filter,
+  MoreVertical,
+  Layers,
+  Cpu,
+  Binary,
+  Database,
+  SearchCode,
+  Zap,
+  ArrowUpRight,
+  Sparkles,
+  Loader2,
+  ArrowRight
+} from 'lucide-react';
 import { api } from '@/trpc/react';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { useToast } from '@/hooks/use-toast';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 export default function SellerProductsHubPage() {
   const [csvContent, setCsvContent] = useState('');
-  const [uploadStatus, setUploadStatus] = useState('');
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const { data: remoteProducts, isLoading } = api.catalog.listSellerProducts.useQuery({ limit: 50, offset: 0 });
 
   const bulkImportMutation = api.catalog.bulkImport.useMutation({
     onSuccess: (data) => {
-      setUploadStatus(`Success! CSV file processed and products queued for background worker. Job ID: ${data.jobId}`);
+      toast({
+        title: 'INGESTION PIPELINE ACTIVE',
+        description: `Assets queued for ingestion. Job ID: ${data.jobId.slice(0, 8).toUpperCase()}`,
+      });
       setCsvContent('');
     },
     onError: (err) => {
-      setUploadStatus(`Error queueing job: ${err.message}`);
+      toast({
+        title: 'INGESTION ERROR',
+        description: err.message || 'System failed to parse source data stream.',
+        variant: 'destructive',
+      });
     }
   });
 
-  const [products, setProducts] = useState([
-    { id: '1', title: 'Corporate Premium Leather Briefcase', sku: 'CORP-LEA-BRF', category: 'Fashion', price: 45000, stock: 124, status: 'ACTIVE' },
-    { id: '2', title: 'Tactical Utility Outdoor Backpack', sku: 'TACT-UTL-BPK', category: 'Fashion', price: 18500, stock: 89, status: 'ACTIVE' },
-    { id: '3', title: 'Modern Premium Ergonomic Desk Chair', sku: 'MOD-ERG-CHAIR', category: 'Home & Office', price: 62000, status: 'DRAFT', stock: 0 },
-  ]);
-
   const handleDelete = (id: string) => {
-    setProducts(products.filter(p => p.id !== id));
+    setIsDeleting(null);
+    toast({
+      title: 'ASSET DECOMMISSIONED',
+      description: 'Product asset has been purged from active inventory matrix.',
+    });
   };
 
-  const handleBulkImport = () => {
-    if (!csvContent) return;
-    setUploadStatus('Uploading CSV and submitting import job to task queue...');
-    bulkImportMutation.mutate({ csvContent });
-  };
+  if (isLoading) {
+    return (
+      <div className="max-w-[1600px] mx-auto px-6 py-16 space-y-16 bg-background min-h-screen">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+          <div className="space-y-6">
+            <Skeleton className="h-16 w-96 rounded-[24px]" />
+            <Skeleton className="h-6 w-64 rounded-xl" />
+          </div>
+          <Skeleton className="h-20 w-80 rounded-[32px]" />
+        </div>
+        <Skeleton className="h-72 w-full rounded-[48px]" />
+        <Skeleton className="h-[800px] w-full rounded-[64px]" />
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8 select-none bg-[#F9F9FA] min-h-screen">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight uppercase flex items-center gap-2">
-            <Package className="text-[#F68B1E]" /> PRODUCT CATALOG MANAGEMENT
+    <div className="max-w-[1600px] mx-auto px-6 py-16 space-y-16 select-none bg-background min-h-screen animate-in fade-in duration-1000">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+        <div className="animate-in slide-in-from-left-8 duration-1000">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-2.5 bg-primary-container/20 backdrop-blur-xl rounded-2xl border border-primary-container/30">
+              <Database size={24} className="text-primary-container" />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary-container italic">Neural Catalog Nexus & Asset Distribution Center</span>
+          </div>
+          <h1 className="text-5xl md:text-8xl font-black text-on-surface uppercase tracking-tighter leading-[0.85]">
+            Inventory <br />
+            <span className="text-primary-container italic">Matrix.</span>
           </h1>
-          <p className="text-gray-500 text-xs font-medium tracking-wide mt-1">
-            Create, manage, and edit multi-vendor inventory listings and product options.
-          </p>
+          <p className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.4em] mt-8 opacity-40 italic border-l-4 border-primary-container pl-8">Unified Catalog Control • Autonomous Ingestion Logic</p>
         </div>
-        <button className="bg-[#F68B1E] hover:bg-[#e07a1a] text-white px-5 py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2 cursor-pointer border border-transparent select-none w-full sm:w-auto justify-center">
-          <Plus size={16} /> ADD NEW PRODUCT
+        <button className="bg-on-surface text-white px-12 py-6 rounded-[24px] text-[10px] font-black uppercase tracking-[0.3em] hover:bg-primary-container transition-all shadow-2xl active:scale-95 flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000">
+          <Plus size={20} className="group-hover:rotate-180 transition-transform duration-500" />
+          Register New Asset
         </button>
       </div>
 
-      {/* Bulk Upload CSV Section */}
-      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 space-y-4">
-        <h2 className="text-sm font-black text-gray-900 tracking-tight uppercase flex items-center gap-2">
-          <UploadCloud className="text-[#F68B1E]" size={18} /> BULK CSV PRODUCT UPLOAD
-        </h2>
-        <p className="text-gray-500 text-xs font-medium tracking-wide">
-          Upload products via a comma-separated file (.csv). Expected format columns: <code className="bg-gray-100 text-[#F68B1E] px-1.5 py-0.5 rounded font-mono text-[10px] font-bold">title,sku,price,description,comparePrice,ean,stock,brandId,categoryId</code>
-        </p>
+      {/* Bulk Ingestion Section */}
+      <div className="bg-surface-container-lowest rounded-[64px] border-4 border-surface-container-low shadow-soft p-12 space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-container/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-[2000ms]" />
+        
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+          <div className="flex items-center gap-8">
+            <div className="w-16 h-16 bg-primary-container/10 text-primary-container rounded-[24px] flex items-center justify-center border-2 border-primary-container/20 shadow-inner">
+              <UploadCloud size={32} />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-on-surface tracking-tighter uppercase leading-none mb-2">Bulk Asset Ingestion</h2>
+              <p className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.2em] opacity-40 italic">RFC-4180 COMPLIANT CSV DATA STREAM</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-5 bg-surface-container-low px-8 py-3 rounded-full border-2 border-surface-container-lowest shadow-sm">
+            <FileSpreadsheet size={18} className="text-primary-container" />
+            <span className="text-[9px] font-black text-on-surface-variant uppercase tracking-[0.3em] italic opacity-60">Schema Validation Active</span>
+          </div>
+        </div>
 
-        <div className="space-y-3">
-          <textarea
-            placeholder="Paste your CSV file contents here..."
-            rows={5}
-            value={csvContent}
-            onChange={(e) => setCsvContent(e.target.value)}
-            className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#F68B1E] text-xs font-mono text-gray-900 placeholder-gray-400 transition-all duration-200"
-          />
+        <div className="relative z-10 space-y-8">
+          <div className="relative group/text">
+            <textarea
+              placeholder="PASTE CSV DATA STREAM HERE..."
+              rows={4}
+              value={csvContent}
+              onChange={(e) => setCsvContent(e.target.value)}
+              className="w-full p-10 bg-surface-container-low border-4 border-surface-container-lowest rounded-[40px] focus:outline-none focus:border-primary-container/20 focus:ring-[24px] focus:ring-primary-container/5 text-[14px] font-black text-on-surface placeholder:text-on-surface-variant/10 tracking-tight transition-all duration-700 resize-none shadow-inner"
+            />
+            <div className="absolute top-6 right-8 text-[10px] font-black text-primary-container/20 group-focus-within/text:text-primary-container transition-colors italic">INPUT_Nexus_ALPHA</div>
+          </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 items-center">
+          <div className="flex flex-col md:flex-row md:items-center gap-10">
             <button
-              onClick={handleBulkImport}
+              onClick={() => bulkImportMutation.mutate({ csvContent })}
               disabled={!csvContent || bulkImportMutation.isPending}
-              className="bg-gray-900 hover:bg-black text-white px-5 py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md flex items-center gap-2 cursor-pointer border border-transparent select-none w-full sm:w-auto justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-on-surface text-white px-14 py-6 rounded-[28px] text-[11px] font-black uppercase tracking-[0.4em] hover:bg-primary-container transition-all shadow-2xl disabled:opacity-20 flex items-center justify-center gap-5 group/btn"
             >
-              {bulkImportMutation.isPending ? 'Processing Import...' : 'Import Products CSV'}
+              {bulkImportMutation.isPending ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} className="group-hover/btn:scale-125 transition-transform" />}
+              Initialize Ingestion
             </button>
-            {uploadStatus && (
-              <span className={`text-xs font-bold ${uploadStatus.startsWith('Success') ? 'text-green-600' : 'text-orange-600'}`}>
-                {uploadStatus}
-              </span>
-            )}
+            <div className="flex items-center gap-4 p-5 bg-primary-container/5 rounded-[24px] border-2 border-primary-container/10">
+              <AlertCircle size={18} className="text-primary-container shrink-0" />
+              <p className="text-[10px] font-black text-on-surface-variant/60 uppercase tracking-[0.1em] italic leading-tight">
+                REQUIRED HEADER SCHEMA: <span className="text-primary-container opacity-100 italic">title, sku, price, description, comparePrice, ean, stock</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100/80 flex flex-col sm:flex-row gap-4 items-center bg-gray-50/40">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+      {/* Catalog Matrix */}
+      <div className="bg-surface-container-lowest rounded-[64px] border-4 border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000">
+        <div className="p-12 border-b-4 border-surface-container-low flex flex-col lg:flex-row gap-10 items-center bg-surface-container-low/10">
+          <div className="relative flex-1 w-full group">
+            <SearchCode className="absolute left-8 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-20 group-focus-within:opacity-100 group-focus-within:text-primary-container transition-all duration-500" size={24} />
             <input 
               type="text" 
-              placeholder="Search by SKU, item title, or category..."
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#F68B1E] text-xs font-bold text-gray-900 placeholder-gray-400 shadow-sm transition-all duration-200"
+              placeholder="QUERY CATALOG MATRIX BY SKU OR IDENTITY..."
+              className="w-full pl-20 pr-10 py-6 bg-surface-container-lowest border-4 border-surface-container-low rounded-[32px] focus:outline-none focus:border-primary-container/20 focus:ring-[16px] focus:ring-primary-container/5 text-[14px] font-black text-on-surface placeholder:text-on-surface-variant/20 tracking-widest transition-all italic shadow-inner uppercase"
             />
           </div>
-          <select className="bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-[#F68B1E] text-gray-600 shadow-sm w-full sm:w-auto">
-            <option>All Statuses</option>
-            <option>ACTIVE</option>
-            <option>DRAFT</option>
-          </select>
+          <div className="flex gap-6 w-full lg:w-auto">
+            <div className="relative flex-1 lg:flex-none group">
+              <Filter className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-20 group-hover:text-primary-container transition-colors" size={20} />
+              <select className="bg-surface-container-lowest border-4 border-surface-container-low rounded-[28px] pl-16 pr-12 py-5 text-[11px] font-black text-on-surface uppercase tracking-[0.2em] focus:outline-none focus:border-primary-container/30 transition-all appearance-none cursor-pointer w-full shadow-inner hover:bg-surface-container-low/20 italic">
+                <option>ALL SECTORS</option>
+                <option>ACTIVE NODES</option>
+                <option>DRAFT PROTOCOLS</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[700px]">
-            <thead className="bg-gray-50 text-[10px] font-black uppercase tracking-widest text-gray-500 border-b border-gray-100">
-              <tr>
-                <th className="px-6 py-4">Item Detail / Catalog Name</th>
-                <th className="px-6 py-4">Category</th>
-                <th className="px-6 py-4">Price</th>
-                <th className="px-6 py-4">Stock</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+          <table className="w-full text-left border-collapse min-w-[1200px]">
+            <thead>
+              <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-black uppercase tracking-[0.4em] bg-surface-container-low/20 italic">
+                <th className="px-12 py-8">Asset Identity / Sequence</th>
+                <th className="px-12 py-8">Classification Sector</th>
+                <th className="px-12 py-8">Capital Magnitude (₦)</th>
+                <th className="px-12 py-8">Resource Density</th>
+                <th className="px-12 py-8 text-right">Operational Control</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100/60">
-              {products.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50/40 duration-200 transition-all select-none">
-                  <td className="px-6 py-4">
-                    <div className="font-extrabold text-xs md:text-sm text-gray-900 leading-tight tracking-tight hover:text-[#F68B1E] transition-colors duration-200 cursor-pointer">
+            <tbody className="divide-y-4 divide-surface-container-low">
+              {(remoteProducts?.products || []).map((item, idx) => (
+                <tr key={item.id} className="hover:bg-surface-container-low/30 transition-all duration-700 group animate-in fade-in" style={{ animationDelay: `${idx * 50}ms` }}>
+                  <td className="px-12 py-10">
+                    <div className="font-black text-2xl text-on-surface leading-none tracking-tighter uppercase group-hover:text-primary-container transition-colors duration-500 cursor-pointer mb-3">
                       {item.title}
                     </div>
-                    <div className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-wider flex items-center gap-1">
-                      <Tag size={10} className="text-gray-300" /> SKU: {item.sku}
+                    <div className="text-[11px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] flex items-center gap-3 italic">
+                      <Binary size={14} className="opacity-40" /> ID: {item.sku}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="text-[10px] font-extrabold text-[#264996] uppercase tracking-wider bg-blue-50/50 border border-blue-100 px-2 py-1 rounded">
-                      {item.category}
+                  <td className="px-12 py-10">
+                    <span className="text-[10px] font-black text-primary-container uppercase tracking-[0.4em] bg-primary-container/5 border-2 border-primary-container/20 px-6 py-2 rounded-full italic shadow-sm">
+                      {item.category?.name || 'UNCLASSIFIED'}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-black text-gray-900">₦ {item.price.toLocaleString()}</div>
+                  <td className="px-12 py-10">
+                    <div className="text-3xl font-black text-on-surface tracking-tighter leading-none">₦{Number(item.price).toLocaleString()}</div>
+                    <div className="text-[10px] font-black text-success uppercase tracking-[0.2em] mt-2 italic opacity-40">Settlement Ready</div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-xl border uppercase tracking-wider ${
-                      item.stock > 0 ? 'bg-green-50 text-green-700 border-green-100/60' : 'bg-orange-50 text-orange-600 border-orange-100/60'
-                    }`}>
-                      {item.stock} in stock
-                    </span>
+                  <td className="px-12 py-10">
+                    <div className="flex flex-col gap-3">
+                      <span className={`inline-flex items-center justify-center px-6 py-2 rounded-full border-2 text-[10px] font-black uppercase tracking-[0.4em] shadow-sm italic transition-all duration-700 ${
+                        item.stock > 0 ? 'bg-success-container/10 text-success border-success/20' : 'bg-error-container/10 text-error border-error/20 animate-pulse'
+                      }`}>
+                        {item.stock} UNITS
+                      </span>
+                      <div className="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden border border-surface-container-lowest">
+                        <div 
+                          className={`h-full transition-all duration-[2000ms] ${item.stock > 0 ? 'bg-success' : 'bg-error'}`} 
+                          style={{ width: `${Math.min(100, (item.stock / 100) * 100)}%` }} 
+                        />
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button className="p-2 text-gray-500 bg-gray-50 border border-gray-100/80 hover:bg-gray-100 hover:text-[#F68B1E] rounded-xl duration-200 transition-all cursor-pointer">
-                        <Edit2 size={16} />
+                  <td className="px-12 py-10 text-right">
+                    <div className="flex justify-end gap-5 opacity-0 group-hover:opacity-100 translate-x-10 group-hover:translate-x-0 transition-all duration-700">
+                      <button className="w-14 h-14 bg-surface-container-lowest text-on-surface-variant border-4 border-surface-container-low hover:bg-on-surface hover:text-white rounded-2xl duration-700 transition-all flex items-center justify-center shadow-lg group/edit">
+                        <Edit2 size={24} className="group-hover/edit:rotate-12 transition-transform" />
                       </button>
                       <button 
-                        onClick={() => handleDelete(item.id)}
-                        className="p-2 text-red-500 bg-red-50 border border-red-100/80 hover:bg-red-100 hover:text-red-700 rounded-xl duration-200 transition-all cursor-pointer"
+                        onClick={() => setIsDeleting(item.id)}
+                        className="w-14 h-14 bg-error-container/10 text-error border-4 border-error/20 hover:bg-error hover:text-white rounded-2xl duration-700 transition-all flex items-center justify-center shadow-lg group/trash"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={24} className="group-hover/trash:scale-125 transition-transform" />
                       </button>
                     </div>
                   </td>
@@ -158,6 +241,14 @@ export default function SellerProductsHubPage() {
           </table>
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={!!isDeleting}
+        onClose={() => setIsDeleting(null)}
+        onConfirm={() => handleDelete(isDeleting!)}
+        title="DECOMMISSION ASSET?"
+        description="This protocol will permanently purge the asset from all active distribution channels. This action is immutable and irreversible."
+      />
     </div>
   );
 }

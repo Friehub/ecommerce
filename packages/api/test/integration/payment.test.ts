@@ -8,7 +8,7 @@ import { paymentService } from '../../modules/payment/services/payment-service.j
 import { ledgerService } from '../../modules/revenue/services/ledger-service.js';
 import { clearDatabase } from './setup.js';
 
-describe.skip('Payment & Revenue Integration Test (Real DB)', () => {
+describe('Payment & Revenue Integration Test (Real DB)', () => {
   let userId: string;
   let sellerId: string;
   let categoryId: string;
@@ -23,12 +23,12 @@ describe.skip('Payment & Revenue Integration Test (Real DB)', () => {
     // 1. Setup User & Seller
     const timestamp = Date.now() + Math.random();
     const user = await prisma.user.create({
-      data: { email: `buyer-${timestamp}@test.com`, name: 'Buyer' }
+      data: { email: `buyer-${timestamp}@test.com`, firstName: 'Buyer' }
     });
     userId = user.id;
 
     const sellerUser = await prisma.user.create({
-      data: { email: `seller-${Math.random()}@test.com`, name: 'Seller' }
+      data: { email: `seller-${Math.random()}@test.com`, firstName: 'Seller' }
     });
     const seller = await prisma.seller.create({
       data: { 
@@ -40,6 +40,10 @@ describe.skip('Payment & Revenue Integration Test (Real DB)', () => {
     sellerId = seller.id;
 
     // 2. Setup Catalog
+    const brand = await prisma.brand.create({
+      data: { name: 'Apple', slug: 'apple' }
+    });
+
     const category = await prisma.category.create({
       data: { name: 'Electronics', slug: 'elec', commissionRate: 10 }
     });
@@ -49,6 +53,8 @@ describe.skip('Payment & Revenue Integration Test (Real DB)', () => {
       data: {
         title: 'Smartphone',
         slug: 'phone',
+        description: 'A great smartphone',
+        brandId: brand.id,
         sellerId,
         categoryId,
         status: 'ACTIVE'
@@ -56,16 +62,21 @@ describe.skip('Payment & Revenue Integration Test (Real DB)', () => {
     });
     productId = product.id;
 
+    const warehouse = await prisma.warehouse.create({
+      data: { name: 'Main', address: '123 Warehouse St' }
+    });
+
     const variant = await prisma.productVariant.create({
       data: {
         productId,
         sku: 'PHONE-RED',
         price: 1000,
+        attributes: { color: 'Red' },
         stockLevels: {
           create: {
             qtyOnHand: 10,
             sellerId,
-            warehouseId: (await prisma.warehouse.create({ data: { name: 'Main' } })).id
+            warehouseId: warehouse.id
           }
         }
       }
@@ -76,13 +87,17 @@ describe.skip('Payment & Revenue Integration Test (Real DB)', () => {
     const order = await prisma.order.create({
       data: {
         userId,
-        status: 'PENDING',
-        totalAmount: 1000,
+        status: 'PENDING_PAYMENT',
+        subtotal: 1000,
+        shippingFee: 0,
+        discount: 0,
+        total: 1000,
+        paymentMethod: 'WALLET',
         packages: {
           create: {
             sellerId,
+            warehouseId: warehouse.id,
             status: 'PENDING',
-            totalAmount: 1000,
             lines: {
               create: {
                 variantId,
@@ -151,28 +166,66 @@ describe.skip('Payment & Revenue Integration Test (Real DB)', () => {
       });
       expect(updatedOrder?.status).toBe('PAID');
 
-      // 4. Verify Revenue/Ledger Entries
-      // Since order is PAID, we manually trigger ledger recording for the test
-      // In production, this would be triggered by 'payment.confirmed' event
+      // 4. Verify Revenue/Ledger Entries (Automatic)
       const lineId = updatedOrder?.packages[0].lines[0].id!;
-      await ledgerService.recordSale(lineId);
-
+      
       // Verify Sale Entry (Gross)
-      const saleEntry = await prisma.sellerLedgerEntry.findFirst({
+      const saleEntries = await prisma.sellerLedgerEntry.findMany({
         where: { sellerId, type: 'SALE', orderLineId: lineId }
       });
-      expect(saleEntry?.amount.toNumber()).toBe(1000);
-      expect(saleEntry?.status).toBe('PENDING');
+      expect(saleEntries.length).toBe(1);
+      expect(saleEntries[0].amount.toNumber()).toBe(1000);
+      expect(saleEntries[0].status).toBe('PENDING');
 
       // Verify Commission Entry (10%)
-      const commissionEntry = await prisma.sellerLedgerEntry.findFirst({
+      const commissionEntries = await prisma.sellerLedgerEntry.findMany({
         where: { sellerId, type: 'COMMISSION', orderLineId: lineId }
       });
-      expect(commissionEntry?.amount.toNumber()).toBe(-100);
+      expect(commissionEntries.length).toBe(1);
+      expect(commissionEntries[0].amount.toNumber()).toBe(-100);
 
-      // Verify Seller Balance (Net)
+      // 5. Test Idempotency: Call recordSale again manually
+      // This should NOT create new entries (Fix for BUG-2.3: Double Ledger)
+      await ledgerService.recordSale(lineId);
+      
+      const saleEntriesAfter = await prisma.sellerLedgerEntry.findMany({
+        where: { sellerId, type: 'SALE', orderLineId: lineId }
+      });
+      expect(saleEntriesAfter.length).toBe(1); // Still 1
+
+      // 6. Verify Seller Balance (Net)
       const balance = await ledgerService.getSellerBalance(sellerId, 'PENDING');
       expect(balance.toNumber()).toBe(900);
+    });
+
+    it('should handle transfer webhooks with idempotency', async () => {
+      // 1. Create a pending payout
+      const payout = await prisma.payout.create({
+        data: {
+          sellerId,
+          amount: 500,
+          status: 'PENDING',
+          bankRef: 'TRF-123'
+        }
+      });
+
+      // 2. Handle first success webhook
+      await paymentService.handleWebhook(payout.id, 'success', 'transfer.success');
+
+      // 3. Verify payout status is COMPLETED
+      const updatedPayout = await prisma.payout.findUnique({ where: { id: payout.id } });
+      expect(updatedPayout?.status).toBe('COMPLETED');
+      expect(updatedPayout?.processedAt).toBeDefined();
+
+      // 4. Handle second success webhook (duplicate)
+      // This should be a no-op due to idempotency guard
+      const firstProcessedAt = updatedPayout?.processedAt;
+      await paymentService.handleWebhook(payout.id, 'success', 'transfer.success');
+
+      const finalPayout = await prisma.payout.findUnique({ where: { id: payout.id } });
+      expect(finalPayout?.status).toBe('COMPLETED');
+      // Verify processedAt didn't change (proving no-op)
+      expect(finalPayout?.processedAt?.getTime()).toBe(firstProcessedAt?.getTime());
     });
   });
 });

@@ -199,6 +199,7 @@ export const inventoryService: Service = {
     return this.syncStockFromDB(variantId);
   },
   async syncAllStock() {
+    console.log('[InventoryService] Starting full stock synchronization...');
     const stockLevels = await prisma.stockLevel.findMany({
       select: {
         variantId: true,
@@ -207,24 +208,33 @@ export const inventoryService: Service = {
       }
     });
 
+    if (stockLevels.length === 0) {
+      console.warn('[InventoryService] No stock levels found in database to sync.');
+      return 0;
+    }
+
     const aggregates = new Map<string, number>();
     for (const sl of stockLevels) {
       const current = aggregates.get(sl.variantId) || 0;
       aggregates.set(sl.variantId, current + (sl.qtyOnHand - sl.qtyReserved));
     }
 
-    const pipeline = redis.pipeline();
+    // 1. Sync to Redis using MSET for atomicity across keys
+    const redisData: Record<string, string | number> = {};
     const rustLevels: { sku: string, quantity: number }[] = [];
     
     for (const [variantId, available] of aggregates.entries()) {
-      pipeline.set(`stock:${variantId}`, available);
+      redisData[`stock:${variantId}`] = available;
       rustLevels.push({ sku: variantId, quantity: available });
     }
-    await pipeline.exec();
 
-    // Push to Rust Inventory Service (Fix BUG-019: Missing sync with high-perf layer)
+    await redis.mset(redisData);
+    console.log(`[InventoryService] Synced ${aggregates.size} unique variants to Redis.`);
+
+    // 2. Push to Rust Inventory Service for high-perf layer consistency
     try {
       await inventorySyncBreaker.fire(rustLevels);
+      console.log('[InventoryService] Successfully synced with Rust inventory layer.');
     } catch (e) {
       console.warn('[InventoryService] Failed to sync with Rust service:', e);
     }

@@ -116,8 +116,8 @@ export const userService: Service = {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return { success: true };
 
-    const { nanoid } = await import('nanoid');
-    const token = nanoid(32);
+    const { generateId } = await import('@ecom/shared');
+    const token = generateId();
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
     await prisma.user.update({
@@ -183,7 +183,7 @@ export const userService: Service = {
       await publishEvent('user.created', { userId: user.id, email: user.email, role: 'BUYER' });
     }
 
-    await prisma.oauthAccount.upsert({
+    await prisma.oAuthAccount.upsert({
       where: { provider_providerAccountId: { provider, providerAccountId } },
       update: { userId: user.id },
       create: { provider, providerAccountId, userId: user.id }

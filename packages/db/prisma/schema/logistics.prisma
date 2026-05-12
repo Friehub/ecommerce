@@ -67,6 +67,7 @@ model ReturnShipment {
   reason          String
   status          String
   qcResult        QCResult?
+  note            String?
   refundTriggered Boolean   @default(false)
   createdAt       DateTime  @default(now())
 

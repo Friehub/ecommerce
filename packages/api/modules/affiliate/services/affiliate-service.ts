@@ -2,6 +2,7 @@ import { prisma, Decimal } from '@ecom/db';
 import { publishEvent } from '@ecom/shared';
 import { paymentService } from '../../payment/services/payment-service.js';
 import type { Service } from '../../../types.js'
+import crypto from 'crypto';
 
 export const affiliateService: Service = {
   async registerAgent(userId: string) {
@@ -19,7 +20,6 @@ export const affiliateService: Service = {
   },
 
   async generateLink(agentId: string, targetType: string, targetId?: string) {
-    const crypto = await import('crypto');
     const slug = crypto.randomBytes(4).toString('hex');
     
     return prisma.referralLink.create({

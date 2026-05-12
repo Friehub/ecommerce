@@ -1,8 +1,10 @@
 import { prisma } from '@ecom/db'
 import bcrypt from 'bcryptjs'
-import { publishEvent } from '@ecom/shared'
+import { publishEvent, redis, generateId } from '@ecom/shared'
 import type { RegisterInput, AddressInput, SellerOnboardingInput } from '../schemas/index.js'
 import type { Service } from '../../../types.js'
+import { notificationService } from '../../notification/services/notification-service.js'
+import { emailTemplates } from '../../notification/services/email-templates.js'
 
 export const userService: Service = {
   async findByEmail(email: string) {
@@ -72,9 +74,6 @@ export const userService: Service = {
   },
 
   async requestPhoneOTP(userId: string) {
-    const { redis } = await import('@ecom/shared');
-    const { notificationService } = await import('../../notification/services/notification-service.js');
-    
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { phone: true } });
     if (!user?.phone) throw new Error('NO_PHONE_NUMBER');
 
@@ -96,8 +95,6 @@ export const userService: Service = {
   },
 
   async verifyPhoneOTP(userId: string, otp: string) {
-    const { redis } = await import('@ecom/shared');
-    
     const storedOtp = await redis.get(`otp:phone:${userId}`);
     if (!storedOtp || storedOtp !== otp) {
       throw new Error('INVALID_OR_EXPIRED_OTP');
@@ -116,7 +113,6 @@ export const userService: Service = {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return { success: true };
 
-    const { generateId } = await import('@ecom/shared');
     const token = generateId();
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
@@ -124,9 +120,6 @@ export const userService: Service = {
       where: { id: user.id },
       data: { resetToken: token, resetTokenExpiresAt: expires }
     });
-
-    const { notificationService } = await import('../../notification/services/notification-service.js');
-    const { emailTemplates } = await import('../../notification/services/email-templates.js');
 
     const template = (emailTemplates as any).PASSWORD_RESET({ 
       email: user.email, 

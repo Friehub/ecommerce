@@ -34,9 +34,15 @@ jobs:
       - name: Generate Prisma client
         run: pnpm --filter @ecom/db generate
 
+      # ── Automated Tests (Gate) ───────────────────────────────────────────
+      - name: Run TypeScript Tests
+        run: pnpm test
+
+      - name: Run Rust Tests
+        run: cargo test --workspace
+
       - name: Typecheck
         run: pnpm -r typecheck
-
 
       - name: Sync code
         run: |
@@ -81,6 +87,7 @@ jobs:
 
           echo "rust=$RUST_CHANGED" >> $GITHUB_OUTPUT
           echo "ts=$TS_CHANGED"     >> $GITHUB_OUTPUT
+          echo "tag=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "Rust changed: $RUST_CHANGED | TS changed: $TS_CHANGED"
 
       # ── Build Rust workspace (ONE cargo-chef pass for all services) ────────
@@ -89,9 +96,8 @@ jobs:
         working-directory: /opt/runner-work/jumia-staging
         env:
           DOCKER_BUILDKIT: 1
+          IMAGE_TAG: ${{ steps.changes.outputs.tag }}
         run: |
-          # All Rust services share the same context+dockerfile — BuildKit
-          # builds the shared stages (chef/cacher/builder) only ONCE.
           docker compose -f docker-compose.staging.yml --env-file .env.staging build \
             search inventory fraud recommendations auction image-processor
 
@@ -105,6 +111,7 @@ jobs:
         working-directory: /opt/runner-work/jumia-staging
         env:
           DOCKER_BUILDKIT: 1
+          IMAGE_TAG: ${{ steps.changes.outputs.tag }}
         run: |
           docker compose -f docker-compose.staging.yml --env-file .env.staging build \
             api workers event-consumer web
@@ -112,18 +119,25 @@ jobs:
       # ── Deploy ────────────────────────────────────────────────────────────
       - name: Deploy staging
         working-directory: /opt/runner-work/jumia-staging
+        env:
+          IMAGE_TAG: ${{ steps.changes.outputs.tag }}
         run: |
+          # Stop only the services that are about to be updated to ensure clean transition
+          docker compose -f docker-compose.staging.yml --env-file .env.staging stop \
+            nginx api workers event-consumer web search inventory fraud recommendations auction image-processor || true
+          
           docker compose -f docker-compose.staging.yml --env-file .env.staging \
-            up -d --force-recreate \
+            up -d \
             nginx api workers event-consumer web \
             search inventory fraud recommendations auction image-processor
 
+          # Save the last successful tag for rollback
+          echo "${{ steps.changes.outputs.tag }}" > last_success_staging_tag.txt
+
       # ── Bounded cache prune — keeps 15 GB, evicts oldest layers ──────────
-      # This replaces the previous "no prune" approach that filled the disk.
-      # 15 GB is enough to keep one full Rust workspace cache hit.
       - name: Prune build cache (bounded)
         if: always()
         run: |
           docker builder prune --keep-storage 5GB -f
-          docker image prune -f
+          docker image prune -a -f --filter "until=24h"
 

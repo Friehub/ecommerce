@@ -69,6 +69,7 @@ services:
       start_period: 10s
 
   web:
+    image: jumia-web:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: apps/web/Dockerfile.prod
@@ -94,6 +95,7 @@ services:
           memory: 512M
 
   api:
+    image: jumia-api:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: apps/api-server/Dockerfile.prod
@@ -131,6 +133,7 @@ services:
           memory: 512M
 
   search:
+    image: jumia-search:${IMAGE_TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
@@ -141,12 +144,18 @@ services:
     volumes:
       - search_index:/data/index
     networks: [app-net]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:
           memory: 256M
 
   inventory:
+    image: jumia-inventory:${IMAGE_TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
@@ -156,12 +165,18 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       RUST_LOG: info
     networks: [app-net]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:
           memory: 64M
 
   fraud:
+    image: jumia-fraud:${IMAGE_TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
@@ -175,12 +190,18 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:
           memory: 64M
 
   recommendations:
+    image: jumia-recommendations:${IMAGE_TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
@@ -194,24 +215,36 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3005/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:
           memory: 64M
 
   auction:
+    image: jumia-auction:${IMAGE_TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
       target: auction-runner
     restart: always
     networks: [app-net]
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep auction || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:
           memory: 64M
 
   image-processor:
+    image: jumia-image-processor:${IMAGE_TAG:-latest}
     build:
       context: ./services
       dockerfile: Dockerfile          # workspace build
@@ -223,12 +256,18 @@ services:
       R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
       R2_BUCKET: ${R2_BUCKET}
     networks: [app-net]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3006/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:
           memory: 128M
 
   workers:
+    image: jumia-workers:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: packages/api/Dockerfile.workers
@@ -247,12 +286,18 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep node || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:
           memory: 256M
 
   event-consumer:
+    image: jumia-event-consumer:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: services/event-consumer/Dockerfile
@@ -266,6 +311,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep event-consumer || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:

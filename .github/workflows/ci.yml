@@ -54,7 +54,12 @@ jobs:
           workspaces: services -> target
           
       - name: Install Protoc
-        run: sudo apt-get install -y protobuf-compiler
+        run: |
+          mkdir -p $HOME/.local/bin
+          curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v25.1/protoc-25.1-linux-x86_64.zip -o protoc.zip
+          python3 -c "import zipfile, os; zipfile.ZipFile('protoc.zip').extractall(os.path.expanduser('~/.local'))"
+          chmod +x $HOME/.local/bin/protoc
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
         
       - name: Cargo Check
         run: cargo check --manifest-path services/Cargo.toml

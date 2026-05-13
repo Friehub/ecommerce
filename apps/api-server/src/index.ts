@@ -47,7 +47,7 @@ const server = Fastify({
 
 // ── Security & middleware ─────────────────────────────────────────
 async function start() {
-  const criticalEnv = ['DATABASE_URL', 'REDIS_URL', 'INTERNAL_API_TOKEN'];
+  const criticalEnv = ['DATABASE_URL', 'REDIS_URL', 'INTERNAL_API_TOKEN', 'PAYSTACK_SECRET_KEY'];
   for (const env of criticalEnv) {
     if (!process.env[env] || process.env[env].includes('placeholder')) {
       server.log.error(`CRITICAL: Environment variable ${env} is missing or insecure!`);

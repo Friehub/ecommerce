@@ -3,6 +3,7 @@ model EventLog {
   id        String   @id @default(cuid())
   topic     String
   payload   Json
-  status    String   @default("PUBLISHED") // PUBLISHED, FAILED, RETRIED
-  createdAt DateTime @default(now())
+  status     String   @default("PUBLISHED") // PENDING, PUBLISHED, FAILED, RETRIED
+  retryCount Int      @default(0)
+  createdAt  DateTime @default(now())
 }

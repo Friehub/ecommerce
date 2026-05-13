@@ -215,6 +215,50 @@ cron.schedule('0 4 * * *', async () => {
   }
 });
 
+// Outbox Sweep Worker (runs every 5 minutes)
+cron.schedule('*/5 * * * *', async () => {
+  console.log('⏳ Running outbox sweep for PENDING events...');
+  try {
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const pendingEvents = await prisma.eventLog.findMany({
+      where: {
+        status: 'PENDING',
+        createdAt: { lt: fiveMinutesAgo }
+      },
+      take: 50
+    });
+
+    if (pendingEvents.length === 0) return;
+
+    console.log(`[Outbox] Found ${pendingEvents.length} PENDING events to retry.`);
+
+    for (const event of pendingEvents) {
+      try {
+        await publishEvent(event.topic as any, event.payload as any);
+        
+        await prisma.eventLog.update({
+          where: { id: event.id },
+          data: { status: 'PUBLISHED' }
+        });
+        console.log(`✅ Event ${event.id} (${event.topic}) published.`);
+      } catch (publishError) {
+        console.error(`❌ Failed to re-publish event ${event.id}:`, publishError);
+        
+        const nextRetryCount = event.retryCount + 1;
+        await prisma.eventLog.update({
+          where: { id: event.id },
+          data: { 
+            retryCount: nextRetryCount,
+            status: nextRetryCount >= 5 ? 'FAILED' : 'PENDING'
+          }
+        });
+      }
+    }
+  } catch (error) {
+    console.error('❌ Outbox sweep failed:', error);
+  }
+});
+
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('Stopping workers...');

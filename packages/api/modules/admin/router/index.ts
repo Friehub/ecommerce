@@ -292,6 +292,13 @@ const _adminRouter = createTRPCRouter({
       return product;
     }),
 
+  listBanners: adminProcedure
+    .query(async () => {
+      return prisma.banner.findMany({
+        orderBy: { position: 'asc' }
+      });
+    }),
+
   createBanner: adminProcedure
     .input(z.object({
       title: z.string(),

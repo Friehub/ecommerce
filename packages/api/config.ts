@@ -13,9 +13,9 @@ const configSchema = z.object({
   NEXTAUTH_SECRET: z.string().min(32),
   NEXTAUTH_URL: z.string().url().default('http://localhost:3000'),
   
-  // Payments (Optional for boot)
-  PAYSTACK_SECRET_KEY: z.string().default('sk_placeholder'),
-  PAYSTACK_WEBHOOK_SECRET: z.string().default('whsec_placeholder'),
+  // Payments (Required)
+  PAYSTACK_SECRET_KEY: z.string().min(1),
+  PAYSTACK_WEBHOOK_SECRET: z.string().min(1),
   
   // Media / Storage
   R2_ACCESS_KEY_ID: z.string().default('placeholder'),

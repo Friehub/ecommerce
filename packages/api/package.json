@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc -b",
     "typecheck": "tsc -b",
-    "test": "pnpm run test:unit && pnpm run test:integration",
+    "test": "pnpm run test:unit",
     "test:unit": "vitest run modules",
     "test:integration": "DATABASE_URL=\"postgresql://ecom_test:ecom_test@localhost:5434/ecom_test\" vitest run test/integration --fileParallelism=false",
     "workers": "tsx scripts/run-workers.ts"

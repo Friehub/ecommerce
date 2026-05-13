@@ -35,7 +35,19 @@ jobs:
         run: pnpm --filter @ecom/db generate
 
       # ── Automated Tests (Gate) ───────────────────────────────────────────
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: services -> target
+
+      - name: Install Protoc
+        run: sudo apt-get install -y protobuf-compiler
+
       - name: Run Rust Tests
+        working-directory: services
         run: cargo test --workspace
 
       - name: Typecheck

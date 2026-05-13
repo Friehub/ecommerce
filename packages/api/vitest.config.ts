@@ -10,10 +10,13 @@ export default defineConfig({
     environment: 'node',
     alias: {
       '@': resolve(__dirname, './src'),
-      '@ecom/db': resolve(__dirname, '../db/dist/index.js'),
-      '@ecom/shared': resolve(__dirname, '../shared/dist/index.js'),
+      '@ecom/db': resolve(__dirname, '../db/index.ts'),
+      '@ecom/shared': resolve(__dirname, '../shared/src/index.ts'),
     },
     // We mock the config module globally for tests
     setupFiles: [resolve(__dirname, './vitest.setup.ts')],
+    deps: {
+      inline: [/@ecom/],
+    },
   },
 });

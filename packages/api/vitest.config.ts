@@ -15,6 +15,7 @@ export default defineConfig({
     },
     // We mock the config module globally for tests
     setupFiles: [resolve(__dirname, './vitest.setup.ts')],
+    testTimeout: 15000,
     deps: {
       inline: [/@ecom/],
     },

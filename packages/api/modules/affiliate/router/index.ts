@@ -1,4 +1,5 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '../../../trpc.js';
+import { z } from 'zod';
 import { GenerateLinkSchema, RecordClickSchema } from '../schemas/index.js';
 import { affiliateService } from '../services/affiliate-service.js';
 

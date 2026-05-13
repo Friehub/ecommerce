@@ -184,12 +184,7 @@ export const affiliateService = {
     const confirmed = stats.find(s => s.status === 'CONFIRMED' || s.status === 'PAID')?._sum.amount || new Decimal(0);
     const pending = stats.find(s => s.status === 'PENDING')?._sum.amount || new Decimal(0);
 
-    const linkStats = await prisma.referralLink.aggregate({
-      where: { agentId },
-      _sum: { clicks: { _count: true } } as any // This is tricky with Prisma aggregate on counts
-    });
-
-    // Let's just do a direct count for simplicity if aggregate is being weird
+    // Direct count for total clicks across all links
     const totalClicks = await prisma.referralClick.count({
       where: { link: { agentId } }
     });

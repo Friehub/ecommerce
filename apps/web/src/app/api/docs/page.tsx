@@ -4,23 +4,23 @@ import { useEffect } from 'react';
 import 'swagger-ui-dist/swagger-ui.css';
 
 export default function ApiDocsPage() {
-  useEffect(() => {
-    const initSwagger = async () => {
-      const { SwaggerUIBundle, SwaggerUIStandalonePreset } = await import('swagger-ui-dist');
-      SwaggerUIBundle({
-        url: '/api/openapi.json',
-        dom_id: '#swagger-ui',
-        presets: [
-          SwaggerUIBundle.presets.apis,
-          SwaggerUIStandalonePreset,
-        ],
-        layout: 'StandaloneLayout',
-      });
-    };
-    initSwagger();
-  }, []);
+ useEffect(() => {
+ const initSwagger = async () => {
+ const { SwaggerUIBundle, SwaggerUIStandalonePreset } = await import('swagger-ui-dist');
+ SwaggerUIBundle({
+ url: '/api/openapi.json',
+ dom_id: '#swagger-ui',
+ presets: [
+ SwaggerUIBundle.presets.apis,
+ SwaggerUIStandalonePreset,
+ ],
+ layout: 'StandaloneLayout',
+ });
+ };
+ initSwagger();
+ }, []);
 
-  return (
-    <div id="swagger-ui" />
-  );
+ return (
+ <div id="swagger-ui" />
+ );
 }

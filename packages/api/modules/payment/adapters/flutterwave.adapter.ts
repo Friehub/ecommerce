@@ -11,8 +11,10 @@ import type {
   PayoutResult,
 } from './types.js';
 
-const FLW_SECRET_KEY = process.env.FLW_SECRET_KEY || 'FLWSECK_test_placeholder';
-const FLW_WEBHOOK_SECRET = process.env.FLW_WEBHOOK_SECRET || 'flw_whsec_placeholder';
+import { config } from '../../../config.js';
+
+const FLW_SECRET_KEY = config.FLW_SECRET_KEY;
+const FLW_WEBHOOK_SECRET = config.FLW_WEBHOOK_SECRET;
 const FLW_BASE = 'https://api.flutterwave.com/v3';
 
 function headers() {

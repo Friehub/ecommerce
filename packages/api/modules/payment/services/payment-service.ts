@@ -342,8 +342,16 @@ export const paymentService = {
   },
 
   async payWithWallet(userId: string, orderId: string, amount: number) {
-    return prisma.$transaction(async (tx) => {
-      // Fix BUG-002: Atomic decrement with guard in WHERE clause
+    // 1. Early Validation: Check if order is payable before initiating transaction
+    // This prevents unnecessary DB locks and provides a cleaner error if the order is already processed
+    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    if (!order) throw new Error('ORDER_NOT_FOUND');
+    if (order.status !== 'PENDING_PAYMENT') {
+      throw new Error(`ORDER_ALREADY_PROCESSED:${order.status}`);
+    }
+
+    await prisma.$transaction(async (tx) => {
+      // 2. Atomic Balance Update
       const result = await tx.wallet.updateMany({
         where: { 
           userId, 
@@ -358,10 +366,10 @@ export const paymentService = {
         throw new Error('INSUFFICIENT_FUNDS');
       }
 
-      // Get wallet ID for transaction log
       const wallet = await tx.wallet.findUnique({ where: { userId } });
       if (!wallet) throw new Error('WALLET_NOT_FOUND');
 
+      // 3. Record Wallet Transaction
       await tx.walletTransaction.create({
         data: {
           walletId: wallet.id,
@@ -371,9 +379,10 @@ export const paymentService = {
         }
       });
 
-      // Use orderService to ensure side effects are triggered
+      // 4. Update Order Status (Enforces state machine internally)
       await orderService.updateStatus(orderId, 'PAID', tx);
 
+      // 5. Create Payment Record
       await tx.payment.create({
         data: {
           orderId,
@@ -384,9 +393,31 @@ export const paymentService = {
           providerRef: `WAL-${orderId}-${Date.now()}`
         }
       });
+
+      // 6. Transactional Outbox: Record the event in the DB in the SAME transaction.
+      // This is the production-safe approach. If the DB commit fails, the event is NEVER recorded.
+      // If the DB commit succeeds, the event is PERMANENTLY recorded as PENDING.
+      await tx.eventLog.create({
+        data: {
+          topic: 'payment.confirmed',
+          payload: { orderId, amount } as any,
+          status: 'PENDING'
+        }
+      });
     });
 
-    await publishEvent('payment.confirmed', { orderId, amount });
+    // 7. Post-Commit Execution: Try to publish immediately for low latency.
+    // In production, a separate background worker should also sweep 'PENDING' EventLogs
+    // to handle cases where this specific process crashes right after the commit.
+    try {
+      await publishEvent('payment.confirmed', { orderId, amount });
+      await prisma.eventLog.updateMany({
+        where: { topic: 'payment.confirmed', payload: { equals: { orderId, amount } } },
+        data: { status: 'PUBLISHED' }
+      });
+    } catch (error) {
+      console.error(`[Outbox] Immediate publish failed for order ${orderId}. Worker will retry.`, error);
+    }
   },
 
   async setupPayoutAccount(sellerId: string, params: { bankCode: string, accountNumber: string, accountName: string }) {

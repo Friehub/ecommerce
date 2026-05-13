@@ -45,6 +45,9 @@ const configSchema = z.object({
   MONNIFY_API_KEY: z.string().default('MK_TEST_placeholder'),
   MONNIFY_SECRET_KEY: z.string().default('test_secret_placeholder'),
   MONNIFY_CONTRACT_CODE: z.string().default('contract_code'),
+  
+  // Internal
+  INTERNAL_API_TOKEN: z.string().default('token_placeholder'),
 });
 
 const parseConfig = () => {
@@ -73,6 +76,7 @@ const parseConfig = () => {
       MONNIFY_API_KEY: process.env.MONNIFY_API_KEY,
       MONNIFY_SECRET_KEY: process.env.MONNIFY_SECRET_KEY,
       MONNIFY_CONTRACT_CODE: process.env.MONNIFY_CONTRACT_CODE,
+      INTERNAL_API_TOKEN: process.env.INTERNAL_API_TOKEN,
     };
 
     const validated = configSchema.parse(envData);
@@ -81,7 +85,7 @@ const parseConfig = () => {
     if (validated.NODE_ENV === 'production') {
       const placeholders = [
         'sk_placeholder', 'whsec_placeholder', 're_placeholder', 'test_secret_placeholder',
-        'FLWSECK_test_placeholder', 'MK_TEST_placeholder', 'placeholder'
+        'FLWSECK_test_placeholder', 'MK_TEST_placeholder', 'placeholder', 'token_placeholder'
       ];
       
       const configEntries = Object.entries(validated);

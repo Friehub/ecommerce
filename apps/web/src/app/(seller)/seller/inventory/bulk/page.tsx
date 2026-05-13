@@ -1,111 +1,144 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Upload, FileText, CheckCircle2, ChevronRight, Download, AlertCircle } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, ChevronRight, Download, AlertCircle, Loader2, Database, Layers } from 'lucide-react';
 import Link from 'next/link';
 
 export default function BulkUploadPage() {
-  const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [success, setSuccess] = useState(false);
+ const [file, setFile] = useState<File | null>(null);
+ const [uploading, setUploading] = useState(false);
+ const [success, setSuccess] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
-    }
-  };
+ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+ if (e.target.files && e.target.files.length > 0) {
+ setFile(e.target.files[0]);
+ }
+ };
 
-  const handleUpload = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file) return;
+ const handleUpload = (e: React.FormEvent) => {
+ e.preventDefault();
+ if (!file) return;
 
-    setUploading(true);
-    // Simulate parse & network upload
-    setTimeout(() => {
-      setUploading(false);
-      setSuccess(true);
-      setFile(null);
-    }, 2000);
-  };
+ setUploading(true);
+ // Simulate parse & network upload
+ setTimeout(() => {
+ setUploading(false);
+ setSuccess(true);
+ setFile(null);
+ }, 2000);
+ };
 
-  return (
-    <div className="space-y-6 select-none max-w-4xl">
-      <div className="flex items-center gap-2 font-bold text-gray-500 text-xs">
-        <Link href="/seller/dashboard" className="hover:text-[#F68B1E] transition-colors">Dashboard</Link>
-        <ChevronRight size={14} className="text-gray-300" />
-        <Link href="/seller/inventory" className="hover:text-[#F68B1E] transition-colors">Inventory</Link>
-        <ChevronRight size={14} className="text-gray-300" />
-        <span className="text-gray-900 font-extrabold">Bulk Upload</span>
-      </div>
+ return (
+ <div className="space-y-10 select-none max-w-5xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+ <div className="flex items-center gap-3 font-black text-on-surface-variant text-[10px] uppercase tracking-[0.3em]">
+ <Link href="/seller/dashboard" className="hover:text-primary-container transition-colors">Hub</Link>
+ <ChevronRight size={14} className="opacity-30" />
+ <Link href="/seller/inventory" className="hover:text-primary-container transition-colors">Assets</Link>
+ <ChevronRight size={14} className="opacity-30" />
+ <span className="text-on-surface">Bulk Ingest</span>
+ </div>
 
-      <div>
-        <h1 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Bulk Catalog Upload</h1>
-        <p className="text-gray-400 font-medium text-sm mt-1">Upload products, variations, pricing, and tags simultaneously via CSV.</p>
-      </div>
+ <div className="flex items-center gap-5">
+ <div className="w-16 h-16 bg-primary-container/10 border-2 border-primary-container/20 rounded-[20px] flex items-center justify-center text-primary-container shadow-xl shadow-primary-container/5">
+ <Database size={32} />
+ </div>
+ <div>
+ <h1 className="text-3xl font-black text-on-surface tracking-tighter uppercase leading-none">Catalog <span className="text-primary-container">Ingestion</span></h1>
+ <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] mt-2 italic">Batch Upload Protocol v4.2</p>
+ </div>
+ </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Dropzone Container */}
-        <div className="md:col-span-2 bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all p-6 md:p-8 shadow-md">
-          <form onSubmit={handleUpload} className="space-y-6">
-            <div className="border-2 border-dashed border-gray-200 hover:border-[#F68B1E] rounded-2xl p-8 text-center bg-gray-50/20 hover:bg-orange-50/10 cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[220px] select-none relative">
-              <input 
-                type="file" 
-                accept=".csv,.xlsx" 
-                onChange={handleFileChange} 
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
-              <div className="w-14 h-14 bg-orange-50 text-[#F68B1E] rounded-full flex items-center justify-center border border-orange-100/60 mb-4 flex-shrink-0">
-                <Upload size={26} />
-              </div>
-              {file ? (
-                <div>
-                  <p className="text-sm font-extrabold text-gray-800">{file.name}</p>
-                  <p className="text-xs font-medium text-gray-400 mt-0.5">{(file.size / 1024).toFixed(1)} KB</p>
-                </div>
-              ) : (
-                <div>
-                  <p className="text-sm font-extrabold text-gray-800">Drag & drop your catalog file</p>
-                  <p className="text-xs font-medium text-gray-400 mt-0.5">Supports standard .csv and .xlsx formats</p>
-                </div>
-              )}
-            </div>
+ <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+ {/* Dropzone Container */}
+ <div className="lg:col-span-8 bg-surface-container-lowest rounded-[40px] border-4 border-surface-container-low shadow-soft p-10">
+ <form onSubmit={handleUpload} className="space-y-8">
+ <div className="group relative">
+ <div className="border-4 border-dashed border-surface-container-low hover:border-primary-container/40 rounded-[32px] p-12 text-center bg-surface-container-low/20 hover:bg-primary-container/5 cursor-pointer transition-all duration-500 flex flex-col items-center justify-center min-h-[320px] select-none">
+ <input 
+ type="file" 
+ accept=".csv,.xlsx" 
+ onChange={handleFileChange} 
+ className="absolute inset-0 opacity-0 cursor-pointer z-10"
+ />
+ <div className="w-20 h-20 bg-surface-container-lowest text-primary-container rounded-[24px] flex items-center justify-center border-2 border-surface-container-low mb-6 shadow-soft group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+ <Upload size={32} />
+ </div>
+ {file ? (
+ <div className="animate-in zoom-in-95">
+ <p className="text-sm font-black text-on-surface uppercase tracking-tight">{file.name}</p>
+ <p className="text-[10px] font-black text-primary-container uppercase tracking-widest mt-2 italic">Payload Size: {(file.size / 1024).toFixed(1)} KB</p>
+ </div>
+ ) : (
+ <div>
+ <p className="text-sm font-black text-on-surface uppercase tracking-tight">Deploy Data Source</p>
+ <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] mt-3 italic">CSV or XLSX Matrix Supported</p>
+ </div>
+ )}
+ </div>
+ </div>
 
-            {success && (
-              <div className="bg-green-50 text-green-700 font-bold border border-green-100 p-3.5 rounded-xl text-xs md:text-sm flex items-center gap-2 animate-pulse">
-                <CheckCircle2 size={18} className="flex-shrink-0" />
-                Products imported and added to moderation queue successfully!
-              </div>
-            )}
+ {success && (
+ <div className="bg-success/5 text-success border-2 border-success/10 p-6 rounded-2xl flex items-center gap-4 animate-in slide-in-from-top-4">
+ <div className="w-10 h-10 bg-success/10 rounded-xl flex items-center justify-center shrink-0">
+ <CheckCircle2 size={20} />
+ </div>
+ <div>
+ <p className="text-[11px] font-black uppercase tracking-tight">Ingestion Successful</p>
+ <p className="text-[9px] font-black uppercase tracking-widest opacity-60 mt-1 italic">Products synchronized with moderation buffer.</p>
+ </div>
+ </div>
+ )}
 
-            <button 
-              type="submit" 
-              disabled={!file || uploading}
-              className="w-full h-12 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-xl font-extrabold text-xs uppercase tracking-wide transition-all shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-95 duration-200 flex items-center justify-center gap-2 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed select-none"
-            >
-              {uploading ? 'Processing & Validating...' : 'Start Upload'}
-            </button>
-          </form>
-        </div>
+ <button 
+ type="submit" 
+ disabled={!file || uploading}
+ className="w-full h-20 bg-on-surface text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] shadow-2xl hover:bg-primary-container transition-all active:scale-95 disabled:opacity-20 flex items-center justify-center gap-4 group"
+ >
+ {uploading ? (
+ <>
+ <Loader2 size={20} className="animate-spin" />
+ Decrypting & Validating Matrix...
+ </>
+ ) : (
+ <>
+ <Layers size={20} className="group-hover:rotate-12 transition-transform" />
+ Initiate Sync
+ </>
+ )}
+ </button>
+ </form>
+ </div>
 
-        {/* Template info */}
-        <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all p-5 shadow-md h-fit">
-          <h3 className="font-extrabold text-gray-900 text-sm tracking-tight border-b border-gray-100 pb-3 mb-4 flex items-center gap-2 uppercase">
-            <FileText size={16} className="text-[#F68B1E]" /> Guidelines
-          </h3>
-          <p className="text-xs font-medium text-gray-500 leading-relaxed mb-4">
-            Ensure your file conforms to the canonical seller schema to prevent parsing rejections.
-          </p>
-          <div className="space-y-3">
-            <div className="flex items-start gap-2 text-xs font-medium text-gray-600 bg-gray-50/50 p-2.5 rounded-xl border border-gray-100/50">
-              <AlertCircle size={16} className="text-blue-500 flex-shrink-0 mt-0.5" />
-              <span>Provide title, SKU, variant, price, and media URL columns.</span>
-            </div>
-            <button className="w-full bg-gray-50 hover:bg-gray-100 text-gray-800 border border-gray-200 h-10 rounded-xl font-extrabold text-xs uppercase transition-all flex items-center justify-center gap-2 tracking-wide mt-2">
-              <Download size={14} /> Download Sample CSV
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+ {/* Template info */}
+ <div className="lg:col-span-4 space-y-6">
+ <div className="bg-surface-container-lowest rounded-[40px] border-4 border-surface-container-low shadow-soft p-8 h-fit animate-in fade-in slide-in-from-right-8 duration-1000 delay-200">
+ <h3 className="text-[10px] font-black text-on-surface uppercase tracking-[0.4em] mb-8 flex items-center gap-3 italic">
+ <FileText size={18} className="text-primary-container" /> Guidelines
+ </h3>
+ <p className="text-[11px] font-black text-on-surface/40 uppercase tracking-widest leading-relaxed mb-10 italic">
+ Ensure your payload conforms to the canonical schema to prevent system rejections.
+ </p>
+ <div className="space-y-6">
+ <div className="flex items-start gap-4 text-[10px] font-black text-on-surface-variant bg-surface-container-low/30 p-6 rounded-2xl border-2 border-surface-container-low">
+ <AlertCircle size={18} className="text-primary-container shrink-0" />
+ <span className="uppercase tracking-tight leading-relaxed">Required Nodes: Title, SKU, Variant, Valuation, and Media URI.</span>
+ </div>
+ <button className="w-full h-16 bg-surface-container-low/30 hover:bg-surface-container-low text-on-surface border-2 border-surface-container-low rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3">
+ <Download size={18} /> Get Sample Matrix
+ </button>
+ </div>
+ </div>
+
+ <div className="bg-primary-container/5 border-4 border-primary-container/10 rounded-[40px] p-8">
+ <p className="text-[9px] font-black text-primary-container uppercase tracking-[0.4em] mb-3 flex items-center gap-2 italic">
+ <Layers size={14} /> Buffer System
+ </p>
+ <p className="text-[10px] font-black text-on-surface/40 uppercase tracking-widest leading-relaxed italic">
+ Entities are placed in a 24-hour moderation buffer prior to global availability.
+ </p>
+ </div>
+ </div>
+ </div>
+ </div>
+ );
 }

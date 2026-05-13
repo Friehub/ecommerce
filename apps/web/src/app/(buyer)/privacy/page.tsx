@@ -1,65 +1,76 @@
 'use client';
 
 import React from 'react';
-import { ShieldCheck, FileText, ChevronRight } from 'lucide-react';
+import { ShieldCheck, FileText, ChevronRight, Fingerprint, Lock, Scale } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PrivacyTermsPage() {
-  return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-12 select-none">
-      <div className="container py-8 max-w-4xl mx-auto px-4">
-        {/* Breadcrumbs */}
-        <div className="flex items-center gap-2 mb-6 font-bold text-gray-500 text-xs">
-          <Link href="/" className="hover:text-[#F68B1E] transition-colors">Home</Link>
-          <ChevronRight size={14} className="text-gray-300" />
-          <span className="text-gray-900 font-extrabold">Terms & Privacy</span>
-        </div>
+ return (
+ <div className="bg-background min-h-screen pb-24 select-none">
+ <div className="container py-12 max-w-5xl mx-auto px-6">
+ {/* Breadcrumbs */}
+ <div className="flex items-center gap-3 mb-10 font-black text-on-surface-variant text-[10px] uppercase tracking-[0.4em]">
+ <Link href="/" className="hover:text-primary-container transition-colors">Hub</Link>
+ <ChevronRight size={14} className="opacity-30" />
+ <span className="text-on-surface">Legal Framework</span>
+ </div>
 
-        {/* Hero Banner */}
-        <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all p-6 md:p-8 flex items-center gap-4 shadow-md mb-8">
-          <div className="w-14 h-14 bg-orange-50 text-[#F68B1E] rounded-full flex items-center justify-center border border-orange-100/60 flex-shrink-0">
-            <ShieldCheck size={28} />
-          </div>
-          <div>
-            <h1 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight leading-tight mb-1">Privacy & Terms of Service</h1>
-            <p className="text-xs md:text-sm font-medium text-gray-400">Effective Date: May 2026. Review our legal commitments and standard user terms.</p>
-          </div>
-        </div>
+ {/* Hero Banner */}
+ <div className="bg-surface-container-lowest rounded-[48px] border-4 border-surface-container-low shadow-soft p-10 md:p-14 flex flex-col md:flex-row items-center gap-8 mb-12 animate-in fade-in slide-in-from-top-8 duration-700">
+ <div className="w-20 h-20 bg-primary-container/10 border-2 border-primary-container/20 rounded-[28px] flex items-center justify-center text-primary-container shadow-xl shadow-primary-container/5 shrink-0">
+ <Fingerprint size={40} />
+ </div>
+ <div className="text-center md:text-left">
+ <h1 className="text-3xl md:text-4xl font-black text-on-surface tracking-tighter uppercase leading-none mb-3">Privacy & <span className="text-primary-container">Encryption</span></h1>
+ <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] italic">Protocol Version 2.0.6 • Effective May 2026</p>
+ </div>
+ </div>
 
-        {/* Content Section */}
-        <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all p-6 md:p-10 shadow-md space-y-8 select-text">
-          <section className="space-y-3">
-            <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
-              <FileText size={18} className="text-[#F68B1E]" />
-              <h2 className="text-base md:text-lg font-extrabold text-gray-900 tracking-tight">1. General Terms</h2>
-            </div>
-            <p className="text-xs md:text-sm font-medium text-gray-600 leading-relaxed">
-              By accessing the Jumia Clone platform, you confirm that you agree to the conditions, notices, and legal disclosures set out within these General Terms. 
-              The platform facilitates buying and selling between multi-vendor sellers and individual buyers.
-            </p>
-          </section>
+ {/* Content Section */}
+ <div className="bg-surface-container-lowest rounded-[56px] border-4 border-surface-container-low shadow-soft p-10 md:p-16 space-y-16 select-text animate-in fade-in slide-in-from-bottom-8 duration-1000">
+ <section className="space-y-6">
+ <div className="flex items-center gap-4 border-b-2 border-surface-container-low pb-6">
+ <div className="p-3 bg-surface-container-low rounded-xl text-primary-container border-2 border-surface-container-low">
+ <Scale size={20} />
+ </div>
+ <h2 className="text-xl font-black text-on-surface tracking-tighter uppercase leading-none">1. Jurisdictional <span className="text-primary-container">Terms</span></h2>
+ </div>
+ <p className="text-[11px] font-black text-on-surface-variant/60 leading-relaxed uppercase tracking-widest italic pl-16">
+ By accessing the Jumia Clone platform, you confirm that you agree to the conditions, notices, and legal disclosures set out within these General Terms. 
+ The platform facilitates buying and selling between multi-vendor sellers and individual buyers under an authorized diagnostic and operational framework.
+ </p>
+ </section>
 
-          <section className="space-y-3">
-            <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
-              <FileText size={18} className="text-[#F68B1E]" />
-              <h2 className="text-base md:text-lg font-extrabold text-gray-900 tracking-tight">2. Privacy & Data Integrity</h2>
-            </div>
-            <p className="text-xs md:text-sm font-medium text-gray-600 leading-relaxed">
-              We collect identity information (e.g., your first name, last name, phone number, and delivery addresses) to perform direct transaction fulfillment. Your details will not be shared with unauthorized external processing networks. All passwords and authentication parameters are securely hashed using high-grade cryptographic measures.
-            </p>
-          </section>
+ <section className="space-y-6">
+ <div className="flex items-center gap-4 border-b-2 border-surface-container-low pb-6">
+ <div className="p-3 bg-surface-container-low rounded-xl text-primary-container border-2 border-surface-container-low">
+ <Lock size={20} />
+ </div>
+ <h2 className="text-xl font-black text-on-surface tracking-tighter uppercase leading-none">2. Identity & <span className="text-primary-container">Data Integrity</span></h2>
+ </div>
+ <p className="text-[11px] font-black text-on-surface-variant/60 leading-relaxed uppercase tracking-widest italic pl-16">
+ We collect identity information (e.g., your first name, last name, phone number, and delivery addresses) to perform direct transaction fulfillment. Your details will not be shared with unauthorized external processing networks. All passwords and authentication parameters are securely hashed using high-grade cryptographic measures and temporal rotation.
+ </p>
+ </section>
 
-          <section className="space-y-3">
-            <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
-              <FileText size={18} className="text-[#F68B1E]" />
-              <h2 className="text-base md:text-lg font-extrabold text-gray-900 tracking-tight">3. Secure Payments & Financial Verification</h2>
-            </div>
-            <p className="text-xs md:text-sm font-medium text-gray-600 leading-relaxed">
-              Payments processed across our network are securely verified through authorized Paystack interfaces. Escrow processing maintains all balances until deliveries pass basic client verification. This protects individual buyers from fraudulent product distribution.
-            </p>
-          </section>
-        </div>
-      </div>
-    </div>
-  );
+ <section className="space-y-6">
+ <div className="flex items-center gap-4 border-b-2 border-surface-container-low pb-6">
+ <div className="p-3 bg-surface-container-low rounded-xl text-primary-container border-2 border-surface-container-low">
+ <ShieldCheck size={20} />
+ </div>
+ <h2 className="text-xl font-black text-on-surface tracking-tighter uppercase leading-none">3. Secure <span className="text-primary-container">Settlements</span></h2>
+ </div>
+ <p className="text-[11px] font-black text-on-surface-variant/60 leading-relaxed uppercase tracking-widest italic pl-16">
+ Payments processed across our network are securely verified through authorized Paystack and bank-grade interfaces. Escrow processing maintains all balances until deliveries pass basic client verification. This protects individual buyers from fraudulent product distribution and systemic failures.
+ </p>
+ </section>
+ </div>
+ 
+ {/* Footer Note */}
+ <div className="mt-16 text-center">
+ <p className="text-[9px] font-black text-on-surface-variant/20 uppercase tracking-[0.5em] italic">Authorized Legal Repository • Non-Repudiation Enabled</p>
+ </div>
+ </div>
+ </div>
+ );
 }

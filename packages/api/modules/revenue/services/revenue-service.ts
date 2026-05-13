@@ -67,9 +67,9 @@ export const revenueService = {
     if (!payout) throw new Error('PAYOUT_NOT_FOUND');
     if (payout.status !== 'PENDING') throw new Error('PAYOUT_ALREADY_PROCESSED');
 
-    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET || process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
+    const { config } = await import('../../../config.js');
 
-    if (PAYSTACK_SECRET_KEY === 'sk_test_placeholder') {
+    if (config.PAYSTACK_SECRET_KEY === 'sk_placeholder' || config.PAYSTACK_SECRET_KEY === 'sk_test_placeholder') {
       throw new Error('PAYOUT_SIMULATION_BLOCKED: A valid PAYSTACK_SECRET_KEY is required for all payout processing.');
     }
 

@@ -11,8 +11,10 @@ import type {
   PayoutResult,
 } from './types.js';
 
-const MONNIFY_API_KEY = process.env.MONNIFY_API_KEY || 'MK_TEST_placeholder';
-const MONNIFY_SECRET_KEY = process.env.MONNIFY_SECRET_KEY || 'test_secret_placeholder';
+import { config } from '../../../config.js';
+
+const MONNIFY_API_KEY = config.MONNIFY_API_KEY;
+const MONNIFY_SECRET_KEY = config.MONNIFY_SECRET_KEY;
 const MONNIFY_BASE = 'https://api.monnify.com/api/v1';
 
 export class MonnifyAdapter implements PaymentAdapter {

@@ -3,6 +3,8 @@
  * Unified client for interacting with high-performance Rust services.
  */
 
+import { config } from './config.js';
+
 const SERVICES = {
     SEARCH: process.env.SEARCH_SERVICE_URL || 'http://localhost:3001',
     INVENTORY: process.env.INVENTORY_SERVICE_URL || 'http://localhost:3002',
@@ -27,7 +29,7 @@ export class RustClient {
                 headers: {
                     'Content-Type': 'application/json',
                     // E04: Add internal auth header to all requests
-                    'X-Internal-Token': process.env.INTERNAL_API_TOKEN || '',
+                    'X-Internal-Token': config.INTERNAL_API_TOKEN,
                     ...options.headers,
                 },
             });

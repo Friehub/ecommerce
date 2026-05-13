@@ -2,7 +2,13 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { paymentService } from '@ecom/api/modules/payment/services/payment-service';
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+
+if (!PAYSTACK_SECRET_KEY || PAYSTACK_SECRET_KEY === 'sk_test_placeholder') {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: PAYSTACK_SECRET_KEY is missing or using placeholder in production.');
+  }
+}
 
 export async function POST(req: Request) {
   try {

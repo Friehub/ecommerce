@@ -9,6 +9,7 @@ model User {
   phoneVerified Boolean  @default(false)
   role         UserRole @default(BUYER)
   isActive     Boolean  @default(true)
+  twoFactorEnabled Boolean @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   resetToken          String?   @unique

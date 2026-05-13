@@ -2,65 +2,86 @@
 
 import { api } from '@/trpc/react';
 import Link from 'next/link';
-import { AlertTriangle, Clock, CheckCircle, ArrowRight } from 'lucide-react';
+import { AlertTriangle, Clock, CheckCircle, ArrowRight, ShieldAlert, Activity, Scale } from 'lucide-react';
 
 export default function DisputeCenter() {
-  const { data: disputes, isLoading } = api.dispute.listMyDisputes.useQuery();
+ const { data: disputes, isLoading } = api.dispute.listMyDisputes.useQuery();
 
-  if (isLoading) {
-    return <div className="container py-12 text-center text-gray-500 uppercase tracking-widest text-xs font-bold">Loading Disputes...</div>;
-  }
+ if (isLoading) {
+ return (
+ <div className="bg-background min-h-screen flex items-center justify-center">
+ <div className="flex flex-col items-center gap-6">
+ <div className="w-16 h-16 border-4 border-primary-container/20 border-t-primary-container rounded-full animate-spin" />
+ <p className="text-[10px] font-black uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Syncing Resolution Nodes</p>
+ </div>
+ </div>
+ );
+ }
 
-  return (
-    <div className="container py-12">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-tight">Dispute Center</h1>
-        <p className="text-gray-500 text-sm mt-1">Manage and track your order disputes.</p>
-      </div>
+ return (
+ <div className="bg-background min-h-screen pb-24 select-none">
+ <div className="container py-12 max-w-5xl mx-auto px-6">
+ <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 border-b-4 border-surface-container-low pb-10">
+ <div>
+ <div className="flex items-center gap-3 mb-4">
+ <Scale size={24} className="text-primary-container" />
+ <h2 className="text-[10px] font-black text-primary-container uppercase tracking-[0.4em]">Resolution Protocol</h2>
+ </div>
+ <h1 className="text-4xl font-black text-on-surface uppercase tracking-tighter leading-none">Dispute <span className="text-primary-container">Matrix</span></h1>
+ <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] mt-4 italic">Operational conflict management and settlement tracking.</p>
+ </div>
+ <div className="flex items-center gap-4">
+ <Link href="/orders" className="h-14 px-8 bg-surface-container-low text-on-surface rounded-xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-on-surface hover:text-white transition-all active:scale-95 flex items-center gap-3 border-2 border-surface-container-low">
+ New Conflict <ArrowRight size={14} />
+ </Link>
+ </div>
+ </div>
 
-      {(!disputes || disputes.length === 0) ? (
-        <div className="bg-white p-12 rounded shadow-sm text-center border border-gray-200">
-          <AlertTriangle className="mx-auto text-gray-300 mb-4" size={48} />
-          <h3 className="text-lg font-bold text-gray-900 uppercase tracking-tight">No Active Disputes</h3>
-          <p className="text-gray-500 text-sm mt-2 max-w-md mx-auto">
-            You currently have no open disputes. If you have an issue with an order, you can open a dispute from the order details page.
-          </p>
-          <Link href="/orders" className="inline-block mt-6 bg-[#282828] text-white px-6 py-2.5 rounded text-xs font-bold uppercase tracking-widest hover:bg-black transition-colors">
-            View Orders
-          </Link>
-        </div>
-      ) : (
-        <div className="bg-white rounded shadow-sm border border-gray-200 overflow-hidden">
-          <div className="divide-y divide-gray-100">
-            {disputes.map((dispute) => (
-              <div key={dispute.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between hover:bg-gray-50 transition-colors gap-4">
-                <div>
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
-                      dispute.status === 'OPEN' ? 'bg-red-50 text-red-600 border-red-100' :
-                      dispute.status === 'UNDER_REVIEW' ? 'bg-orange-50 text-orange-600 border-orange-100' :
-                      'bg-green-50 text-green-600 border-green-100'
-                    }`}>
-                      {dispute.status.replace('_', ' ')}
-                    </span>
-                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">
-                      Order #{dispute.orderId.slice(-8).toUpperCase()}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900">{dispute.reason}</h3>
-                  <p className="text-gray-500 text-xs mt-1 font-medium">
-                    Opened on {new Date(dispute.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                
-                <Link href={`/disputes/${dispute.id}`} className="inline-flex items-center justify-center gap-2 border border-gray-200 px-4 py-2 rounded text-xs font-bold text-gray-700 hover:border-[#f68b1e] hover:text-[#f68b1e] transition-all uppercase tracking-widest bg-white w-full md:w-auto">
-                  View Thread <ArrowRight size={14} />
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+ {(!disputes || disputes.length === 0) ? (
+ <div className="bg-surface-container-lowest p-20 rounded-[56px] border-4 border-surface-container-low shadow-soft text-center animate-in zoom-in-95 duration-1000">
+ <ShieldAlert className="mx-auto text-surface-container-low mb-10" size={80} />
+ <h3 className="text-3xl font-black text-on-surface uppercase tracking-tighter mb-4">Zero <span className="text-primary-container">Anomalies</span></h3>
+ <p className="text-on-surface-variant/40 text-[11px] max-w-sm mx-auto mb-12 font-black uppercase tracking-[0.3em] leading-relaxed italic">
+ NO ACTIVE CONFLICTS DETECTED WITHIN YOUR TRANSACTION HISTORY. ALL NODES OPERATING WITHIN NORMAL PARAMETERS.
+ </p>
+ <Link href="/orders" className="h-20 px-16 bg-on-surface text-white rounded-3xl font-black text-[10px] uppercase tracking-[0.4em] hover:bg-primary-container transition-all shadow-2xl flex items-center justify-center gap-4 mx-auto w-fit">
+ Explore History <ArrowRight size={20} />
+ </Link>
+ </div>
+ ) : (
+ <div className="bg-surface-container-lowest rounded-[48px] border-4 border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700">
+ <div className="divide-y-2 divide-surface-container-low">
+ {disputes.map((dispute) => (
+ <div key={dispute.id} className="p-10 flex flex-col md:flex-row md:items-center justify-between hover:bg-surface-container-low/20 transition-all gap-8 group">
+ <div className="space-y-4">
+ <div className="flex items-center gap-4">
+ <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-2 ${
+ dispute.status === 'OPEN' ? 'bg-error/5 text-error border-error/10' :
+ dispute.status === 'UNDER_REVIEW' ? 'bg-primary-container/5 text-primary-container border-primary-container/10' :
+ 'bg-success/5 text-success border-success/10'
+ }`}>
+ {dispute.status.replace('_', ' ')}
+ </span>
+ <span className="text-on-surface-variant/40 text-[10px] font-black uppercase tracking-[0.3em] italic">
+ Node #{dispute.orderId.slice(-8).toUpperCase()}
+ </span>
+ </div>
+ <h3 className="text-xl font-black text-on-surface uppercase tracking-tighter leading-none group-hover:text-primary-container transition-colors">{dispute.reason}</h3>
+ <div className="flex items-center gap-3 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">
+ <Activity size={12} />
+ Sequence Initiated {new Date(dispute.createdAt).toLocaleDateString()}
+ </div>
+ </div>
+ 
+ <Link href={`/disputes/${dispute.id}`} className="h-16 px-10 bg-surface-container-low text-on-surface rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-on-surface hover:text-white transition-all active:scale-95 flex items-center justify-center gap-4 group/btn border-2 border-surface-container-low shrink-0">
+ Audit Thread <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
+ </Link>
+ </div>
+ ))}
+ </div>
+ </div>
+ )}
+ </div>
+ </div>
+ );
 }

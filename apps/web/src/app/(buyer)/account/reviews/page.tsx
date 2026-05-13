@@ -1,165 +1,189 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Star, MessageSquare, ChevronRight, ShieldCheck, ShoppingBag } from 'lucide-react';
+import { Star, MessageSquare, ChevronRight, ShieldCheck, ShoppingBag, Activity, ArrowRight, StarHalf } from 'lucide-react';
 import { api } from '@/trpc/react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
 export default function UserReviewsPage() {
-  const { data: session } = useSession();
-  const [activeTab, setActiveTab] = useState<'reviewed' | 'pending'>('pending');
+ const { data: session } = useSession();
+ const [activeTab, setActiveTab] = useState<'reviewed' | 'pending'>('pending');
 
-  const { data: reviews, isLoading: reviewsLoading } = api.review.listMyReviews.useQuery(undefined, {
-    enabled: !!session?.user
-  });
+ const { data: reviews, isLoading: reviewsLoading } = api.review.listMyReviews.useQuery(undefined, {
+ enabled: !!session?.user
+ });
 
-  const { data: pending, isLoading: pendingLoading } = api.review.getPendingReviews.useQuery(undefined, {
-    enabled: !!session?.user
-  });
+ const { data: pending, isLoading: pendingLoading } = api.review.getPendingReviews.useQuery(undefined, {
+ enabled: !!session?.user
+ });
 
-  if (!session?.user) {
-    return (
-      <div className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">
-        Please log in to see your reviews.
-      </div>
-    );
-  }
+ if (!session?.user) {
+ return (
+ <div className="bg-background min-h-screen flex items-center justify-center p-6">
+ <div className="bg-surface-container-lowest p-16 rounded-[48px] border-4 border-surface-container-low shadow-soft text-center max-w-lg w-full">
+ <ShieldCheck className="mx-auto text-on-surface-variant/20 mb-8" size={64} />
+ <p className="text-[10px] font-black uppercase tracking-[0.4em] text-on-surface-variant/40 italic mb-10">IDENTITY VERIFICATION REQUIRED TO ACCESS FEEDBACK NODES.</p>
+ <Link href="/login" className="h-16 px-12 bg-on-surface text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.4em] hover:bg-primary-container transition-all flex items-center justify-center gap-4 mx-auto w-fit shadow-2xl">
+ Establish Session <ArrowRight size={18} />
+ </Link>
+ </div>
+ </div>
+ );
+ }
 
-  const isLoading = reviewsLoading || pendingLoading;
+ const isLoading = reviewsLoading || pendingLoading;
 
-  if (isLoading) {
-    return (
-      <div className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">
-        Loading...
-      </div>
-    );
-  }
+ if (isLoading) {
+ return (
+ <div className="bg-background min-h-screen flex items-center justify-center">
+ <div className="flex flex-col items-center gap-6">
+ <div className="w-16 h-16 border-4 border-primary-container/20 border-t-primary-container rounded-full animate-spin" />
+ <p className="text-[10px] font-black uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Syncing Perception Data</p>
+ </div>
+ </div>
+ );
+ }
 
-  return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-12 select-none">
-      <div className="container py-8 max-w-4xl mx-auto px-4">
-        {/* Breadcrumbs */}
-        <div className="flex items-center gap-2 mb-6 font-bold text-gray-500 text-xs">
-          <Link href="/" className="hover:text-[#F68B1E] transition-colors">Home</Link>
-          <ChevronRight size={14} className="text-gray-300" />
-          <Link href="/account" className="hover:text-[#F68B1E] transition-colors">My Account</Link>
-          <ChevronRight size={14} className="text-gray-300" />
-          <span className="text-gray-900 font-extrabold">Reviews</span>
-        </div>
+ return (
+ <div className="bg-background min-h-screen pb-24 select-none">
+ <div className="container py-12 max-w-5xl mx-auto px-6">
+ {/* Breadcrumbs */}
+ <div className="flex items-center gap-4 mb-12 font-black text-on-surface-variant/40 text-[10px] uppercase tracking-[0.4em]">
+ <Link href="/" className="hover:text-on-surface transition-colors">Core</Link>
+ <ChevronRight size={12} className="opacity-20" />
+ <Link href="/account" className="hover:text-on-surface transition-colors">Profile</Link>
+ <ChevronRight size={12} className="opacity-20" />
+ <span className="text-on-surface">Perception</span>
+ </div>
 
-        {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-          <div>
-            <h1 className="text-2xl font-black text-gray-900 uppercase tracking-tight flex items-center gap-3">
-              <MessageSquare size={28} className="text-[#F68B1E]" />
-              Reviews & Ratings
-            </h1>
-            <p className="text-sm text-gray-500 mt-1 font-medium">Manage your feedback and rate your recent purchases.</p>
-          </div>
-        </div>
+ {/* Page Header */}
+ <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 border-b-4 border-surface-container-low pb-10">
+ <div>
+ <div className="flex items-center gap-3 mb-4">
+ <MessageSquare size={24} className="text-primary-container" />
+ <h2 className="text-[10px] font-black text-primary-container uppercase tracking-[0.4em]">Sentiment Engine</h2>
+ </div>
+ <h1 className="text-4xl font-black text-on-surface uppercase tracking-tighter leading-none">Reviews <span className="text-primary-container">& Ratings</span></h1>
+ <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] mt-4 italic">Management of feedback logs and purchase validation metrics.</p>
+ </div>
+ <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.4em] text-on-surface-variant/40 italic">
+ <span className="flex items-center gap-2 px-4 py-2 bg-primary-container/5 text-primary-container rounded-xl border-2 border-primary-container/10">
+ <Activity size={14} /> Telemetry Active
+ </span>
+ </div>
+ </div>
 
-        {/* Tabs */}
-        <div className="flex gap-8 border-b border-gray-200 mb-8 overflow-x-auto">
-          <button 
-            onClick={() => setActiveTab('pending')}
-            className={`pb-4 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === 'pending' ? 'text-[#F68B1E]' : 'text-gray-400 hover:text-gray-600'}`}
-          >
-            To Rate ({pending?.length || 0})
-            {activeTab === 'pending' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#F68B1E] rounded-t-full" />}
-          </button>
-          <button 
-            onClick={() => setActiveTab('reviewed')}
-            className={`pb-4 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === 'reviewed' ? 'text-[#F68B1E]' : 'text-gray-400 hover:text-gray-600'}`}
-          >
-            My Reviews ({reviews?.length || 0})
-            {activeTab === 'reviewed' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#F68B1E] rounded-t-full" />}
-          </button>
-        </div>
+ {/* Tabs */}
+ <div className="flex gap-12 border-b-4 border-surface-container-low mb-12 overflow-x-auto no-scrollbar">
+ <button 
+ onClick={() => setActiveTab('pending')}
+ className={`pb-8 text-[11px] font-black uppercase tracking-[0.3em] transition-all relative whitespace-nowrap ${activeTab === 'pending' ? 'text-primary-container' : 'text-on-surface-variant/40 hover:text-on-surface'}`}
+ >
+ Awaiting Calibration ({pending?.length || 0})
+ {activeTab === 'pending' && <div className="absolute bottom-[-4px] left-0 right-0 h-2 bg-primary-container rounded-t-full shadow-[0_0_20px_rgba(var(--primary-container),0.4)]" />}
+ </button>
+ <button 
+ onClick={() => setActiveTab('reviewed')}
+ className={`pb-8 text-[11px] font-black uppercase tracking-[0.3em] transition-all relative whitespace-nowrap ${activeTab === 'reviewed' ? 'text-primary-container' : 'text-on-surface-variant/40 hover:text-on-surface'}`}
+ >
+ Processed Logs ({reviews?.length || 0})
+ {activeTab === 'reviewed' && <div className="absolute bottom-[-4px] left-0 right-0 h-2 bg-primary-container rounded-t-full shadow-[0_0_20px_rgba(var(--primary-container),0.4)]" />}
+ </button>
+ </div>
 
-        {/* Content */}
-        <div className="grid grid-cols-1 gap-6">
-          {activeTab === 'pending' ? (
-            pending && pending.length > 0 ? (
-              pending.map((item: any) => (
-                <div key={item.id} className="bg-white rounded-2xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md p-6 flex flex-col md:flex-row items-center gap-6">
-                  <div className="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 flex-shrink-0 overflow-hidden">
-                    <img src={item.variant?.product?.media?.[0]?.url} alt={item.variant?.product?.title} className="w-full h-full object-contain p-2" />
-                  </div>
-                  <div className="flex-1 text-center md:text-left">
-                    <h3 className="font-extrabold text-gray-900 leading-tight mb-1">{item.variant?.product?.title}</h3>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Delivered on {format(new Date(item.updatedAt), 'MMM dd, yyyy')}</p>
-                  </div>
-                  <Link 
-                    href={`/account/reviews/new?productId=${item.variant?.product?.id}`}
-                    className="bg-orange-50 text-[#F68B1E] hover:bg-[#F68B1E] hover:text-white px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all border border-orange-100"
-                  >
-                    Rate Product
-                  </Link>
-                </div>
-              ))
-            ) : (
-              <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-20 text-center">
-                <ShoppingBag className="mx-auto text-gray-100 mb-4" size={48} />
-                <h3 className="text-lg font-bold text-gray-900">All caught up!</h3>
-                <p className="text-gray-500 text-sm mt-1">You've rated all your recent delivered items.</p>
-              </div>
-            )
-          ) : (
-            reviews && reviews.length > 0 ? (
-              reviews.map((review: any) => (
-                <div key={review.id} className="bg-white rounded-2xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md p-6">
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <div className="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 flex-shrink-0">
-                      {review.product?.media?.[0]?.url ? (
-                        <img src={review.product.media[0].url} alt={review.product.title} className="w-full h-full object-contain p-2" />
-                      ) : (
-                        <ShoppingBag className="text-gray-300" size={32} />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h3 className="font-extrabold text-gray-900 leading-tight mb-1">{review.product?.title || 'Unknown Product'}</h3>
-                          <div className="flex items-center gap-0.5 mb-2">
-                            {[...Array(5)].map((_, i) => (
-                              <Star 
-                                key={i} 
-                                size={14} 
-                                className={i < review.rating ? "text-[#F68B1E] fill-[#F68B1E]" : "text-gray-200 fill-gray-200"} 
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                          {review.createdAt ? format(new Date(review.createdAt), 'MMM dd, yyyy') : 'Unknown Date'}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600 leading-relaxed italic mb-4">"{review.comment}"</p>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-[#48A44C]">
-                          <ShieldCheck size={14} />
-                          VERIFIED PURCHASE
-                        </div>
-                        <div className="text-[10px] font-bold px-2 py-0.5 rounded border border-gray-100 text-gray-400 uppercase tracking-tighter">
-                          Status: {review.status}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-20 text-center">
-                <MessageSquare className="mx-auto text-gray-200 mb-4" size={48} />
-                <h3 className="text-lg font-bold text-gray-900">No reviews yet</h3>
-                <p className="text-gray-500 text-sm mt-1 max-w-xs mx-auto">Once you've purchased items and shared your feedback, they will appear here.</p>
-              </div>
-            )
-          )}
-        </div>
-      </div>
-    </div>
-  );
+ {/* Content */}
+ <div className="grid grid-cols-1 gap-10">
+ {activeTab === 'pending' ? (
+ pending && pending.length > 0 ? (
+ pending.map((item: any, idx: number) => (
+ <div key={item.id} className="bg-surface-container-lowest rounded-[48px] border-4 border-surface-container-low hover:border-primary-container/20 transition-all duration-500 shadow-soft p-10 flex flex-col md:flex-row items-center gap-10 group animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: `${idx * 50}ms` }}>
+ <div className="w-24 h-24 bg-surface-container-low rounded-[28px] flex items-center justify-center border-2 border-surface-container-low flex-shrink-0 overflow-hidden shadow-inner group-hover:scale-105 transition-transform duration-500">
+ <img src={item.variant?.product?.media?.[0]?.url} alt={item.variant?.product?.title} className="w-full h-full object-contain p-3" />
+ </div>
+ <div className="flex-1 text-center md:text-left">
+ <h3 className="text-xl font-black text-on-surface uppercase tracking-tighter leading-tight mb-2 group-hover:text-primary-container transition-colors">{item.variant?.product?.title}</h3>
+ <div className="flex items-center justify-center md:justify-start gap-3">
+ <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">Delivered {format(new Date(item.updatedAt), 'MMM dd, yyyy').toUpperCase()}</p>
+ <div className="w-1 h-1 bg-surface-container-low rounded-full" />
+ <span className="text-[9px] font-black text-primary-container/40 uppercase tracking-[0.2em]">WAITING PERCEPTION</span>
+ </div>
+ </div>
+ <Link 
+ href={`/account/reviews/new?productId=${item.variant?.product?.id}`}
+ className="h-16 px-10 bg-on-surface text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-primary-container transition-all active:scale-95 flex items-center gap-4 shrink-0 shadow-2xl group/btn"
+ >
+ Calibrate Sentiment <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
+ </Link>
+ </div>
+ ))
+ ) : (
+ <div className="bg-surface-container-lowest rounded-[56px] border-4 border-surface-container-low py-32 text-center shadow-soft animate-in zoom-in-95 duration-1000">
+ <ShoppingBag className="mx-auto text-surface-container-low mb-10 opacity-40" size={80} />
+ <h3 className="text-3xl font-black text-on-surface uppercase tracking-tighter mb-4">Pipeline <span className="text-success">Nominal</span></h3>
+ <p className="text-on-surface-variant/40 text-[10px] font-black uppercase tracking-[0.3em] italic px-10 leading-relaxed">ALL RECENT ACQUISITIONS HAVE BEEN SYSTEMICALLY RATED AND CALIBRATED.</p>
+ </div>
+ )
+ ) : (
+ reviews && reviews.length > 0 ? (
+ reviews.map((review: any, idx: number) => (
+ <div key={review.id} className="bg-surface-container-lowest rounded-[48px] border-4 border-surface-container-low hover:border-primary-container/20 transition-all duration-500 shadow-soft p-10 animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: `${idx * 50}ms` }}>
+ <div className="flex flex-col md:flex-row gap-10">
+ <div className="w-24 h-24 bg-surface-container-low rounded-[28px] flex items-center justify-center border-2 border-surface-container-low flex-shrink-0 shadow-inner">
+ {review.product?.media?.[0]?.url ? (
+ <img src={review.product.media[0].url} alt={review.product.title} className="w-full h-full object-contain p-3" />
+ ) : (
+ <ShoppingBag className="text-on-surface-variant/20" size={32} />
+ )}
+ </div>
+ <div className="flex-1">
+ <div className="flex flex-col md:flex-row md:items-start justify-between mb-6 gap-4">
+ <div>
+ <h3 className="text-xl font-black text-on-surface uppercase tracking-tighter leading-tight mb-4">{review.product?.title || 'UNKNOWN NODE'}</h3>
+ <div className="flex items-center gap-1.5 p-1 px-3 bg-on-surface text-white w-fit rounded-full shadow-xl">
+ {[...Array(5)].map((_, i) => (
+ <Star 
+ key={i} 
+ size={14} 
+ className={i < review.rating ? "text-primary-container fill-primary-container" : "text-white/10 fill-white/10"} 
+ />
+ ))}
+ <span className="text-[10px] font-black ml-2">{review.rating}.0</span>
+ </div>
+ </div>
+ <span className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] italic bg-surface-container-low px-4 py-2 rounded-xl">
+ {review.createdAt ? format(new Date(review.createdAt), 'dd MMM yyyy').toUpperCase() : 'UNKNOWN TEMPORAL'}
+ </span>
+ </div>
+ <div className="bg-surface-container-low/30 p-8 rounded-[32px] border-2 border-surface-container-low mb-8">
+ <p className="text-[11px] font-black text-on-surface uppercase tracking-widest leading-loose italic opacity-60">"{review.comment.toUpperCase()}"</p>
+ </div>
+ <div className="flex flex-wrap items-center gap-6">
+ <div className="flex items-center gap-3 text-[10px] font-black text-success uppercase tracking-[0.2em]">
+ <div className="w-10 h-10 bg-success/5 rounded-xl flex items-center justify-center border-2 border-success/10">
+ <ShieldCheck size={20} />
+ </div>
+ VERIFIED ACQUISITION
+ </div>
+ <div className="h-10 px-4 bg-surface-container-low text-on-surface-variant/60 rounded-xl flex items-center justify-center text-[9px] font-black uppercase tracking-[0.3em] border-2 border-surface-container-low italic">
+ Status: {review.status}
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ ))
+ ) : (
+ <div className="bg-surface-container-lowest rounded-[56px] border-4 border-surface-container-low py-32 text-center shadow-soft">
+ <MessageSquare className="mx-auto text-surface-container-low mb-10 opacity-40" size={80} />
+ <h3 className="text-3xl font-black text-on-surface uppercase tracking-tighter mb-4">No <span className="text-primary-container">Telemetries</span></h3>
+ <p className="text-on-surface-variant/40 text-[10px] font-black uppercase tracking-[0.3em] italic px-10 leading-relaxed max-w-sm mx-auto">INITIATE ACQUISITIONS AND CALIBRATE PERCEPTIONS TO POPULATE THIS DATASET.</p>
+ </div>
+ )
+ )}
+ </div>
+ </div>
+ </div>
+ );
 }

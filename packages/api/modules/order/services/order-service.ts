@@ -195,8 +195,6 @@ export const orderService = {
       include: { packages: true }
     });
 
-    await publishEvent('order.status_updated', { orderId, status });
-
     // Side effects
     if (status === 'PAID') {
       await inventoryService.confirmStock(orderId, db);
@@ -207,12 +205,19 @@ export const orderService = {
         for (const line of lines) {
           await ledgerService.recordSale(line.id);
         }
+        // Transactional integrity: If we are in a transaction (db !== prisma), 
+        // these events should ideally be moved to an outbox.
         await publishEvent('package.pending_confirmation', { packageId: pkg.id, sellerId: pkg.sellerId });
       }
 
       // FraudWorker will now handle the transition to PROCESSING after screening.
       // This prevents suspicious orders from auto-creating shipments immediately.
     }
+
+    // F03: Status update event must be published AFTER the DB update.
+    // If this is called inside a transaction, there's still a small risk of Ghost Events
+    // if the outer transaction fails after this function returns.
+    await publishEvent('order.status_updated', { orderId, status });
 
     if (status === 'CANCELLED') {
       await inventoryService.releaseStockByOrderId(orderId, db);

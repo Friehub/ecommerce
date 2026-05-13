@@ -25,7 +25,7 @@
     "@ecom/db": "workspace:*",
     "@ecom/shared": "workspace:*",
     "@prisma/client": "^6.19.3",
-    "@trpc/server": "^10.45.2",
+    "@trpc/server": "10.45.4",
     "@types/node-cron": "^3.0.11",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.76.4",

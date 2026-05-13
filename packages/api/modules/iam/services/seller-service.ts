@@ -37,7 +37,11 @@ export const sellerService = {
     if (!seller) throw new Error('SELLER_NOT_FOUND');
 
     const { paymentService } = await import('../../payment/services/payment-service.js');
-    return await paymentService.setupPayoutAccount(seller.id, data);
+    return await paymentService.setupPayoutAccount(seller.id, {
+      bankCode: data.bankCode,
+      accountNumber: data.bankAccountNumber,
+      accountName: data.bankAccountName,
+    });
   },
 
   async getPublicProfile(idOrSlug: string) {

@@ -16,18 +16,18 @@ export const ledgerService = {
 
     if (!line) throw new Error('ORDER_LINE_NOT_FOUND');
 
-    // Idempotency: Check if sale already recorded
-    const existing = await prisma.sellerLedgerEntry.findFirst({
-      where: { orderLineId, type: LedgerEntryType.SALE }
-    });
-    if (existing) return { saleEntry: existing };
-
     const sellerId = line.package.sellerId;
     const grossAmount = line.unitPrice.mul(line.quantity);
     const commissionRate = line.variant.product.category.commissionRate || new Decimal(10);
     const commissionAmount = grossAmount.mul(commissionRate).div(100).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
 
     return await prisma.$transaction(async (tx) => {
+      // Idempotency: Check if sale already recorded (inside transaction)
+      const existing = await tx.sellerLedgerEntry.findFirst({
+        where: { orderLineId, type: LedgerEntryType.SALE }
+      });
+      if (existing) return { saleEntry: existing };
+
       const saleEntry = await tx.sellerLedgerEntry.create({
         data: {
           sellerId,
@@ -305,10 +305,14 @@ export const ledgerService = {
 
     // 2. Trigger Bank Transfer via Payment Service
     try {
-      await paymentService.processPayout(payoutId);
+      await paymentService.initiatePayout(payoutId);
     } catch (err) {
       console.error(`[Ledger] Payout approval failed for ${payoutId}:`, err);
-      // Revert status if possible or leave for manual intervention
+      // Revert status to PENDING so it can be retried
+      await prisma.payout.update({
+        where: { id: payoutId },
+        data: { status: 'PENDING' }
+      });
       throw err;
     }
 

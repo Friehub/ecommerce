@@ -2,20 +2,20 @@ import { auth } from '../../auth';
 import { redirect } from 'next/navigation';
 
 export default async function AdminLayout({
-  children,
+ children,
 }: {
-  children: React.ReactNode;
+ children: React.ReactNode;
 }) {
-  const session = await auth();
+ const session = await auth();
 
-  if (!session) {
-    redirect('/login');
-  }
+ if (!session) {
+ redirect('/login');
+ }
 
-  const role = (session.user as any)?.role;
-  if (role !== 'ADMIN') {
-    redirect('/');
-  }
+ const role = (session.user as any)?.role;
+ if (role !== 'ADMIN') {
+ redirect('/');
+ }
 
-  return <>{children}</>;
+ return <>{children}</>;
 }

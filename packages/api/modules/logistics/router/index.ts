@@ -48,7 +48,7 @@ const _logisticsRouter = createTRPCRouter({
     
     if (!agent) throw new Error('NOT_AN_AGENT');
     
-    return await logisticsService.getAgentShipments(agent.id);
+    return await logisticsService.listShipments(agent.id);
   }),
 
   updateShipmentStatus: agentProcedure

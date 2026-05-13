@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800;900&display=swap');
+/* Removed redundant @import - using next/font/google in layout.tsx */
 
 @tailwind base;
 @tailwind components;
@@ -6,23 +6,12 @@
 
 @layer base {
   :root {
-    --background: #fff8f5;
-    --foreground: #231a12;
-    --primary: #914d00;
-    --primary-container: #f68b1e;
-    --on-primary: #ffffff;
-    --surface: #fff8f5;
-    --on-surface: #231a12;
-    --surface-variant: #f2dfd3;
-    --on-surface-variant: #554335;
-    --outline: #897363;
-    --outline-variant: #dcc2af;
-    --error: #ba1a1a;
+    /* Token variables managed by Tailwind */
   }
 
   body {
     @apply bg-background text-on-surface antialiased;
-    font-family: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     text-rendering: optimizeLegibility;
     font-feature-settings: "kern" 1, "liga" 1;
   }

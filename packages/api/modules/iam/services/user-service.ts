@@ -72,6 +72,13 @@ export const userService = {
     });
   },
 
+  async toggleTwoFactor(userId: string, enabled: boolean) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { twoFactorEnabled: enabled }
+    });
+  },
+
   async requestPhoneOTP(userId: string) {
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { phone: true } });
     if (!user?.phone) throw new Error('NO_PHONE_NUMBER');

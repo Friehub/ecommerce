@@ -1,129 +1,166 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MessageSquare, Send, ChevronRight, User, ShieldCheck } from 'lucide-react';
+import { MessageSquare, Send, ChevronRight, User, ShieldCheck, ArrowRight, Activity, Zap } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ContactSupportPage() {
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: 'agent',
-      text: 'Hello! I am your Jumia virtual assistant. How can I assist you with your order today?',
-      time: '09:00'
-    }
-  ]);
+ const [message, setMessage] = useState('');
+ const [messages, setMessages] = useState([
+ {
+ id: 1,
+ sender: 'agent',
+ text: 'Hello! I am your Jumia virtual assistant. How can I assist you with your order today?',
+ time: '09:00'
+ }
+ ]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim()) return;
+ const handleSendMessage = (e: React.FormEvent) => {
+ e.preventDefault();
+ if (!message.trim()) return;
 
-    const newMsg = {
-      id: messages.length + 1,
-      sender: 'user',
-      text: message,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    setMessages([...messages, newMsg]);
-    setMessage('');
+ const newMsg = {
+ id: messages.length + 1,
+ sender: 'user',
+ text: message.toUpperCase(),
+ time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+ };
+ setMessages([...messages, newMsg]);
+ setMessage('');
 
-    // Dynamic simulated agent response
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: prev.length + 1,
-          sender: 'agent',
-          text: 'Thank you for reaching out! One of our human live agents is connecting to help resolve this.',
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
-    }, 1200);
-  };
+ // Dynamic simulated agent response
+ setTimeout(() => {
+ setMessages((prev) => [
+ ...prev,
+ {
+ id: prev.length + 1,
+ sender: 'agent',
+ text: 'THANK YOU FOR REACHING OUT. A HUMAN RESOLUTIONS SPECIALIST IS CONNECTING TO YOUR SECURE SESSION.',
+ time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+ }
+ ]);
+ }, 1200);
+ };
 
-  return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-12 select-none">
-      <div className="container py-8 max-w-4xl mx-auto px-4">
-        {/* Breadcrumbs */}
-        <div className="flex items-center gap-2 mb-6 font-bold text-gray-500 text-xs">
-          <Link href="/" className="hover:text-[#F68B1E] transition-colors">Home</Link>
-          <ChevronRight size={14} className="text-gray-300" />
-          <Link href="/help" className="hover:text-[#F68B1E] transition-colors">Help Center</Link>
-          <ChevronRight size={14} className="text-gray-300" />
-          <span className="text-gray-900 font-extrabold">Support</span>
-        </div>
+ return (
+ <div className="bg-background min-h-screen pb-24 select-none">
+ <div className="container py-12 max-w-6xl mx-auto px-6">
+ {/* Breadcrumbs */}
+ <div className="flex items-center gap-3 mb-12 font-black text-on-surface-variant text-[10px] uppercase tracking-[0.4em]">
+ <Link href="/" className="hover:text-primary-container transition-colors">Hub</Link>
+ <ChevronRight size={14} className="opacity-30" />
+ <Link href="/help" className="hover:text-primary-container transition-colors">Intelligence</Link>
+ <ChevronRight size={14} className="opacity-30" />
+ <span className="text-on-surface">Secure Session</span>
+ </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Agent Connection Panel */}
-          <div className="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 shadow-md p-6 h-fit">
-            <div className="flex items-center gap-3 border-b border-gray-100 pb-4 mb-4">
-              <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center text-[#F68B1E] flex-shrink-0 border border-orange-100">
-                <MessageSquare size={24} />
-              </div>
-              <div>
-                <h2 className="font-extrabold text-gray-900 text-base leading-tight">Live Support</h2>
-                <p className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100/50 w-fit mt-1">Agent Available</p>
-              </div>
-            </div>
-            <div className="space-y-4 text-xs md:text-sm font-medium text-gray-600">
-              <p>Direct communication channels are monitored 24/7 by human specialists.</p>
-              <div className="flex items-center gap-2 bg-gray-50/60 p-3 rounded-xl border border-gray-100/50">
-                <ShieldCheck className="text-[#F68B1E] flex-shrink-0" size={18} />
-                <span className="text-gray-700 text-xs font-bold">Encrypted connection</span>
-              </div>
-            </div>
-          </div>
+ <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+ {/* Agent Connection Panel */}
+ <div className="lg:col-span-4 space-y-6">
+ <div className="bg-surface-container-lowest rounded-[40px] border-4 border-surface-container-low shadow-soft p-10 animate-in fade-in slide-in-from-left-8 duration-700">
+ <div className="flex items-center gap-4 border-b-2 border-surface-container-low pb-8 mb-8">
+ <div className="w-16 h-16 bg-primary-container text-white rounded-[24px] flex items-center justify-center shadow-xl shadow-primary-container/20 border-4 border-white/10 shrink-0">
+ <Zap size={32} />
+ </div>
+ <div>
+ <h2 className="font-black text-on-surface text-xl uppercase tracking-tighter leading-none">Real-Time <span className="text-primary-container">Link</span></h2>
+ <div className="flex items-center gap-2 mt-3">
+ <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
+ <p className="text-[10px] font-black text-success uppercase tracking-widest italic">Node Active</p>
+ </div>
+ </div>
+ </div>
+ 
+ <div className="space-y-6">
+ <div className="p-6 bg-surface-container-low/30 rounded-[28px] border-2 border-surface-container-low">
+ <div className="flex items-center gap-4 mb-4">
+ <ShieldCheck size={18} className="text-primary-container" />
+ <h4 className="text-[10px] font-black text-on-surface uppercase tracking-widest">Encryption Status</h4>
+ </div>
+ <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] leading-relaxed italic">
+ YOUR SESSION IS PROTECTED BY END-TO-END CRYPTOGRAPHIC PROTOCOLS. DATA INTEGRITY VERIFIED.
+ </p>
+ </div>
 
-          {/* Messages Flow */}
-          <div className="lg:col-span-2 flex flex-col h-[500px] bg-white rounded-xl border border-gray-100 hover:border-gray-200 duration-300 transition-all shadow-md overflow-hidden">
-            <div className="p-4 bg-gray-50/60 border-b border-gray-100 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-9 h-9 bg-orange-100 text-[#F68B1E] rounded-full flex items-center justify-center border border-orange-200">
-                    <User size={18} />
-                  </div>
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full" />
-                </div>
-                <div>
-                  <h3 className="font-extrabold text-gray-900 text-sm md:text-base leading-tight tracking-tight">Virtual Assistant</h3>
-                  <p className="text-[10px] md:text-xs font-bold text-gray-400">Resolutions Specialist</p>
-                </div>
-              </div>
-            </div>
+ <div className="p-6 bg-surface-container-low/30 rounded-[28px] border-2 border-surface-container-low">
+ <div className="flex items-center gap-4 mb-4">
+ <Activity size={18} className="text-primary-container" />
+ <h4 className="text-[10px] font-black text-on-surface uppercase tracking-widest">Queue Latency</h4>
+ </div>
+ <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] leading-relaxed italic">
+ EXPECTED HANDSHAKE TIME: &lt; 2 MINUTES.
+ </p>
+ </div>
+ </div>
+ </div>
 
-            <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50/20">
-              {messages.map((msg) => (
-                <div key={msg.id} className={`flex gap-3 max-w-[85%] select-text ${msg.sender === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border ${msg.sender === 'user' ? 'bg-orange-50 text-[#F68B1E] border-orange-100' : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
-                    <User size={14} />
-                  </div>
-                  <div className={`p-3.5 rounded-2xl text-xs md:text-sm font-medium ${msg.sender === 'user' ? 'bg-[#F68B1E] text-white rounded-tr-none' : 'bg-white border border-gray-100 rounded-tl-none shadow-sm text-gray-800'}`}>
-                    <p className="leading-relaxed break-words">{msg.text}</p>
-                    <span className={`text-[10px] font-bold block mt-1.5 ${msg.sender === 'user' ? 'text-white/75' : 'text-gray-400'}`}>{msg.time}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+ <div className="bg-on-surface text-white rounded-[32px] p-8 shadow-2xl relative overflow-hidden group">
+ <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
+ <p className="text-[9px] font-black uppercase tracking-[0.4em] mb-4 opacity-40">Security Advisory</p>
+ <p className="text-[10px] font-black uppercase tracking-[0.2em] leading-relaxed italic relative z-10">
+ DO NOT DISCLOSE AUTHORIZATION TOKENS OR TEMPORAL PASSWORDS DURING THIS SESSION.
+ </p>
+ </div>
+ </div>
 
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-100 bg-white flex items-center gap-3">
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type your message here..."
-                className="w-full h-11 px-4 border border-gray-200 focus:border-[#F68B1E] focus:ring-1 focus:ring-orange-200/50 rounded-xl outline-none font-medium text-gray-800 bg-gray-50/20 focus:bg-white transition-all duration-200"
-              />
-              <button 
-                type="submit"
-                className="w-11 h-11 bg-[#F68B1E] hover:bg-[#e07a1a] text-white rounded-xl font-extrabold transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-95 duration-200 flex items-center justify-center flex-shrink-0"
-              >
-                <Send size={18} />
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+ {/* Messages Flow */}
+ <div className="lg:col-span-8 flex flex-col h-[700px] bg-surface-container-lowest rounded-[48px] border-4 border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-right-8 duration-1000">
+ {/* Header */}
+ <div className="p-8 bg-surface-container-low/30 border-b-2 border-surface-container-low flex items-center justify-between">
+ <div className="flex items-center gap-5">
+ <div className="relative">
+ <div className="w-14 h-14 bg-surface-container-lowest border-2 border-surface-container-low rounded-[20px] flex items-center justify-center text-on-surface-variant/40 shadow-sm">
+ <User size={24} />
+ </div>
+ <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-success border-4 border-surface-container-lowest rounded-full shadow-sm" />
+ </div>
+ <div>
+ <h3 className="font-black text-on-surface text-2xl tracking-tighter uppercase leading-none">Virtual <span className="text-primary-container">Core</span></h3>
+ <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] mt-2 italic">Automated Resolutions Node v8.4</p>
+ </div>
+ </div>
+ </div>
+
+ {/* Chat Area */}
+ <div className="flex-1 overflow-y-auto p-10 space-y-8 custom-scrollbar bg-surface-container-low/5">
+ {messages.map((msg) => (
+ <div key={msg.id} className={`flex gap-6 max-w-[85%] select-text animate-in slide-in-from-bottom-4 duration-500 ${msg.sender === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}>
+ <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center flex-shrink-0 border-2 transition-all ${msg.sender === 'user' ? 'bg-primary-container/10 text-primary-container border-primary-container/20' : 'bg-surface-container-lowest border-surface-container-low text-on-surface-variant/20'}`}>
+ <User size={18} />
+ </div>
+ <div className={`p-6 rounded-[32px] text-[11px] font-black uppercase tracking-widest leading-relaxed shadow-soft border-2 ${msg.sender === 'user' ? 'bg-on-surface text-white border-on-surface rounded-tr-none' : 'bg-surface-container-lowest border-surface-container-low rounded-tl-none text-on-surface'}`}>
+ <p className="break-words">{msg.text}</p>
+ <div className={`flex items-center gap-2 mt-4 opacity-30 text-[9px]`}>
+ <Activity size={10} />
+ {msg.time}
+ </div>
+ </div>
+ </div>
+ ))}
+ </div>
+
+ {/* Input Area */}
+ <form onSubmit={handleSendMessage} className="p-8 border-t-2 border-surface-container-low bg-surface-container-low/30 flex items-center gap-6">
+ <div className="flex-1 relative group">
+ <input
+ type="text"
+ value={message}
+ onChange={(e) => setMessage(e.target.value)}
+ placeholder="INJECT COMMUNICATION DATA..."
+ className="w-full h-16 pl-8 pr-8 border-2 border-surface-container-low focus:border-primary-container rounded-2xl outline-none font-black text-[10px] uppercase tracking-widest text-on-surface bg-surface-container-lowest transition-all duration-300 placeholder:font-normal placeholder:text-on-surface-variant/50"
+ />
+ </div>
+ <button 
+ type="submit"
+ disabled={!message.trim()}
+ className="w-16 h-16 bg-on-surface hover:bg-primary-container text-white rounded-2xl font-black transition-all shadow-xl hover:shadow-primary-container/20 active:scale-90 duration-300 flex items-center justify-center flex-shrink-0 disabled:opacity-10 group"
+ >
+ <Send size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+ </button>
+ </form>
+ </div>
+ </div>
+ </div>
+ </div>
+ );
 }

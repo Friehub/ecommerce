@@ -3,215 +3,247 @@
 import React, { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { api } from '@/trpc/react';
-import { Star, Camera, ChevronLeft, Send, Loader2, X } from 'lucide-react';
+import { Star, Camera, ChevronLeft, Send, Loader2, X, Activity, ShieldCheck, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 function ReviewFormContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const productId = searchParams.get('productId');
+ const searchParams = useSearchParams();
+ const router = useRouter();
+ const productId = searchParams.get('productId');
 
-  const [rating, setRating] = useState(0);
-  const [hover, setHover] = useState(0);
-  const [comment, setComment] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+ const [rating, setRating] = useState(0);
+ const [hover, setHover] = useState(0);
+ const [comment, setComment] = useState('');
+ const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: product, isLoading: productLoading } = api.catalog.getProduct.useQuery(
-    { id: productId as string },
-    { enabled: !!productId }
-  );
+ const { data: product, isLoading: productLoading } = api.catalog.getProduct.useQuery(
+ { id: productId as string },
+ { enabled: !!productId }
+ );
 
-  const createReview = api.review.create.useMutation({
-    onSuccess: () => {
-      alert('Review submitted successfully! It will appear once approved.');
-      router.push('/account/reviews');
-    },
-    onError: (err) => {
-      alert(err.message || 'Failed to submit review');
-      setIsSubmitting(false);
-    }
+ const createReview = api.review.create.useMutation({
+ onSuccess: () => {
+ router.push('/account/reviews');
+ },
+ onError: (err) => {
+ setIsSubmitting(false);
+ }
+ });
+
+ const [images, setImages] = useState<string[]>([]);
+ const [uploading, setUploading] = useState(false);
+
+ const getUploadUrl = api.media.getUploadUrl.useMutation();
+
+ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+ const file = e.target.files?.[0];
+ if (!file) return;
+
+ setUploading(true);
+ try {
+ const { url, key } = await getUploadUrl.mutateAsync({
+ path: file.name,
+ contentType: file.type
+ });
+
+ await fetch(url, {
+ method: 'PUT',
+ body: file,
+ headers: { 'Content-Type': file.type }
+ });
+
+ setImages(prev => [...prev, key]);
+ } catch (err: any) {
+ console.error(err);
+ } finally {
+ setUploading(false);
+ }
+ };
+
+ const handleSubmit = (e: React.FormEvent) => {
+ e.preventDefault();
+ if (rating === 0 || !comment || !productId) return;
+
+ setIsSubmitting(true);
+  createReview.mutate({
+    productId,
+    rating,
+    comment,
+    images
   });
+ };
 
-  const [images, setImages] = useState<string[]>([]);
-  const [uploading, setUploading] = useState(false);
+ if (productLoading) {
+ return (
+ <div className="bg-background min-h-screen flex items-center justify-center">
+ <div className="flex flex-col items-center gap-6">
+ <div className="w-16 h-16 border-4 border-primary-container/20 border-t-primary-container rounded-full animate-spin" />
+ <p className="text-[10px] font-black uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Fetching Node Metadata</p>
+ </div>
+ </div>
+ );
+ }
 
-  const getUploadUrl = api.media.getUploadUrl.useMutation();
+ if (!product) {
+ return (
+ <div className="bg-background min-h-screen flex items-center justify-center p-6">
+ <div className="bg-surface-container-lowest p-16 rounded-[48px] border-4 border-surface-container-low shadow-soft text-center max-w-lg w-full">
+ <X className="mx-auto text-error mb-8" size={64} />
+ <h2 className="text-3xl font-black text-on-surface uppercase tracking-tighter mb-4">Node <span className="text-error">Not Found</span></h2>
+ <p className="text-[10px] font-black uppercase tracking-[0.4em] text-on-surface-variant/40 italic mb-10">THE TARGET PRODUCT IDENTITY DOES NOT EXIST IN THE CURRENT CATALOG.</p>
+ <Link href="/account/reviews" className="h-16 px-12 bg-on-surface text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.4em] hover:bg-primary-container transition-all flex items-center justify-center gap-4 mx-auto w-fit">
+ Return to Profile <ArrowRight size={18} />
+ </Link>
+ </div>
+ </div>
+ );
+ }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+ return (
+ <div className="bg-background min-h-screen pb-24 select-none">
+ <div className="container py-12 max-w-3xl mx-auto px-6">
+ <Link 
+ href="/account/reviews"
+ className="flex items-center gap-3 mb-12 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] hover:text-on-surface transition-all group"
+ >
+ <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+ Back to Perception Logs
+ </Link>
 
-    setUploading(true);
-    try {
-      const { url, key } = await getUploadUrl.mutateAsync({
-        path: file.name,
-        contentType: file.type
-      });
+ <div className="bg-surface-container-lowest rounded-[56px] border-4 border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000">
+ <div className="p-10 md:p-16 border-b-4 border-surface-container-low bg-surface-container-low/30">
+ <h1 className="text-4xl font-black text-on-surface tracking-tighter uppercase mb-10 leading-none">Calibrate <span className="text-primary-container">Sentiment</span></h1>
+ 
+ <div className="flex items-center gap-8 p-8 bg-surface-container-lowest rounded-[32px] border-2 border-surface-container-low shadow-inner">
+ <div className="w-20 h-20 bg-surface-container-low rounded-[20px] flex items-center justify-center border-2 border-surface-container-low shrink-0 overflow-hidden">
+ <img src={product.media[0]?.url} alt={product.title} className="w-full h-full object-contain p-2" />
+ </div>
+ <div className="min-w-0">
+ <h3 className="text-xl font-black text-on-surface uppercase tracking-tighter leading-tight truncate">{product.title}</h3>
+ <div className="flex items-center gap-3 mt-2">
+ <ShieldCheck size={14} className="text-primary-container" />
+ <p className="text-[10px] font-black text-primary-container uppercase tracking-[0.3em] italic">Verified Acquisition</p>
+ </div>
+ </div>
+ </div>
+ </div>
 
-      await fetch(url, {
-        method: 'PUT',
-        body: file,
-        headers: { 'Content-Type': file.type }
-      });
+ <form onSubmit={handleSubmit} className="p-10 md:p-16 space-y-12">
+ {/* Rating Stars */}
+ <div className="text-center">
+ <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] mb-8 italic">Specify Performance Magnitude</p>
+ <div className="flex justify-center gap-4">
+ {[1, 2, 3, 4, 5].map((star) => (
+ <button
+ key={star}
+ type="button"
+ onClick={() => setRating(star)}
+ onMouseEnter={() => setHover(star)}
+ onMouseLeave={() => setHover(0)}
+ className="transition-all duration-500 hover:scale-125 active:scale-90"
+ >
+ <Star 
+ size={48} 
+ className={`transition-all duration-500 ${
+ (hover || rating) >= star ? 'text-primary-container fill-primary-container drop-shadow-[0_0_15px_rgba(var(--primary-container),0.4)]' : 'text-surface-container-low fill-surface-container-low'
+ }`}
+ />
+ </button>
+ ))}
+ </div>
+ {rating > 0 && (
+ <p className="text-[11px] font-black text-primary-container uppercase tracking-[0.5em] mt-8 animate-in fade-in zoom-in duration-300">
+ {['Critical Failure', 'Below Spec', 'Operational', 'High Grade', 'Peak Performance'][rating - 1]}
+ </p>
+ )}
+ </div>
 
-      setImages(prev => [...prev, key]);
-    } catch (err: any) {
-      alert(`Upload failed: ${err.message}`);
-    } finally {
-      setUploading(false);
-    }
-  };
+ {/* Comment Area */}
+ <div className="space-y-4">
+ <label className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] block ml-2 italic">Perception Narrative</label>
+ <textarea
+ value={comment}
+ onChange={(e) => setComment(e.target.value)}
+ placeholder="TRANSMIT YOUR EXPERIENCE LOG... WAS THE PRODUCT SPECIFICATION COMPLIANT?"
+ className="w-full min-h-[200px] p-8 bg-surface-container-low/30 border-2 border-surface-container-low rounded-[32px] focus:border-primary-container text-[11px] font-black text-on-surface uppercase tracking-widest leading-loose outline-none placeholder:font-normal placeholder:text-on-surface-variant/50 transition-all"
+ />
+ </div>
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (rating === 0) return alert('Please select a rating');
-    if (!comment) return alert('Please enter a comment');
-    if (!productId) return;
+ {/* Photo Upload */}
+ <div className="space-y-4">
+ <label className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em] block ml-2 italic">Visual Telemetry</label>
+ <div className="flex flex-wrap gap-6">
+ {images.map((img, idx) => (
+ <div key={idx} className="w-28 h-28 bg-surface-container-low rounded-[24px] border-2 border-surface-container-low overflow-hidden group/img relative shadow-inner">
+ <img src={`${process.env.NEXT_PUBLIC_R2_URL || ''}/${img}`} className="w-full h-full object-cover" />
+ <button 
+ type="button"
+ onClick={() => setImages(prev => prev.filter((_, i) => i !== idx))}
+ className="absolute inset-0 bg-on-surface/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white"
+ >
+ <X size={24} />
+ </button>
+ </div>
+ ))}
+ 
+ {images.length < 5 && (
+ <label className="w-28 h-28 border-4 border-dashed border-surface-container-low rounded-[24px] flex flex-col items-center justify-center gap-3 text-on-surface-variant/20 hover:border-primary-container/40 hover:text-primary-container transition-all cursor-pointer group">
+ {uploading ? (
+ <Loader2 size={24} className="animate-spin" />
+ ) : (
+ <>
+ <Camera size={28} className="group-hover:scale-110 transition-transform" />
+ <span className="text-[8px] font-black uppercase tracking-[0.2em]">Add Node</span>
+ </>
+ )}
+ <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+ </label>
+ )}
+ </div>
+ </div>
 
-    setIsSubmitting(true);
-    createReview.mutate({
-      productId,
-      rating,
-      comment,
-      images
-    });
-  };
-
-  if (productLoading) return <div className="p-12 text-center text-xs font-bold uppercase tracking-widest text-gray-400">Loading Product Info...</div>;
-  if (!product) return <div className="p-12 text-center text-xs font-bold uppercase tracking-widest text-red-500">Product not found</div>;
-
-  return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-12 select-none">
-      <div className="container py-8 max-w-2xl mx-auto px-4">
-        <Link 
-          href="/account/reviews"
-          className="flex items-center gap-2 mb-8 text-xs font-black text-gray-400 uppercase tracking-[0.2em] hover:text-[#F68B1E] transition-colors group"
-        >
-          <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          Back to Reviews
-        </Link>
-
-        <div className="bg-white rounded-[32px] border border-gray-100 shadow-2xl shadow-gray-200/50 overflow-hidden">
-          <div className="p-8 border-b border-gray-50 bg-gradient-to-r from-white to-gray-50/30">
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-6">Rate & Review</h1>
-            
-            <div className="flex items-center gap-6 p-4 bg-orange-50/30 rounded-2xl border border-orange-100">
-              <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center border border-orange-100/50 shrink-0 overflow-hidden">
-                <img src={product.media[0]?.url} alt={product.title} className="w-full h-full object-contain p-2" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-extrabold text-gray-900 leading-tight truncate">{product.title}</h3>
-                <p className="text-[10px] font-bold text-[#F68B1E] uppercase tracking-widest mt-1">Verified Purchase</p>
-              </div>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="p-8 space-y-8">
-            {/* Rating Stars */}
-            <div className="text-center">
-              <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">How would you rate this product?</p>
-              <div className="flex justify-center gap-3">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setRating(star)}
-                    onMouseEnter={() => setHover(star)}
-                    onMouseLeave={() => setHover(0)}
-                    className="transition-all duration-300 hover:scale-125 active:scale-95"
-                  >
-                    <Star 
-                      size={40} 
-                      className={`transition-colors duration-300 ${
-                        (hover || rating) >= star ? 'text-orange-400 fill-orange-400' : 'text-gray-100'
-                      }`}
-                    />
-                  </button>
-                ))}
-              </div>
-              {rating > 0 && (
-                <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mt-4 animate-bounce">
-                  {['Terrible', 'Bad', 'Okay', 'Good', 'Amazing'][rating - 1]}!
-                </p>
-              )}
-            </div>
-
-            {/* Comment Area */}
-            <div className="space-y-4">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest block">Your Review</label>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Share your experience with this product... Was it what you expected? How is the quality?"
-                className="w-full min-h-[160px] p-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-orange-400 focus:bg-white transition-all text-sm font-medium leading-relaxed"
-              />
-            </div>
-
-            {/* Photo Upload */}
-            <div className="space-y-4">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest block">Add Photos</label>
-              <div className="flex flex-wrap gap-4">
-                {images.map((img, idx) => (
-                  <div key={idx} className="w-24 h-24 bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden group/img relative">
-                    <img src={`${process.env.NEXT_PUBLIC_R2_URL || ''}/${img}`} className="w-full h-full object-cover" />
-                    <button 
-                      type="button"
-                      onClick={() => setImages(prev => prev.filter((_, i) => i !== idx))}
-                      className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white"
-                    >
-                      <X size={20} />
-                    </button>
-                  </div>
-                ))}
-                
-                {images.length < 5 && (
-                  <label className="w-24 h-24 border-2 border-dashed border-gray-100 rounded-2xl flex flex-col items-center justify-center gap-2 text-gray-300 hover:border-orange-200 hover:text-orange-300 transition-all cursor-pointer">
-                    {uploading ? (
-                      <Loader2 size={24} className="animate-spin" />
-                    ) : (
-                      <>
-                        <Camera size={24} />
-                        <span className="text-[8px] font-black uppercase tracking-widest">Add Photo</span>
-                      </>
-                    )}
-                    <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-                  </label>
-                )}
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting || rating === 0}
-              className={`w-full py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95 ${
-                isSubmitting || rating === 0 
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-[#F68B1E] to-[#DF3131] text-white hover:shadow-orange-200/50'
-              }`}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                <>
-                  <Send size={16} />
-                  Submit Review
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
+ <button
+ type="submit"
+ disabled={isSubmitting || rating === 0 || !comment}
+ className={`w-full h-24 rounded-[40px] font-black text-[11px] uppercase tracking-[0.5em] shadow-2xl transition-all flex items-center justify-center gap-4 active:scale-95 disabled:opacity-20 group ${
+ isSubmitting || rating === 0 || !comment
+ ? 'bg-surface-container-low text-on-surface-variant' 
+ : 'bg-on-surface text-white hover:bg-primary-container'
+ }`}
+ >
+ {isSubmitting ? (
+ <>
+ <Loader2 size={24} className="animate-spin" />
+ Transmitting...
+ </>
+ ) : (
+ <>
+ Transmit Sentiment Log <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
+ </>
+ )}
+ </button>
+ </form>
+ </div>
+ 
+ <div className="mt-12 flex items-center gap-4 bg-primary-container/5 p-8 rounded-[32px] border-2 border-primary-container/10">
+ <Activity size={24} className="text-primary-container animate-pulse shrink-0" />
+ <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant/60 leading-relaxed italic">
+ ALL SUBMITTED LOGS UNDERGO SYSTEMIC CONTENT VERIFICATION BEFORE BEING COMMITTED TO THE PUBLIC LEDGER.
+ </p>
+ </div>
+ </div>
+ </div>
+ );
 }
 
 export default function NewReviewPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ReviewFormContent />
-    </Suspense>
-  );
+ return (
+ <Suspense fallback={
+ <div className="bg-background min-h-screen flex items-center justify-center">
+ <div className="w-16 h-16 border-4 border-primary-container/20 border-t-primary-container rounded-full animate-spin" />
+ </div>
+ }>
+ <ReviewFormContent />
+ </Suspense>
+ );
 }

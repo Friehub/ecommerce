@@ -3,10 +3,10 @@ import { publishEvent } from '@ecom/shared'
 
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   'PENDING': ['PICKED_UP', 'FAILED'],
-  'PICKED_UP': ['IN_TRANSIT', 'FAILED'],
+  'PICKED_UP': ['IN_TRANSIT', 'OUT_FOR_DELIVERY', 'FAILED'],
   'IN_TRANSIT': ['OUT_FOR_DELIVERY', 'FAILED'],
   'OUT_FOR_DELIVERY': ['DELIVERED', 'FAILED'],
-  'FAILED': ['PICKED_UP'], // Allow retry from pickup
+  'FAILED': ['PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY'], // Allow retry from various states
   'DELIVERED': [] // Terminal state
 };
 

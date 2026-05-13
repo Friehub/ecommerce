@@ -11,10 +11,10 @@ import type {
   PayoutResult,
 } from './types.js';
 
-const PAYSTACK_SECRET_KEY =
-  process.env.PAYSTACK_SECRET || process.env.PAYSTACK_SECRET_KEY || 'sk_test_placeholder';
-const PAYSTACK_WEBHOOK_SECRET =
-  process.env.PAYSTACK_WEBHOOK_SECRET || 'whsec_test_placeholder';
+import { config } from '../../../config.js';
+
+const PAYSTACK_SECRET_KEY = config.PAYSTACK_SECRET_KEY;
+const PAYSTACK_WEBHOOK_SECRET = config.PAYSTACK_WEBHOOK_SECRET;
 const PAYSTACK_BASE = 'https://api.paystack.co';
 
 function headers() {

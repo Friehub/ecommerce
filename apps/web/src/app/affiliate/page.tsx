@@ -1,10 +1,31 @@
 'use client';
 
 import { api } from '@/trpc/react';
-import { useState } from 'react';
-import { Share2, Link as LinkIcon, DollarSign, Activity, CheckCircle, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { 
+  Share2, 
+  Link as LinkIcon, 
+  DollarSign, 
+  Activity, 
+  CheckCircle, 
+  Clock, 
+  Loader2, 
+  Sparkles, 
+  Copy, 
+  ExternalLink, 
+  TrendingUp, 
+  MousePointer2, 
+  Target,
+  ArrowRight,
+  ShieldCheck,
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  BarChart3
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { Skeleton } from '../../components/ui/Skeleton';
 
 export default function AffiliatePortal() {
   const { data: session } = useSession();
@@ -24,16 +45,37 @@ export default function AffiliatePortal() {
 
   const [targetType, setTargetType] = useState<'PRODUCT' | 'CATEGORY' | 'HOME'>('HOME');
   const [targetId, setTargetId] = useState('');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [page, setPage] = useState(0);
+  const limit = 10;
+
+  const { data: stats } = api.affiliate.getMyStats.useQuery(undefined, {
+    enabled: !!session?.user
+  });
+
+  const { data: commissionsData, isLoading: isLoadingComms } = api.affiliate.getMyCommissions.useQuery({
+    limit,
+    offset: page * limit
+  }, {
+    enabled: !!session?.user
+  });
+
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   if (!session?.user) {
     return (
-      <div className="bg-[#F9F9FA] min-h-screen flex items-center justify-center p-6">
-        <div className="bg-white p-12 rounded-3xl shadow-xl shadow-black/5 border border-gray-100 text-center max-w-sm">
-          <Share2 className="mx-auto text-gray-200 mb-6" size={64} />
-          <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight mb-2">Exclusive Portal</h2>
-          <p className="text-gray-500 text-sm font-medium mb-8">Please log in to your account to access the affiliate dashboard and start earning.</p>
-          <Link href="/auth/login" className="block w-full py-4 bg-[#1A1A1A] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#F68B1E] transition-all">
-            Sign In Now
+      <div className="bg-background min-h-screen flex items-center justify-center p-6">
+        <div className="bg-surface-container-lowest p-12 rounded-[40px] shadow-soft border-4 border-surface-container-low text-center max-w-sm animate-in fade-in zoom-in-95">
+          <Share2 className="mx-auto text-on-surface-variant/20 mb-8" size={64} />
+          <h2 className="text-xl font-black text-on-surface uppercase tracking-tight mb-3">Exclusive Portal</h2>
+          <p className="text-on-surface-variant/60 text-[10px] font-black uppercase tracking-[0.2em] mb-10 leading-relaxed italic">Authentication required to initialize partner telemetry.</p>
+          <Link href="/login" className="block w-full py-5 bg-on-surface text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-primary-container transition-all shadow-xl active:scale-95">
+            Access Terminal
           </Link>
         </div>
       </div>
@@ -42,226 +84,349 @@ export default function AffiliatePortal() {
 
   if (isLoading) {
     return (
-      <div className="bg-[#F9F9FA] min-h-screen">
-        <div className="container py-20 text-center text-gray-400 font-black uppercase tracking-widest text-[10px]">
-          Syncing Partner Ledger...
+      <div className="bg-background min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-6">
+          <Activity className="text-primary-container animate-pulse" size={48} />
+          <div className="text-center space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-on-surface-variant/40 italic">Syncing Partner Ledger...</p>
+          </div>
         </div>
       </div>
     );
   }
 
+  // REGISTRATION / ONBOARDING VIEW
   if (!profile) {
     return (
-      <div className="bg-[#F9F9FA] min-h-screen pb-20">
-        <div className="bg-[#1A1A1A] text-white py-24 overflow-hidden relative">
-          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-[#F68B1E]/10 rounded-full blur-3xl" />
-          <div className="container relative z-10 text-center">
-            <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl border border-white/10 mb-8">
-              <Activity size={16} className="text-[#F68B1E]" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">Monetize Your Influence</span>
+      <div className="bg-background min-h-screen pb-20 selection:bg-primary-container/30">
+        <div className="bg-on-surface text-white py-32 overflow-hidden relative border-b-8 border-primary-container/20">
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-primary-container/10 rounded-full blur-[120px] animate-pulse" />
+          <div className="container relative z-10 text-center max-w-4xl mx-auto px-6">
+            <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-xl px-6 py-2.5 rounded-2xl border-2 border-white/10 mb-12 animate-in slide-in-from-top-8 duration-700">
+              <Sparkles size={16} className="text-primary-container" />
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60 italic">Monetize Your Influence</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6">
+            <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8] mb-10 animate-in fade-in duration-1000">
               Partner with <br />
-              <span className="text-[#F68B1E]">Jumia Network</span>
+              <span className="text-primary-container italic">Jumia Network.</span>
             </h1>
-            <p className="text-gray-400 font-medium max-w-md mx-auto mb-12 leading-relaxed">
-              Earn up to 10% commission on every successful order you refer. Turn your audience into a sustainable engine of revenue.
+            <p className="text-white/40 font-black text-[11px] uppercase tracking-[0.2em] max-w-md mx-auto mb-16 leading-relaxed italic opacity-80">
+              Unlock elite revenue nodes and command up to <span className="text-white font-black">10% commission</span> on referred telemetry.
             </p>
-            <button 
-              onClick={() => registerMutation.mutate()}
-              disabled={registerMutation.isLoading}
-              className="bg-white text-black px-12 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#F68B1E] hover:text-white transition-all transform active:scale-95 shadow-2xl shadow-orange-500/20 disabled:opacity-50"
-            >
-              {registerMutation.isLoading ? 'Processing...' : 'Become a Partner'}
-            </button>
+
+            <div className="bg-white/5 backdrop-blur-xl rounded-[40px] border-2 border-white/10 p-10 md:p-16 text-left max-w-2xl mx-auto animate-in slide-in-from-bottom-12 duration-1000">
+              <h2 className="text-sm font-black uppercase tracking-[0.4em] text-white mb-8 flex items-center gap-4">
+                <ShieldCheck size={20} className="text-primary-container" />
+                Partner Agreement
+              </h2>
+              <div className="space-y-6 mb-12 max-h-48 overflow-y-auto pr-4 custom-scrollbar text-[10px] font-medium text-white/40 uppercase tracking-widest leading-relaxed">
+                <p>1. THE PARTNER AGREES TO REPRESENT THE JUMIA CLONE BRAND WITH INTEGRITY ACROSS ALL DIGITAL CHANNELS.</p>
+                <p>2. COMMISSIONS ARE CALCULATED BASED ON NET SALES VALUE, EXCLUDING SHIPPING AND TAXES.</p>
+                <p>3. SPAM, FRAUDULENT CLICKS, OR MISLEADING ADVERTISING WILL RESULT IN IMMEDIATE TERMINATION OF THE PARTNER NODE.</p>
+                <p>4. SETTLEMENTS ARE PROCESSED ON A 30-DAY ROLLING WINDOW FOLLOWING ORDER COMPLETION.</p>
+                <p>5. JUMIA CLONE RESERVES THE RIGHT TO ADJUST COMMISSION RATES BASED ON PERFORMANCE TIERS.</p>
+              </div>
+
+              <div className="flex items-start gap-4 mb-12 cursor-pointer group" onClick={() => setAgreedToTerms(!agreedToTerms)}>
+                <div className={`mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${agreedToTerms ? 'bg-primary-container border-primary-container' : 'border-white/20 group-hover:border-white/40'}`}>
+                  {agreedToTerms && <CheckCircle size={14} className="text-white" />}
+                </div>
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/60 group-hover:text-white transition-colors">I acknowledge the terms of the Jumia Network Partnership Protocol.</p>
+              </div>
+
+              <button 
+                onClick={() => registerMutation.mutate()}
+                disabled={registerMutation.isLoading || !agreedToTerms}
+                className="w-full bg-primary-container text-white py-6 rounded-[24px] font-black text-[11px] uppercase tracking-[0.4em] hover:bg-white hover:text-on-surface transition-all transform active:scale-95 shadow-[0_0_50px_rgba(246,139,30,0.3)] disabled:opacity-20 disabled:cursor-not-allowed group flex items-center justify-center gap-4"
+              >
+                {registerMutation.isLoading ? <Loader2 className="animate-spin" size={20} /> : (
+                  <>
+                    Initialize Partnership <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                  </>
+                )}
+              </button>
+            </div>
           </div>
+        </div>
+
+        {/* Benefits Grid */}
+        <div className="container mx-auto px-6 max-w-6xl -mt-20 relative z-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { icon: <Zap size={24} />, title: 'Instant Nodes', desc: 'Generate unique tracking slugs for any product or category instantly.' },
+            { icon: <TrendingUp size={24} />, title: 'High Yield', desc: 'Command high commission rates that scale with your referral performance.' },
+            { icon: <BarChart3 size={24} />, title: 'Live Telemetry', desc: 'Monitor your network pulse with real-time click and conversion data.' }
+          ].map((benefit, i) => (
+            <div key={i} className="bg-surface-container-lowest p-10 rounded-[40px] border-4 border-surface-container-low shadow-soft hover:-translate-y-2 transition-all duration-500 animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${i * 100}ms` }}>
+              <div className="w-14 h-14 bg-primary-container/10 rounded-2xl flex items-center justify-center text-primary-container mb-8">
+                {benefit.icon}
+              </div>
+              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-on-surface mb-4">{benefit.title}</h3>
+              <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40 leading-relaxed italic">{benefit.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
-  const totalEarned = profile.commissions
-    .filter(c => c.status === 'CONFIRMED' || c.status === 'PAID')
-    .reduce((acc, c) => acc + Number(c.amount), 0);
+  // DASHBOARD VIEW
+  const totalEarned = stats?.confirmed || 0;
+  const pendingEarned = stats?.pending || 0;
+  const totalClicks = stats?.totalClicks || 0;
 
-  const pendingEarned = profile.commissions
-    .filter(c => c.status === 'PENDING')
-    .reduce((acc, c) => acc + Number(c.amount), 0);
-
-  const totalClicks = profile.links.reduce((acc, l) => acc + (l as any)._count?.clicks || 0, 0);
+  const commissions = commissionsData?.items || [];
+  const totalCommissions = commissionsData?.total || 0;
+  const totalPages = Math.ceil(totalCommissions / limit);
 
   return (
-    <div className="bg-[#F9F9FA] min-h-screen pb-20 select-none">
-      <div className="bg-[#1A1A1A] pt-12 pb-24 border-b border-white/5">
-        <div className="container">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="bg-[#F68B1E] p-1.5 rounded-lg">
-                  <Activity size={18} className="text-white" />
+    <div className="bg-background min-h-screen pb-20 select-none animate-in fade-in duration-1000">
+      {/* Header */}
+      <div className="bg-on-surface pt-16 pb-32 border-b border-white/5 relative overflow-hidden">
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary-container to-transparent opacity-30" />
+        <div className="container mx-auto px-6 max-w-7xl relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+            <div className="animate-in slide-in-from-left-8 duration-700">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="bg-primary-container/20 backdrop-blur-xl p-2.5 rounded-2xl border-2 border-primary-container/30">
+                  <Activity size={24} className="text-primary-container" />
                 </div>
-                <h1 className="text-2xl font-black text-white uppercase tracking-tight">Partner Dashboard</h1>
+                <h1 className="text-4xl font-black text-white uppercase tracking-tighter leading-none">Partner <span className="text-primary-container italic">Terminal.</span></h1>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/10 flex items-center gap-2">
-                   <span className="text-[10px] font-black text-gray-500 uppercase">Tier</span>
-                   <span className="text-[10px] font-black text-[#F68B1E] uppercase">{profile.tier}</span>
+              <div className="flex items-center gap-6">
+                <div className="bg-white/5 px-6 py-2.5 rounded-2xl border-2 border-white/10 flex items-center gap-3">
+                  <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">Protocol Tier</span>
+                  <span className="text-[10px] font-black text-primary-container uppercase italic tracking-[0.2em]">{profile.tier}</span>
                 </div>
-                <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/10 flex items-center gap-2">
-                   <span className="text-[10px] font-black text-gray-500 uppercase">Rate</span>
-                   <span className="text-[10px] font-black text-white uppercase">{Number(profile.commissionRate)}%</span>
+                <div className="bg-white/5 px-6 py-2.5 rounded-2xl border-2 border-white/10 flex items-center gap-3">
+                  <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">Yield Rate</span>
+                  <span className="text-[10px] font-black text-white uppercase italic tracking-[0.2em]">{Number(profile.commissionRate)}%</span>
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              {/* Profile placeholder */}
-              <div className="text-right hidden md:block">
-                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Authenticated Partner</p>
-                <p className="text-sm font-black text-white uppercase">{session?.user?.name}</p>
+            <div className="flex items-center gap-8 bg-white/5 backdrop-blur-xl p-6 rounded-[32px] border-2 border-white/10 shadow-2xl animate-in slide-in-from-right-8 duration-700">
+              <div className="text-right hidden sm:block">
+                <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] mb-2 italic">Active Identity</p>
+                <p className="text-xs font-black text-white uppercase tracking-tighter italic">{session?.user?.name || session?.user?.email}</p>
+              </div>
+              <div className="w-14 h-14 bg-primary-container text-white rounded-2xl flex items-center justify-center font-black text-xl border-4 border-white/5 shadow-xl">
+                {session.user?.name?.[0].toUpperCase() || 'P'}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container -mt-12 relative z-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <div className="container mx-auto px-6 max-w-7xl -mt-16 relative z-20">
+        {/* Statistics Grid / Earnings Widget */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
           {[
-            { label: 'Total Earnings', val: `₦${totalEarned.toLocaleString()}`, icon: <DollarSign size={20} />, color: 'text-green-500' },
-            { label: 'Pending Payout', val: `₦${pendingEarned.toLocaleString()}`, icon: <Clock size={20} />, color: 'text-[#F68B1E]' },
-            { label: 'Network Clicks', val: totalClicks.toLocaleString(), icon: <Activity size={20} />, color: 'text-blue-500' }
+            { label: 'Confirmed Yield', val: `₦${totalEarned.toLocaleString()}`, icon: <DollarSign size={24} />, color: 'text-success', badge: 'bg-success/10 border-success/20' },
+            { label: 'Pending Settlement', val: `₦${pendingEarned.toLocaleString()}`, icon: <Clock size={24} />, color: 'text-primary-container', badge: 'bg-primary-container/10 border-primary-container/20' },
+            { label: 'Network Pulse', val: totalClicks.toLocaleString(), icon: <Activity size={24} />, color: 'text-secondary', badge: 'bg-secondary/10 border-secondary/20' }
           ].map((stat, i) => (
-            <div key={i} className="bg-white p-8 rounded-3xl shadow-xl shadow-black/[0.03] border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">{stat.label}</span>
-                <div className={`${stat.color} bg-current/10 p-2 rounded-xl`}>{stat.icon}</div>
+            <div key={i} className="bg-surface-container-lowest p-10 rounded-[48px] border-4 border-surface-container-low shadow-soft hover:translate-y-[-10px] transition-all duration-700 group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${i * 150}ms` }}>
+              <div className="flex items-center justify-between mb-10">
+                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-on-surface-variant/40 italic">{stat.label}</span>
+                <div className={`${stat.color} ${stat.badge} p-3 rounded-2xl border-2 transition-transform group-hover:scale-110 duration-500`}>{stat.icon}</div>
               </div>
-              <p className={`text-3xl font-black ${stat.color} tracking-tighter`}>{stat.val}</p>
+              <p className={`text-4xl font-black ${stat.color} tracking-tighter leading-none`}>{stat.val}</p>
+              <div className="w-full h-1 bg-surface-container-low rounded-full mt-8 overflow-hidden">
+                <div className={`h-full ${stat.color.replace('text-', 'bg-')} opacity-20`} style={{ width: '60%' }} />
+              </div>
             </div>
           ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Link Generator */}
           <div className="lg:col-span-1">
-            <div className="bg-white p-8 rounded-3xl shadow-xl shadow-black/[0.03] border border-gray-100">
-              <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-8 pb-4 border-b border-gray-50">Generate Link</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Link Destination</label>
-                  <select 
-                    value={targetType}
-                    onChange={(e) => setTargetType(e.target.value as any)}
-                    className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#F68B1E] text-xs font-bold uppercase tracking-widest appearance-none"
-                  >
-                    <option value="HOME">Homepage</option>
-                    <option value="PRODUCT">Specific Product</option>
-                    <option value="CATEGORY">Category Page</option>
-                  </select>
+            <div className="bg-surface-container-lowest p-10 rounded-[48px] border-4 border-surface-container-low shadow-soft sticky top-32">
+              <h3 className="text-sm font-black text-on-surface uppercase tracking-[0.4em] mb-10 pb-6 border-b-2 border-surface-container-low flex items-center gap-4">
+                <LinkIcon size={18} className="text-primary-container" />
+                Link Generator
+              </h3>
+              <div className="space-y-8">
+                <div className="space-y-3">
+                  <label className="block text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Destination Target</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { type: 'HOME', label: 'Home', icon: <Target size={14} /> },
+                      { type: 'PRODUCT', label: 'Product', icon: <MousePointer2 size={14} /> },
+                      { type: 'CATEGORY', label: 'Cat', icon: <TrendingUp size={14} /> }
+                    ].map((btn) => (
+                      <button
+                        key={btn.type}
+                        onClick={() => setTargetType(btn.type as any)}
+                        className={`h-12 rounded-xl border-2 flex items-center justify-center gap-2 text-[8px] font-black uppercase tracking-widest transition-all ${targetType === btn.type ? 'bg-on-surface text-white border-on-surface' : 'bg-surface-container-low/30 border-surface-container-low text-on-surface-variant hover:border-on-surface-variant'}`}
+                      >
+                        {btn.icon} {btn.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 {targetType !== 'HOME' && (
-                  <div>
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">ID / Slug</label>
+                  <div className="space-y-3">
+                    <label className="block text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Asset ID / Slug</label>
                     <input 
                       type="text" 
                       value={targetId}
                       onChange={(e) => setTargetId(e.target.value)}
-                      placeholder={targetType === 'PRODUCT' ? 'e.g. prod_123' : 'e.g. tech-gear'}
-                      className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#F68B1E] text-xs font-bold"
+                      placeholder={targetType === 'PRODUCT' ? 'e.g. prod_123' : 'e.g. fashion-electronics'}
+                      className="w-full h-14 px-6 bg-surface-container-low/30 border-2 border-surface-container-low rounded-2xl focus:border-primary-container focus:ring-4 focus:ring-primary-container/5 text-xs font-bold text-on-surface outline-none transition-all placeholder:font-normal placeholder:text-on-surface-variant/50"
                     />
                   </div>
                 )}
                 <button 
                   onClick={() => generateMutation.mutate({ targetType, targetId: targetId || undefined })}
                   disabled={generateMutation.isLoading}
-                  className="w-full bg-[#1A1A1A] text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#F68B1E] transition-all transform active:scale-95 shadow-xl shadow-black/10"
+                  className="w-full bg-primary-container text-white h-14 rounded-2xl font-black text-[11px] uppercase tracking-[0.3em] hover:bg-on-surface transition-all transform active:scale-95 shadow-xl shadow-primary-container/20 flex items-center justify-center gap-3 group"
                 >
-                  {generateMutation.isLoading ? 'Generating...' : 'Create Tracker'}
+                  {generateMutation.isLoading ? <Loader2 size={16} className="animate-spin" /> : (
+                    <>
+                      Initialize Tracker <Zap size={16} className="group-hover:rotate-12 transition-transform" />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-2 space-y-12">
-            <div className="bg-white rounded-3xl shadow-xl shadow-black/[0.03] border border-gray-100 overflow-hidden">
-              <div className="px-8 py-6 border-b border-gray-50 flex items-center justify-between">
-                <h3 className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Active Trackers</h3>
-                <LinkIcon size={16} className="text-gray-300" />
+            {/* Referral Link List */}
+            <div className="bg-surface-container-lowest rounded-[48px] border-4 border-surface-container-low shadow-soft overflow-hidden">
+              <div className="px-10 py-8 border-b-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/10">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-on-surface/5 rounded-xl flex items-center justify-center border-2 border-outline-variant/10">
+                    <LinkIcon size={18} className="text-on-surface-variant opacity-40" />
+                  </div>
+                  <h3 className="text-[10px] font-black text-on-surface uppercase tracking-[0.4em]">Active Trackers</h3>
+                </div>
               </div>
-              <div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto">
+              <div className="divide-y-4 divide-surface-container-low max-h-[600px] overflow-y-auto custom-scrollbar">
                 {profile.links.map(link => (
-                  <div key={link.id} className="p-8 flex items-center justify-between hover:bg-gray-50/50 transition-colors group">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <p className="text-sm font-black text-gray-900 uppercase tracking-tight">taas.link/{link.slug}</p>
-                        <button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(`https://friehub.cloud/r/${link.slug}`);
-                          }}
-                          className="text-[#F68B1E] opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <LinkIcon size={14} />
-                        </button>
+                  <div key={link.id} className="p-10 flex items-center justify-between hover:bg-surface-container-low/20 transition-all duration-500 group">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-4">
+                        <p className="text-lg font-black text-on-surface uppercase tracking-tighter group-hover:text-primary-container transition-colors">taas.link/{link.slug}</p>
+                        <div className="flex items-center gap-2">
+                          <button 
+                            onClick={() => copyToClipboard(`https://friehub.cloud/r/${link.slug}`, link.id)}
+                            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${copiedId === link.id ? 'bg-success text-white' : 'bg-surface-container-low text-on-surface-variant hover:bg-on-surface hover:text-white'}`}
+                          >
+                            {copiedId === link.id ? <CheckCircle size={14} /> : <Copy size={14} />}
+                          </button>
+                          <a 
+                            href={`https://friehub.cloud/r/${link.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-primary-container hover:text-white transition-all"
+                          >
+                            <ExternalLink size={14} />
+                          </a>
+                        </div>
                       </div>
-                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Target: {link.targetType}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[8px] font-black text-white px-2 py-1 bg-on-surface rounded-md uppercase tracking-[0.1em]">{link.targetType}</span>
+                        {link.targetId && <span className="text-[8px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">{link.targetId}</span>}
+                      </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-black text-gray-900 tracking-tighter group-hover:text-[#F68B1E] transition-colors">{(link as any)._count?.clicks || 0}</p>
-                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Clicks</p>
+                      <p className="text-3xl font-black text-on-surface tracking-tighter leading-none group-hover:scale-110 transition-transform origin-right duration-500">{(link as any)._count?.clicks || 0}</p>
+                      <p className="text-[9px] font-black text-on-surface-variant/30 uppercase tracking-widest mt-2">Telemetry Pulses</p>
                     </div>
                   </div>
                 ))}
                 {profile.links.length === 0 && (
-                  <div className="p-20 text-center text-gray-300">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">No links generated yet.</p>
+                  <div className="py-32 text-center">
+                    <LinkIcon size={48} className="mx-auto text-on-surface-variant opacity-5 mb-6" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-on-surface-variant/30 italic">No trackers initialized in current sector.</p>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-xl shadow-black/[0.03] border border-gray-100 overflow-hidden">
-              <div className="px-8 py-6 border-b border-gray-50 flex items-center justify-between">
-                <h3 className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Commission History</h3>
-                <DollarSign size={16} className="text-gray-300" />
+            {/* Commission Matrix / Table */}
+            <div className="bg-surface-container-lowest rounded-[48px] border-4 border-surface-container-low shadow-soft overflow-hidden">
+              <div className="px-10 py-8 border-b-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/10">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-on-surface/5 rounded-xl flex items-center justify-center border-2 border-outline-variant/10">
+                    <DollarSign size={18} className="text-on-surface-variant opacity-40" />
+                  </div>
+                  <h3 className="text-[10px] font-black text-on-surface uppercase tracking-[0.4em]">Yield Log (Commission Ledger)</h3>
+                </div>
               </div>
-              <div className="divide-y divide-gray-50">
-                {profile.commissions.slice(0, 5).map(comm => (
-                  <div key={comm.id} className="p-8 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
-                    <div className="flex items-center gap-6">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${comm.status === 'CONFIRMED' || comm.status === 'PAID' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>
-                        {comm.status === 'CONFIRMED' || comm.status === 'PAID' ? <CheckCircle size={20} /> : <Clock size={20} />}
-                      </div>
-                      <div>
-                        <p className="text-sm font-black text-gray-900 uppercase tracking-tight">Order #{comm.orderId.slice(-8).toUpperCase()}</p>
-                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">{new Date(comm.createdAt).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-black text-gray-900 tracking-tighter">₦{Number(comm.amount).toLocaleString()}</p>
-                      <p className={`text-[9px] font-black uppercase tracking-[0.2em] mt-1 ${comm.status === 'CONFIRMED' || comm.status === 'PAID' ? 'text-green-600' : 'text-[#F68B1E]'}`}>
-                        {comm.status}
+              
+              {commissions.length > 0 ? (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-surface-container-low/5 border-b-2 border-surface-container-low">
+                          <th className="px-10 py-6 text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em]">Status</th>
+                          <th className="px-10 py-6 text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em]">Transaction ID</th>
+                          <th className="px-10 py-6 text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em]">Timestamp</th>
+                          <th className="px-10 py-6 text-right text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em]">Yield</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y-2 divide-surface-container-low/50">
+                        {commissions.map(comm => (
+                          <tr key={comm.id} className="hover:bg-surface-container-low/10 transition-colors group">
+                            <td className="px-10 py-8">
+                              <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border-2 text-[8px] font-black uppercase tracking-widest ${
+                                comm.status === 'CONFIRMED' || comm.status === 'PAID' 
+                                  ? 'bg-success/5 text-success border-success/10' 
+                                  : comm.status === 'CANCELLED'
+                                  ? 'bg-error/5 text-error border-error/10'
+                                  : 'bg-primary-container/5 text-primary-container border-primary-container/10'
+                              }`}>
+                                {comm.status === 'CONFIRMED' || comm.status === 'PAID' ? <CheckCircle size={10} /> : <Clock size={10} />}
+                                {comm.status}
+                              </div>
+                            </td>
+                            <td className="px-10 py-8 text-[10px] font-black text-on-surface uppercase tracking-tight">#{comm.orderId.slice(-12).toUpperCase()}</td>
+                            <td className="px-10 py-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">{new Date(comm.createdAt).toLocaleDateString()}</td>
+                            <td className="px-10 py-8 text-right text-base font-black text-on-surface tracking-tighter group-hover:text-success transition-colors">₦{Number(comm.amount).toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="px-10 py-8 border-t-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/5">
+                      <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">
+                        Sector {page + 1} of {totalPages}
                       </p>
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => setPage(p => Math.max(0, p - 1))}
+                          disabled={page === 0}
+                          className="w-12 h-12 flex items-center justify-center bg-surface-container-low rounded-xl text-on-surface-variant hover:bg-on-surface hover:text-white transition-all disabled:opacity-20"
+                        >
+                          <ChevronLeft size={18} />
+                        </button>
+                        <button
+                          onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                          disabled={page >= totalPages - 1}
+                          className="w-12 h-12 flex items-center justify-center bg-surface-container-low rounded-xl text-on-surface-variant hover:bg-on-surface hover:text-white transition-all disabled:opacity-20"
+                        >
+                          <ChevronRight size={18} />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                {profile.commissions.length === 0 && (
-                  <div className="p-20 text-center text-gray-300">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">No commissions earned yet.</p>
-                  </div>
-                )}
-              </div>
+                  )}
+                </>
+              ) : (
+                <div className="py-32 text-center">
+                  <DollarSign size={48} className="mx-auto text-on-surface-variant opacity-5 mb-6" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-on-surface-variant/30 italic">No yield recorded in ledger history.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 24px;
-        }
-      `}</style>
     </div>
   );
 }
-

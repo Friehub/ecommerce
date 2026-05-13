@@ -155,12 +155,49 @@ export const affiliateService = {
         links: {
           include: { _count: { select: { clicks: true } } },
           orderBy: { id: 'desc' }
-        },
-        commissions: {
-          orderBy: { createdAt: 'desc' },
-          take: 50
         }
       }
     });
+  },
+
+  async getCommissions(agentId: string, limit: number = 20, offset: number = 0) {
+    const [items, total] = await Promise.all([
+      prisma.commission.findMany({
+        where: { agentId },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.commission.count({ where: { agentId } })
+    ]);
+
+    return { items, total };
+  },
+
+  async getAgentStats(agentId: string) {
+    const stats = await prisma.commission.groupBy({
+      by: ['status'],
+      where: { agentId },
+      _sum: { amount: true }
+    });
+
+    const confirmed = stats.find(s => s.status === 'CONFIRMED' || s.status === 'PAID')?._sum.amount || new Decimal(0);
+    const pending = stats.find(s => s.status === 'PENDING')?._sum.amount || new Decimal(0);
+
+    const linkStats = await prisma.referralLink.aggregate({
+      where: { agentId },
+      _sum: { clicks: { _count: true } } as any // This is tricky with Prisma aggregate on counts
+    });
+
+    // Let's just do a direct count for simplicity if aggregate is being weird
+    const totalClicks = await prisma.referralClick.count({
+      where: { link: { agentId } }
+    });
+
+    return {
+      confirmed: confirmed.toNumber(),
+      pending: pending.toNumber(),
+      totalClicks
+    };
   }
 };

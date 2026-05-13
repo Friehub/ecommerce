@@ -132,6 +132,12 @@ const _iamRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       return await userService.resetPassword(input.token, input.newPassword);
     }),
+
+  toggleTwoFactor: protectedProcedure
+    .input(z.object({ enabled: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      return await userService.toggleTwoFactor(ctx.session.user.id, input.enabled);
+    }),
 });
 
 export const iamRouter = _iamRouter;

@@ -7,7 +7,7 @@ import { HeroCarousel } from '../components/home/HeroCarousel';
 import { AdBanners } from '../components/home/AdBanners';
 import { FlashSales } from '../components/home/FlashSales';
 import { ProductSection } from '../components/home/ProductSection';
-import { TrendingNow } from '../components/home/TrendingNow';
+import { CategoryGrid } from '../components/home/CategoryGrid';
 import { Package, ShieldCheck, RotateCcw, Store, ChevronRight } from 'lucide-react';
 import { api } from '@/trpc/react';
 import { Skeleton } from '../components/ui/Skeleton';
@@ -19,48 +19,50 @@ export default function Home() {
         {/* Hero Section Grid */}
         <section className="grid grid-cols-12 gap-8 items-start">
           {/* Category Sidebar (Hidden on Mobile) */}
-          <div className="hidden lg:block lg:col-span-2 sticky top-24">
+          <aside className="hidden lg:block lg:col-span-3 sticky top-24">
             <CategorySidebar />
-          </div>
+          </aside>
           
-          {/* Hero Carousel (Full width on mobile, 7 cols on desktop) */}
-          <div className="col-span-12 lg:col-span-7">
-            <HeroCarousel />
-          </div>
-
-          {/* Side Promo Actions */}
-          <div className="col-span-12 lg:col-span-3">
-            <div className="flex lg:flex-col gap-6 h-full overflow-x-auto lg:overflow-visible hide-scrollbar pb-4 lg:pb-0">
-              <div className="bg-surface-container-lowest rounded-[32px] p-8 border-4 border-surface-container-lowest shadow-soft flex-1 flex flex-row lg:flex-col justify-between gap-8 min-w-[340px] lg:min-w-0 transition-all hover:shadow-2xl">
-                {[
-                  { icon: <Package size={20} className="text-primary-container" />, title: 'Free Delivery', sub: 'Priority shipping' },
-                  { icon: <ShieldCheck size={20} className="text-primary-container" />, title: 'Secure Pay', sub: 'Verified gateway' },
-                  { icon: <RotateCcw size={20} className="text-primary-container" />, title: 'Easy Returns', sub: 'No questions asked' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-5 group cursor-pointer shrink-0">
-                    <div className="w-12 h-12 bg-surface-container-low rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all border border-outline-variant/30">
-                      {item.icon}
-                    </div>
-                    <div>
-                      <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-on-surface">{item.title}</h4>
-                      <p className="text-[9px] font-black text-on-surface-variant uppercase tracking-widest mt-1 opacity-60 italic">{item.sub}</p>
-                    </div>
-                  </div>
-                ))}
+          {/* Hero Carousel (Full width on mobile, 9 cols on desktop) */}
+          <div className="col-span-12 lg:col-span-9">
+            <div className="grid grid-cols-12 gap-8">
+              <div className="col-span-12 xl:col-span-9">
+                <HeroCarousel />
               </div>
               
-              <div className="bg-on-surface rounded-[32px] p-8 text-white relative overflow-hidden group cursor-pointer shadow-2xl flex-1 min-w-[280px] lg:min-w-0 border-4 border-surface-container-lowest">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 rounded-full blur-3xl group-hover:bg-primary-container/40 transition-all duration-700" />
-                <div className="relative z-10">
-                  <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mb-6 border border-white/20">
-                    <Store size={20} className="text-primary-container" />
+              {/* Side Promo Actions - Adjusted for better layout */}
+              <div className="hidden xl:flex xl:col-span-3 flex-col gap-6">
+                <div className="bg-surface-container-lowest rounded-[40px] p-8 border-4 border-surface-container-low shadow-soft flex flex-col justify-between gap-8 transition-all hover:shadow-2xl">
+                  {[
+                    { icon: <Package size={20} className="text-primary-container" />, title: 'Free Delivery', sub: 'Priority shipping' },
+                    { icon: <ShieldCheck size={20} className="text-primary-container" />, title: 'Secure Pay', sub: 'Verified gateway' },
+                    { icon: <RotateCcw size={20} className="text-primary-container" />, title: 'Easy Returns', sub: 'No questions asked' },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-5 group cursor-pointer shrink-0">
+                      <div className="w-12 h-12 bg-surface-container-low rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all border border-outline-variant/30">
+                        {item.icon}
+                      </div>
+                      <div>
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-on-surface">{item.title}</h4>
+                        <p className="text-[9px] font-black text-on-surface-variant uppercase tracking-widest mt-1 opacity-60 italic">{item.sub}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="bg-on-surface rounded-[40px] p-8 text-white relative overflow-hidden group cursor-pointer shadow-2xl border-4 border-surface-container-low flex-1">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 rounded-full blur-3xl group-hover:bg-primary-container/40 transition-all duration-700" />
+                  <div className="relative z-10">
+                    <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-6 border border-white/20">
+                      <Store size={22} className="text-primary-container" />
+                    </div>
+                    <h3 className="text-3xl font-black leading-[0.9] uppercase tracking-tighter mb-8 group-hover:text-primary-container transition-colors">
+                      Empower <br /> Your Brand
+                    </h3>
+                    <Link href="/seller/register" className="inline-flex items-center gap-4 bg-primary-container text-white px-10 py-5 rounded-[22px] text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-on-surface transition-all shadow-2xl active:scale-95">
+                      Start Selling <ChevronRight size={16} />
+                    </Link>
                   </div>
-                  <h3 className="text-2xl font-black leading-[0.9] uppercase tracking-tighter mb-6 group-hover:text-primary-container transition-colors">
-                    Empower <br /> Your Brand
-                  </h3>
-                  <Link href="/seller/register" className="inline-flex items-center gap-3 bg-primary-container text-white px-8 py-4 rounded-[18px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white hover:text-on-surface transition-all shadow-2xl active:scale-95">
-                    Start Selling <ChevronRight size={14} />
-                  </Link>
                 </div>
               </div>
             </div>
@@ -73,8 +75,8 @@ export default function Home() {
         {/* Flash Sales */}
         <FlashSales />
 
-        {/* Trending Categories */}
-        <TrendingNow />
+        {/* Category Matrix (The Grid) */}
+        <CategoryGrid />
 
         {/* Dynamic Product Sections from Live Category Tree */}
         <div className="mt-16">
@@ -117,4 +119,3 @@ function HomepageDynamicSections() {
     </div>
   );
 }
-

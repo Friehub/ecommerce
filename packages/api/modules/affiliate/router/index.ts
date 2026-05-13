@@ -27,6 +27,22 @@ const _affiliateRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       return affiliateService.getMyProfile(ctx.session.user.id);
     }),
+
+  getMyCommissions: protectedProcedure
+    .input(z.object({
+      limit: z.number().min(1).max(100).default(10),
+      offset: z.number().default(0)
+    }))
+    .query(async ({ ctx, input }) => {
+      const agent = await affiliateService.registerAgent(ctx.session.user.id);
+      return affiliateService.getCommissions(agent.id, input.limit, input.offset);
+    }),
+
+  getMyStats: protectedProcedure
+    .query(async ({ ctx }) => {
+      const agent = await affiliateService.registerAgent(ctx.session.user.id);
+      return affiliateService.getAgentStats(agent.id);
+    }),
 });
 
 export const affiliateRouter = _affiliateRouter as any;

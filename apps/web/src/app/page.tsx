@@ -2,15 +2,15 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { CategorySidebar } from '../components/home/CategorySidebar';
-import { HeroCarousel } from '../components/home/HeroCarousel';
-import { AdBanners } from '../components/home/AdBanners';
-import { FlashSales } from '../components/home/FlashSales';
-import { ProductSection } from '../components/home/ProductSection';
-import { CategoryGrid } from '../components/home/CategoryGrid';
+import { CategorySidebar } from '@/components/home/CategorySidebar';
+import { HeroCarousel } from '@/components/home/HeroCarousel';
+import { AdBanners } from '@/components/home/AdBanners';
+import { FlashSales } from '@/components/home/FlashSales';
+import { ProductSection } from '@/components/home/ProductSection';
+import { CategoryGrid } from '@/components/home/CategoryGrid';
 import { Package, ShieldCheck, RotateCcw, Store, ChevronRight } from 'lucide-react';
 import { api } from '@/trpc/react';
-import { Skeleton } from '../components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function Home() {
   return (

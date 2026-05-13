@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ShoppingBag, ChevronRight, TrendingUp, Zap, Truck, ArrowRight, Activity, BarChart3 } from 'lucide-react';
 import { api } from '@/trpc/react';
-import { ProductCard } from '../../../components/ui/ProductCard';
+import { ProductCard } from '@/components/ui/ProductCard';
 
 export default function BestSellersPage() {
  const { data, isLoading } = api.catalog.listProducts.useQuery({

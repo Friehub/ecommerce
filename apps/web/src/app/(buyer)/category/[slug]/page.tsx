@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { api } from '@/trpc/react';
-import { ProductCard } from '../../../../components/ui/ProductCard';
+import { ProductCard } from '@/components/ui/ProductCard';
 import { ChevronRight, Filter, SortAsc, ArrowRight, Layers, SlidersHorizontal, PackageSearch } from 'lucide-react';
 import Link from 'next/link';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import ModeratorDisputesDashboard from '../../moderator/disputes/page';
+import ModeratorDisputesDashboard from '@/app/moderator/disputes/page';
 
 export default function AdminDisputesPage() {
  return <ModeratorDisputesDashboard />;

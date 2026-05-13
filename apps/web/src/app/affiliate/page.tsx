@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { Skeleton } from '../../components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function AffiliatePortal() {
   const { data: session } = useSession();

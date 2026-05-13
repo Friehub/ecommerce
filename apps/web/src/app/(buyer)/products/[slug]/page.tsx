@@ -1,8 +1,8 @@
 import { api } from '@/trpc/server';
 import { notFound } from "next/navigation";
-import { ProductGallery } from "../../../../components/products/ProductGallery";
-import { ProductActions } from "../../../../components/products/ProductActions";
-import { ProductReviews } from "../../../../components/products/ProductReviews";
+import { ProductGallery } from "@/components/products/ProductGallery";
+import { ProductActions } from "@/components/products/ProductActions";
+import { ProductReviews } from "@/components/products/ProductReviews";
 import { ChevronRight, Star, Share2, MapPin, ShieldCheck, ChevronLeft, ArrowRight, ShoppingBag } from "lucide-react";
 import Link from 'next/link';
 

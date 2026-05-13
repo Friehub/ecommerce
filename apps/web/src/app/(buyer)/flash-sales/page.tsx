@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { api } from '@/trpc/react';
-import { ProductCard } from '../../../components/ui/ProductCard';
+import { ProductCard } from '@/components/ui/ProductCard';
 import { Zap, ChevronRight, Clock, ArrowRight } from 'lucide-react';
 
 const CountdownTimer = ({ endTime }: { endTime: any }) => {

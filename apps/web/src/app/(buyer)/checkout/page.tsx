@@ -4,7 +4,7 @@ import React from 'react';
 import { api } from '@/trpc/react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useCart } from '../../../context/CartContext';
+import { useCart } from '@/context/CartContext';
 import { ChevronLeft, MapPin, CreditCard, ShoppingBag, Loader2, Plus, CheckCircle2, X, AlertCircle, Home, Briefcase, Info, ChevronRight, ArrowRight, Truck } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -36,7 +36,7 @@ const Toast = ({ message, type, onClose }: { message: string, type: 'success' | 
  </div>
 );
 
-import { NIGERIA_STATES, STATE_LOCATIONS } from '../../../constants/locations';
+import { NIGERIA_STATES, STATE_LOCATIONS } from '@/constants/locations';
 
 export default function CheckoutPage() {
  const { data: session, status } = useSession();

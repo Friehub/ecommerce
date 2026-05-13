@@ -4,7 +4,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { api } from '@/trpc/react';
-import { ProductCard } from '../../../components/ui/ProductCard';
+import { ProductCard } from '@/components/ui/ProductCard';
 import { Filter, SortAsc, Search as SearchIcon, X, SlidersHorizontal, Loader2 } from 'lucide-react';
 
 function SearchResults() {

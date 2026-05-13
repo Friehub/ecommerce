@@ -1,6 +1,6 @@
 'use client';
 
-import { trpc } from "@/lib/trpc/client";
+import { api as trpc } from "@/trpc/react";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";

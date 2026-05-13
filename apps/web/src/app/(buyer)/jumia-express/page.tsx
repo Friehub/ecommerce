@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Zap, ShieldCheck, Truck, ChevronRight, ArrowRight, PackageCheck, Timer } from 'lucide-react';
 import { api } from '@/trpc/react';
-import { ProductCard } from '../../../components/ui/ProductCard';
+import { ProductCard } from '@/components/ui/ProductCard';
 
 export default function JumiaExpressPage() {
  const { data, isLoading } = api.catalog.listProducts.useQuery({

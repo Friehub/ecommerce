@@ -41,32 +41,43 @@ export type Decimal = Prisma.Decimal
 
 // Explicitly export commonly used types and enums for ESM/CJS compatibility
 import pkg from '@prisma/client'
-export const { 
-  LedgerEntryType, 
-  LedgerStatus, 
-  SellerStatus, 
-  SellerTier,
-  ProductStatus,
-  OrderStatus,
-  Role
-} = pkg as any
 
-export type { 
-  LedgerEntryType, 
-  LedgerStatus, 
-  SellerStatus, 
-  SellerTier,
-  ProductStatus,
-  OrderStatus,
-  Role,
-  PrismaClient,
-  User,
-  Seller,
-  Product,
-  Order,
-  OrderLine,
-  OrderPackage,
-  Notification,
-  Dispute,
-  Review
-} from '@prisma/client'
+// Enums (Value + Type)
+export type LedgerEntryType = import('@prisma/client').LedgerEntryType
+export const LedgerEntryType = pkg.LedgerEntryType
+
+export type LedgerStatus = import('@prisma/client').LedgerStatus
+export const LedgerStatus = pkg.LedgerStatus
+
+export type SellerStatus = import('@prisma/client').SellerStatus
+export const SellerStatus = pkg.SellerStatus
+
+export type SellerTier = import('@prisma/client').SellerTier
+export const SellerTier = pkg.SellerTier
+
+export type ProductStatus = import('@prisma/client').ProductStatus
+export const ProductStatus = pkg.ProductStatus
+
+export type OrderStatus = import('@prisma/client').OrderStatus
+export const OrderStatus = pkg.OrderStatus
+
+export type UserRole = import('@prisma/client').UserRole
+export const UserRole = pkg.UserRole
+
+export type DisputeStatus = import('@prisma/client').DisputeStatus
+export const DisputeStatus = pkg.DisputeStatus
+
+export type ReviewStatus = import('@prisma/client').ReviewStatus
+export const ReviewStatus = pkg.ReviewStatus
+
+export type PaymentStatus = import('@prisma/client').PaymentStatus
+export const PaymentStatus = pkg.PaymentStatus
+
+export type PackageStatus = import('@prisma/client').PackageStatus
+export const PackageStatus = pkg.PackageStatus
+
+export type ShipmentStatus = import('@prisma/client').ShipmentStatus
+export const ShipmentStatus = pkg.ShipmentStatus
+
+// Re-export all types from @prisma/client safely
+export type * from '@prisma/client'

@@ -4,7 +4,7 @@ const ROOT = __dirname;
 
 // Manual env loader to be 100% sure variables are injected
 function getEnv() {
-  const envPath = path.join(ROOT, '.env.staging');
+  const envPath = path.join(ROOT, '.env');
   if (!fs.existsSync(envPath)) {
     return {};
   }

@@ -35,25 +35,19 @@ jobs:
         run: pnpm --filter @ecom/db generate
 
       # ── Automated Tests (Gate) ───────────────────────────────────────────
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: services -> target
-
-      - name: Install Protoc
-        run: |
-          mkdir -p $HOME/.local/bin
-          curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v25.1/protoc-25.1-linux-x86_64.zip -o protoc.zip
-          python3 -c "import zipfile, os; zipfile.ZipFile('protoc.zip').extractall(os.path.expanduser('~/.local'))"
-          chmod +x $HOME/.local/bin/protoc
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Run Rust Tests
-        working-directory: services
-        run: cargo test --workspace
+      # Rust services are disabled in staging — compiled via Node.js fallbacks.
+      # Re-enable when Rust service compilation is added back to docker-compose.staging.yml.
+      # - name: Set up Rust
+      #   uses: dtolnay/rust-toolchain@stable
+      # - name: Rust Cache
+      #   uses: Swatinem/rust-cache@v2
+      #   with:
+      #     workspaces: services -> target
+      # - name: Install Protoc
+      #   run: ...
+      # - name: Run Rust Tests
+      #   working-directory: services
+      #   run: cargo test --workspace
 
       - name: Typecheck
         run: pnpm -r typecheck
@@ -110,16 +104,11 @@ jobs:
           echo "tag=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "Rust changed: $RUST_CHANGED | TS changed: $TS_CHANGED"
 
-      # ── Build Rust workspace (ONE cargo-chef pass for all services) ────────
-      - name: Build Rust services (workspace)
-        if: steps.changes.outputs.rust == 'true'
-        working-directory: /opt/runner-work/jumia-staging
-        env:
-          DOCKER_BUILDKIT: 1
-          IMAGE_TAG: ${{ steps.changes.outputs.tag }}
-        run: |
-          docker compose -f docker-compose.staging.yml --env-file .env.staging build \
-            search inventory fraud recommendations auction image-processor
+      # ── Rust services disabled in staging (commented out of compose) ────────
+      # - name: Build Rust services (workspace)
+      #   if: steps.changes.outputs.rust == 'true'
+      #   run: docker compose -f docker-compose.staging.yml --env-file .env.staging build \
+      #     search inventory fraud recommendations auction image-processor
 
       # ── Build TypeScript services ──────────────────────────────────────────
       - name: Clear stale Docker build cache
@@ -142,14 +131,15 @@ jobs:
         env:
           IMAGE_TAG: ${{ steps.changes.outputs.tag }}
         run: |
-          # Stop only the services that are about to be updated to ensure clean transition
+          # Stop only the services that are about to be updated
+          # Rust services (search, inventory, fraud, recommendations, auction, image-processor)
+          # are disabled in docker-compose.staging.yml until compilation time is resolved.
           docker compose -f docker-compose.staging.yml --env-file .env.staging stop \
-            nginx api workers event-consumer web search inventory fraud recommendations auction image-processor || true
-          
+            nginx api workers event-consumer web || true
+
           docker compose -f docker-compose.staging.yml --env-file .env.staging \
             up -d \
-            nginx api workers event-consumer web \
-            search inventory fraud recommendations auction image-processor
+            nginx api workers event-consumer web
 
           # Save the last successful tag for rollback
           echo "${{ steps.changes.outputs.tag }}" > last_success_staging_tag.txt

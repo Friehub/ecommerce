@@ -44,3 +44,4 @@ export * from '@prisma/client'
 import pkg from '@prisma/client'
 const { LedgerEntryType, LedgerStatus, SellerStatus, SellerTier } = pkg
 export { LedgerEntryType, LedgerStatus, SellerStatus, SellerTier }
+export type { LedgerEntryType, LedgerStatus, SellerStatus, SellerTier } from '@prisma/client'

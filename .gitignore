@@ -30,8 +30,6 @@ target/
 .env.production.local
 .env.prod
 .env.staging
-.env.example
-
 # ─── Logs ──────────────────────────────────────────────────────────
 *.log
 logs/

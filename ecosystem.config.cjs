@@ -1,5 +1,6 @@
 const path = require('path');
-const ROOT = '/opt/runner-work/jumia-staging';
+// Automatically detect the root directory where PM2 is started
+const ROOT = process.cwd();
 
 module.exports = {
   apps: [

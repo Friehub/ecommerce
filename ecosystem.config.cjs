@@ -12,7 +12,7 @@ module.exports = {
     {
       name: 'jumia-web',
       script: 'node server.js',
-      cwd: './apps/web/.next/standalone/apps/web',
+      cwd: './apps/web/.next/standalone',
       env_staging: {
         NODE_ENV: 'production',
         PORT: 3000,

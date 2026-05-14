@@ -125,7 +125,7 @@ jobs:
       - name: Post-Deploy Smoke Test
         run: |
           echo "Verifying staging health..."
-          sleep 5
+          sleep 15
           curl --fail --silent --show-error --max-time 10 http://localhost:4000/health || \
           (echo "Staging smoke test FAILED" && exit 1)
           echo "Staging verified!"

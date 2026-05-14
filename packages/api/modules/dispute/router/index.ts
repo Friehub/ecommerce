@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure } from '../../../trpc.js';
+import { createTRPCRouter, protectedProcedure, adminProcedure } from '../../../trpc.js';
 import { OpenDisputeSchema, RespondDisputeSchema, UploadEvidenceSchema, GetDisputeSchema } from '../schemas/index.js';
 import { disputeService } from '../services/dispute-service.js';
 import { paymentService } from '../../payment/services/payment-service.js';
@@ -59,13 +59,8 @@ const _disputeRouter = createTRPCRouter({
       return disputeService.escalateDispute(input.disputeId, ctx.session.user.id);
     }),
 
-  listAllDisputes: protectedProcedure
-    .query(async ({ ctx }) => {
-      const user = await prisma.user.findUnique({
-        where: { id: ctx.session.user.id },
-        select: { role: true }
-      });
-      if (user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') throw new Error('UNAUTHORIZED');
+  listAllDisputes: adminProcedure
+    .query(async () => {
       return prisma.dispute.findMany({
         include: {
           order: { select: { id: true, total: true } },
@@ -76,7 +71,7 @@ const _disputeRouter = createTRPCRouter({
       });
     }),
 
-  resolveDispute: protectedProcedure
+  resolveDispute: adminProcedure
     .input(z.object({
       disputeId: z.string(),
       resolution: z.string(),
@@ -84,11 +79,6 @@ const _disputeRouter = createTRPCRouter({
       refundAmount: z.number().optional()
     }))
     .mutation(async ({ ctx, input }) => {
-      const user = await prisma.user.findUnique({
-        where: { id: ctx.session.user.id },
-        select: { role: true }
-      });
-      if (user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') throw new Error('UNAUTHORIZED');
 
       const dispute = await prisma.dispute.findUnique({
         where: { id: input.disputeId },

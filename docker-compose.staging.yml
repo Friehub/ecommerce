@@ -57,8 +57,8 @@ services:
     image: nginx:1.31.0-alpine
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
@@ -89,8 +89,9 @@ services:
       AUTH_TRUST_HOST: "true"
       DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
-      PAYSTACK_SECRET_KEY: ${PAYSTACK_SECRET}
+      PAYSTACK_SECRET_KEY: ${PAYSTACK_SECRET_KEY}
       PAYSTACK_WEBHOOK_SECRET: ${PAYSTACK_WEBHOOK_SECRET}
+      SKIP_ENV_VALIDATION: "true"
     networks: [edge-net, app-net, db-net]
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/health || exit 1"]
@@ -117,8 +118,9 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       ALLOWED_ORIGINS: "https://staging.friehub.cloud"
-      PAYSTACK_SECRET: ${PAYSTACK_SECRET_KEY}
+      PAYSTACK_SECRET_KEY: ${PAYSTACK_SECRET_KEY}
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
+      SKIP_ENV_VALIDATION: "true"
       PORT: 4000
       HOST: 0.0.0.0
       SEARCH_SERVICE_URL: http://search:3001
@@ -305,6 +307,7 @@ services:
       FRAUD_SERVICE_URL: http://fraud:3004
       RECOMMENDATIONS_SERVICE_URL: http://recommendations:3005
       IMAGE_PROCESSOR_SERVICE_URL: http://image-processor:3006
+      SKIP_ENV_VALIDATION: "true"
     networks: [app-net, db-net]
     depends_on:
       postgres:
@@ -332,6 +335,7 @@ services:
     environment:
       DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      SKIP_ENV_VALIDATION: "true"
     networks: [app-net, db-net]
     depends_on:
       postgres:

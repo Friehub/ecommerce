@@ -40,5 +40,7 @@ export const Decimal = Prisma.Decimal
 export type Decimal = Prisma.Decimal
 export * from '@prisma/client'
 
-// Explicitly export enums to avoid ESM re-export issues
-export { LedgerEntryType, LedgerStatus, SellerStatus, SellerTier } from '@prisma/client'
+// Explicitly export enums to avoid ESM re-export issues with CJS @prisma/client
+import pkg from '@prisma/client'
+const { LedgerEntryType, LedgerStatus, SellerStatus, SellerTier } = pkg
+export { LedgerEntryType, LedgerStatus, SellerStatus, SellerTier }

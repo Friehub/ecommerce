@@ -20,8 +20,8 @@ COPY . .
 RUN pnpm --filter @ecom/db generate
 RUN pnpm --filter @ecom/db build
 RUN pnpm --filter @ecom/shared build
-RUN pnpm --filter @ecom/api build
-RUN pnpm --filter @ecom/api-server build
+RUN pnpm --filter @ecom/api exec tsc -b --force
+RUN pnpm --filter @ecom/api-server exec tsc -b --force
 
 # Deploy standalone production bundle
 RUN pnpm deploy --filter @ecom/api-server --prod /app/deploy

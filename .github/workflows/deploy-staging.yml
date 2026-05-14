@@ -103,6 +103,9 @@ jobs:
       #     search inventory fraud recommendations auction image-processor
 
       - name: Build Application
+        env:
+          SKIP_ENV_VALIDATION: "true"
+          NODE_ENV: "production"
         run: pnpm build
 
       - name: Run Migrations

@@ -88,7 +88,7 @@ export const LoginForm = () => {
             required
           />
           <div className="flex justify-end">
-            <Link href="/auth/forgot-password" size="sm" className="text-xs text-jumia-orange hover:underline">
+            <Link href="/auth/forgot-password" className="text-xs text-jumia-orange hover:underline">
               Forgot Password?
             </Link>
           </div>

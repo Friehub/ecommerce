@@ -12,7 +12,7 @@ export default function NotificationsPage() {
   const { data: session } = useSession();
   const utils = api.useUtils();
 
-  const { data: notifications, isLoading } = api.notification.listNotifications.useQuery(
+  const { data: notifications, isLoading } = api.notification.list.useQuery(
     { limit: 50, offset: 0 },
     { enabled: !!session?.user }
   );
@@ -20,7 +20,7 @@ export default function NotificationsPage() {
   const markAsRead = api.notification.markAsRead.useMutation({
     onSuccess: () => {
       utils.notification.getUnread.invalidate();
-      utils.notification.listNotifications.invalidate();
+      utils.notification.list.invalidate();
     },
   });
 

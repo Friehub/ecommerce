@@ -1,9 +1,12 @@
+const path = require('path');
+const ROOT = '/opt/runner-work/jumia-staging';
+
 module.exports = {
   apps: [
     {
       name: 'jumia-api',
       script: 'node dist/index.js',
-      cwd: './apps/api-server',
+      cwd: path.join(ROOT, 'apps/api-server'),
       env_staging: {
         NODE_ENV: 'production',
         PORT: 4000,
@@ -12,7 +15,7 @@ module.exports = {
     {
       name: 'jumia-web',
       script: 'node server.js',
-      cwd: './apps/web/.next/standalone',
+      cwd: path.join(ROOT, 'apps/web/.next/standalone'),
       env_staging: {
         NODE_ENV: 'production',
         PORT: 3000,
@@ -22,7 +25,7 @@ module.exports = {
     {
       name: 'jumia-workers',
       script: 'npx tsx scripts/run-workers.ts',
-      cwd: './packages/api',
+      cwd: path.join(ROOT, 'packages/api'),
       env_staging: {
         NODE_ENV: 'production',
       }
@@ -30,7 +33,7 @@ module.exports = {
     {
       name: 'jumia-event-consumer',
       script: 'node dist/index.js',
-      cwd: './services/event-consumer',
+      cwd: path.join(ROOT, 'services/event-consumer'),
       env_staging: {
         NODE_ENV: 'production',
       }

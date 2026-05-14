@@ -1,6 +1,4 @@
 const path = require('path');
-// __dirname is the absolute path to the directory containing THIS file.
-// This is the most reliable way to find the project root.
 const ROOT = __dirname;
 
 module.exports = {
@@ -16,7 +14,7 @@ module.exports = {
     },
     {
       name: 'jumia-web',
-      script: 'node server.js',
+      script: 'node apps/web/server.js', // Standard Next.js standalone entry
       cwd: path.join(ROOT, 'apps/web/.next/standalone'),
       env_staging: {
         NODE_ENV: 'production',

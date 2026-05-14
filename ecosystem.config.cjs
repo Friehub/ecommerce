@@ -1,6 +1,7 @@
 const path = require('path');
-// Automatically detect the root directory where PM2 is started
-const ROOT = process.cwd();
+// __dirname is the absolute path to the directory containing THIS file.
+// This is the most reliable way to find the project root.
+const ROOT = __dirname;
 
 module.exports = {
   apps: [

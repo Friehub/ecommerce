@@ -102,53 +102,28 @@ jobs:
       #   run: docker compose -f docker-compose.staging.yml --env-file .env.staging build \
       #     search inventory fraud recommendations auction image-processor
 
-      # ── Build TypeScript services ──────────────────────────────────────────
-      - name: Clear stale Docker build cache
-        if: steps.changes.outputs.ts == 'true'
-        run: docker builder prune -f --keep-storage 1GB
+      - name: Build Application
+        run: pnpm build
 
-      - name: Build TypeScript services
-        if: steps.changes.outputs.ts == 'true'
-        working-directory: /opt/runner-work/jumia-staging
+      - name: Run Migrations
         env:
-          DOCKER_BUILDKIT: 1
-          IMAGE_TAG: ${{ steps.changes.outputs.tag }}
+          DATABASE_URL: "postgresql://ecom:${{ secrets.DB_PASSWORD }}@127.0.0.1:5433/ecom?sslmode=disable"
+        run: pnpm --filter @ecom/db npx prisma migrate deploy --schema packages/db/prisma/schema
+
+      - name: Deploy with PM2
         run: |
-          docker compose -f docker-compose.staging.yml --env-file .env.staging build \
-            api workers event-consumer web
+          # Ensure PM2 is installed on the host
+          if ! command -v pm2 &> /dev/null; then
+            npm install -g pm2
+          fi
+          # Reload all services defined in the ecosystem file
+          pm2 startOrReload ecosystem.config.cjs --env staging --update-env
 
-      # ── Deploy ────────────────────────────────────────────────────────────
-      - name: Deploy staging
-        working-directory: /opt/runner-work/jumia-staging
-        env:
-          IMAGE_TAG: ${{ steps.changes.outputs.tag }}
-        run: |
-          # Stop only the services that are about to be updated
-          # Rust services (search, inventory, fraud, recommendations, auction, image-processor)
-          # are disabled in docker-compose.staging.yml until compilation time is resolved.
-          docker compose -f docker-compose.staging.yml --env-file .env.staging stop \
-            nginx api workers event-consumer web || true
-
-          docker compose -f docker-compose.staging.yml --env-file .env.staging \
-            up -d \
-            nginx api workers event-consumer web
-
-          # Save the last successful tag for rollback
-          echo "${{ steps.changes.outputs.tag }}" > last_success_staging_tag.txt
-
-      # ── Smoke Test ───────────────────────────────────────────────────
       - name: Post-Deploy Smoke Test
         run: |
           echo "Verifying staging health..."
-          sleep 10
+          sleep 5
           curl --fail --silent --show-error --max-time 10 http://localhost:4000/health || \
           (echo "Staging smoke test FAILED" && exit 1)
           echo "Staging verified!"
-
-      # ── Bounded cache prune — keeps 15 GB, evicts oldest layers ──────────
-      - name: Prune build cache (bounded)
-        if: always()
-        run: |
-          docker builder prune --keep-storage 5GB -f
-          docker image prune -a -f --filter "until=24h"
 

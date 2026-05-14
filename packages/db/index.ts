@@ -38,10 +38,35 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 export { Prisma } from '@prisma/client'
 export const Decimal = Prisma.Decimal
 export type Decimal = Prisma.Decimal
-export * from '@prisma/client'
 
-// Explicitly export enums to avoid ESM re-export issues with CJS @prisma/client
+// Explicitly export commonly used types and enums for ESM/CJS compatibility
 import pkg from '@prisma/client'
-const { LedgerEntryType, LedgerStatus, SellerStatus, SellerTier } = pkg
-export { LedgerEntryType, LedgerStatus, SellerStatus, SellerTier }
-export type { LedgerEntryType, LedgerStatus, SellerStatus, SellerTier } from '@prisma/client'
+export const { 
+  LedgerEntryType, 
+  LedgerStatus, 
+  SellerStatus, 
+  SellerTier,
+  ProductStatus,
+  OrderStatus,
+  Role
+} = pkg as any
+
+export type { 
+  LedgerEntryType, 
+  LedgerStatus, 
+  SellerStatus, 
+  SellerTier,
+  ProductStatus,
+  OrderStatus,
+  Role,
+  PrismaClient,
+  User,
+  Seller,
+  Product,
+  Order,
+  OrderLine,
+  OrderPackage,
+  Notification,
+  Dispute,
+  Review
+} from '@prisma/client'

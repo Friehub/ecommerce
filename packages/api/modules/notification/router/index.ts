@@ -43,5 +43,5 @@ const _notificationRouter = createTRPCRouter({
     }),
 });
 
-export const notificationRouter = _notificationRouter as any;
+export const notificationRouter = _notificationRouter;
 export type NotificationRouter = typeof _notificationRouter;

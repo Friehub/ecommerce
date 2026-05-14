@@ -10,7 +10,6 @@ const ADMIN_AUTH_ROUTES = ['/admin/login'];
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
-  // @ts-expect-error - role is added in session callback
   const role = req.auth?.user?.role;
 
   // Classify the route

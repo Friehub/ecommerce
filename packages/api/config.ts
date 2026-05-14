@@ -82,7 +82,7 @@ const parseConfig = () => {
     const validated = configSchema.parse(envData);
 
     // B12: Production Assertions - prevent placeholder keys in prod
-    if (validated.NODE_ENV === 'production') {
+    if (validated.NODE_ENV === 'production' && process.env.SKIP_ENV_VALIDATION !== 'true') {
       const placeholders = [
         'sk_placeholder', 'whsec_placeholder', 're_placeholder', 'test_secret_placeholder',
         'FLWSECK_test_placeholder', 'MK_TEST_placeholder', 'placeholder', 'token_placeholder'

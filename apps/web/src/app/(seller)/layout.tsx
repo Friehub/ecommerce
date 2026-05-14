@@ -13,7 +13,6 @@ export default async function SellerLayout({
  redirect('/seller/login');
  }
 
- // @ts-expect-error - role exists in session
  const role = session.user?.role;
  if (role !== 'SELLER' && role !== 'ADMIN') {
  redirect('/');

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Jumia Product Listing Page</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f9f9fa",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#006d36",
+                        "secondary-container": "#e4e2e1",
+                        "on-surface-variant": "#554335",
+                        "primary-fixed": "#ffdcc3",
+                        "on-background": "#1a1c1d",
+                        "on-tertiary-fixed-variant": "#005227",
+                        "secondary-fixed": "#e4e2e1",
+                        "on-primary-fixed-variant": "#6e3900",
+                        "surface": "#f9f9fa",
+                        "primary": "#914d00",
+                        "primary-fixed-dim": "#ffb77e",
+                        "outline-variant": "#dcc2af",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#004620",
+                        "on-surface": "#1a1c1d",
+                        "outline": "#897363",
+                        "on-primary-fixed": "#2f1500",
+                        "inverse-primary": "#ffb77e",
+                        "on-tertiary-fixed": "#00210c",
+                        "inverse-surface": "#2f3132",
+                        "primary-container": "#f68b1e",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#5e3000",
+                        "tertiary-fixed-dim": "#60de88",
+                        "tertiary-container": "#3abd6b",
+                        "surface-container-low": "#f3f3f4",
+                        "surface-bright": "#f9f9fa",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "surface-variant": "#e2e2e3",
+                        "inverse-on-surface": "#f1f1f2",
+                        "secondary": "#5f5e5e",
+                        "surface-dim": "#dadadb",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e2e2e3",
+                        "tertiary-fixed": "#7dfca2",
+                        "surface-tint": "#914d00",
+                        "surface-container": "#eeeeef",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#656464",
+                        "surface-container-high": "#e8e8e9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "base": "4px",
+                        "container-max": "1184px",
+                        "stack-lg": "24px",
+                        "margin-desktop": "24px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-bold": ["Hanken Grotesk"],
+                        "price-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "price-sm": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-bold": ["12px", { "lineHeight": "12px", "fontWeight": "700" }],
+                        "price-lg": ["24px", { "lineHeight": "24px", "fontWeight": "800" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "price-sm": ["16px", { "lineHeight": "16px", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 w-full flex flex-col items-center px-margin-desktop bg-surface dark:bg-surface-container shadow-sm dark:shadow-none border-b border-outline-variant dark:border-outline">
+<div class="max-w-container-max w-full flex items-center justify-between py-stack-sm h-16">
+<div class="flex items-center gap-stack-lg">
+<a class="text-headline-md font-display-lg font-black text-primary-container dark:text-primary-fixed-dim" href="#">Jumia</a>
+<nav class="hidden md:flex gap-stack-md">
+<a class="text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors px-2 py-1 rounded" href="#">Sell on Jumia</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors px-2 py-1 rounded" href="#">Help</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors px-2 py-1 rounded" href="#">Support</a>
+</nav>
+</div>
+<div class="flex-1 max-w-xl px-stack-lg">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+<input class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded-full focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-md text-body-md bg-surface-container-lowest" placeholder="Search products, brands and categories" type="text"/>
+<button class="absolute right-1 top-1/2 -translate-y-1/2 bg-primary-container text-on-primary px-4 py-1.5 rounded-full font-label-bold text-label-bold hover:bg-primary transition-colors">SEARCH</button>
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low p-2 rounded transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-95 duration-100">person</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low p-2 rounded transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-95 duration-100">help</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low p-2 rounded transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-95 duration-100">shopping_cart</span>
+</a>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-desktop py-stack-lg flex flex-col md:flex-row gap-gutter">
+<!-- Sidebar / Filters -->
+<aside class="w-full md:w-64 flex-shrink-0 flex flex-col gap-stack-md">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap items-center gap-2 font-body-sm text-body-sm text-secondary mb-stack-sm">
+<a class="hover:underline" href="#">Home</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<a class="hover:underline" href="#">Phones &amp; Tablets</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-on-surface font-semibold">Smartphones</span>
+</div>
+<!-- Categories SideNav -->
+<div class="bg-surface dark:bg-surface-container-lowest rounded-lg border border-outline-variant dark:border-outline shadow-sm flex flex-col p-4 mb-stack-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Categories</h3>
+<p class="font-body-sm text-body-sm text-secondary mb-stack-md">Shop by Department</p>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded" href="#">
+<span class="material-symbols-outlined">shopping_basket</span>
+<span class="font-label-bold text-label-bold">Supermarket</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded" href="#">
+<span class="material-symbols-outlined">health_and_safety</span>
+<span class="font-label-bold text-label-bold">Health &amp; Beauty</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded" href="#">
+<span class="material-symbols-outlined">home_work</span>
+<span class="font-label-bold text-label-bold">Home &amp; Office</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded" href="#">
+<span class="material-symbols-outlined">kitchen</span>
+<span class="font-label-bold text-label-bold">Appliances</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-2 text-primary-container dark:text-primary-fixed font-bold translate-x-1 duration-200 bg-surface-container-high rounded" href="#">
+<span class="material-symbols-outlined">smartphone</span>
+<span class="font-label-bold text-label-bold">Phones &amp; Tablets</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded" href="#">
+<span class="material-symbols-outlined">computer</span>
+<span class="font-label-bold text-label-bold">Computing</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded" href="#">
+<span class="material-symbols-outlined">tv</span>
+<span class="font-label-bold text-label-bold">Electronics</span>
+</a>
+</div>
+</div>
+<!-- Filters -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col gap-stack-md shadow-sm">
+<!-- Jumia Express -->
+<div class="flex items-center justify-between border-b border-outline-variant pb-stack-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label-bold text-label-bold">Jumia Express</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- Brand Filter -->
+<div class="flex flex-col gap-2 border-b border-outline-variant pb-stack-sm">
+<h4 class="font-label-bold text-label-bold text-on-surface uppercase tracking-wide">Brand</h4>
+<div class="relative mb-2">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-secondary text-sm">search</span>
+<input class="w-full pl-8 pr-2 py-1 text-sm border border-outline-variant rounded bg-background focus:border-primary-container focus:ring-0" placeholder="Search" type="text"/>
+</div>
+<div class="flex flex-col gap-1 max-h-40 overflow-y-auto">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary-container focus:ring-primary-container h-4 w-4" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary-container">Samsung (412)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary-container focus:ring-primary-container h-4 w-4" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary-container">Apple (205)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary-container focus:ring-primary-container h-4 w-4" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary-container">Xiaomi (180)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary-container focus:ring-primary-container h-4 w-4" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary-container">Tecno (150)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary-container focus:ring-primary-container h-4 w-4" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary-container">Infinix (120)</span>
+</label>
+</div>
+</div>
+<!-- Price Filter -->
+<div class="flex flex-col gap-2 border-b border-outline-variant pb-stack-sm">
+<h4 class="font-label-bold text-label-bold text-on-surface uppercase tracking-wide">Price (₦)</h4>
+<div class="flex items-center gap-2">
+<input class="w-full px-2 py-1 text-sm border border-outline-variant rounded bg-background focus:border-primary-container focus:ring-0" placeholder="Min" type="number"/>
+<span class="text-secondary">-</span>
+<input class="w-full px-2 py-1 text-sm border border-outline-variant rounded bg-background focus:border-primary-container focus:ring-0" placeholder="Max" type="number"/>
+<button class="bg-primary-container text-on-primary px-3 py-1 rounded font-label-bold text-label-bold">GO</button>
+</div>
+</div>
+<!-- Product Rating Filter -->
+<div class="flex flex-col gap-2">
+<h4 class="font-label-bold text-label-bold text-on-surface uppercase tracking-wide">Product Rating</h4>
+<div class="flex flex-col gap-1">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="text-primary-container focus:ring-primary-container h-4 w-4" name="rating" type="radio"/>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-surface-variant text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-body-sm text-body-sm text-on-surface ml-1">&amp; Up</span>
+</div>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="text-primary-container focus:ring-primary-container h-4 w-4" name="rating" type="radio"/>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-surface-variant text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-surface-variant text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-body-sm text-body-sm text-on-surface ml-1">&amp; Up</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<section class="flex-1 flex flex-col min-w-0">
+<!-- Header & Sorting -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col md:flex-row items-start md:items-center justify-between mb-stack-md shadow-sm gap-4">
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Smartphones</h1>
+<p class="font-body-sm text-body-sm text-secondary">10,432 results found</p>
+</div>
+<div class="flex items-center gap-2 self-end md:self-auto w-full md:w-auto">
+<label class="font-label-bold text-label-bold text-on-surface whitespace-nowrap">Sort by:</label>
+<select class="w-full md:w-auto border border-outline-variant rounded bg-surface focus:border-primary-container focus:ring-0 font-body-md text-body-md py-1.5 px-3">
+<option>Popularity</option>
+<option>Newest Arrivals</option>
+<option>Price: Low to High</option>
+<option>Price: High to Low</option>
+<option>Product Rating</option>
+</select>
+</div>
+</div>
+<!-- Active Filters Chips -->
+<div class="flex flex-wrap gap-2 mb-stack-md">
+<div class="bg-surface-container border border-outline-variant rounded-full px-3 py-1 flex items-center gap-1 font-body-sm text-body-sm">
+<span>Samsung</span>
+<button class="material-symbols-outlined text-sm hover:text-error transition-colors">close</button>
+</div>
+<div class="bg-surface-container border border-outline-variant rounded-full px-3 py-1 flex items-center gap-1 font-body-sm text-body-sm">
+<span>₦50,000 - ₦200,000</span>
+<button class="material-symbols-outlined text-sm hover:text-error transition-colors">close</button>
+</div>
+<button class="font-label-bold text-label-bold text-primary-container hover:underline px-2 py-1">Clear All</button>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden group hover:shadow-md transition-shadow relative flex flex-col">
+<div class="absolute top-2 right-2 bg-primary-fixed text-on-primary-fixed font-label-bold text-[10px] px-1.5 py-0.5 rounded z-10">-15%</div>
+<div class="aspect-square bg-surface relative overflow-hidden flex items-center justify-center p-4">
+<img alt="Product Image" class="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300" data-alt="A sleek, modern smartphone resting on a clean, reflective white surface. The phone's screen is black, contrasting sharply with the pristine environment. Soft, high-key studio lighting highlights the device's metallic edges and glass finish, creating a premium retail aesthetic. The overall color palette is minimal, dominated by whites, silvers, and deep blacks. The mood is sophisticated and focused on high-end technology." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8WO8oRqeUqg75koI1hMsliINLE5Tb4vK8_4Jbq4hzNRySXQeJ9kKIas-LFX-jh_dk2xb3xbM0NXQofT4OU36pmcwOYiWfaH9ffYdR5fh_sZ4u3LRPIetJ_vjvQPXsaA4iiXQ4Y2gF2KshvawjtfM9e-uVqgHx9WKVxXD6ZxjeySWTSZAnrNnyTrACjgQsvwSciJ7BmKP1map11tEalMVxoDcSG9JZLkM06k3tuVYPYgfsFLZehHQSMpORDCbx0dt1AnnsMotFZo8q"/>
+</div>
+<div class="p-3 flex flex-col flex-grow">
+<div class="flex items-center gap-1 mb-1">
+<span class="bg-primary-container text-on-primary text-[9px] font-bold px-1 rounded uppercase flex items-center gap-0.5 leading-tight"><span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">bolt</span>Express</span>
+<span class="text-[10px] text-tertiary flex items-center gap-0.5 bg-surface-container px-1 rounded"><span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">verified</span>Official Store</span>
+</div>
+<h3 class="font-body-md text-body-md text-on-surface line-clamp-2 mb-2 group-hover:text-primary-container transition-colors">Samsung Galaxy A14 6.6" 4GB RAM 64GB ROM 50MP 5000mAh - Black</h3>
+<div class="mt-auto">
+<div class="font-price-sm text-price-sm text-on-surface mb-0.5">₦ 85,000</div>
+<div class="font-body-sm text-body-sm text-secondary line-through">₦ 100,000</div>
+<div class="flex items-center justify-between mt-2">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-body-sm text-body-sm text-secondary ml-1">(124)</span>
+</div>
+<div class="w-8 h-1 bg-surface-variant rounded-full overflow-hidden" title="Seller Score: 90%">
+<div class="h-full bg-tertiary-container w-[90%]"></div>
+</div>
+</div>
+</div>
+<button class="w-full mt-3 bg-primary-container text-on-primary font-label-bold text-label-bold py-2 rounded hover:bg-primary transition-colors uppercase">Add to Cart</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden group hover:shadow-md transition-shadow relative flex flex-col">
+<div class="aspect-square bg-surface relative overflow-hidden flex items-center justify-center p-4">
+<img alt="Product Image" class="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300" data-alt="A detailed close-up of a modern smartphone showing its multi-lens camera array on the back. The device features a matte blue finish, resting diagonally against a stark white background. Studio lighting is crisp and even, emphasizing the circular camera lenses and the subtle texture of the phone's casing. The aesthetic is clean, professional, and typical of high-quality e-commerce product photography. The mood is objective and detail-oriented." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJoq_LmKFPBOf4Ubifgzhq-hc-8yl8MSYBrx6ncAbMZINobjTh4296-OFf4gNy9Ax21HoL1WJfNDBCifProAbVMpi36CaVY0Gc6BZEYPz50mOhrBubXtWqIyEsmGFPH-M8JyOz70fi5SO0nraIau19q1B9aDYCgeCBiuZiMJ8IPaUAl4RNwY_akf0wV5tantXoNmbmJ0IjvrLtazjdqj7zg4_-I0hxulWYrgA98RzG-EbjevouJ1wZEdsIzxsXOuMZD6eVQMPpYjUc"/>
+</div>
+<div class="p-3 flex flex-col flex-grow">
+<div class="flex items-center gap-1 mb-1">
+<span class="bg-primary-container text-on-primary text-[9px] font-bold px-1 rounded uppercase flex items-center gap-0.5 leading-tight"><span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">bolt</span>Express</span>
+</div>
+<h3 class="font-body-md text-body-md text-on-surface line-clamp-2 mb-2 group-hover:text-primary-container transition-colors">Apple iPhone 13 128GB - Midnight Blue</h3>
+<div class="mt-auto">
+<div class="font-price-sm text-price-sm text-on-surface mb-0.5">₦ 540,000</div>
+<div class="flex items-center justify-between mt-2">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-body-sm text-body-sm text-secondary ml-1">(56)</span>
+</div>
+<div class="w-8 h-1 bg-surface-variant rounded-full overflow-hidden" title="Seller Score: 95%">
+<div class="h-full bg-tertiary-container w-[95%]"></div>
+</div>
+</div>
+</div>
+<button class="w-full mt-3 bg-primary-container text-on-primary font-label-bold text-label-bold py-2 rounded hover:bg-primary transition-colors uppercase">Add to Cart</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden group hover:shadow-md transition-shadow relative flex flex-col">
+<div class="absolute top-2 right-2 bg-primary-fixed text-on-primary-fixed font-label-bold text-[10px] px-1.5 py-0.5 rounded z-10">-5%</div>
+<div class="aspect-square bg-surface relative overflow-hidden flex items-center justify-center p-4">
+<img alt="Product Image" class="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300" data-alt="A smartphone displayed in portrait orientation, standing upright against a neutral light grey backdrop. The screen is active, displaying an abstract, colorful wallpaper. Soft, diffused lighting creates a gentle shadow behind the device, adding depth. The style is modern e-commerce product imagery, prioritizing clarity and the visual appeal of the phone's display. The overall tone is bright, accessible, and commercial." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0IjyJ4P7LlgUKUCstaGo3M-ww8TFZzRCOrUfKNpctBTM6BBh7C9xdG9mCEGa9JxlHXo3f4nXPhOFxALJkzkNGYPosw0KrOmK4T37RvHzoLOMf_se2n6lzv-ORuw0nVvnkb8MRlu7x8A1tpERFaVLzv-TZ2GRjtQbxepFbC3tcHu5rRQlpbQPU-EZKu5jE_FREnTMMYhfXq8A8THH7CF76DZaMxOcyXvK9vvXRdTosq2Q9OX9DGxqqJ8BZ9kcGsjluaUaDTDOC9a-B"/>
+</div>
+<div class="p-3 flex flex-col flex-grow">
+<div class="flex items-center gap-1 mb-1">
+<span class="text-[10px] text-tertiary flex items-center gap-0.5 bg-surface-container px-1 rounded"><span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">verified</span>Official Store</span>
+</div>
+<h3 class="font-body-md text-body-md text-on-surface line-clamp-2 mb-2 group-hover:text-primary-container transition-colors">Xiaomi Redmi Note 12 Pro 5G 8GB/256GB - Polar White</h3>
+<div class="mt-auto">
+<div class="font-price-sm text-price-sm text-on-surface mb-0.5">₦ 185,000</div>
+<div class="font-body-sm text-body-sm text-secondary line-through">₦ 195,000</div>
+<div class="flex items-center justify-between mt-2">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-body-sm text-body-sm text-secondary ml-1">(210)</span>
+</div>
+<div class="w-8 h-1 bg-surface-variant rounded-full overflow-hidden" title="Seller Score: 82%">
+<div class="h-full bg-primary-fixed-dim w-[82%]"></div>
+</div>
+</div>
+</div>
+<button class="w-full mt-3 bg-primary-container text-on-primary font-label-bold text-label-bold py-2 rounded hover:bg-primary transition-colors uppercase">Add to Cart</button>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden group hover:shadow-md transition-shadow relative flex flex-col">
+<div class="aspect-square bg-surface relative overflow-hidden flex items-center justify-center p-4">
+<img alt="Product Image" class="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300" data-alt="Three identical smartphones arranged in a fanned-out pattern, displaying different color options: silver, black, and gold. They are placed on a pure white, seamless surface. Studio lighting is positioned to create subtle reflections on the screens and metallic edges, emphasizing the product variations. The aesthetic is clean, catalog-style product photography designed to showcase options clearly. The mood is practical and visually organized." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7ju68nUcErtgyUpcOrW73r64taHxYYGckyx5F2kcwHi9pIh0It7JZFsHh2tBQ65CgpZ-TreGslWp-M9WB5DJazmsOvsVqTn5U46zZHeALX088FU8wubuVi04nX62HsxnIJD6unf2KUVDs0bz6QL-OdDk3l0m_fIMxZHK66UNilGu1-DAoWaBUxYSusK8hQmM6ZsJCskHJUM6esZ3rfGqlu2wfOuRhnAVxPe63Jp1lxiw1tXuSGdOz1XKVmhPuqrk1dG26OCGLUjlZ"/>
+</div>
+<div class="p-3 flex flex-col flex-grow">
+<h3 class="font-body-md text-body-md text-on-surface line-clamp-2 mb-2 group-hover:text-primary-container transition-colors">Tecno Spark 10 Pro 8GB RAM 256GB ROM Starry Black</h3>
+<div class="mt-auto">
+<div class="font-price-sm text-price-sm text-on-surface mb-0.5">₦ 115,000</div>
+<div class="flex items-center justify-between mt-2">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-body-sm text-body-sm text-secondary ml-1">(89)</span>
+</div>
+<div class="w-8 h-1 bg-surface-variant rounded-full overflow-hidden" title="Seller Score: 75%">
+<div class="h-full bg-primary-fixed w-[75%]"></div>
+</div>
+</div>
+</div>
+<button class="w-full mt-3 bg-primary-container text-on-primary font-label-bold text-label-bold py-2 rounded hover:bg-primary transition-colors uppercase">Add to Cart</button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex justify-center mt-stack-lg gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-secondary hover:bg-surface-container transition-colors disabled:opacity-50"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary-container text-on-primary font-label-bold text-label-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-container transition-colors font-label-bold text-label-bold">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-container transition-colors font-label-bold text-label-bold">3</button>
+<span class="flex items-end justify-center w-8 text-secondary tracking-widest">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-container transition-colors font-label-bold text-label-bold">10</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-secondary hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-stack-lg px-margin-desktop flex flex-col gap-stack-md mt-auto bg-surface-container-highest dark:bg-surface-dim border-t border-outline-variant dark:border-outline">
+<div class="max-w-container-max mx-auto w-full flex flex-col md:flex-row justify-between items-center gap-stack-md">
+<div class="font-display-lg text-display-lg font-black text-on-surface">Jumia</div>
+<nav class="flex flex-wrap justify-center gap-stack-md">
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">About Jumia</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Help Center</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Jumia Careers</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Terms and Conditions</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Privacy Notice</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Official Stores</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Flash Sales</a>
+</nav>
+</div>
+<div class="max-w-container-max mx-auto w-full text-center mt-stack-sm">
+<p class="font-body-sm text-body-sm text-secondary">© 2024 Jumia. All Rights Reserved.</p>
+</div>
+</footer>
+</body></html>

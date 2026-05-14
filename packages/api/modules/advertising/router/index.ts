@@ -121,5 +121,5 @@ const _advertisingRouter = createTRPCRouter({
     }),
 });
 
-export const advertisingRouter = _advertisingRouter as any;
+export const advertisingRouter = _advertisingRouter;
 export type AdvertisingRouter = typeof _advertisingRouter;

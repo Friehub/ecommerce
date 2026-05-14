@@ -77,7 +77,7 @@ export default function AdminKYCVerificationPage() {
  </div>
  <div className="h-12 w-48 bg-surface-container-low rounded-xl" />
  </div>
- <div className="bg-surface-container-low rounded-[48px] h-[600px] border-4 border-surface-container-lowest" />
+ <div className="bg-surface-container-low rounded-[48px] h-[600px] border border-surface-container-lowest" />
  </div>
  );
  }
@@ -88,35 +88,35 @@ export default function AdminKYCVerificationPage() {
  <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
  <div className="animate-in slide-in-from-left-8 duration-1000">
  <div className="flex items-center gap-4 mb-6">
- <div className="p-2.5 bg-primary-container/20 backdrop-blur-xl rounded-2xl border border-primary-container/30 shadow-inner">
- <ShieldCheck size={24} className="text-primary-container" />
+ <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30 shadow-inner">
+ <ShieldCheck size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary-container italic">Compliance Verification & Merchant Onboarding Protocol</span>
+ <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Compliance Verification & Merchant Onboarding Protocol</span>
  </div>
- <h1 className="text-5xl md:text-7xl font-black text-on-surface uppercase tracking-tighter leading-[0.85]">
+ <h1 className="text-5xl md:text-7xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Moderation <br />
- <span className="text-primary-container italic">Queue.</span>
+ <span className="text-jumia-orange italic">Queue.</span>
  </h1>
  </div>
 
  <div className="flex flex-col items-end gap-3 animate-in slide-in-from-right-8 duration-1000">
  <div className="flex items-center gap-4 px-6 py-3 bg-surface-container-low border-2 border-surface-container-lowest rounded-2xl shadow-soft">
  <Fingerprint size={16} className="text-on-surface-variant/40" />
- <span className="text-[10px] font-black uppercase tracking-widest text-on-surface/60">Registry Load: {kycQueue?.length || 0} Entities</span>
+ <span className="text-[10px] font-semibold uppercase tracking-widest text-on-surface/60">Registry Load: {kycQueue?.length || 0} Entities</span>
  </div>
- <p className="text-on-surface-variant/40 text-[10px] font-black uppercase tracking-[0.2em] italic text-right">Verification Latency: ~14.2m</p>
+ <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase tracking-[0.2em] italic text-right">Verification Latency: ~14.2m</p>
  </div>
  </div>
 
  {/* Moderation Matrix */}
- <div className="bg-surface-container-lowest border-4 border-surface-container-low rounded-[56px] shadow-soft overflow-hidden group">
+ <div className="bg-surface-container-lowest border border-surface-container-low rounded-[56px] shadow-soft overflow-hidden group">
  <div className="p-10 border-b-4 border-surface-container-low flex flex-col lg:flex-row gap-8 items-center bg-surface-container-low/20">
  <div className="relative flex-1 w-full group/search">
- <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant/20 group-focus-within/search:text-primary-container transition-colors" size={20} />
+ <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant/20 group-focus-within/search:text-jumia-orange transition-colors" size={20} />
  <input 
  type="text" 
  placeholder="SEARCH BY BUSINESS NAME, ENTITY ID OR TAX PROTOCOL..."
- className="w-full pl-16 pr-8 py-5 bg-surface-container-low border-4 border-surface-container-lowest rounded-[28px] focus:outline-none focus:border-primary-container/20 focus:ring-[20px] focus:ring-primary-container/5 text-xs font-black text-on-surface placeholder:font-normal placeholder:text-on-surface-variant/50 shadow-inner transition-all duration-700 uppercase tracking-widest"
+ className="w-full pl-16 pr-8 py-5 bg-surface-container-low border border-surface-container-lowest rounded focus:outline-none focus:border-jumia-orange/20 focus:ring-[20px] focus:ring-primary-container/5 text-xs font-semibold text-on-surface placeholder:font-normal placeholder:text-on-surface-variant/50 shadow-inner transition-all duration-700 uppercase tracking-widest"
  />
  </div>
  </div>
@@ -124,7 +124,7 @@ export default function AdminKYCVerificationPage() {
  <div className="overflow-x-auto custom-scrollbar">
  <table className="w-full text-left border-collapse min-w-[1000px]">
  <thead>
- <tr className="bg-surface-container-low/10 text-[10px] font-black uppercase tracking-[0.4em] text-on-surface-variant/30 border-b-4 border-surface-container-low">
+ <tr className="bg-surface-container-low/10 text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/30 border-b-4 border-surface-container-low">
  <th className="px-10 py-8 italic">Merchant Entity</th>
  <th className="px-10 py-8 italic">Document Registry</th>
  <th className="px-10 py-8 italic">Protocol Status</th>
@@ -133,17 +133,17 @@ export default function AdminKYCVerificationPage() {
  </thead>
  <tbody className="divide-y-4 divide-surface-container-low">
  {kycQueue?.map((item) => (
- <tr key={item.id} className="hover:bg-primary-container/5 transition-all duration-700 group/row">
+ <tr key={item.id} className="hover:bg-jumia-orange-dark/5 transition-all duration-700 group/row">
  <td className="px-10 py-8">
  <div className="flex items-center gap-5">
- <div className="w-14 h-14 bg-surface-container-low rounded-[20px] border-2 border-surface-container-lowest flex items-center justify-center text-on-surface-variant group-hover/row:bg-primary-container/10 group-hover/row:text-primary-container transition-all duration-700 shadow-inner">
+ <div className="w-14 h-14 bg-surface-container-low rounded-sm border-2 border-surface-container-lowest flex items-center justify-center text-on-surface-variant group-hover/row:bg-jumia-orange/10 group-hover/row:text-jumia-orange transition-all duration-700 shadow-inner">
  <Briefcase size={24} />
  </div>
  <div>
- <div className="font-black text-sm md:text-base text-on-surface uppercase tracking-tight leading-none mb-1 group-hover/row:translate-x-2 transition-transform duration-700">
+ <div className="font-semibold text-sm md:text-base text-on-surface uppercase tracking-tight leading-none mb-1 group-hover/row:translate-x-2 transition-transform duration-700">
  {item.businessName}
  </div>
- <div className="flex items-center gap-2 text-[9px] font-black text-on-surface-variant/30 uppercase tracking-[0.2em] italic">
+ <div className="flex items-center gap-2 text-[9px] font-semibold text-on-surface-variant/30 uppercase tracking-[0.2em] italic">
  <User size={10} /> {item.user.email}
  </div>
  </div>
@@ -152,17 +152,17 @@ export default function AdminKYCVerificationPage() {
  <td className="px-10 py-8">
  <div className="flex flex-col gap-3">
  {item.documents?.map((doc: any) => (
- <div key={doc.id} className="flex items-center gap-4 bg-surface-container-low/40 p-3 rounded-2xl border-2 border-surface-container-lowest hover:border-primary-container/20 transition-all duration-500 group/doc">
- <div className="w-8 h-8 bg-surface-container-low rounded-xl flex items-center justify-center shrink-0 border border-surface-container-lowest group-hover/doc:bg-primary-container/10 group-hover/doc:text-primary-container transition-all duration-500">
+ <div key={doc.id} className="flex items-center gap-4 bg-surface-container-low/40 p-3 rounded-2xl border-2 border-surface-container-lowest hover:border-jumia-orange/20 transition-all duration-500 group/doc">
+ <div className="w-8 h-8 bg-surface-container-low rounded-xl flex items-center justify-center shrink-0 border border-surface-container-lowest group-hover/doc:bg-jumia-orange/10 group-hover/doc:text-jumia-orange transition-all duration-500">
  <File size={14} />
  </div>
  <div className="flex-1 min-w-0">
- <span className="font-black text-[9px] text-on-surface-variant uppercase tracking-widest block truncate leading-none mb-1">{doc.type}</span>
+ <span className="font-semibold text-[9px] text-on-surface-variant uppercase tracking-widest block truncate leading-none mb-1">{doc.type}</span>
  <a 
  href={doc.url} 
  target="_blank" 
  rel="noopener noreferrer"
- className="text-[8px] font-black text-primary-container uppercase tracking-[0.3em] flex items-center gap-1.5 cursor-pointer hover:underline opacity-60 hover:opacity-100"
+ className="text-[8px] font-semibold text-jumia-orange uppercase tracking-[0.3em] flex items-center gap-1.5 cursor-pointer hover:underline opacity-60 hover:opacity-100"
  >
  ACCESS BLOB <ExternalLink size={8} />
  </a>
@@ -172,14 +172,14 @@ export default function AdminKYCVerificationPage() {
  {(!item.documents || item.documents.length === 0) && (
  <div className="flex items-center gap-3 opacity-20">
  <AlertCircle size={14} />
- <span className="text-[9px] font-black uppercase tracking-widest italic">Registry Void: No Blobs Detected</span>
+ <span className="text-[9px] font-semibold uppercase tracking-widest italic">Registry Void: No Blobs Detected</span>
  </div>
  )}
  </div>
  </td>
  <td className="px-10 py-8">
- <span className={`text-[10px] px-4 py-1.5 rounded-full font-black border-2 uppercase tracking-[0.2em] italic transition-all duration-700 ${
- item.status === 'PENDING_VERIFICATION' ? 'bg-primary-container/10 text-primary-container border-primary-container/20 shadow-[0_0_15px_rgba(246,139,30,0.2)] animate-pulse' :
+ <span className={`text-[10px] px-4 py-1.5 rounded-full font-semibold border-2 uppercase tracking-[0.2em] italic transition-all duration-700 ${
+ item.status === 'PENDING_VERIFICATION' ? 'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20 shadow-[0_0_15px_rgba(246,139,30,0.2)] animate-pulse' :
  item.status === 'ACTIVE' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
  'bg-error/10 text-error border-error/20'
  }`}>
@@ -193,7 +193,7 @@ export default function AdminKYCVerificationPage() {
  <button 
  onClick={() => handleUpdate(item.id, 'APPROVED')}
  disabled={approveMutation.isPending}
- className="bg-green-500/5 text-green-500 hover:bg-green-500 hover:text-white border-4 border-green-500/10 p-4 rounded-2xl duration-500 transition-all cursor-pointer shadow-soft group/btn disabled:opacity-50"
+ className="bg-green-500/5 text-green-500 hover:bg-green-500 hover:text-white border border-green-500/10 p-4 rounded-2xl duration-500 transition-all cursor-pointer shadow-soft group/btn disabled:opacity-50"
  title="AUTHORIZE ENTITY"
  >
  <CheckCircle size={20} className="group-hover/btn:scale-110 transition-transform" />
@@ -201,14 +201,14 @@ export default function AdminKYCVerificationPage() {
  <button 
  onClick={() => handleUpdate(item.id, 'REJECTED')}
  disabled={updateStatusMutation.isPending}
- className="bg-error/5 text-error hover:bg-error hover:text-white border-4 border-error/10 p-4 rounded-2xl duration-500 transition-all cursor-pointer shadow-soft group/btn disabled:opacity-50"
+ className="bg-error/5 text-error hover:bg-error hover:text-white border border-error/10 p-4 rounded-2xl duration-500 transition-all cursor-pointer shadow-soft group/btn disabled:opacity-50"
  title="REJECT ENTITY"
  >
  <XCircle size={20} className="group-hover/btn:rotate-12 transition-transform" />
  </button>
  </>
  )}
- <button className="p-4 bg-surface-container-low text-on-surface-variant/40 hover:text-on-surface hover:bg-surface-container-lowest rounded-2xl border-4 border-surface-container-lowest transition-all duration-500 shadow-soft">
+ <button className="p-4 bg-surface-container-low text-on-surface-variant/40 hover:text-on-surface hover:bg-surface-container-lowest rounded-2xl border border-surface-container-lowest transition-all duration-500 shadow-soft">
  <History size={20} />
  </button>
  </div>
@@ -218,10 +218,10 @@ export default function AdminKYCVerificationPage() {
  {kycQueue?.length === 0 && (
  <tr>
  <td colSpan={4} className="px-10 py-32 text-center select-none space-y-6">
- <div className="w-20 h-20 bg-surface-container-low rounded-[32px] border-4 border-surface-container-lowest flex items-center justify-center mx-auto text-on-surface-variant/20">
+ <div className="w-20 h-20 bg-surface-container-low rounded border border-surface-container-lowest flex items-center justify-center mx-auto text-on-surface-variant/20">
  <ShieldCheck size={40} />
  </div>
- <p className="text-[10px] font-black uppercase tracking-[0.5em] text-on-surface-variant/20 italic">
+ <p className="text-[10px] font-semibold uppercase tracking-[0.5em] text-on-surface-variant/20 italic">
  Registry clear. all entities reconciled.
  </p>
  </td>

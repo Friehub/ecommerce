@@ -132,5 +132,5 @@ const _disputeRouter = createTRPCRouter({
     }),
 });
 
-export const disputeRouter = _disputeRouter as any;
+export const disputeRouter = _disputeRouter;
 export type DisputeRouter = typeof _disputeRouter;

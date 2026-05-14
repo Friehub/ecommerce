@@ -1,0 +1,83 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecom-db-local
+    environment:
+      POSTGRES_DB: ecom_dev
+      POSTGRES_USER: ecom
+      POSTGRES_PASSWORD: ecom
+    volumes:
+      - ./postgres/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    ports:
+      - '5433:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ecom -d ecom_dev']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecom-redis-local
+    ports:
+      - '6380:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api-server/Dockerfile.prod
+    container_name: ecom-api-local
+    environment:
+      DATABASE_URL: "postgresql://ecom:ecom@postgres:5432/ecom_dev?sslmode=disable"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: "f9f046b8565a4e5caeef8eb82f4da075"
+      NEXTAUTH_SECRET: "f9f046b8565a4e5caeef8eb82f4da075"
+      INTERNAL_API_TOKEN: "test_internal_token"
+      PAYSTACK_SECRET_KEY: "sk_test_dummy_key"
+      PAYSTACK_WEBHOOK_SECRET: "whsec_dummy_secret"
+      PORT: 4000
+      HOST: 0.0.0.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - '4000:4000'
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.prod
+    container_name: ecom-web-local
+    environment:
+      NODE_ENV: production
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXTAUTH_SECRET: "f9f046b8565a4e5caeef8eb82f4da075"
+      AUTH_SECRET: "f9f046b8565a4e5caeef8eb82f4da075"
+      DATABASE_URL: "postgresql://ecom:ecom@postgres:5432/ecom_dev?sslmode=disable"
+      REDIS_URL: "redis://redis:6379"
+      NEXT_PUBLIC_API_URL: "http://localhost:4000/trpc"
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - '3000:3000'
+
+  e2e:
+    build:
+      context: .
+      dockerfile: apps/e2e/Dockerfile
+    container_name: ecom-e2e-local
+    environment:
+      WEB_URL: "http://web:3000"
+    depends_on:
+      web:
+        condition: service_started

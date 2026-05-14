@@ -50,6 +50,7 @@ model SellerDocument {
   rejectionReason String?        // populated when status = REJECTED
   reviewedAt      DateTime?      // timestamp of admin decision
   reviewedBy      String?        // adminId who made the decision
+  createdAt       DateTime       @default(now())
 
   seller Seller @relation(fields: [sellerId], references: [id])
 

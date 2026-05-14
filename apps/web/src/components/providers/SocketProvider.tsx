@@ -28,7 +28,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       socketInstance.on('connect', () => {
-        console.log('[Telemetry] Socket stream initialized');
+        console.log('[Notifications] Socket stream initialized');
       });
 
       socketInstance.on('notification', (notification) => {
@@ -62,33 +62,33 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         {notifications.map((n) => (
           <div 
             key={n.id} 
-            className="pointer-events-auto bg-on-surface text-white rounded-[32px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] border-4 border-white/5 p-8 w-[400px] animate-in slide-in-from-right-full duration-700 flex gap-6 overflow-hidden relative group"
+            className="pointer-events-auto bg-jumia-orange text-white rounded shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] border border-white/5 p-8 w-[400px] animate-in slide-in-from-right-full duration-700 flex gap-6 overflow-hidden relative group"
           >
             {/* Background Activity Pulse */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/10 rounded-full blur-[40px] animate-pulse" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-jumia-orange/10 rounded-full blur-[40px] animate-pulse" />
             
-            <div className="absolute left-0 top-0 bottom-0 w-2 bg-primary-container shadow-[0_0_20px_rgba(246,139,30,0.5)]" />
+            <div className="absolute left-0 top-0 bottom-0 w-2 bg-jumia-orange shadow-[0_0_20px_rgba(246,139,30,0.5)]" />
             
-            <div className="w-16 h-16 bg-white/5 rounded-[20px] flex items-center justify-center shrink-0 border-2 border-white/5 group-hover:bg-primary-container group-hover:text-white transition-all duration-500">
+            <div className="w-16 h-16 bg-white/5 rounded-sm flex items-center justify-center shrink-0 border-2 border-white/5 group-hover:bg-jumia-orange-dark group-hover:text-white transition-all duration-500">
               <Bell size={28} strokeWidth={1.5} className="group-hover:rotate-12 transition-transform" />
             </div>
             
             <div className="flex-1 min-w-0 flex flex-col justify-center">
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-[9px] font-black text-primary-container uppercase tracking-[0.4em] italic">System Alert</span>
+                <span className="text-[9px] font-semibold text-jumia-orange uppercase tracking-[0.4em] italic">System Alert</span>
                 <div className="h-[1px] flex-1 bg-white/10" />
               </div>
-              <h4 className="text-sm font-black text-white uppercase tracking-tighter truncate leading-none mb-2">{n.title}</h4>
+              <h4 className="text-sm font-semibold text-white uppercase tracking-tighter truncate leading-none mb-2">{n.title}</h4>
               <p className="text-[11px] font-medium text-white/50 leading-relaxed line-clamp-2 italic">{n.message}</p>
               
               <div className="mt-4 flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Activity size={10} className="text-primary-container animate-pulse" />
-                  <span className="text-[8px] font-black uppercase tracking-widest text-white/20">Live Sync</span>
+                  <Activity size={10} className="text-jumia-orange animate-pulse" />
+                  <span className="text-[8px] font-semibold uppercase tracking-widest text-white/20">Live Sync</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <ShieldCheck size={10} className="text-success" />
-                  <span className="text-[8px] font-black uppercase tracking-widest text-white/20">Verified</span>
+                  <span className="text-[8px] font-semibold uppercase tracking-widest text-white/20">Verified</span>
                 </div>
               </div>
             </div>

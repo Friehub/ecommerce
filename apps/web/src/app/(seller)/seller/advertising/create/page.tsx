@@ -36,31 +36,31 @@ export default function CreateCampaign() {
 
  return (
  <div className="max-w-2xl animate-in fade-in slide-in-from-left-8 duration-700">
- <Link href="/seller/advertising" className="inline-flex items-center text-on-surface-variant/40 hover:text-primary-container text-[10px] font-black uppercase tracking-[0.4em] mb-8 transition-colors group">
+ <Link href="/seller/advertising" className="inline-flex items-center text-on-surface-variant/40 hover:text-jumia-orange text-[10px] font-semibold uppercase tracking-[0.4em] mb-8 transition-colors group">
  <ArrowLeft size={14} className="mr-3 group-hover:-translate-x-2 transition-transform" /> Protocol Dashboard
  </Link>
 
- <div className="bg-surface-container-lowest rounded-[40px] border-4 border-surface-container-low shadow-soft overflow-hidden">
+ <div className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden">
  <div className="p-10 border-b-4 border-surface-container-low bg-surface-container-low/10">
- <h1 className="text-2xl font-black text-on-surface uppercase tracking-tight">Initialize Campaign</h1>
- <p className="text-on-surface-variant/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1 italic">Set up a new sponsored node within the ecosystem.</p>
+ <h1 className="text-2xl font-semibold text-on-surface uppercase tracking-tight">Initialize Campaign</h1>
+ <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase tracking-[0.2em] mt-1 italic">Set up a new sponsored node within the ecosystem.</p>
  </div>
 
  <form onSubmit={handleSubmit} className="p-10 space-y-8">
  <div className="space-y-3">
- <label className="block text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Campaign Designation</label>
+ <label className="block text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Campaign Designation</label>
  <input 
  type="text" 
  required
  value={name}
  onChange={e => setName(e.target.value)}
- className="w-full h-14 px-6 border-2 border-surface-container-low rounded-2xl focus:border-primary-container focus:ring-4 focus:ring-primary-container/5 outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300 placeholder:font-normal placeholder:text-on-surface-variant/50"
+ className="w-full h-14 px-6 border-2 border-surface-container-low rounded-2xl focus:border-jumia-orange focus:ring-4 focus:ring-primary-container/5 outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300 placeholder:font-normal placeholder:text-on-surface-variant/50"
  placeholder="e.g. SUMMER_ELECTRONICS_NODE"
  />
  </div>
 
  <div className="space-y-3">
- <label className="block text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Operational Budget (₦)</label>
+ <label className="block text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Operational Budget (₦)</label>
  <input 
  type="number" 
  required
@@ -68,30 +68,30 @@ export default function CreateCampaign() {
  step="100"
  value={budget}
  onChange={e => setBudget(e.target.value)}
- className="w-full h-14 px-6 border-2 border-surface-container-low rounded-2xl focus:border-primary-container focus:ring-4 focus:ring-primary-container/5 outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300 placeholder:font-normal placeholder:text-on-surface-variant/50"
+ className="w-full h-14 px-6 border-2 border-surface-container-low rounded-2xl focus:border-jumia-orange focus:ring-4 focus:ring-primary-container/5 outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300 placeholder:font-normal placeholder:text-on-surface-variant/50"
  placeholder="5000"
  />
- <p className="text-[8px] text-on-surface-variant/30 font-black uppercase mt-2 tracking-[0.2em] italic border-l-2 border-primary-container pl-3">Campaign will automatically pause when budget is exhausted.</p>
+ <p className="text-[8px] text-on-surface-variant/30 font-semibold uppercase mt-2 tracking-[0.2em] italic border-l-2 border-jumia-orange pl-3">Campaign will automatically pause when budget is exhausted.</p>
  </div>
 
  <div className="grid grid-cols-2 gap-6">
  <div className="space-y-3">
- <label className="block text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Activation Date</label>
+ <label className="block text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Activation Date</label>
  <input 
  type="date" 
  required
  value={startDate}
  onChange={e => setStartDate(e.target.value)}
- className="w-full h-14 px-6 border-2 border-surface-container-low rounded-2xl focus:border-primary-container focus:ring-4 focus:ring-primary-container/5 outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300"
+ className="w-full h-14 px-6 border-2 border-surface-container-low rounded-2xl focus:border-jumia-orange focus:ring-4 focus:ring-primary-container/5 outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300"
  />
  </div>
  <div className="space-y-3">
- <label className="block text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Termination (Optional)</label>
+ <label className="block text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Termination (Optional)</label>
  <input 
  type="date" 
  value={endDate}
  onChange={e => setEndDate(e.target.value)}
- className="w-full h-14 px-6 border-2 border-surface-container-low rounded-2xl focus:border-primary-container focus:ring-4 focus:ring-primary-container/5 outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300"
+ className="w-full h-14 px-6 border-2 border-surface-container-low rounded-2xl focus:border-jumia-orange focus:ring-4 focus:ring-primary-container/5 outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300"
  />
  </div>
  </div>
@@ -100,7 +100,7 @@ export default function CreateCampaign() {
  <button 
  type="submit"
  disabled={createMutation.isLoading}
- className="bg-on-surface text-white px-10 py-5 rounded-[20px] font-black text-[11px] uppercase tracking-[0.3em] hover:bg-primary-container transition-all shadow-xl active:scale-95 disabled:opacity-50 flex items-center gap-4 group"
+ className="bg-jumia-orange text-white px-10 py-5 rounded-sm font-semibold text-[11px] uppercase tracking-[0.3em] hover:bg-jumia-orange-dark transition-all shadow-xl active:scale-95 disabled:opacity-50 flex items-center gap-4 group"
  >
  {createMutation.isLoading ? <Loader2 size={18} className="animate-spin" /> : (
  <>

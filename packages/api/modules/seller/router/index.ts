@@ -16,6 +16,36 @@ const _sellerRouter = createTRPCRouter({
     return await sellerDashboardService.getMetrics(seller.id);
   }),
 
+  getProfile: sellerProcedure.query(async ({ ctx }) => {
+    const seller = await prisma.seller.findUnique({
+      where: { userId: ctx.session.user.id },
+      include: { documents: true }
+    });
+    if (!seller) throw new Error('NOT_A_SELLER');
+    return seller;
+  }),
+
+  uploadDocument: sellerProcedure
+    .input(z.object({
+      type: z.enum(['NIN', 'BANK_STATEMENT', 'CAC', 'UTILITY_BILL']),
+      url: z.string().url(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const seller = await prisma.seller.findUnique({
+        where: { userId: ctx.session.user.id }
+      });
+      if (!seller) throw new Error('NOT_A_SELLER');
+
+      return await prisma.sellerDocument.create({
+        data: {
+          sellerId: seller.id,
+          type: input.type as any,
+          url: input.url,
+          status: 'PENDING'
+        }
+      });
+    }),
+
   approveSeller: adminProcedure
     .input(z.object({ sellerId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -180,5 +210,5 @@ const _sellerRouter = createTRPCRouter({
     }),
 });
 
-export const sellerRouter = _sellerRouter as any;
+export const sellerRouter = _sellerRouter;
 export type SellerRouter = typeof _sellerRouter;

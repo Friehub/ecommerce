@@ -43,7 +43,7 @@ export const Toast: React.FC<ToastProps> = ({ title, message, type = 'success', 
  >
   <div className="flex-shrink-0">{icon}</div>
   <div className="flex-1 space-y-1">
-    {title && <h5 className="text-xs font-black uppercase tracking-widest">{title}</h5>}
+    {title && <h5 className="text-xs font-semibold uppercase tracking-widest">{title}</h5>}
     <p className="text-[11px] font-medium leading-relaxed opacity-90">{message}</p>
   </div>
  <button 

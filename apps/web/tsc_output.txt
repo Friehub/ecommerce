@@ -1,0 +1,15 @@
+src/app/(seller)/seller/orders/page.tsx(86,67): error TS2367: This comparison appears to be unintentional because the types '"PENDING" | "READY_FOR_PICKUP" | "PICKED_UP" | "OUT_FOR_DELIVERY" | "DELIVERED" | "CANCELLED"' and '"SHIPPED"' have no overlap.
+src/app/(seller)/seller/orders/page.tsx(240,2): error TS2322: Type '"SHIPPED"' is not assignable to type '"PENDING" | "READY_FOR_PICKUP" | "PICKED_UP" | "IN_TRANSIT" | "OUT_FOR_DELIVERY" | "DELIVERED" | "CANCELLED"'.
+src/app/(seller)/seller/orders/page.tsx(251,4): error TS2367: This comparison appears to be unintentional because the types 'PackageStatus' and '"SHIPPED"' have no overlap.
+src/app/(seller)/seller/products/page.tsx(39,58): error TS2551: Property 'listSellerProducts' does not exist on type 'DecoratedProcedureRecord<{ bulkImport: BuildProcedure<"mutation", { _config: RootConfig<{ ctx: TRPCContext; meta: OpenApiMeta<TRPCMeta>; errorShape: { data: { zodError: typeToFlattenedError<any, string>; code: "PARSE_ERROR" | ... 13 more ... | "CLIENT_CLOSED_REQUEST"; httpStatus: number; path?: string; stack?: strin...'. Did you mean 'getSellerProducts'?
+src/app/moderator/disputes/page.tsx(104,3): error TS2304: Cannot find name 'ShieldCheck'.
+src/auth.config.ts(34,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/components/auth/LoginForm.tsx(106,37): error TS2322: Type '{ children: string; href: string; size: string; className: string; }' is not assignable to type 'IntrinsicAttributes & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps<any>> & LinkProps<...> & { ...; } & RefAttributes<...>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps<any>> & LinkProps<...> & { ...; } & RefAttributes<...>'.
+src/components/layout/Footer.tsx(50,18): error TS2322: Type '{ size: number; className: string; }' is not assignable to type 'IntrinsicAttributes & { size?: number; }'.
+  Property 'className' does not exist on type 'IntrinsicAttributes & { size?: number; }'.
+src/components/layout/Navbar.tsx(231,57): error TS2304: Cannot find name 'Gavel'.
+src/components/products/ProductGallery.tsx(11,54): error TS2304: Cannot find name 'useState'.
+src/components/products/ProductGallery.tsx(12,46): error TS2304: Cannot find name 'useState'.
+src/components/products/ProductReviews.tsx(76,30): error TS2345: Argument of type 'number | Decimal' is not assignable to parameter of type 'number'.
+  Type 'Decimal' is not assignable to type 'number'.

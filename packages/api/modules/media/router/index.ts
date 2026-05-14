@@ -22,5 +22,5 @@ const _mediaRouter = createTRPCRouter({
     }),
 });
 
-export const mediaRouter = _mediaRouter as any;
+export const mediaRouter = _mediaRouter;
 export type MediaRouter = typeof _mediaRouter;

@@ -46,5 +46,5 @@ const _affiliateRouter = createTRPCRouter({
     }),
 });
 
-export const affiliateRouter = _affiliateRouter as any;
+export const affiliateRouter = _affiliateRouter;
 export type AffiliateRouter = typeof _affiliateRouter;

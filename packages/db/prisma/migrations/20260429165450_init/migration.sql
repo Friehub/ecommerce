@@ -345,6 +345,10 @@ CREATE TABLE "SellerDocument" (
     "type" TEXT NOT NULL,
     "url" TEXT NOT NULL,
     "status" "DocumentStatus" NOT NULL DEFAULT 'PENDING',
+    "rejectionReason" TEXT,
+    "reviewedAt" TIMESTAMP(3),
+    "reviewedBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "SellerDocument_pkey" PRIMARY KEY ("id")
 );

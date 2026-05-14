@@ -1,112 +1,137 @@
+// apps/web/src/app/(buyer)/account/page.tsx
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { User, Package, Heart, MapPin, Settings, ChevronRight, CreditCard, Loader2, Bell } from 'lucide-react';
+import { 
+  User, Package, Heart, MapPin, CreditCard, Bell, 
+  ChevronRight, LogOut, Ticket, MessageSquare, ShieldCheck, Mail
+} from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import { Skeleton } from '@/components/ui/Skeleton';
+
+const sidebarLinks = [
+  { label: 'Account', icon: User, href: '/account', active: true },
+  { label: 'Orders', icon: Package, href: '/account/orders' },
+  { label: 'Inbox', icon: Mail, href: '/account/inbox' },
+  { label: 'Pending Reviews', icon: MessageSquare, href: '/account/reviews' },
+  { label: 'Vouchers', icon: Ticket, href: '/account/vouchers' },
+  { label: 'Saved Items', icon: Heart, href: '/wishlist' },
+  { label: 'Personal Information', icon: User, href: '/account/settings' },
+  { label: 'Address Book', icon: MapPin, href: '/account/addresses' },
+  { label: 'Newsletter Preferences', icon: Bell, href: '/account/newsletter' },
+];
 
 export default function AccountPage() {
- const { data: session, status } = useSession();
- const router = useRouter();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
 
- React.useEffect(() => {
- if (status === 'unauthenticated') {
- router.push('/login');
- }
- }, [status, router]);
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
 
- if (status === 'loading') {
- return (
- <div className="bg-background min-h-screen py-8">
- <div className="container mx-auto px-4">
- <div className="h-8 w-48 bg-surface-container rounded-lg animate-pulse mb-8" />
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
- <div className="lg:col-span-1">
- <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant p-6 h-48 animate-pulse" />
- </div>
- <div className="lg:col-span-2">
- <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
- {[...Array(6)].map((_, i) => (
- <div key={i} className="h-32 bg-surface-container-lowest rounded-2xl border border-outline-variant animate-pulse" />
- ))}
- </div>
- </div>
- </div>
- </div>
- </div>
- );
- }
+  if (status === 'loading') {
+    return (
+      <div className="max-w-container-max mx-auto px-margin-desktop py-8">
+        <div className="flex gap-gutter">
+          <Skeleton className="w-[240px] h-[500px]" />
+          <div className="flex-1 space-y-6">
+            <Skeleton className="h-48" />
+            <Skeleton className="h-48" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
- if (!session) return null;
+  if (!session) return null;
 
- const menuItems = [
- { label: 'Orders', icon: <Package size={24} />, href: '/account/orders', desc: 'Check your order status and history' },
- { label: 'Notifications', icon: <Bell size={24} />, href: '/notifications', desc: 'View your messages and alerts' },
- { label: 'Saved Items', icon: <Heart size={24} />, href: '/wishlist', desc: 'View items you saved for later' },
- { label: 'Jumia Wallet', icon: <CreditCard size={24} />, href: '/account/wallet', desc: 'Check balance and fund your account' },
- { label: 'Addresses', icon: <MapPin size={24} />, href: '/account/addresses', desc: 'Manage your delivery addresses' },
- { label: 'Account Settings', icon: <Settings size={24} />, href: '/account/settings', desc: 'Update your profile and password' },
- ];
+  return (
+    <div className="bg-j-background min-h-screen pb-12">
+      <div className="max-w-container-max mx-auto px-margin-desktop py-4 flex flex-col md:flex-row gap-gutter">
+        {/* Sidebar */}
+        <aside className="w-full md:w-[240px] flex flex-col gap-2">
+          <div className="bg-white rounded border border-j-outline-variant shadow-sm overflow-hidden">
+            <nav className="flex flex-col">
+              {sidebarLinks.map((link) => (
+                <Link 
+                  key={link.label}
+                  href={link.href}
+                  className={`flex items-center gap-3 p-3 text-body-sm font-medium transition-all border-l-4 ${
+                    pathname === link.href 
+                    ? 'bg-j-surface-container-low border-jumia-orange text-jumia-orange' 
+                    : 'border-transparent text-j-text hover:bg-j-surface-container-lowest'
+                  }`}
+                >
+                  <link.icon size={18} />
+                  <span>{link.label}</span>
+                </Link>
+              ))}
+              <button 
+                className="flex items-center gap-3 p-3 text-body-sm font-medium text-j-text hover:bg-j-surface-container-lowest border-l-4 border-transparent mt-4 border-t border-j-outline-variant"
+                onClick={() => router.push('/api/auth/signout')}
+              >
+                <LogOut size={18} className="text-jumia-orange" />
+                <span className="text-jumia-orange uppercase">Logout</span>
+              </button>
+            </nav>
+          </div>
+        </aside>
 
- return (
- <div className="bg-background min-h-screen py-8">
- <div className="container mx-auto px-4">
- <h1 className="text-title-lg text-on-surface mb-8 tracking-tight border-b-4 border-primary-container pb-2 w-fit uppercase font-black">
- My Account
- </h1>
- 
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
- {/* User Overview */}
- <div className="lg:col-span-1">
- <div className="bg-surface-container-lowest rounded-[32px] border border-outline-variant hover:border-outline transition-all duration-300 shadow-soft p-8">
- <div className="flex items-center gap-5 mb-8">
- <div className="w-20 h-20 bg-primary-container text-white border-4 border-primary-container/20 rounded-full flex items-center justify-center text-3xl font-black shadow-lg shadow-primary-container/10">
- {session.user?.email?.[0].toUpperCase()}
- </div>
- <div>
- <p className="font-black text-xl text-on-surface leading-tight tracking-tighter uppercase">{session.user?.email?.split('@')[0]}</p>
- <p className="text-[10px] font-black text-on-surface-variant mt-1 uppercase tracking-widest opacity-60">{session.user?.email}</p>
- </div>
- </div>
- <div className="border-t border-outline-variant/30 pt-6 space-y-5">
- <div className="flex justify-between text-xs">
- <span className="text-on-surface-variant font-black uppercase tracking-widest opacity-60">Member Since</span>
- <span className="font-black text-on-surface uppercase tracking-tight">April 2024</span>
- </div>
- <div className="flex justify-between text-xs">
- <span className="text-on-surface-variant font-black uppercase tracking-widest opacity-60">Account Type</span>
- <span className="font-black text-primary-container uppercase tracking-tight">{(session.user as any)?.role || 'Buyer'}</span>
- </div>
- </div>
- </div>
- </div>
- 
- {/* Quick Links Grid */}
- <div className="lg:col-span-2">
- <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
- {menuItems.map((item) => (
- <Link 
- key={item.label}
- href={item.href}
- className="bg-surface-container-lowest p-6 rounded-[28px] border border-outline-variant hover:border-primary-container hover:shadow-xl transition-all duration-300 flex items-start gap-5 group cursor-pointer shadow-soft"
- >
- <div className="text-primary-container bg-primary-container/5 p-4 rounded-2xl group-hover:bg-primary-container group-hover:text-white transition-all duration-300 flex items-center justify-center group-hover:scale-110 shadow-sm">
- {item.icon}
- </div>
- <div className="flex-1">
- <h3 className="font-black text-on-surface mb-1 flex items-center justify-between group-hover:text-primary-container transition-colors uppercase tracking-tight text-sm">
- {item.label}
- <ChevronRight size={18} className="text-on-surface-variant opacity-20 group-hover:text-primary-container group-hover:translate-x-1 transition-all duration-300" />
- </h3>
- <p className="text-[11px] font-medium text-on-surface-variant group-hover:text-on-surface transition-colors leading-relaxed">{item.desc}</p>
- </div>
- </Link>
- ))}
- </div>
- </div>
- </div>
- </div>
- </div>
- );
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col gap-gutter">
+          <div className="bg-white rounded border border-j-outline-variant shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-j-outline-variant bg-j-surface-container-low">
+              <h1 className="text-label-bold font-bold uppercase">Account Overview</h1>
+            </div>
+            
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Account Details */}
+              <div className="border border-j-outline-variant rounded p-4 flex flex-col gap-4">
+                <h3 className="text-label-bold font-bold uppercase border-b border-j-outline-variant pb-2">Account Details</h3>
+                <div className="flex flex-col gap-1">
+                  <p className="text-body-md font-bold uppercase">{session.user?.name || "Verified Member"}</p>
+                  <p className="text-body-sm text-j-text-muted">{session.user?.email}</p>
+                </div>
+              </div>
+
+              {/* Address Book */}
+              <div className="border border-j-outline-variant rounded p-4 flex flex-col gap-4">
+                <h3 className="text-label-bold font-bold uppercase border-b border-j-outline-variant pb-2 flex justify-between items-center">
+                  Address Book
+                  <Link href="/account/addresses" className="text-jumia-orange"><ChevronRight size={16} /></Link>
+                </h3>
+                <div className="flex flex-col gap-1">
+                  <p className="text-body-sm text-j-text font-medium">Your default shipping address:</p>
+                  <p className="text-body-sm text-j-text-muted mt-1 italic">No default address set.</p>
+                </div>
+              </div>
+
+              {/* Jumia Wallet */}
+              <div className="border border-j-outline-variant rounded p-4 flex flex-col gap-4">
+                <h3 className="text-label-bold font-bold uppercase border-b border-j-outline-variant pb-2">Jumia Store Credit</h3>
+                <div className="flex items-center gap-3">
+                  <CreditCard className="text-jumia-orange" size={24} />
+                  <p className="text-body-md font-bold text-j-text">₦ 0.00</p>
+                </div>
+              </div>
+
+              {/* Newsletter */}
+              <div className="border border-j-outline-variant rounded p-4 flex flex-col gap-4">
+                <h3 className="text-label-bold font-bold uppercase border-b border-j-outline-variant pb-2">Newsletter Preferences</h3>
+                <div className="flex flex-col gap-1">
+                  <p className="text-body-sm text-j-text">You are currently not subscribed to any newsletters.</p>
+                  <Link href="/account/newsletter" className="text-jumia-orange text-body-sm font-bold uppercase mt-2">Edit Preferences</Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 }

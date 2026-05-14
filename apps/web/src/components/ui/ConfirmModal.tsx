@@ -38,9 +38,9 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
  btn: 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-500/20'
  },
  info: {
- icon: <AlertTriangle className="text-primary-container" size={24} />,
- bg: 'bg-primary-container/10',
- btn: 'bg-primary-container text-white hover:bg-primary-container/90 shadow-primary-container/20'
+ icon: <AlertTriangle className="text-jumia-orange" size={24} />,
+ bg: 'bg-jumia-orange/10',
+ btn: 'bg-jumia-orange text-white hover:bg-jumia-orange-dark/90 shadow-primary-container/20'
  }
  };
 
@@ -48,7 +48,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
  return (
  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
- <div className="bg-surface-container-lowest rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in duration-200">
+ <div className="bg-surface-container-lowest rounded w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in duration-200">
  <div className="p-8">
  <div className="flex items-center justify-between mb-6">
  <div className={`w-12 h-12 ${current.bg} rounded-2xl flex items-center justify-center`}>
@@ -59,19 +59,19 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
  </button>
  </div>
 
- <h3 className="text-lg font-black text-on-surface uppercase tracking-widest mb-2">{title}</h3>
+ <h3 className="text-lg font-semibold text-on-surface uppercase tracking-widest mb-2">{title}</h3>
  <p className="text-sm text-on-surface-variant font-medium leading-relaxed mb-8">{message}</p>
 
  <div className="flex gap-3">
  <button 
  onClick={onCancel}
- className="flex-1 h-12 bg-surface-container-low text-on-surface font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-surface-container transition-all"
+ className="flex-1 h-12 bg-surface-container-low text-on-surface font-semibold text-[10px] uppercase tracking-widest rounded-xl hover:bg-surface-container transition-all"
  >
  {cancelLabel}
  </button>
  <button 
  onClick={onConfirm}
- className={`flex-1 h-12 ${current.btn} font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg transition-all active:scale-95`}
+ className={`flex-1 h-12 ${current.btn} font-semibold text-[10px] uppercase tracking-widest rounded-xl shadow-lg transition-all active:scale-95`}
  >
  {confirmLabel}
  </button>

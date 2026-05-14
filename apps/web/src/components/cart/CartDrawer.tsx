@@ -19,7 +19,7 @@ export const CartDrawer = () => {
  <>
  {/* Backdrop */}
  <div 
- className="fixed inset-0 bg-on-surface/80 backdrop-blur-sm z-[100] transition-opacity animate-in fade-in duration-500"
+ className="fixed inset-0 bg-jumia-orange/80 backdrop-blur-sm z-[100] transition-opacity animate-in fade-in duration-500"
  onClick={() => setIsOpen(false)}
  />
 
@@ -27,12 +27,12 @@ export const CartDrawer = () => {
  <div className="fixed right-0 top-0 h-full w-full max-w-md bg-surface-container-lowest z-[110] shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 border-l border-surface-container-low">
  <div className="p-8 border-b border-surface-container-low flex items-center justify-between">
  <div className="flex items-center gap-4">
- <div className="bg-primary-container/10 p-3 rounded-[20px] border border-primary-container/20">
- <ShoppingBag size={24} className="text-primary-container" />
+ <div className="bg-jumia-orange/10 p-3 rounded-sm border border-jumia-orange/20">
+ <ShoppingBag size={24} className="text-jumia-orange" />
  </div>
  <div>
- <h2 className="font-black text-on-surface uppercase tracking-widest text-sm leading-none mb-1">Logistics Hub</h2>
- <p className="text-[9px] font-black text-on-surface-variant uppercase tracking-widest opacity-40 italic">{totalItems} Assets Identified</p>
+ <h2 className="font-semibold text-on-surface uppercase tracking-widest text-sm leading-none mb-1">Logistics Hub</h2>
+ <p className="text-[9px] font-semibold text-on-surface-variant uppercase tracking-widest opacity-40 italic">{totalItems} Assets Identified</p>
  </div>
  </div>
  <button 
@@ -51,7 +51,7 @@ export const CartDrawer = () => {
  className="flex gap-6 group animate-in fade-in slide-in-from-right-8 duration-700"
  style={{ animationDelay: `${idx * 100}ms` }}
  >
- <div className="w-24 h-24 bg-surface-container-low rounded-[24px] border-2 border-surface-container-lowest overflow-hidden flex-shrink-0 relative shadow-inner">
+ <div className="w-24 h-24 bg-surface-container-low rounded border-2 border-surface-container-lowest overflow-hidden flex-shrink-0 relative shadow-inner">
  <Image 
  src={item.variant.product.media[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400'} 
  alt={item.variant.product.title}
@@ -62,7 +62,7 @@ export const CartDrawer = () => {
  </div>
  <div className="flex-1 flex flex-col py-1">
  <div className="flex justify-between items-start gap-4 mb-2">
- <h3 className="text-[11px] font-black text-on-surface uppercase tracking-tight line-clamp-2 leading-tight flex-1 group-hover:text-primary-container transition-colors">
+ <h3 className="text-[11px] font-semibold text-on-surface uppercase tracking-tight line-clamp-2 leading-tight flex-1 group-hover:text-jumia-orange transition-colors">
  {item.variant.product.title}
  </h3>
  <button 
@@ -73,7 +73,7 @@ export const CartDrawer = () => {
  </button>
  </div>
  
- <p className="text-[8px] font-black text-on-surface-variant uppercase tracking-[0.2em] mb-4 opacity-40 italic">
+ <p className="text-[8px] font-semibold text-on-surface-variant uppercase tracking-[0.2em] mb-4 opacity-40 italic">
  {Object.values(item.variant.attributes as any).join(' / ')}
  </p>
 
@@ -85,7 +85,7 @@ export const CartDrawer = () => {
  >
  <Minus size={14} />
  </button>
- <span className="w-8 text-center text-xs font-black">{item.quantity}</span>
+ <span className="w-8 text-center text-xs font-semibold">{item.quantity}</span>
  <button 
  onClick={() => updateQuantity(item.id, item.quantity + 1)}
  className="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all touch-manipulation active:scale-90"
@@ -93,7 +93,7 @@ export const CartDrawer = () => {
  <Plus size={14} />
  </button>
  </div>
- <div className="text-sm font-black text-on-surface tracking-tighter">
+ <div className="text-sm font-semibold text-on-surface tracking-tighter">
  ₦ {((Number(item.priceSnapshot ?? item.variant?.price ?? 0)) * item.quantity).toLocaleString()}
  </div>
  </div>
@@ -102,16 +102,16 @@ export const CartDrawer = () => {
  ))
  ) : (
  <div className="h-full flex flex-col items-center justify-center text-center px-4">
- <div className="w-32 h-32 bg-surface-container-low rounded-[40px] flex items-center justify-center mb-10 border-4 border-surface-container-lowest shadow-inner group">
+ <div className="w-32 h-32 bg-surface-container-low rounded flex items-center justify-center mb-10 border border-surface-container-lowest shadow-inner group">
  <ShoppingBag size={48} className="text-on-surface-variant opacity-20 group-hover:scale-110 transition-transform duration-700" />
  </div>
- <h3 className="font-black text-on-surface text-xl uppercase tracking-tighter leading-none mb-4">Registry Clear</h3>
- <p className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.3em] mt-2 max-w-[280px] opacity-40 italic leading-relaxed">
+ <h3 className="font-semibold text-on-surface text-xl uppercase tracking-tighter leading-none mb-4">Registry Clear</h3>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.3em] mt-2 max-w-[280px] opacity-40 italic leading-relaxed">
  Logistics hub is awaiting asset ingestion commands.
  </p>
  <button 
  onClick={() => setIsOpen(false)}
- className="mt-12 bg-on-surface text-white px-12 py-5 rounded-[24px] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-on-surface/20 hover:bg-primary-container active:scale-95 transition-all flex items-center gap-4 group"
+ className="mt-12 bg-jumia-orange text-white px-12 py-5 rounded font-semibold text-xs uppercase tracking-[0.3em] shadow-2xl shadow-on-surface/20 hover:bg-jumia-orange-dark active:scale-95 transition-all flex items-center gap-4 group"
  >
  Discover Assets
  <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-500" />
@@ -125,20 +125,20 @@ export const CartDrawer = () => {
  <div className="space-y-4">
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-3">
- <Sparkles size={16} className="text-primary-container" />
- <span className="text-on-surface-variant font-black text-[10px] uppercase tracking-[0.3em] italic opacity-60">Aggregate Value</span>
+ <Sparkles size={16} className="text-jumia-orange" />
+ <span className="text-on-surface-variant font-semibold text-[10px] uppercase tracking-[0.3em] italic opacity-60">Aggregate Value</span>
  </div>
- <span className="text-3xl font-black text-on-surface tracking-tighter leading-none">₦ {cartTotal.toLocaleString()}</span>
+ <span className="text-3xl font-semibold text-on-surface tracking-tighter leading-none">₦ {cartTotal.toLocaleString()}</span>
  </div>
  <div className="h-1 bg-surface-container-low rounded-full overflow-hidden">
- <div className="h-full bg-primary-container w-2/3 animate-pulse" />
+ <div className="h-full bg-jumia-orange w-2/3 animate-pulse" />
  </div>
  </div>
  
  <Link 
  href="/cart"
  onClick={() => setIsOpen(false)}
- className="w-full bg-primary-container text-white py-6 rounded-[28px] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-primary-container/40 hover:bg-on-surface active:scale-[0.96] transition-all flex items-center justify-center gap-4 group"
+ className="w-full bg-jumia-orange text-white py-6 rounded font-semibold text-xs uppercase tracking-[0.3em] shadow-2xl shadow-primary-container/40 hover:bg-jumia-orange active:scale-[0.96] transition-all flex items-center justify-center gap-4 group"
  >
  Initialize Settlement
  <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-500" />

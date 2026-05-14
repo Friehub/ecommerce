@@ -63,12 +63,12 @@ export default function AdminDashboard() {
  </div>
  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
  {[1, 2, 3, 4].map(i => (
- <div key={i} className="h-40 bg-surface-container-low rounded-[32px] border-4 border-surface-container-lowest" />
+ <div key={i} className="h-40 bg-surface-container-low rounded border border-surface-container-lowest" />
  ))}
  </div>
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 pt-10">
- <div className="h-[400px] bg-surface-container-low rounded-[48px] border-4 border-surface-container-lowest" />
- <div className="h-[400px] bg-surface-container-low rounded-[48px] border-4 border-surface-container-lowest" />
+ <div className="h-[400px] bg-surface-container-low rounded-[48px] border border-surface-container-lowest" />
+ <div className="h-[400px] bg-surface-container-low rounded-[48px] border border-surface-container-lowest" />
  </div>
  </div>
  );
@@ -80,14 +80,14 @@ export default function AdminDashboard() {
  <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
  <div className="animate-in slide-in-from-left-8 duration-1000">
  <div className="flex items-center gap-4 mb-6">
- <div className="p-2.5 bg-primary-container/20 backdrop-blur-xl rounded-2xl border border-primary-container/30 shadow-inner">
- <ShieldCheck size={24} className="text-primary-container" />
+ <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30 shadow-inner">
+ <ShieldCheck size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary-container italic">Operations Command Hub & Platform Moderation</span>
+ <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Operations Command Hub & Platform Moderation</span>
  </div>
- <h1 className="text-5xl md:text-7xl font-black text-on-surface uppercase tracking-tighter leading-[0.85]">
+ <h1 className="text-5xl md:text-7xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Ops <br />
- <span className="text-primary-container italic">Hub.</span>
+ <span className="text-jumia-orange italic">Hub.</span>
  </h1>
  </div>
 
@@ -97,26 +97,26 @@ export default function AdminDashboard() {
  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
  </div>
- <span className="text-[10px] font-black uppercase tracking-widest text-on-surface/60">System Heartbeat: Operational</span>
+ <span className="text-[10px] font-semibold uppercase tracking-widest text-on-surface/60">System Heartbeat: Operational</span>
  </div>
  </div>
  </div>
 
  {/* KPI Matrix */}
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
- <div className="bg-on-surface text-white p-8 rounded-[40px] border-4 border-surface-container-low shadow-3xl group relative overflow-hidden transition-all duration-700 hover:-translate-y-2">
- <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container/10 rounded-full blur-[60px] pointer-events-none group-hover:scale-150 transition-transform duration-1000" />
+ <div className="bg-jumia-orange text-white p-8 rounded border border-surface-container-low shadow-3xl group relative overflow-hidden transition-all duration-700 hover:-translate-y-2">
+ <div className="absolute top-0 right-0 w-32 h-32 bg-jumia-orange/10 rounded-full blur-[60px] pointer-events-none group-hover:scale-150 transition-transform duration-1000" />
  <div className="relative z-10">
  <div className="flex items-center justify-between mb-6">
  <div className="flex items-center gap-3 text-white/40">
  <div className="p-2 bg-white/5 rounded-xl border border-white/10">
  <Activity size={20} />
  </div>
- <h3 className="text-[10px] font-black uppercase tracking-[0.3em]">Telemetry</h3>
+ <h3 className="text-[10px] font-semibold uppercase tracking-[0.3em]">Notifications</h3>
  </div>
  </div>
- <p className="text-5xl font-black tracking-tighter italic mb-3">{metrics?.activeSessions || 0}</p>
- <div className="flex items-center gap-2 text-primary-container text-[10px] font-black uppercase tracking-widest bg-primary-container/10 w-fit px-3 py-1.5 rounded-full border border-primary-container/20">
+ <p className="text-5xl font-semibold tracking-tighter italic mb-3">{metrics?.activeSessions || 0}</p>
+ <div className="flex items-center gap-2 text-jumia-orange text-[10px] font-semibold uppercase tracking-widest bg-jumia-orange/10 w-fit px-3 py-1.5 rounded-full border border-jumia-orange/20">
  <Zap size={12} className="animate-pulse" /> Live Load
  </div>
  </div>
@@ -128,20 +128,20 @@ export default function AdminDashboard() {
  { label: 'Conflict Load', value: metrics?.openDisputes || 0, icon: AlertTriangle, sub: 'Active Disputes', color: 'text-error', href: '/admin/disputes' }
  ].map((kpi, i) => {
  const Content = (
- <div className="h-full bg-surface-container-lowest p-8 rounded-[40px] border-4 border-surface-container-low shadow-soft group transition-all duration-700 hover:border-primary-container/20 hover:translate-x-2">
+ <div className="h-full bg-surface-container-lowest p-8 rounded border border-surface-container-low shadow-soft group transition-all duration-700 hover:border-jumia-orange/20 hover:translate-x-2">
  <div className="flex items-center justify-between mb-6">
  <div className="flex items-center gap-4">
- <div className="p-3 bg-surface-container-low rounded-2xl text-on-surface-variant group-hover:text-primary-container group-hover:bg-primary-container/5 transition-all duration-700 shadow-inner">
+ <div className="p-3 bg-surface-container-low rounded-2xl text-on-surface-variant group-hover:text-jumia-orange group-hover:bg-jumia-orange-dark/5 transition-all duration-700 shadow-inner">
  <kpi.icon size={22} />
  </div>
  <div>
- <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-on-surface-variant/40">{kpi.label}</h3>
- <p className="text-[9px] font-black uppercase tracking-[0.2em] text-on-surface/20 italic">{kpi.sub}</p>
+ <h3 className="text-[10px] font-semibold uppercase tracking-[0.3em] text-on-surface-variant/40">{kpi.label}</h3>
+ <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-on-surface/20 italic">{kpi.sub}</p>
  </div>
  </div>
- {kpi.href && <ArrowRight size={16} className="text-on-surface-variant/20 group-hover:text-primary-container group-hover:translate-x-2 transition-all duration-700" />}
+ {kpi.href && <ArrowRight size={16} className="text-on-surface-variant/20 group-hover:text-jumia-orange group-hover:translate-x-2 transition-all duration-700" />}
  </div>
- <p className={`text-3xl md:text-4xl font-black tracking-tighter uppercase leading-none ${kpi.color || 'text-on-surface'}`}>{kpi.value}</p>
+ <p className={`text-3xl md:text-4xl font-semibold tracking-tighter uppercase leading-none ${kpi.color || 'text-on-surface'}`}>{kpi.value}</p>
  </div>
  );
 
@@ -157,20 +157,20 @@ export default function AdminDashboard() {
 
  {/* Moderation Matrix Tables */}
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
- <div className="bg-surface-container-lowest border-4 border-surface-container-low rounded-[56px] p-12 shadow-soft space-y-10 group relative overflow-hidden">
- <div className="absolute top-0 right-0 w-64 h-64 bg-primary-container/5 rounded-full blur-[80px] pointer-events-none group-hover:scale-150 transition-transform duration-[3000ms]" />
+ <div className="bg-surface-container-lowest border border-surface-container-low rounded-[56px] p-12 shadow-soft space-y-10 group relative overflow-hidden">
+ <div className="absolute top-0 right-0 w-64 h-64 bg-jumia-orange/5 rounded-full blur-[80px] pointer-events-none group-hover:scale-150 transition-transform duration-[3000ms]" />
  
  <div className="relative z-10 flex items-center justify-between pb-8 border-b-4 border-surface-container-low">
  <div className="flex items-center gap-6">
- <div className="w-14 h-14 bg-primary-container/10 text-primary-container rounded-2xl flex items-center justify-center border-2 border-primary-container/20 shadow-inner">
+ <div className="w-14 h-14 bg-jumia-orange/10 text-jumia-orange rounded-2xl flex items-center justify-center border-2 border-jumia-orange/20 shadow-inner">
  <Fingerprint size={28} />
  </div>
  <div>
- <h3 className="text-xl font-black text-on-surface tracking-tighter uppercase leading-none mb-2">KYC Backlog</h3>
- <p className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.2em] opacity-40 italic">Pending Merchant Authorization Queue</p>
+ <h3 className="text-xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-2">KYC Backlog</h3>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.2em] opacity-40 italic">Pending Merchant Authorization Queue</p>
  </div>
  </div>
- <div className="px-4 py-2 bg-primary-container text-white rounded-full text-[10px] font-black italic shadow-3xl">
+ <div className="px-4 py-2 bg-jumia-orange text-white rounded-full text-[10px] font-semibold italic shadow-3xl">
  {pendingSellers?.length || 0} UNITS
  </div>
  </div>
@@ -179,18 +179,18 @@ export default function AdminDashboard() {
  {pendingSellers?.map(seller => (
  <div key={seller.id} className="flex justify-between items-center p-6 bg-surface-container-low/40 border-2 border-surface-container-lowest rounded-3xl group/row hover:translate-x-4 transition-all duration-500">
  <div className="flex items-center gap-4">
- <div className="w-10 h-10 bg-surface-container-low rounded-xl flex items-center justify-center text-on-surface-variant border border-surface-container-lowest group-hover/row:bg-primary-container/10 group-hover/row:text-primary-container transition-all duration-700">
+ <div className="w-10 h-10 bg-surface-container-low rounded-xl flex items-center justify-center text-on-surface-variant border border-surface-container-lowest group-hover/row:bg-jumia-orange/10 group-hover/row:text-jumia-orange transition-all duration-700">
  <Briefcase size={18} />
  </div>
  <div>
- <h4 className="text-sm font-black text-on-surface uppercase tracking-tight leading-none mb-1 group-hover/row:translate-x-2 transition-transform duration-700">{seller.businessName}</h4>
- <p className="text-[9px] font-black text-on-surface-variant/30 uppercase tracking-widest italic">{seller.user.email}</p>
+ <h4 className="text-sm font-semibold text-on-surface uppercase tracking-tight leading-none mb-1 group-hover/row:translate-x-2 transition-transform duration-700">{seller.businessName}</h4>
+ <p className="text-[9px] font-semibold text-on-surface-variant/30 uppercase tracking-widest italic">{seller.user.email}</p>
  </div>
  </div>
  <button
  onClick={() => approveSellerMutation.mutate({ sellerId: seller.id })}
  disabled={approveSellerMutation.isPending}
- className="bg-green-500/5 text-green-500 hover:bg-green-500 hover:text-white border-4 border-green-500/10 p-3 rounded-xl duration-500 transition-all cursor-pointer shadow-soft group/btn disabled:opacity-50"
+ className="bg-green-500/5 text-green-500 hover:bg-green-500 hover:text-white border border-green-500/10 p-3 rounded-xl duration-500 transition-all cursor-pointer shadow-soft group/btn disabled:opacity-50"
  >
  <CheckCircle size={18} className="group-hover/btn:scale-110 transition-transform" />
  </button>
@@ -199,13 +199,13 @@ export default function AdminDashboard() {
  {(!pendingSellers || pendingSellers.length === 0) && (
  <div className="py-20 text-center space-y-4 opacity-20">
  <CheckCircle size={48} className="mx-auto" />
- <p className="text-[10px] font-black uppercase tracking-[0.4em] italic">Backlog reconciled</p>
+ <p className="text-[10px] font-semibold uppercase tracking-[0.4em] italic">Backlog reconciled</p>
  </div>
  )}
  </div>
  </div>
 
- <div className="bg-surface-container-lowest border-4 border-surface-container-low rounded-[56px] p-12 shadow-soft space-y-10 group relative overflow-hidden">
+ <div className="bg-surface-container-lowest border border-surface-container-low rounded-[56px] p-12 shadow-soft space-y-10 group relative overflow-hidden">
  <div className="absolute top-0 right-0 w-64 h-64 bg-error/5 rounded-full blur-[80px] pointer-events-none group-hover:scale-150 transition-transform duration-[3000ms]" />
  
  <div className="relative z-10 flex items-center justify-between pb-8 border-b-4 border-surface-container-low">
@@ -214,11 +214,11 @@ export default function AdminDashboard() {
  <AlertTriangle size={28} />
  </div>
  <div>
- <h3 className="text-xl font-black text-on-surface tracking-tighter uppercase leading-none mb-2">Dispute Matrix</h3>
- <p className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.2em] opacity-40 italic">Active Conflict Arbitration Registry</p>
+ <h3 className="text-xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-2">Dispute Matrix</h3>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.2em] opacity-40 italic">Active Conflict Arbitration Registry</p>
  </div>
  </div>
- <div className="px-4 py-2 bg-error text-white rounded-full text-[10px] font-black italic shadow-3xl">
+ <div className="px-4 py-2 bg-error text-white rounded-full text-[10px] font-semibold italic shadow-3xl">
  {disputes?.length || 0} UNITS
  </div>
  </div>
@@ -229,18 +229,18 @@ export default function AdminDashboard() {
  <div className="flex items-start justify-between gap-4">
  <div className="space-y-3">
  <div className="flex items-center gap-3">
- <span className="bg-error/10 text-error border-2 border-error/20 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest italic">
+ <span className="bg-error/10 text-error border-2 border-error/20 px-3 py-1 rounded-full text-[8px] font-semibold uppercase tracking-widest italic">
  {dispute.status}
  </span>
- <span className="text-[9px] font-black text-on-surface-variant/20 uppercase tracking-[0.3em] italic">
+ <span className="text-[9px] font-semibold text-on-surface-variant/20 uppercase tracking-[0.3em] italic">
  Ord #{dispute.orderId.slice(-8).toUpperCase()}
  </span>
  </div>
- <h4 className="text-sm font-black text-on-surface uppercase tracking-tighter italic leading-none group-hover/row:translate-x-2 transition-transform duration-700">{dispute.reason}</h4>
+ <h4 className="text-sm font-semibold text-on-surface uppercase tracking-tighter italic leading-none group-hover/row:translate-x-2 transition-transform duration-700">{dispute.reason}</h4>
  </div>
  <Link
  href={`/disputes/${dispute.id}`}
- className="p-3 bg-surface-container-low text-on-surface-variant/40 hover:text-primary-container hover:bg-primary-container/10 border-4 border-surface-container-lowest rounded-xl transition-all duration-500 shadow-soft"
+ className="p-3 bg-surface-container-low text-on-surface-variant/40 hover:text-jumia-orange hover:bg-jumia-orange-dark/10 border border-surface-container-lowest rounded-xl transition-all duration-500 shadow-soft"
  >
  <ArrowRight size={18} />
  </Link>
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
  {(!disputes || disputes.length === 0) && (
  <div className="py-20 text-center space-y-4 opacity-20">
  <Layers size={48} className="mx-auto" />
- <p className="text-[10px] font-black uppercase tracking-[0.4em] italic">Conflict Registry Optimized</p>
+ <p className="text-[10px] font-semibold uppercase tracking-[0.4em] italic">Conflict Registry Optimized</p>
  </div>
  )}
  </div>

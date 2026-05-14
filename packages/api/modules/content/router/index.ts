@@ -20,5 +20,5 @@ const _contentRouter = createTRPCRouter({
   }),
 });
 
-export const contentRouter = _contentRouter as any;
+export const contentRouter = _contentRouter;
 export type ContentRouter = typeof _contentRouter;

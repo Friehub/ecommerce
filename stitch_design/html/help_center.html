@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Jumia Help Center 2024</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "background": "#f9f9fa",
+                      "on-tertiary": "#ffffff",
+                      "tertiary": "#006d36",
+                      "secondary-container": "#e4e2e1",
+                      "on-surface-variant": "#554335",
+                      "primary-fixed": "#ffdcc3",
+                      "on-background": "#1a1c1d",
+                      "on-tertiary-fixed-variant": "#005227",
+                      "secondary-fixed": "#e4e2e1",
+                      "on-primary-fixed-variant": "#6e3900",
+                      "surface": "#f9f9fa",
+                      "primary": "#914d00",
+                      "primary-fixed-dim": "#ffb77e",
+                      "outline-variant": "#dcc2af",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-container": "#004620",
+                      "on-surface": "#1a1c1d",
+                      "outline": "#897363",
+                      "on-primary-fixed": "#2f1500",
+                      "inverse-primary": "#ffb77e",
+                      "on-tertiary-fixed": "#00210c",
+                      "inverse-surface": "#2f3132",
+                      "primary-container": "#f68b1e",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#5e3000",
+                      "tertiary-fixed-dim": "#60de88",
+                      "tertiary-container": "#3abd6b",
+                      "surface-container-low": "#f3f3f4",
+                      "surface-bright": "#f9f9fa",
+                      "on-secondary-fixed": "#1b1c1c",
+                      "surface-variant": "#e2e2e3",
+                      "inverse-on-surface": "#f1f1f2",
+                      "secondary": "#5f5e5e",
+                      "surface-dim": "#dadadb",
+                      "error": "#ba1a1a",
+                      "surface-container-highest": "#e2e2e3",
+                      "tertiary-fixed": "#7dfca2",
+                      "surface-tint": "#914d00",
+                      "surface-container": "#eeeeef",
+                      "on-secondary-fixed-variant": "#474746",
+                      "on-error-container": "#93000a",
+                      "on-secondary-container": "#656464",
+                      "surface-container-high": "#e8e8e9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "base": "4px",
+                      "container-max": "1184px",
+                      "stack-lg": "24px",
+                      "margin-desktop": "24px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px"
+              },
+              "fontFamily": {
+                      "body-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-bold": [
+                              "Hanken Grotesk"
+                      ],
+                      "price-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "price-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-sm": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-bold": [
+                              "12px",
+                              {
+                                      "lineHeight": "12px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "price-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "price-sm": [
+                              "16px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar Component -->
+<nav class="sticky top-0 z-50 w-full flex flex-col items-center px-margin-desktop bg-surface dark:bg-surface-container border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none">
+<div class="w-full max-w-[1184px] mx-auto flex items-center justify-between h-16">
+<!-- Brand Logo -->
+<div class="flex items-center gap-2 cursor-pointer">
+<span class="text-headline-md font-display-lg font-black text-primary-container dark:text-primary-fixed-dim">Jumia</span>
+</div>
+<!-- Navigation Links -->
+<div class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors px-3 py-2 rounded-DEFAULT active:scale-95 duration-100" href="#">Sell on Jumia</a>
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors px-3 py-2 active:scale-95 duration-100" href="#">Help</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors px-3 py-2 rounded-DEFAULT active:scale-95 duration-100" href="#">Support</a>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-4 text-primary dark:text-primary-fixed">
+<button aria-label="person" class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-full transition-colors active:scale-95 duration-100">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+<button aria-label="help" class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-full transition-colors active:scale-95 duration-100">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button aria-label="shopping_cart" class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-full transition-colors active:scale-95 duration-100">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow w-full max-w-[1184px] mx-auto px-gutter py-stack-lg flex gap-gutter">
+<!-- SideNavBar Component -->
+<aside class="hidden lg:flex flex-col w-64 h-fit sticky top-24 gap-stack-sm p-4 bg-surface dark:bg-surface-container-lowest rounded-lg border border-outline-variant dark:border-outline shadow-sm">
+<div class="mb-4">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Categories</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Shop by Department</p>
+</div>
+<a class="flex items-center gap-3 p-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+<span class="font-label-bold text-label-bold">Supermarket</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="health_and_safety">health_and_safety</span>
+<span class="font-label-bold text-label-bold">Health &amp; Beauty</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="home_work">home_work</span>
+<span class="font-label-bold text-label-bold">Home &amp; Office</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="kitchen">kitchen</span>
+<span class="font-label-bold text-label-bold">Appliances</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="smartphone">smartphone</span>
+<span class="font-label-bold text-label-bold">Phones &amp; Tablets</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="computer">computer</span>
+<span class="font-label-bold text-label-bold">Computing</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="tv">tv</span>
+<span class="font-label-bold text-label-bold">Electronics</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="checkroom">checkroom</span>
+<span class="font-label-bold text-label-bold">Fashion</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="child_care">child_care</span>
+<span class="font-label-bold text-label-bold">Baby Products</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="sports_esports">sports_esports</span>
+<span class="font-label-bold text-label-bold">Gaming</span>
+</a>
+</aside>
+<!-- Help Center Content -->
+<div class="flex-grow flex flex-col gap-stack-lg">
+<!-- Hero Search Section -->
+<section class="bg-surface-container-lowest rounded-xl p-8 border border-surface-variant shadow-sm text-center">
+<h1 class="font-display-lg text-display-lg text-on-surface mb-6">How can we help you today?</h1>
+<div class="max-w-2xl mx-auto relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-12 pr-4 py-4 rounded-full border border-outline-variant bg-surface-bright focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-lg text-body-lg text-on-surface placeholder-on-surface-variant outline-none transition-colors shadow-sm" placeholder="Type a question or keyword (e.g. tracking, returns)" type="text"/>
+</div>
+</section>
+<!-- Icon Grid: Quick Topics -->
+<section class="grid grid-cols-2 md:grid-cols-5 gap-gutter">
+<a class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-3xl text-on-surface group-hover:text-primary" data-icon="payments">payments</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface text-center">Payments</span>
+</a>
+<a class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-3xl text-on-surface group-hover:text-primary" data-icon="local_shipping">local_shipping</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface text-center">Delivery</span>
+</a>
+<a class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-3xl text-on-surface group-hover:text-primary" data-icon="assignment_return">assignment_return</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface text-center">Returns</span>
+</a>
+<a class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-3xl text-on-surface group-hover:text-primary" data-icon="manage_accounts">manage_accounts</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface text-center">Account</span>
+</a>
+<a class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-3xl text-on-surface group-hover:text-primary" data-icon="storefront">storefront</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface text-center">Sell on Jumia</span>
+</a>
+</section>
+<!-- FAQ Section (Bento-style layout) -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-xl p-6 border border-surface-variant shadow-sm flex flex-col gap-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 border-b border-surface-variant pb-4">Frequently Asked Questions</h3>
+<!-- Accordion Item 1 (Simulated expanded) -->
+<div class="border border-outline-variant rounded-lg overflow-hidden bg-surface-bright">
+<button class="w-full text-left px-4 py-4 flex justify-between items-center hover:bg-surface-container-low transition-colors">
+<span class="font-headline-sm text-headline-sm text-primary">How do I track my order?</span>
+<span class="material-symbols-outlined text-primary" data-icon="expand_less">expand_less</span>
+</button>
+<div class="px-4 pb-4 border-t border-outline-variant pt-3">
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                You can track your order status by logging into your account, navigating to 'Orders', and selecting the 'Track Package' button next to the relevant order. We will also send you email and SMS updates at key stages of the delivery process.
+                            </p>
+</div>
+</div>
+<!-- Accordion Item 2 -->
+<div class="border border-surface-variant rounded-lg overflow-hidden">
+<button class="w-full text-left px-4 py-4 flex justify-between items-center hover:bg-surface-container-low transition-colors">
+<span class="font-headline-sm text-headline-sm text-on-surface">What is Jumia's return policy?</span>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+<!-- Accordion Item 3 -->
+<div class="border border-surface-variant rounded-lg overflow-hidden">
+<button class="w-full text-left px-4 py-4 flex justify-between items-center hover:bg-surface-container-low transition-colors">
+<span class="font-headline-sm text-headline-sm text-on-surface">How do I cancel an order?</span>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Contact Options Sidebar -->
+<div class="lg:col-span-1 flex flex-col gap-gutter">
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-surface-variant shadow-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-primary-fixed mb-4 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="forum">forum</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-2">Live Chat</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Get instant help from our support team available 24/7.</p>
+<button class="w-full bg-primary-container text-on-primary font-label-bold text-label-bold py-3 px-6 rounded-DEFAULT hover:bg-primary transition-colors">Start Chat</button>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-surface-variant shadow-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-secondary-container mb-4 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="mail">mail</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-2">Email Us</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Send us a message and we'll reply within 24 hours.</p>
+<button class="w-full bg-surface text-on-surface font-label-bold text-label-bold py-3 px-6 rounded-DEFAULT border border-outline hover:bg-surface-container-low transition-colors">Send Email</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer Component -->
+<footer class="w-full py-stack-lg px-margin-desktop flex flex-col gap-stack-md mt-auto bg-surface-container-highest dark:bg-surface-dim border-t border-outline-variant dark:border-outline flat no shadows">
+<div class="w-full max-w-[1184px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="font-display-lg text-display-lg font-black text-on-surface">Jumia</div>
+<div class="flex flex-wrap justify-center gap-4">
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 active:opacity-80" href="#">About Jumia</a>
+<a class="font-label-bold text-label-bold text-on-surface font-bold underline hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 active:opacity-80" href="#">Help Center</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 active:opacity-80" href="#">Jumia Careers</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 active:opacity-80" href="#">Terms and Conditions</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 active:opacity-80" href="#">Privacy Notice</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 active:opacity-80" href="#">Official Stores</a>
+<a class="font-label-bold text-label-bold text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 active:opacity-80" href="#">Flash Sales</a>
+</div>
+<div class="font-body-sm text-body-sm text-secondary dark:text-on-secondary-fixed-variant">
+                © 2024 Jumia. All Rights Reserved.
+            </div>
+</div>
+</footer>
+</body></html>

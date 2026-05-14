@@ -124,10 +124,10 @@ export default function SellerFinance() {
  <div className="max-w-[1600px] mx-auto px-6 py-16 space-y-16 bg-background min-h-screen">
  <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
  <div className="space-y-6">
- <Skeleton className="h-16 w-96 rounded-[24px]" />
+ <Skeleton className="h-16 w-96 rounded" />
  <Skeleton className="h-6 w-64 rounded-xl" />
  </div>
- <Skeleton className="h-20 w-80 rounded-[32px]" />
+ <Skeleton className="h-20 w-80 rounded" />
  </div>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
  {[...Array(3)].map((_, i) => (
@@ -163,8 +163,8 @@ export default function SellerFinance() {
  name: 'Escrow Holdings', 
  value: `₦${Number(stats?.pendingBalance || 0).toLocaleString()}`, 
  icon: Lock, 
- color: 'text-primary-container',
- badge: 'bg-primary-container/10 text-primary-container border-primary-container/20',
+ color: 'text-jumia-orange',
+ badge: 'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20',
  description: 'AWAITING MATURITY'
  },
  ];
@@ -175,21 +175,21 @@ export default function SellerFinance() {
  <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
  <div className="animate-in slide-in-from-left-8 duration-1000">
  <div className="flex items-center gap-4 mb-6">
- <div className="p-2.5 bg-primary-container/20 backdrop-blur-xl rounded-2xl border border-primary-container/30">
- <Cpu size={24} className="text-primary-container" />
+ <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30">
+ <Cpu size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary-container italic">Automated Capital Management Nexus</span>
+ <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Automated Capital Management Nexus</span>
  </div>
- <h1 className="text-5xl md:text-8xl font-black text-on-surface uppercase tracking-tighter leading-[0.85]">
+ <h1 className="text-5xl md:text-8xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Financial <br />
- <span className="text-primary-container italic">Engine.</span>
+ <span className="text-jumia-orange italic">Engine.</span>
  </h1>
- <p className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.4em] mt-8 opacity-40 italic border-l-4 border-primary-container pl-8">Real-time Settlement Control • Advanced Revenue Synchronization</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Real-time Settlement Control • Advanced Revenue Synchronization</p>
  </div>
  <button 
  onClick={() => setShowWithdrawModal(true)}
  disabled={!stats?.availableBalance || Number(stats.availableBalance) <= 0}
- className="bg-on-surface text-white px-12 py-6 rounded-[24px] text-[10px] font-black uppercase tracking-[0.3em] hover:bg-primary-container transition-all shadow-2xl active:scale-95 disabled:opacity-20 disabled:grayscale disabled:scale-100 flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000"
+ className="bg-jumia-orange text-white px-12 py-6 rounded text-[10px] font-semibold uppercase tracking-[0.3em] hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 disabled:opacity-20 disabled:grayscale disabled:scale-100 flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000"
  >
  <ArrowUpRight size={20} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-500" />
  Execute Withdrawal
@@ -199,18 +199,18 @@ export default function SellerFinance() {
  {/* Stats Grid */}
  <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
  {financeStats.map((stat, idx) => (
- <div key={stat.name} className="bg-surface-container-lowest p-10 rounded-[48px] border-4 border-surface-container-low flex flex-col justify-between h-[220px] hover:translate-y-[-12px] transition-all duration-700 shadow-soft group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${idx * 150}ms` }}>
+ <div key={stat.name} className="bg-surface-container-lowest p-10 rounded-[48px] border border-surface-container-low flex flex-col justify-between h-[220px] hover:translate-y-[-12px] transition-all duration-700 shadow-soft group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${idx * 150}ms` }}>
  <div className="flex justify-between items-start">
- <div className={`w-14 h-14 rounded-[24px] bg-surface-container-low flex items-center justify-center border-2 border-outline-variant/5 group-hover:scale-110 group-hover:border-primary-container/20 transition-all duration-1000 shadow-inner`}>
+ <div className={`w-14 h-14 rounded bg-surface-container-low flex items-center justify-center border-2 border-outline-variant/5 group-hover:scale-110 group-hover:border-jumia-orange/20 transition-all duration-1000 shadow-inner`}>
  <stat.icon className={stat.color} size={28} strokeWidth={2.5} />
  </div>
- <span className={`text-[9px] font-black px-5 py-2 rounded-full uppercase tracking-widest border-2 italic shadow-sm ${stat.badge}`}>
+ <span className={`text-[9px] font-semibold px-5 py-2 rounded-full uppercase tracking-widest border-2 italic shadow-sm ${stat.badge}`}>
  {stat.description}
  </span>
  </div>
  <div>
- <p className="text-on-surface-variant/40 text-[9px] font-black uppercase tracking-[0.4em] mb-3 italic">{stat.name}</p>
- <h3 className={`text-3xl font-black tracking-tighter leading-none ${stat.color}`}>{stat.value}</h3>
+ <p className="text-on-surface-variant/40 text-[9px] font-semibold uppercase tracking-[0.4em] mb-3 italic">{stat.name}</p>
+ <h3 className={`text-3xl font-semibold tracking-tighter leading-none ${stat.color}`}>{stat.value}</h3>
  </div>
  </div>
  ))}
@@ -219,20 +219,20 @@ export default function SellerFinance() {
  {/* History Sections */}
  <div className="space-y-16">
  {/* Ledger */}
- <div className="bg-surface-container-lowest rounded-[64px] border-4 border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000">
+ <div className="bg-surface-container-lowest rounded-[64px] border border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000">
  <div className="p-12 border-b-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/10">
  <div className="flex items-center gap-6">
- <div className="w-12 h-12 bg-on-surface/5 rounded-2xl flex items-center justify-center border-2 border-on-surface/10">
+ <div className="w-12 h-12 bg-jumia-orange/5 rounded-2xl flex items-center justify-center border-2 border-on-surface/10">
  <History size={24} className="text-on-surface-variant" />
  </div>
  <div>
- <h3 className="text-sm font-black text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Audit Trail</h3>
- <p className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Granular Resource Allocation Log</p>
+ <h3 className="text-sm font-semibold text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Audit Trail</h3>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Granular Resource Allocation Log</p>
  </div>
  </div>
  <button 
  onClick={handleExport}
- className="bg-on-surface text-white px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.3em] flex items-center gap-4 transition-all hover:bg-primary-container active:scale-95 shadow-lg group italic"
+ className="bg-jumia-orange text-white px-8 py-3 rounded-full text-[9px] font-semibold uppercase tracking-[0.3em] flex items-center gap-4 transition-all hover:bg-jumia-orange-dark active:scale-95 shadow-lg group italic"
  >
  <Download size={16} className="group-hover:translate-y-0.5 transition-transform duration-500" />
  Export Assets
@@ -241,7 +241,7 @@ export default function SellerFinance() {
  <div className="overflow-x-auto">
  <table className="w-full text-left border-collapse min-w-[1000px]">
  <thead>
- <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-black uppercase tracking-[0.4em] bg-surface-container-low/20 italic">
+ <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] bg-surface-container-low/20 italic">
  <th className="px-12 py-8">Timestamp</th>
  <th className="px-12 py-8">Operation</th>
  <th className="px-12 py-8">Resource ID</th>
@@ -252,7 +252,7 @@ export default function SellerFinance() {
  <tbody className="divide-y-4 divide-surface-container-low">
  {ledger?.entries.map((entry, idx) => (
  <tr key={entry.id} className="hover:bg-surface-container-low/30 transition-all duration-700 group animate-in fade-in" style={{ animationDelay: `${idx * 50}ms` }}>
- <td className="px-12 py-10 text-on-surface-variant/40 text-[11px] font-black uppercase tracking-tight italic">
+ <td className="px-12 py-10 text-on-surface-variant/40 text-[11px] font-semibold uppercase tracking-tight italic">
  {format(new Date(entry.createdAt), 'MMM dd, HH:mm:ss')}
  </td>
  <td className="px-12 py-10">
@@ -260,17 +260,17 @@ export default function SellerFinance() {
  <div className={`w-8 h-8 rounded-lg flex items-center justify-center border-2 ${Number(entry.amount) >= 0 ? 'bg-success/5 border-success/10 text-success' : 'bg-error/5 border-error/10 text-error'}`}>
  {Number(entry.amount) >= 0 ? <TrendingUp size={14} /> : <TrendingUp size={14} className="rotate-180" />}
  </div>
- <span className="text-[13px] font-black text-on-surface uppercase tracking-widest">{entry.type}</span>
+ <span className="text-[13px] font-semibold text-on-surface uppercase tracking-widest">{entry.type}</span>
  </div>
  </td>
- <td className="px-12 py-10 text-on-surface-variant/40 text-[11px] font-black uppercase tracking-[0.2em] italic">
+ <td className="px-12 py-10 text-on-surface-variant/40 text-[11px] font-semibold uppercase tracking-[0.2em] italic">
  {entry.orderLineId ? `#${entry.orderLineId.slice(-8).toUpperCase()}` : 'SYSTEM'}
  </td>
- <td className={`px-12 py-10 text-right font-black text-2xl tracking-tighter ${Number(entry.amount) >= 0 ? 'text-success' : 'text-error'}`}>
+ <td className={`px-12 py-10 text-right font-semibold text-2xl tracking-tighter ${Number(entry.amount) >= 0 ? 'text-success' : 'text-error'}`}>
  {Number(entry.amount) >= 0 ? '+' : ''}₦{Number(entry.amount).toLocaleString()}
  </td>
  <td className="px-12 py-10">
- <span className={`inline-flex items-center px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.3em] border-2 shadow-sm italic ${
+ <span className={`inline-flex items-center px-6 py-2 rounded-full text-[9px] font-semibold uppercase tracking-[0.3em] border-2 shadow-sm italic ${
  entry.status === 'AVAILABLE' ? 'bg-success-container/10 text-success border-success/20' : 'bg-surface-container-low text-on-surface-variant/30 border-outline-variant/10'
  }`}>
  {entry.status}
@@ -284,22 +284,22 @@ export default function SellerFinance() {
  </div>
 
  {/* Payouts */}
- <div className="bg-surface-container-lowest rounded-[64px] border-4 border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000">
+ <div className="bg-surface-container-lowest rounded-[64px] border border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000">
  <div className="p-12 border-b-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/10">
  <div className="flex items-center gap-6">
- <div className="w-12 h-12 bg-on-surface/5 rounded-2xl flex items-center justify-center border-2 border-on-surface/10">
+ <div className="w-12 h-12 bg-jumia-orange/5 rounded-2xl flex items-center justify-center border-2 border-on-surface/10">
  <Receipt size={24} className="text-on-surface-variant" />
  </div>
  <div>
- <h3 className="text-sm font-black text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Settlement Pipeline</h3>
- <p className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Active Capital Extraction Logistics</p>
+ <h3 className="text-sm font-semibold text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Settlement Pipeline</h3>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Active Capital Extraction Logistics</p>
  </div>
  </div>
  </div>
  <div className="overflow-x-auto">
  <table className="w-full text-left border-collapse min-w-[1000px]">
  <thead>
- <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-black uppercase tracking-[0.4em] bg-surface-container-low/20 italic">
+ <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] bg-surface-container-low/20 italic">
  <th className="px-12 py-8">Request ID</th>
  <th className="px-12 py-8">Execution Timestamp</th>
  <th className="px-12 py-8">Net Settlement</th>
@@ -310,21 +310,21 @@ export default function SellerFinance() {
  {payouts?.map((payout, idx) => (
  <tr key={payout.id} className="hover:bg-surface-container-low/30 transition-all duration-700 group animate-in fade-in" style={{ animationDelay: `${idx * 50}ms` }}>
  <td className="px-12 py-10">
- <div className="text-[13px] font-black text-on-surface tracking-tighter uppercase leading-none italic opacity-60 group-hover:opacity-100 transition-opacity duration-500">#{payout.id.slice(0, 12).toUpperCase()}</div>
+ <div className="text-[13px] font-semibold text-on-surface tracking-tighter uppercase leading-none italic opacity-60 group-hover:opacity-100 transition-opacity duration-500">#{payout.id.slice(0, 12).toUpperCase()}</div>
  </td>
- <td className="px-12 py-10 text-on-surface-variant/40 text-[11px] font-black uppercase tracking-tight italic">
+ <td className="px-12 py-10 text-on-surface-variant/40 text-[11px] font-semibold uppercase tracking-tight italic">
  {format(new Date(payout.createdAt), 'MMM dd, yyyy HH:mm')}
  </td>
- <td className="px-12 py-10 font-black text-on-surface text-3xl tracking-tighter">
+ <td className="px-12 py-10 font-semibold text-on-surface text-3xl tracking-tighter">
  ₦{Number(payout.amount).toLocaleString()}
  </td>
  <td className="px-12 py-10">
- <span className={`inline-flex items-center px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.4em] border-2 shadow-sm italic transition-all duration-700 ${
+ <span className={`inline-flex items-center px-8 py-3 rounded-full text-[9px] font-semibold uppercase tracking-[0.4em] border-2 shadow-sm italic transition-all duration-700 ${
  payout.status === 'COMPLETED' ? 'bg-success-container/10 text-success border-success/20' : 
  payout.status === 'REJECTED' ? 'bg-error-container/10 text-error border-error/20' :
- 'bg-primary-container/10 text-primary-container border-primary-container/20'
+ 'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20'
  }`}>
- <div className={`w-2 h-2 rounded-full ${payout.status === 'COMPLETED' ? 'bg-success' : payout.status === 'REJECTED' ? 'bg-error' : 'bg-primary-container animate-pulse'}`} />
+ <div className={`w-2 h-2 rounded-full ${payout.status === 'COMPLETED' ? 'bg-success' : payout.status === 'REJECTED' ? 'bg-error' : 'bg-jumia-orange animate-pulse'}`} />
  {payout.status}
  </span>
  </td>
@@ -336,17 +336,17 @@ export default function SellerFinance() {
  </div>
 
  {/* Payout Credentials */}
- <div className="bg-on-surface rounded-[64px] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000 border-4 border-surface-container-low relative">
- <div className="absolute top-0 right-0 w-96 h-96 bg-primary-container/5 rounded-full blur-[100px]" />
+ <div className="bg-jumia-orange rounded-[64px] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000 border border-surface-container-low relative">
+ <div className="absolute top-0 right-0 w-96 h-96 bg-jumia-orange/5 rounded-full blur-[100px]" />
  <div className="relative z-10">
  <div className="p-12 border-b-2 border-white/5 bg-white/5 backdrop-blur-xl">
  <div className="flex items-center gap-6">
  <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center border-2 border-white/10 shadow-inner">
- <CreditCard size={24} className="text-primary-container" />
+ <CreditCard size={24} className="text-jumia-orange" />
  </div>
  <div>
- <h3 className="text-sm font-black text-white uppercase tracking-[0.4em] leading-none mb-2">Settlement Nexus</h3>
- <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] italic">Institutional Credential Configuration</p>
+ <h3 className="text-sm font-semibold text-white uppercase tracking-[0.4em] leading-none mb-2">Settlement Nexus</h3>
+ <p className="text-[9px] font-semibold text-white/30 uppercase tracking-[0.2em] italic">Institutional Credential Configuration</p>
  </div>
  </div>
  </div>
@@ -364,43 +364,43 @@ export default function SellerFinance() {
  className="grid grid-cols-1 md:grid-cols-3 gap-12"
  >
  <div className="space-y-4">
- <label className="block text-[10px] font-black text-white/30 uppercase tracking-[0.4em] italic ml-1">Merchant Institution</label>
+ <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-[0.4em] italic ml-1">Merchant Institution</label>
  <div className="relative group">
- <Building2 size={20} className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary-container transition-all duration-500" />
+ <Building2 size={20} className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-jumia-orange transition-all duration-500" />
  <select 
  name="bankCode" 
  defaultValue={account?.bankCode || ''}
- className="w-full bg-white/5 border-4 border-white/5 rounded-[28px] pl-16 pr-8 py-6 text-[14px] font-black text-white uppercase tracking-tighter focus:outline-none focus:border-primary-container/20 focus:ring-8 focus:ring-primary-container/5 transition-all appearance-none cursor-pointer hover:bg-white/10"
+ className="w-full bg-white/5 border border-white/5 rounded pl-16 pr-8 py-6 text-[14px] font-semibold text-white uppercase tracking-tighter focus:outline-none focus:border-jumia-orange/20 focus:ring-8 focus:ring-primary-container/5 transition-all appearance-none cursor-pointer hover:bg-white/10"
  required
  >
- <option value="" className="bg-on-surface">SELECT INSTITUTION</option>
- <option value="044" className="bg-on-surface">ACCESS BANK</option>
- <option value="058" className="bg-on-surface">GTBANK</option>
- <option value="011" className="bg-on-surface">FIRST BANK</option>
- <option value="033" className="bg-on-surface">UNITED BANK FOR AFRICA</option>
- <option value="057" className="bg-on-surface">ZENITH BANK</option>
+ <option value="" className="bg-jumia-orange">SELECT INSTITUTION</option>
+ <option value="044" className="bg-jumia-orange">ACCESS BANK</option>
+ <option value="058" className="bg-jumia-orange">GTBANK</option>
+ <option value="011" className="bg-jumia-orange">FIRST BANK</option>
+ <option value="033" className="bg-jumia-orange">UNITED BANK FOR AFRICA</option>
+ <option value="057" className="bg-jumia-orange">ZENITH BANK</option>
  </select>
  </div>
  </div>
  <div className="space-y-4">
- <label className="block text-[10px] font-black text-white/30 uppercase tracking-[0.4em] italic ml-1">Vault Sequence</label>
+ <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-[0.4em] italic ml-1">Vault Sequence</label>
  <input 
  name="accountNumber" 
  type="text" 
  defaultValue={account?.bankAccountNumber || ''}
  placeholder="0000000000"
- className="w-full bg-white/5 border-4 border-white/5 rounded-[28px] px-8 py-6 text-[14px] font-black text-white uppercase tracking-[0.3em] focus:outline-none focus:border-primary-container/20 focus:ring-8 focus:ring-primary-container/5 transition-all hover:bg-white/10 placeholder:font-normal placeholder:text-white/40"
+ className="w-full bg-white/5 border border-white/5 rounded px-8 py-6 text-[14px] font-semibold text-white uppercase tracking-[0.3em] focus:outline-none focus:border-jumia-orange/20 focus:ring-8 focus:ring-primary-container/5 transition-all hover:bg-white/10 placeholder:font-normal placeholder:text-white/40"
  required 
  />
  </div>
  <div className="space-y-4">
- <label className="block text-[10px] font-black text-white/30 uppercase tracking-[0.4em] italic ml-1">Legal Identity</label>
+ <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-[0.4em] italic ml-1">Legal Identity</label>
  <input 
  name="accountName" 
  type="text" 
  defaultValue={account?.bankAccountName || ''}
  placeholder="MERCHANT NAME"
- className="w-full bg-white/5 border-4 border-white/5 rounded-[28px] px-8 py-6 text-[14px] font-black text-white uppercase tracking-tighter focus:outline-none focus:border-primary-container/20 focus:ring-8 focus:ring-primary-container/5 transition-all hover:bg-white/10 placeholder:font-normal placeholder:text-white/40"
+ className="w-full bg-white/5 border border-white/5 rounded px-8 py-6 text-[14px] font-semibold text-white uppercase tracking-tighter focus:outline-none focus:border-jumia-orange/20 focus:ring-8 focus:ring-primary-container/5 transition-all hover:bg-white/10 placeholder:font-normal placeholder:text-white/40"
  required 
  />
  </div>
@@ -408,7 +408,7 @@ export default function SellerFinance() {
  <button 
  type="submit"
  disabled={updateAccount.isLoading}
- className="bg-white text-on-surface px-14 py-6 rounded-[28px] text-[11px] font-black uppercase tracking-[0.4em] hover:bg-primary-container hover:text-white transition-all shadow-2xl active:scale-95 disabled:opacity-20 flex items-center gap-6 group"
+ className="bg-white text-on-surface px-14 py-6 rounded text-[11px] font-semibold uppercase tracking-[0.4em] hover:bg-jumia-orange-dark hover:text-white transition-all shadow-2xl active:scale-95 disabled:opacity-20 flex items-center gap-6 group"
  >
  {updateAccount.isLoading ? <Loader2 className="animate-spin" size={20} /> : <CheckCircle2 size={20} className="group-hover:scale-125 transition-transform duration-500" />}
  Synchronize Credentials
@@ -422,16 +422,16 @@ export default function SellerFinance() {
 
  {/* Withdrawal Modal */}
  {showWithdrawModal && (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-on-surface/90 backdrop-blur-3xl animate-in fade-in duration-500">
+ <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-jumia-orange/90 backdrop-blur-3xl animate-in fade-in duration-500">
  <div className="bg-surface-container-lowest w-full max-w-xl rounded-[64px] border-8 border-surface-container-low shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-500 relative">
  <div className="p-12 border-b-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/10">
  <div className="flex items-center gap-6">
- <div className="w-14 h-14 bg-primary-container/10 text-primary-container rounded-2xl flex items-center justify-center border-2 border-primary-container/20 shadow-inner">
+ <div className="w-14 h-14 bg-jumia-orange/10 text-jumia-orange rounded-2xl flex items-center justify-center border-2 border-jumia-orange/20 shadow-inner">
  <PiggyBank size={28} />
  </div>
  <div>
- <h3 className="text-sm font-black text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Settlement Request</h3>
- <p className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Execute Capital Extraction</p>
+ <h3 className="text-sm font-semibold text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Settlement Request</h3>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Execute Capital Extraction</p>
  </div>
  </div>
  <button 
@@ -443,15 +443,15 @@ export default function SellerFinance() {
  </div>
  
  <div className="p-14 space-y-12">
- <div className="bg-surface-container-low p-10 rounded-[40px] border-2 border-outline-variant/5 shadow-inner">
- <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] mb-6 italic ml-1">Institutional Destination</p>
+ <div className="bg-surface-container-low p-10 rounded border-2 border-outline-variant/5 shadow-inner">
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mb-6 italic ml-1">Institutional Destination</p>
  <div className="flex items-center gap-8">
- <div className="w-16 h-16 bg-on-surface text-white rounded-[24px] flex items-center justify-center shadow-2xl border-4 border-surface-container-low">
+ <div className="w-16 h-16 bg-jumia-orange text-white rounded flex items-center justify-center shadow-2xl border border-surface-container-low">
  <Building2 size={28} />
  </div>
  <div>
- <h4 className="text-xl font-black text-on-surface tracking-tighter uppercase leading-none mb-2">{account?.bankAccountName || 'NO ACCOUNT LINKED'}</h4>
- <p className="text-[11px] font-black text-on-surface-variant/40 tracking-[0.3em] uppercase italic flex items-center gap-3">
+ <h4 className="text-xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-2">{account?.bankAccountName || 'NO ACCOUNT LINKED'}</h4>
+ <p className="text-[11px] font-semibold text-on-surface-variant/40 tracking-[0.3em] uppercase italic flex items-center gap-3">
  <Globe size={14} className="opacity-40" /> {account?.bankAccountNumber || '••••••••••'}
  </p>
  </div>
@@ -460,34 +460,34 @@ export default function SellerFinance() {
 
  <div className="space-y-6">
  <div className="flex justify-between items-end px-4">
- <label className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] italic">Request Magnitude (₦)</label>
- <p className="text-[10px] font-black text-success uppercase tracking-[0.3em] border-b-2 border-success/20 pb-1 italic">MAX: ₦{Number(stats?.availableBalance || 0).toLocaleString()}</p>
+ <label className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] italic">Request Magnitude (₦)</label>
+ <p className="text-[10px] font-semibold text-success uppercase tracking-[0.3em] border-b-2 border-success/20 pb-1 italic">MAX: ₦{Number(stats?.availableBalance || 0).toLocaleString()}</p>
  </div>
  <div className="relative group">
- <span className="absolute left-8 top-1/2 -translate-y-1/2 text-4xl font-black text-on-surface-variant/10 group-focus-within:text-primary-container/20 transition-colors duration-500 italic">₦</span>
+ <span className="absolute left-8 top-1/2 -translate-y-1/2 text-4xl font-semibold text-on-surface-variant/10 group-focus-within:text-jumia-orange/20 transition-colors duration-500 italic">₦</span>
  <input 
  type="number" 
  value={withdrawAmount}
  onChange={(e) => setWithdrawAmount(e.target.value)}
  placeholder="0.00"
- className="w-full bg-surface-container-low border-4 border-outline-variant/5 rounded-[36px] pl-20 pr-10 py-10 text-6xl font-black text-on-surface tracking-tighter focus:outline-none focus:border-primary-container/20 focus:ring-[24px] focus:ring-primary-container/5 transition-all shadow-inner placeholder:text-on-surface-variant/5"
+ className="w-full bg-surface-container-low border border-outline-variant/5 rounded-[36px] pl-20 pr-10 py-10 text-6xl font-semibold text-on-surface tracking-tighter focus:outline-none focus:border-jumia-orange/20 focus:ring-[24px] focus:ring-primary-container/5 transition-all shadow-inner placeholder:text-on-surface-variant/5"
  />
  </div>
  </div>
 
- <div className="flex items-center gap-6 p-8 bg-primary-container/5 rounded-[32px] border-2 border-primary-container/10 shadow-inner">
- <div className="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center shrink-0">
- <Info size={20} className="text-primary-container" />
+ <div className="flex items-center gap-6 p-8 bg-jumia-orange/5 rounded border-2 border-jumia-orange/10 shadow-inner">
+ <div className="w-10 h-10 rounded-full bg-jumia-orange/20 flex items-center justify-center shrink-0">
+ <Info size={20} className="text-jumia-orange" />
  </div>
- <p className="text-[11px] font-black text-on-surface-variant/60 uppercase tracking-[0.1em] italic leading-relaxed">
- Institutional latency typically range between <span className="text-primary-container">24-48 business cycles</span> for full synchronization of assets.
+ <p className="text-[11px] font-semibold text-on-surface-variant/60 uppercase tracking-[0.1em] italic leading-relaxed">
+ Institutional latency typically range between <span className="text-jumia-orange">24-48 business cycles</span> for full synchronization of assets.
  </p>
  </div>
 
  <button 
  onClick={handleWithdraw}
  disabled={isWithdrawing || !withdrawAmount}
- className="w-full bg-on-surface text-white py-8 rounded-[36px] text-[13px] font-black uppercase tracking-[0.5em] hover:bg-primary-container transition-all shadow-2xl active:scale-95 disabled:opacity-20 flex items-center justify-center gap-6 group overflow-hidden relative"
+ className="w-full bg-jumia-orange text-white py-8 rounded-[36px] text-[13px] font-semibold uppercase tracking-[0.5em] hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 disabled:opacity-20 flex items-center justify-center gap-6 group overflow-hidden relative"
  >
  <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
  {isWithdrawing ? <Loader2 className="animate-spin" size={24} /> : <ShieldCheck size={24} className="group-hover:scale-125 transition-transform duration-500" />}

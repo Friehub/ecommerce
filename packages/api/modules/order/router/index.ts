@@ -90,5 +90,5 @@ const _orderRouter = createTRPCRouter({
     }),
 });
 
-export const orderRouter = _orderRouter as any;
+export const orderRouter = _orderRouter;
 export type OrderRouter = typeof _orderRouter;

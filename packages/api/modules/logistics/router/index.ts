@@ -91,5 +91,5 @@ const _logisticsRouter = createTRPCRouter({
   }),
 });
 
-export const logisticsRouter = _logisticsRouter as any;
+export const logisticsRouter = _logisticsRouter;
 export type LogisticsRouter = typeof _logisticsRouter;

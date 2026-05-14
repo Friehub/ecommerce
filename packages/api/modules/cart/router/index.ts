@@ -50,5 +50,5 @@ const _cartRouter = createTRPCRouter({
     }),
 });
 
-export const cartRouter = _cartRouter as any;
+export const cartRouter = _cartRouter;
 export type CartRouter = typeof _cartRouter;

@@ -58,34 +58,34 @@ export default function FlashSalesPage() {
  return (
     <div className="bg-background min-h-screen pb-32 select-none animate-in fade-in duration-1000">
       <div className="container py-12">
-        <div className="flex items-center gap-4 mb-12 font-black text-on-surface-variant/40 text-[10px] uppercase tracking-[0.4em] italic">
-          <Link href="/" className="hover:text-primary-container transition-colors">Hub.Node</Link>
+        <div className="flex items-center gap-4 mb-12 font-semibold text-on-surface-variant/40 text-[10px] uppercase tracking-[0.4em] italic">
+          <Link href="/" className="hover:text-jumia-orange transition-colors">Hub.Node</Link>
           <ChevronRight size={14} className="opacity-20" />
           <span className="text-on-surface">Flash.Auctions</span>
         </div>
 
-        <div className="bg-surface-container-lowest rounded-[56px] border-4 border-surface-container-low shadow-soft overflow-hidden transition-all hover:border-primary-container/20 duration-1000 group/hero">
+        <div className="bg-surface-container-lowest rounded-[56px] border border-surface-container-low shadow-soft overflow-hidden transition-all hover:border-jumia-orange/20 duration-1000 group/hero">
           <div className="bg-error p-10 md:p-16 text-white flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[120px] -mr-48 -mt-48 animate-pulse" />
             <div className="flex items-center gap-8 relative z-10">
-              <div className="w-20 h-20 bg-white/10 backdrop-blur-xl rounded-[32px] flex items-center justify-center border-4 border-white/20 shadow-2xl group-hover/hero:scale-110 transition-transform duration-700">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur-xl rounded flex items-center justify-center border border-white/20 shadow-2xl group-hover/hero:scale-110 transition-transform duration-700">
                 <Zap size={40} fill="white" className="text-white animate-pulse" />
               </div>
               <div>
-                <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-[0.8] mb-4">
+                <h1 className="text-4xl md:text-6xl font-semibold uppercase italic tracking-tighter leading-[0.8] mb-4">
                   Flash <br />
                   <span className="text-white/40">Auctions.</span>
                 </h1>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-white animate-ping" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-60">High-Frequency Protocol Active</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.5em] opacity-60">High-Frequency Protocol Active</p>
                 </div>
               </div>
             </div>
             {flashSales && flashSales.length > 0 && (
               <div className="flex flex-col items-center md:items-end gap-4 relative z-10">
-                <span className="text-[10px] font-black uppercase tracking-[0.5em] opacity-40 italic">Temporal Sync Window</span>
-                <div className="bg-white/10 backdrop-blur-md text-white px-10 py-6 rounded-[32px] text-2xl font-black shadow-2xl border-4 border-white/20 flex items-center gap-6">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.5em] opacity-40 italic">Temporal Sync Window</span>
+                <div className="bg-white/10 backdrop-blur-md text-white px-10 py-6 rounded text-2xl font-semibold shadow-2xl border border-white/20 flex items-center gap-6">
                   <Clock size={24} className="animate-spin-slow opacity-60" />
                   <CountdownTimer endTime={earliestEnd} />
                 </div>
@@ -97,7 +97,7 @@ export default function FlashSalesPage() {
  {isLoading ? (
  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
  {[...Array(6)].map((_, i) => (
- <div key={i} className="aspect-[3/4] bg-surface-container-low rounded-[32px] animate-pulse border-2 border-surface-container-lowest" />
+ <div key={i} className="aspect-[3/4] bg-surface-container-low rounded animate-pulse border-2 border-surface-container-lowest" />
  ))}
  </div>
  ) : flashProducts.length > 0 ? (
@@ -110,12 +110,12 @@ export default function FlashSalesPage() {
  </div>
  ) : (
  <div className="py-40 text-center">
- <div className="w-32 h-32 bg-surface-container-low rounded-[40px] flex items-center justify-center mx-auto mb-10 border-4 border-surface-container-lowest shadow-soft group">
- <Zap size={48} className="text-on-surface-variant/10 group-hover:text-primary-container transition-colors" />
+ <div className="w-32 h-32 bg-surface-container-low rounded flex items-center justify-center mx-auto mb-10 border border-surface-container-lowest shadow-soft group">
+ <Zap size={48} className="text-on-surface-variant/10 group-hover:text-jumia-orange transition-colors" />
  </div>
- <h2 className="text-3xl font-black text-on-surface uppercase tracking-tighter">Frequency Silent</h2>
- <p className="text-on-surface-variant/40 text-[10px] font-black uppercase tracking-[0.4em] mt-4 mb-12 italic">No active flash protocols detected at this timestamp.</p>
- <Link href="/" className="inline-flex items-center gap-4 px-12 py-5 bg-on-surface text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.3em] shadow-2xl hover:scale-105 active:scale-95 transition-all">
+ <h2 className="text-3xl font-semibold text-on-surface uppercase tracking-tighter">Frequency Silent</h2>
+ <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase tracking-[0.4em] mt-4 mb-12 italic">No active flash protocols detected at this timestamp.</p>
+ <Link href="/" className="inline-flex items-center gap-4 px-12 py-5 bg-jumia-orange text-white rounded-2xl font-semibold text-[11px] uppercase tracking-[0.3em] shadow-2xl hover:scale-105 active:scale-95 transition-all">
  Return to Hub <ArrowRight size={18} />
  </Link>
  </div>

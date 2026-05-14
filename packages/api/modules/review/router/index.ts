@@ -82,5 +82,5 @@ const _reviewRouter = createTRPCRouter({
     }),
 });
 
-export const reviewRouter = _reviewRouter as any;
+export const reviewRouter = _reviewRouter;
 export type ReviewRouter = typeof _reviewRouter;

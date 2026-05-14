@@ -8,7 +8,7 @@ export const catalogQueryService = {
       const product = await prisma.product.findUnique({
         where: { slug },
         include: { 
-          variants: true, 
+          variants: { include: { stockLevels: true } }, 
           brand: true, 
           category: true,
           media: true,
@@ -44,7 +44,11 @@ export const catalogQueryService = {
           });
         }
 
-        return { ...product, recommendations };
+        const inventory = product.variants.reduce((total, variant) => {
+          return total + variant.stockLevels.reduce((sum, sl) => sum + sl.qtyOnHand - sl.qtyReserved, 0);
+        }, 0);
+
+        return { ...product, recommendations, inventory };
       }
  
       return product;

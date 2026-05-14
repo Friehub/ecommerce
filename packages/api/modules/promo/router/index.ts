@@ -21,5 +21,5 @@ const _promoRouter = createTRPCRouter({
   }),
 });
 
-export const promoRouter = _promoRouter as any;
+export const promoRouter = _promoRouter;
 export type PromoRouter = typeof _promoRouter;

@@ -57,5 +57,5 @@ const _inventoryRouter = createTRPCRouter({
     }),
 });
 
-export const inventoryRouter = _inventoryRouter as any;
+export const inventoryRouter = _inventoryRouter;
 export type InventoryRouter = typeof _inventoryRouter;

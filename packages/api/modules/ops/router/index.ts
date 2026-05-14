@@ -29,5 +29,5 @@ const _opsRouter = createTRPCRouter({
   }),
 });
 
-export const opsRouter = _opsRouter as any;
+export const opsRouter = _opsRouter;
 export type OpsRouter = typeof _opsRouter;

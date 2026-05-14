@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 // Load env vars from root .env or staging
-dotenv.config({ path: path.resolve(__dirname, '../../.env.staging') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 export default defineConfig({
   testDir: './tests',
@@ -24,24 +24,20 @@ export default defineConfig({
     { name: 'setup', testMatch: /.*\.setup\.ts/ },
 
     {
-      name: 'chromium',
+      name: 'buyer',
       use: { 
         ...devices['Desktop Chrome'],
-        channel: 'chrome', // Use system chrome
-        storageState: 'apps/e2e/playwright/.auth/user.json',
+        storageState: 'apps/e2e/playwright/.auth/buyer.json',
       },
       dependencies: ['setup'],
     },
-
-    /*
     {
-      name: 'firefox',
+      name: 'seller',
       use: { 
-        ...devices['Desktop Firefox'],
-        storageState: 'apps/e2e/playwright/.auth/user.json',
+        ...devices['Desktop Chrome'],
+        storageState: 'apps/e2e/playwright/.auth/seller.json',
       },
       dependencies: ['setup'],
     },
-    */
   ],
 });

@@ -23,7 +23,6 @@ export default {
       // Persist role and id into the JWT when the user first signs in.
       if (user) {
         token.id = user.id;
-        // @ts-expect-error — role is a custom field not in the base User type
         token.role = user.role;
       }
       return token;
@@ -32,8 +31,7 @@ export default {
       // Expose id and role on session.user so middleware can read them.
       if (session.user && token) {
         session.user.id = token.id as string;
-        // @ts-expect-error — role is a custom field
-        session.user.role = token.role;
+        session.user.role = token.role as string;
       }
       return session;
     },

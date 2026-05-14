@@ -56,54 +56,56 @@ export const LoginForm = () => {
  };
 
  return (
- <div className="bg-surface-container-lowest p-10 rounded-[32px] border-4 border-surface-container-low hover:border-primary-container/20 hover:shadow-2xl duration-500 transition-all w-full max-w-[440px] shadow-soft select-none animate-in fade-in zoom-in-95">
+ <div className="bg-surface-container-lowest p-10 rounded border border-surface-container-low hover:border-jumia-orange/20 hover:shadow-2xl duration-500 transition-all w-full max-w-[440px] shadow-soft select-none animate-in fade-in zoom-in-95">
  <div className="flex flex-col items-center mb-10">
- <div className="w-16 h-16 bg-primary-container/10 rounded-2xl flex items-center justify-center border-2 border-primary-container/10 mb-6 group">
- <Lock size={32} className="text-primary-container group-hover:rotate-12 transition-transform" />
+ <div className="w-16 h-16 bg-jumia-orange/10 rounded-2xl flex items-center justify-center border-2 border-jumia-orange/10 mb-6 group">
+ <Lock size={32} className="text-jumia-orange group-hover:rotate-12 transition-transform" />
  </div>
- <h1 className="text-3xl font-black text-on-surface tracking-tighter uppercase leading-none mb-2">Access Granted</h1>
- <p className="text-[10px] text-on-surface-variant font-black uppercase tracking-[0.4em] opacity-40">Secure Identity Gateway</p>
+ <h1 className="text-3xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-2">Access Granted</h1>
+ <p className="text-[10px] text-on-surface-variant font-semibold uppercase tracking-[0.4em] opacity-40">Secure Identity Gateway</p>
  </div>
 
  <form onSubmit={handleSubmit} className="space-y-6">
  {error && (
- <div className="bg-error-container/10 text-error p-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border-2 border-error/10 animate-in fade-in duration-300">
+ <div className="bg-error-container/10 text-error p-4 rounded-2xl text-[10px] font-semibold uppercase tracking-[0.2em] border-2 border-error/10 animate-in fade-in duration-300">
  {error}
  </div>
  )}
 
  <div className="space-y-2">
- <label className="text-[10px] font-black uppercase text-on-surface-variant tracking-[0.3em] ml-2 opacity-60">Credential Identifier</label>
+ <label className="text-[10px] font-semibold uppercase text-on-surface-variant tracking-[0.3em] ml-2 opacity-60">Credential Identifier</label>
  <div className="relative group/input">
- <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within/input:text-primary-container transition-colors" size={18} strokeWidth={1.5} />
+ <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within/input:text-jumia-orange transition-colors" size={18} strokeWidth={1.5} />
  <input
  type="email"
  value={email}
  onChange={(e) => setEmail(e.target.value)}
- className="w-full h-14 pl-14 pr-6 border-2 border-surface-container-low focus:border-primary-container focus:ring-4 focus:ring-primary-container/5 rounded-2xl outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300 placeholder:font-normal placeholder:text-on-surface-variant/50"
+ className="w-full h-14 pl-14 pr-6 border-2 border-surface-container-low focus:border-jumia-orange focus:ring-4 focus:ring-primary-container/5 rounded-2xl outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300 placeholder:font-normal placeholder:text-on-surface-variant/50"
  placeholder="IDENTITY@NODE.COM"
+ data-testid="login-email"
  required
  />
  </div>
  </div>
 
  <div className="space-y-2">
- <label className="text-[10px] font-black uppercase text-on-surface-variant tracking-[0.3em] ml-2 opacity-60">Access Cipher</label>
+ <label className="text-[10px] font-semibold uppercase text-on-surface-variant tracking-[0.3em] ml-2 opacity-60">Access Cipher</label>
  <div className="relative group/input">
- <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within/input:text-primary-container transition-colors" size={18} strokeWidth={1.5} />
+ <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within/input:text-jumia-orange transition-colors" size={18} strokeWidth={1.5} />
  <input
  type="password"
  value={password}
  onChange={(e) => setPassword(e.target.value)}
- className="w-full h-14 pl-14 pr-6 border-2 border-surface-container-low focus:border-primary-container focus:ring-4 focus:ring-primary-container/5 rounded-2xl outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300 placeholder:font-normal placeholder:text-on-surface-variant/50"
+ className="w-full h-14 pl-14 pr-6 border-2 border-surface-container-low focus:border-jumia-orange focus:ring-4 focus:ring-primary-container/5 rounded-2xl outline-none font-bold text-on-surface bg-surface-container-low/30 focus:bg-white transition-all duration-300 placeholder:font-normal placeholder:text-on-surface-variant/50"
  placeholder="••••••••"
+ data-testid="login-password"
  required
  />
  </div>
  </div>
 
  <div className="flex justify-end px-2">
- <Link href="/auth/forgot-password" size="sm" className="text-[9px] font-black text-on-surface-variant hover:text-primary-container hover:underline uppercase tracking-[0.3em] opacity-60">
+ <Link href="/auth/forgot-password" className="text-[9px] font-semibold text-on-surface-variant hover:text-jumia-orange hover:underline uppercase tracking-[0.3em] opacity-60">
  Recovery Protocol
  </Link>
  </div>
@@ -111,7 +113,8 @@ export const LoginForm = () => {
  <button
  type="submit"
  disabled={loading}
- className="w-full h-14 bg-on-surface text-white rounded-2xl font-black uppercase tracking-[0.4em] text-[11px] hover:shadow-2xl hover:scale-[1.02] active:scale-95 duration-300 transition-all flex items-center justify-center gap-3 cursor-pointer disabled:bg-surface-container disabled:text-on-surface-variant disabled:cursor-not-allowed group"
+ className="w-full h-14 bg-jumia-orange text-white rounded-2xl font-semibold uppercase tracking-[0.4em] text-[11px] hover:shadow-2xl hover:scale-[1.02] active:scale-95 duration-300 transition-all flex items-center justify-center gap-3 cursor-pointer disabled:bg-surface-container disabled:text-on-surface-variant disabled:cursor-not-allowed group"
+ data-testid="login-submit"
  >
  {loading ? <Loader2 className="animate-spin" size={20} /> : (
  <>
@@ -126,7 +129,7 @@ export const LoginForm = () => {
  <div className="absolute inset-0 flex items-center">
  <span className="w-full border-t-2 border-surface-container-low"></span>
  </div>
- <div className="relative flex justify-center text-[9px] uppercase tracking-[0.4em] font-black">
+ <div className="relative flex justify-center text-[9px] uppercase tracking-[0.4em] font-semibold">
  <span className="bg-surface-container-lowest px-4 text-on-surface-variant opacity-30">External Linkage</span>
  </div>
  </div>
@@ -134,7 +137,7 @@ export const LoginForm = () => {
  <button
  type="button"
  onClick={() => signIn('google', { callbackUrl: callbackUrl || '/' })}
- className="w-full h-14 bg-surface-container-lowest border-2 border-surface-container-low hover:border-primary-container/20 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] text-on-surface transition-all duration-300 flex items-center justify-center gap-4 shadow-sm hover:shadow-xl active:scale-95 cursor-pointer"
+ className="w-full h-14 bg-surface-container-lowest border-2 border-surface-container-low hover:border-jumia-orange/20 rounded-2xl font-semibold text-[10px] uppercase tracking-[0.3em] text-on-surface transition-all duration-300 flex items-center justify-center gap-4 shadow-sm hover:shadow-xl active:scale-95 cursor-pointer"
  >
  <svg className="w-5 h-5" viewBox="0 0 24 24">
  <path
@@ -158,9 +161,9 @@ export const LoginForm = () => {
  </button>
 
  <div className="mt-8 text-center">
- <p className="text-[10px] font-black uppercase tracking-[0.3em] text-on-surface-variant opacity-40">
+ <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-on-surface-variant opacity-40">
  New to the ecosystem?{' '}
- <Link href="/register" className="text-primary-container hover:underline ml-2">
+ <Link href="/register" className="text-jumia-orange hover:underline ml-2">
  Initialize Account
  </Link>
  </p>

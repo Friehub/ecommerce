@@ -363,6 +363,6 @@ const _adminRouter = createTRPCRouter({
     }),
 });
 
-export const adminRouter = _adminRouter as any;
+export const adminRouter = _adminRouter;
 export type AdminRouter = typeof _adminRouter;
 

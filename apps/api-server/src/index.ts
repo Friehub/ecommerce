@@ -115,10 +115,6 @@ async function start() {
     httpRequestDurationSeconds.observe(labels, duration);
   });
 
-  server.get('/metrics', async (request, reply) => {
-    reply.header('Content-Type', register.contentType);
-    return register.metrics();
-  });
 
   server.ready(err => {
     if (err) throw err;

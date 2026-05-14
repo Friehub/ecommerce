@@ -90,5 +90,5 @@ const _revenueRouter = createTRPCRouter({
   }),
 });
 
-export const revenueRouter = _revenueRouter as any;
+export const revenueRouter = _revenueRouter;
 export type RevenueRouter = typeof _revenueRouter;

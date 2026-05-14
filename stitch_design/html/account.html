@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Jumia - Account Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "background": "#f9f9fa",
+                      "on-tertiary": "#ffffff",
+                      "tertiary": "#006d36",
+                      "secondary-container": "#e4e2e1",
+                      "on-surface-variant": "#554335",
+                      "primary-fixed": "#ffdcc3",
+                      "on-background": "#1a1c1d",
+                      "on-tertiary-fixed-variant": "#005227",
+                      "secondary-fixed": "#e4e2e1",
+                      "on-primary-fixed-variant": "#6e3900",
+                      "surface": "#f9f9fa",
+                      "primary": "#914d00",
+                      "primary-fixed-dim": "#ffb77e",
+                      "outline-variant": "#dcc2af",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-container": "#004620",
+                      "on-surface": "#1a1c1d",
+                      "outline": "#897363",
+                      "on-primary-fixed": "#2f1500",
+                      "inverse-primary": "#ffb77e",
+                      "on-tertiary-fixed": "#00210c",
+                      "inverse-surface": "#2f3132",
+                      "primary-container": "#f68b1e",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#5e3000",
+                      "tertiary-fixed-dim": "#60de88",
+                      "tertiary-container": "#3abd6b",
+                      "surface-container-low": "#f3f3f4",
+                      "surface-bright": "#f9f9fa",
+                      "on-secondary-fixed": "#1b1c1c",
+                      "surface-variant": "#e2e2e3",
+                      "inverse-on-surface": "#f1f1f2",
+                      "secondary": "#5f5e5e",
+                      "surface-dim": "#dadadb",
+                      "error": "#ba1a1a",
+                      "surface-container-highest": "#e2e2e3",
+                      "tertiary-fixed": "#7dfca2",
+                      "surface-tint": "#914d00",
+                      "surface-container": "#eeeeef",
+                      "on-secondary-fixed-variant": "#474746",
+                      "on-error-container": "#93000a",
+                      "on-secondary-container": "#656464",
+                      "surface-container-high": "#e8e8e9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "base": "4px",
+                      "container-max": "1184px",
+                      "stack-lg": "24px",
+                      "margin-desktop": "24px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px"
+              },
+              "fontFamily": {
+                      "body-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-bold": [
+                              "Hanken Grotesk"
+                      ],
+                      "price-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "price-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-sm": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-bold": [
+                              "12px",
+                              {
+                                      "lineHeight": "12px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "price-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "price-sm": [
+                              "16px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { background-color: #f1f1f2; }
+    </style>
+</head>
+<body class="font-body-md text-on-surface antialiased flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 w-full flex flex-col items-center px-margin-desktop bg-surface dark:bg-surface-container border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none">
+<div class="max-w-container-max w-full flex items-center justify-between py-stack-md">
+<div class="flex items-center gap-stack-lg">
+<a class="text-headline-md font-display-lg font-black text-primary-container dark:text-primary-fixed-dim" href="#">Jumia</a>
+<div class="hidden md:flex relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-DEFAULT font-body-md text-body-md focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors" placeholder="Search products, brands and categories" type="text"/>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-stack-md">
+<a class="text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors px-3 py-2 rounded-DEFAULT flex items-center gap-2" href="#">
+                    Sell on Jumia
+                </a>
+<a class="text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors px-3 py-2 rounded-DEFAULT flex items-center gap-2" href="#">
+                    Help
+                </a>
+<a class="text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors px-3 py-2 rounded-DEFAULT flex items-center gap-2" href="#">
+                    Support
+                </a>
+</nav>
+<div class="flex items-center gap-stack-sm">
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors flex flex-col items-center justify-center text-primary dark:text-primary-fixed font-bold border-b-2 border-primary" data-icon="person">
+<span class="material-symbols-outlined">person</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant font-body-md text-body-md" data-icon="help">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant font-body-md text-body-md" data-icon="shopping_cart">
+<span class="material-symbols-outlined">shopping_cart</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-desktop py-stack-lg flex flex-col lg:flex-row gap-gutter">
+<!-- Left Sidebar (Custom Account Nav) -->
+<aside class="hidden lg:flex flex-col w-64 h-fit sticky top-24 gap-stack-sm p-4 bg-surface dark:bg-surface-container-lowest rounded-lg border border-outline-variant dark:border-outline shadow-sm">
+<h2 class="font-headline-sm text-headline-sm text-on-surface px-4 py-2 mb-2">My Account</h2>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT bg-surface-container-low dark:bg-secondary-container text-primary-container dark:text-primary-fixed font-bold transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person" data-weight="fill" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-body-md text-body-md">Account Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-body-md text-body-md">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span class="font-body-md text-body-md">Inbox</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="local_offer">local_offer</span>
+<span class="font-body-md text-body-md">Vouchers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="monetization_on">monetization_on</span>
+<span class="font-body-md text-body-md">Jumia Coins</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="font-body-md text-body-md">Saved Items</span>
+</a>
+</nav>
+</aside>
+<!-- Main Dashboard Content -->
+<div class="flex-1 flex flex-col gap-stack-lg">
+<h1 class="font-headline-md text-headline-md text-on-surface">Account Overview</h1>
+<!-- Bento Grid: Overview Boxes -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Account Information -->
+<div class="bg-surface rounded-DEFAULT border border-outline-variant p-4 flex flex-col gap-stack-md hover:shadow-md transition-shadow">
+<div class="flex justify-between items-center border-b border-outline-variant pb-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Account Information</h3>
+<a class="text-primary-container font-label-bold text-label-bold hover:underline" href="#">EDIT</a>
+</div>
+<div class="flex flex-col gap-1">
+<p class="font-body-lg text-body-lg text-on-surface font-semibold">John Doe</p>
+<p class="font-body-md text-body-md text-on-surface-variant">johndoe@example.com</p>
+</div>
+</div>
+<!-- Address Book -->
+<div class="bg-surface rounded-DEFAULT border border-outline-variant p-4 flex flex-col gap-stack-md hover:shadow-md transition-shadow">
+<div class="flex justify-between items-center border-b border-outline-variant pb-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Address Book</h3>
+<a class="text-primary-container font-label-bold text-label-bold hover:underline" href="#">EDIT</a>
+</div>
+<div class="flex flex-col gap-1">
+<p class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-wider mb-1">Default Shipping Address</p>
+<p class="font-body-md text-body-md text-on-surface">John Doe</p>
+<p class="font-body-md text-body-md text-on-surface-variant">123 Jumia Way, Block B</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Lagos, Nigeria</p>
+<p class="font-body-md text-body-md text-on-surface-variant">+234 801 234 5678</p>
+</div>
+</div>
+<!-- Wallet / Store Credit -->
+<div class="bg-surface rounded-DEFAULT border border-outline-variant p-4 flex flex-col gap-stack-md md:col-span-2 hover:shadow-md transition-shadow">
+<div class="flex justify-between items-center border-b border-outline-variant pb-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" data-icon="account_balance_wallet">account_balance_wallet</span>
+                            Jumia Store Credit
+                        </h3>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-price-lg text-price-lg text-on-surface">₦ 45,000.00</span>
+</div>
+</div>
+</div>
+<!-- Recent Orders -->
+<div class="bg-surface rounded-DEFAULT border border-outline-variant overflow-hidden flex flex-col">
+<div class="px-4 py-3 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Recent Orders</h3>
+<a class="text-primary-container font-label-bold text-label-bold hover:underline uppercase" href="#">See All</a>
+</div>
+<div class="flex flex-col divide-y divide-outline-variant">
+<!-- Order Item 1 -->
+<div class="p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center hover:bg-surface-container-low transition-colors">
+<div class="w-16 h-16 bg-surface-variant rounded flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="smartphone">smartphone</span>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<h4 class="font-body-lg text-body-lg text-on-surface line-clamp-1">Samsung Galaxy S23 Ultra 5G</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Order #394857201 • Placed on Oct 24, 2024</p>
+<span class="inline-flex items-center px-2 py-1 rounded bg-tertiary-container text-on-tertiary-container font-label-bold text-label-bold w-fit mt-1">
+                                DELIVERED
+                            </span>
+</div>
+<div class="font-price-sm text-price-sm text-on-surface">₦ 850,000</div>
+</div>
+<!-- Order Item 2 -->
+<div class="p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center hover:bg-surface-container-low transition-colors">
+<div class="w-16 h-16 bg-surface-variant rounded flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chair">chair</span>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<h4 class="font-body-lg text-body-lg text-on-surface line-clamp-1">Ergonomic Office Chair - Black</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Order #394857202 • Placed on Oct 26, 2024</p>
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface-container-highest text-on-surface-variant font-label-bold text-label-bold w-fit mt-1">
+                                PENDING
+                            </span>
+</div>
+<div class="font-price-sm text-price-sm text-on-surface">₦ 45,500</div>
+</div>
+<!-- Order Item 3 -->
+<div class="p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center hover:bg-surface-container-low transition-colors">
+<div class="w-16 h-16 bg-surface-variant rounded flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="headphones">headphones</span>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<h4 class="font-body-lg text-body-lg text-on-surface line-clamp-1">Sony WH-1000XM5 Wireless Noise Canceling Headphones</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Order #394857199 • Placed on Oct 10, 2024</p>
+<span class="inline-flex items-center px-2 py-1 rounded bg-error-container text-on-error-container font-label-bold text-label-bold w-fit mt-1">
+                                CANCELED
+                            </span>
+</div>
+<div class="font-price-sm text-price-sm text-on-surface">₦ 280,000</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-stack-lg px-margin-desktop flex flex-col gap-stack-md mt-auto bg-surface-container-highest dark:bg-surface-dim border-t border-outline-variant dark:border-outline">
+<div class="max-w-container-max mx-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-stack-lg">
+<div class="flex flex-col gap-stack-sm">
+<span class="font-display-lg text-display-lg font-black text-on-surface">Jumia</span>
+<p class="font-body-sm text-body-sm text-secondary dark:text-on-secondary-fixed-variant">
+                    © 2024 Jumia. All Rights Reserved.
+                </p>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<h4 class="font-headline-sm text-headline-sm text-primary dark:text-primary-fixed">About Jumia</h4>
+<nav class="flex flex-col gap-2">
+<a class="font-body-sm text-body-sm text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">About Jumia</a>
+<a class="font-body-sm text-body-sm text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Jumia Careers</a>
+<a class="font-body-sm text-body-sm text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Terms and Conditions</a>
+<a class="font-body-sm text-body-sm text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Privacy Notice</a>
+</nav>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<h4 class="font-headline-sm text-headline-sm text-primary dark:text-primary-fixed">Customer Service</h4>
+<nav class="flex flex-col gap-2">
+<a class="font-body-sm text-body-sm text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Help Center</a>
+</nav>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<h4 class="font-headline-sm text-headline-sm text-primary dark:text-primary-fixed">Explore</h4>
+<nav class="flex flex-col gap-2">
+<a class="font-body-sm text-body-sm text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Official Stores</a>
+<a class="font-body-sm text-body-sm text-secondary dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-100 hover:opacity-80" href="#">Flash Sales</a>
+</nav>
+</div>
+</div>
+</footer>
+</body></html>

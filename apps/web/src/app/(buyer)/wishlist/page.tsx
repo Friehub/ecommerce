@@ -36,12 +36,12 @@ export default function WishlistPage() {
  {/* Breadcrumb with Fade Mask */}
  <div className="relative mb-10 overflow-hidden">
  <div className="flex items-center gap-3 whitespace-nowrap overflow-x-auto scrollbar-hide pr-12">
- <Link href="/" className="inline-flex items-center gap-2 text-on-surface-variant hover:text-primary-container transition-all font-black text-[10px] uppercase tracking-[0.2em] group">
+ <Link href="/" className="inline-flex items-center gap-2 text-on-surface-variant hover:text-jumia-orange transition-all font-semibold text-[10px] uppercase tracking-[0.2em] group">
  <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
  Home
  </Link>
  <span className="text-on-surface-variant/20">/</span>
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-40 italic">Asset Priority List</span>
+ <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant opacity-40 italic">Asset Priority List</span>
  </div>
  <div className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-background to-transparent pointer-events-none" />
  </div>
@@ -49,10 +49,10 @@ export default function WishlistPage() {
  <div className="max-w-6xl mx-auto">
  <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
  <div>
- <h1 className="text-4xl md:text-6xl font-black text-on-surface tracking-tighter uppercase leading-none">Wishlist Matrix</h1>
- <p className="text-[10px] font-black text-on-surface-variant uppercase mt-4 tracking-[0.4em] opacity-40 italic">Monitoring {wishlist?.items.length || 0} prioritized inventory units</p>
+ <h1 className="text-4xl md:text-6xl font-semibold text-on-surface tracking-tighter uppercase leading-none">Wishlist Matrix</h1>
+ <p className="text-[10px] font-semibold text-on-surface-variant uppercase mt-4 tracking-[0.4em] opacity-40 italic">Monitoring {wishlist?.items.length || 0} prioritized inventory units</p>
  </div>
- <div className="w-20 h-20 bg-surface-container-low rounded-[32px] border-4 border-surface-container-lowest shadow-soft flex items-center justify-center text-primary-container group hover:scale-110 transition-transform duration-500">
+ <div className="w-20 h-20 bg-surface-container-low rounded border border-surface-container-lowest shadow-soft flex items-center justify-center text-jumia-orange group hover:scale-110 transition-transform duration-500">
  <Heart size={36} fill="currentColor" className="group-hover:animate-pulse" />
  </div>
  </div>
@@ -60,7 +60,7 @@ export default function WishlistPage() {
  {isLoading ? (
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
  {[...Array(6)].map((_, i) => (
- <div key={i} className="h-[450px] bg-surface-container-low border-2 border-outline-variant/30 rounded-[40px] animate-pulse" />
+ <div key={i} className="h-[450px] bg-surface-container-low border-2 border-outline-variant/30 rounded animate-pulse" />
  ))}
  </div>
  ) : wishlist?.items && wishlist.items.length > 0 ? (
@@ -68,10 +68,10 @@ export default function WishlistPage() {
  {wishlist.items.map((item: any, idx: number) => (
  <div 
  key={item.id} 
- className="bg-surface-container-lowest border-4 border-surface-container-low rounded-[40px] overflow-hidden hover:border-primary-container/20 hover:shadow-2xl transition-all duration-700 group flex flex-col animate-in fade-in slide-in-from-bottom-4"
+ className="bg-surface-container-lowest border border-surface-container-low rounded overflow-hidden hover:border-jumia-orange/20 hover:shadow-2xl transition-all duration-700 group flex flex-col animate-in fade-in slide-in-from-bottom-4"
  style={{ animationDelay: `${idx * 100}ms` }}
  >
- <div className="relative aspect-square bg-surface-container-low/30 overflow-hidden m-4 rounded-[32px] border-2 border-outline-variant/10">
+ <div className="relative aspect-square bg-surface-container-low/30 overflow-hidden m-4 rounded border-2 border-outline-variant/10">
  <Image 
  src={item.variant.product.media?.[0]?.url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400'} 
  alt={item.variant.product.title}
@@ -88,22 +88,22 @@ export default function WishlistPage() {
  </button>
  {item.variant.product.isExpress && (
  <div className="absolute bottom-6 left-6">
- <span className="bg-primary-container text-white text-[8px] font-black px-3 py-1.5 rounded-xl uppercase tracking-[0.2em] shadow-xl border border-white/10">Express Delivery</span>
+ <span className="bg-jumia-orange text-white text-[8px] font-semibold px-3 py-1.5 rounded-xl uppercase tracking-[0.2em] shadow-xl border border-white/10">Express Delivery</span>
  </div>
  )}
  </div>
 
  <div className="p-8 flex-1 flex flex-col justify-between">
  <div>
- <h3 className="font-black text-sm text-on-surface leading-tight line-clamp-2 uppercase tracking-tighter mb-4 group-hover:text-primary-container transition-colors duration-500">
+ <h3 className="font-semibold text-sm text-on-surface leading-tight line-clamp-2 uppercase tracking-tighter mb-4 group-hover:text-jumia-orange transition-colors duration-500">
  <Link href={`/products/${item.variant.product.slug}`}>{item.variant.product.title}</Link>
  </h3>
- <p className="text-2xl font-black text-on-surface tracking-tighter leading-none">₦ {Number(item.variant.price).toLocaleString()}</p>
+ <p className="text-2xl font-semibold text-on-surface tracking-tighter leading-none">₦ {Number(item.variant.price).toLocaleString()}</p>
  </div>
 
  <button 
  onClick={() => handleAddToCart(item)}
- className="mt-8 w-full h-16 bg-on-surface hover:bg-primary-container text-white rounded-[24px] font-black uppercase text-[10px] tracking-[0.3em] transition-all shadow-xl active:scale-95 flex items-center justify-center gap-4 group/buy"
+ className="mt-8 w-full h-16 bg-jumia-orange hover:bg-jumia-orange-dark text-white rounded font-semibold uppercase text-[10px] tracking-[0.3em] transition-all shadow-xl active:scale-95 flex items-center justify-center gap-4 group/buy"
  >
  <ShoppingCart size={18} className="group-hover/buy:-translate-y-1 transition-transform" />
  Add to Hub
@@ -113,13 +113,13 @@ export default function WishlistPage() {
  ))}
  </div>
  ) : (
- <div className="py-32 text-center px-8 bg-surface-container-low/30 border-4 border-dashed border-outline-variant/30 rounded-[64px] animate-in fade-in zoom-in-95 duration-1000">
- <div className="w-32 h-32 bg-surface-container-low border-4 border-surface-container-lowest rounded-[48px] flex items-center justify-center mx-auto mb-10 shadow-inner group">
+ <div className="py-32 text-center px-8 bg-surface-container-low/30 border border-dashed border-outline-variant/30 rounded-[64px] animate-in fade-in zoom-in-95 duration-1000">
+ <div className="w-32 h-32 bg-surface-container-low border border-surface-container-lowest rounded-[48px] flex items-center justify-center mx-auto mb-10 shadow-inner group">
  <Heart size={48} className="text-on-surface-variant opacity-10 group-hover:scale-125 transition-transform duration-1000" />
  </div>
- <h3 className="font-black text-4xl text-on-surface tracking-tighter uppercase leading-none">Zero Priority Assets</h3>
- <p className="text-[10px] font-black text-on-surface-variant uppercase mt-4 mb-12 tracking-[0.4em] opacity-40 italic">Initialize your wishlist matrix to monitor high-value targets</p>
- <Link href="/" className="inline-flex items-center gap-4 px-16 py-6 bg-primary-container text-white rounded-[28px] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-primary-container/30 hover:bg-on-surface transition-all hover:scale-105 active:scale-95 group">
+ <h3 className="font-semibold text-4xl text-on-surface tracking-tighter uppercase leading-none">Zero Priority Assets</h3>
+ <p className="text-[10px] font-semibold text-on-surface-variant uppercase mt-4 mb-12 tracking-[0.4em] opacity-40 italic">Initialize your wishlist matrix to monitor high-value targets</p>
+ <Link href="/" className="inline-flex items-center gap-4 px-16 py-6 bg-jumia-orange text-white rounded font-semibold text-xs uppercase tracking-[0.3em] shadow-2xl shadow-primary-container/30 hover:bg-jumia-orange transition-all hover:scale-105 active:scale-95 group">
  Begin Discovery
  <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-500" />
  </Link>

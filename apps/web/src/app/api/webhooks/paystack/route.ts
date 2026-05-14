@@ -5,7 +5,7 @@ import { paymentService } from '@ecom/api/modules/payment/services/payment-servi
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 if (!PAYSTACK_SECRET_KEY || PAYSTACK_SECRET_KEY === 'sk_test_placeholder') {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' && process.env.SKIP_ENV_VALIDATION !== 'true') {
     throw new Error('FATAL: PAYSTACK_SECRET_KEY is missing or using placeholder in production.');
   }
 }

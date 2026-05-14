@@ -47,5 +47,5 @@ const _returnRouter = createTRPCRouter({
   }),
 });
 
-export const returnRouter = _returnRouter as any;
+export const returnRouter = _returnRouter;
 export type ReturnRouter = typeof _returnRouter;

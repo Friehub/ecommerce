@@ -1,7 +1,8 @@
 # ── Stage 1: Builder ───────────────────────────────────────────
 FROM node:20-slim AS builder
 RUN apt-get update && apt-get install -y libc6 && rm -rf /var/lib/apt/lists/*
-RUN npm install -g pnpm
+# Use corepack (built into node:20) to pin pnpm version — avoids re-downloading on every build
+RUN corepack enable && corepack prepare pnpm@9 --activate
 WORKDIR /app
 
 # Copy root manifests
@@ -20,8 +21,11 @@ COPY . .
 RUN pnpm --filter @ecom/db generate
 RUN pnpm --filter @ecom/db build
 RUN pnpm --filter @ecom/shared build
-RUN pnpm --filter @ecom/api exec tsc -b --force
-RUN pnpm --filter @ecom/api-server exec tsc -b --force
+# Delete stale .tsbuildinfo files before compiling to prevent cache corruption
+# without paying the cost of --force on every run
+RUN find . -name '*.tsbuildinfo' -delete
+RUN pnpm --filter @ecom/api exec tsc -b
+RUN pnpm --filter @ecom/api-server exec tsc -b
 
 # Deploy standalone production bundle
 RUN pnpm deploy --filter @ecom/api-server --prod /app/deploy --legacy

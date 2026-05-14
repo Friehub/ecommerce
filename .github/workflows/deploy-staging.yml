@@ -56,6 +56,8 @@ jobs:
         run: pnpm audit --audit-level critical
 
       - name: Validate Docker Build
+        env:
+          DOCKER_BUILDKIT: 1
         run: docker compose -f docker-compose.staging.yml build
 
       - name: Sync code

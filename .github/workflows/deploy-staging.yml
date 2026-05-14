@@ -6,7 +6,7 @@ on:
 
 concurrency:
   group: deploy-staging
-  cancel-in-progress: true  # staging deploys can be superseded
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # needed for git diff change detection
+          fetch-depth: 2
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,89 +34,30 @@ jobs:
       - name: Generate Prisma client
         run: pnpm --filter @ecom/db generate
 
-      # ── Automated Tests (Gate) ───────────────────────────────────────────
-      # Rust services are disabled in staging — compiled via Node.js fallbacks.
-      # Re-enable when Rust service compilation is added back to docker-compose.staging.yml.
-      # - name: Set up Rust
-      #   uses: dtolnay/rust-toolchain@stable
-      # - name: Rust Cache
-      #   uses: Swatinem/rust-cache@v2
-      #   with:
-      #     workspaces: services -> target
-      # - name: Install Protoc
-      #   run: ...
-      # - name: Run Rust Tests
-      #   working-directory: services
-      #   run: cargo test --workspace
-
-
-      - name: Sync code
+      - name: Start Infrastructure (Postgres/Redis)
         run: |
-          rsync -av --delete \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='target' \
-            --exclude='apps/web/.next/' \
-            --exclude='nginx/certs/' \
-            --exclude='.env*' \
-            $GITHUB_WORKSPACE/ /opt/runner-work/jumia-staging/
-
-      - name: Start database
-        working-directory: /opt/runner-work/jumia-staging
-        run: |
-          docker compose -f docker-compose.staging.yml --env-file .env.staging up -d --force-recreate postgres
+          if [ ! -f ".env.staging" ]; then
+            echo "ERROR: .env.staging is missing! Please create it in $(pwd)"
+            exit 1
+          fi
+          # Using infra-only compose for staging
+          docker compose -f docker-compose.infra.yml --env-file .env.staging up -d --force-recreate
           echo "Waiting for database to be ready..."
           sleep 10
-          docker compose -f docker-compose.staging.yml --env-file .env.staging exec -T postgres sh -c "psql -U ecom -d ecom -c 'GRANT ALL ON SCHEMA public TO ecom;'"
-          docker compose -f docker-compose.staging.yml --env-file .env.staging exec -T postgres sh -c "psql -U ecom -d ecom -c \"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'ecom' AND pid <> pg_backend_pid();\"" || true
-          docker compose -f docker-compose.staging.yml --env-file .env.staging stop api workers event-consumer || true
-
-      - name: Migrate and seed staging database
-        run: |
-          DB_PASSWORD=$(grep '^DB_PASSWORD=' /opt/runner-work/jumia-staging/.env.staging | cut -d '=' -f2-)
-          DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db npx prisma db push --accept-data-loss --force-reset
-          DATABASE_URL="postgresql://ecom:${DB_PASSWORD}@127.0.0.1:5433/ecom" pnpm --filter @ecom/db pnpm run seed
-
-      # ── Detect what changed ────────────────────────────────────────────────
-      - name: Detect changed service groups
-        id: changes
-        run: |
-          RUST_CHANGED=false
-          TS_CHANGED=false
-
-          if git diff --name-only HEAD~1 HEAD | grep -qE '^(services/|docker-compose)'; then
-            RUST_CHANGED=true
-          fi
-          if git diff --name-only HEAD~1 HEAD | grep -qE '^(apps/|packages/|docker-compose)'; then
-            TS_CHANGED=true
-          fi
-
-          echo "rust=$RUST_CHANGED" >> $GITHUB_OUTPUT
-          echo "ts=$TS_CHANGED"     >> $GITHUB_OUTPUT
-          echo "tag=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "Rust changed: $RUST_CHANGED | TS changed: $TS_CHANGED"
-
-      # ── Rust services disabled in staging (commented out of compose) ────────
-      # - name: Build Rust services (workspace)
-      #   if: steps.changes.outputs.rust == 'true'
-      #   run: docker compose -f docker-compose.staging.yml --env-file .env.staging build \
-      #     search inventory fraud recommendations auction image-processor
+          # Ensure permissions are correct
+          docker compose -f docker-compose.infra.yml --env-file .env.staging exec -T postgres sh -c "psql -U ecom -d ecom -c 'GRANT ALL ON SCHEMA public TO ecom;'" || true
 
       - name: Build Application
         env:
           SKIP_ENV_VALIDATION: "true"
           NODE_ENV: "production"
         run: |
-          # Remove any stale build cache to force a fresh compile
           find . -name "*.tsbuildinfo" -delete
           pnpm build
-          
-          # Verify the API build output
           if [ ! -d "apps/api-server/dist" ]; then
             echo "ERROR: apps/api-server/dist was not created!"
             exit 1
           fi
-          echo "API build verified successfully."
 
       - name: Run Migrations
         env:
@@ -125,12 +66,10 @@ jobs:
 
       - name: Deploy with PM2
         run: |
-          # Ensure PM2 is installed on the host
           if ! command -v pm2 &> /dev/null; then
             npm install -g pm2
           fi
-          # Reload all services defined in the ecosystem file
-          pm2 startOrReload ecosystem.config.cjs --env staging --update-env
+          pm2 startOrReload ecosystem.config.cjs --update-env
 
       - name: Post-Deploy Smoke Test
         run: |
@@ -139,4 +78,3 @@ jobs:
           curl --fail --silent --show-error --max-time 10 http://localhost:4000/health || \
           (echo "Staging smoke test FAILED" && exit 1)
           echo "Staging verified!"
-

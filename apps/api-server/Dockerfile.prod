@@ -24,7 +24,7 @@ RUN pnpm --filter @ecom/api exec tsc -b --force
 RUN pnpm --filter @ecom/api-server exec tsc -b --force
 
 # Deploy standalone production bundle
-RUN pnpm deploy --filter @ecom/api-server --prod /app/deploy
+RUN pnpm deploy --filter @ecom/api-server --prod /app/deploy --legacy
 
 # ── Stage 2: Production runner ─────────────────────────────────
 FROM node:20-slim AS runner

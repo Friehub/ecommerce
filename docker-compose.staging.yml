@@ -73,6 +73,22 @@ services:
       retries: 3
       start_period: 10s
 
+  migrate:
+    image: jumia-api:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/api-server/Dockerfile.prod
+    env_file:
+      - .env.staging
+    environment:
+      DATABASE_URL: "postgresql://ecom:${DB_PASSWORD}@postgres:5432/ecom?sslmode=disable"
+      SKIP_ENV_VALIDATION: "true"
+    networks: [db-net]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["pnpm", "--filter", "@ecom/db", "migrate", "deploy"]
+
   web:
     image: jumia-web:${IMAGE_TAG:-latest}
     build:
@@ -81,6 +97,9 @@ services:
     restart: always
     env_file:
       - .env.staging
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     environment:
       NODE_ENV: production
       NEXTAUTH_URL: ${NEXTAUTH_URL}
@@ -134,6 +153,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:4000/health || exit 1"]
       interval: 10s
@@ -314,6 +335,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "pgrep node || exit 1"]
       interval: 10s
@@ -342,6 +365,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "pgrep event-consumer || exit 1"]
       interval: 10s

@@ -40,6 +40,11 @@ ENV NODE_ENV production
 
 # Copy the deployed application from builder
 COPY --from=builder /app/deploy ./
+# Also copy the database package so we have the prisma schema and can run migrations
+COPY --from=builder /app/packages/db ./packages/db
+
+# Install pnpm and prisma for migrations
+RUN corepack enable && corepack prepare pnpm@9 --activate && npm install -g prisma
 
 EXPOSE 4000
 

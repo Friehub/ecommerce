@@ -87,7 +87,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: ["pnpm", "--filter", "@ecom/db", "migrate", "deploy"]
+    command: ["npx", "prisma", "migrate", "deploy", "--schema", "packages/db/prisma/schema"]
 
   web:
     image: jumia-web:${IMAGE_TAG:-latest}

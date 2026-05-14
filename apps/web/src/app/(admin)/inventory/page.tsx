@@ -30,13 +30,13 @@ export default async function AdminInventoryPage() {
  </div>
  <div>
  <h1 className="text-4xl md:text-5xl font-semibold text-on-surface uppercase tracking-tighter leading-none">Stock <span className="text-jumia-orange">Intelligence</span></h1>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-4 italic">Real-time Synchronization Across Global Distribution Nodes and Fulfillment Arrays.</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-4 italic">Real-time Synchronization Across Global Distribution Nodes and Fulfillment Arrays.</p>
  </div>
  </div>
  </div>
  <div className="flex items-center gap-4 bg-surface-container-low/30 px-8 py-4 rounded border-2 border-surface-container-low">
  <Activity size={20} className="text-jumia-orange animate-pulse" />
- <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-on-surface-variant">Global Inventory Sync Active</span>
+ <span className="text-[10px] font-semibold uppercase  text-on-surface-variant">Global Inventory Sync Active</span>
  </div>
  </div>
 
@@ -45,11 +45,11 @@ export default async function AdminInventoryPage() {
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-surface-container-low/30 border-b-4 border-surface-container-low">
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Product Asset</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">SKU / Node</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Warehouse Node</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Unit Velocity</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Status</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Product Asset</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">SKU / Node</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Warehouse Node</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Unit Velocity</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Status</th>
  </tr>
  </thead>
  <tbody className="divide-y-4 divide-surface-container-low">
@@ -62,7 +62,7 @@ export default async function AdminInventoryPage() {
  </div>
  <div>
  <div className="text-lg font-semibold text-on-surface uppercase tracking-tighter leading-none group-hover:text-jumia-orange transition-colors mb-2">{stock.variant.product.title}</div>
- <div className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic">Product Identity: {stock.variant.product.id.slice(-8).toUpperCase()}</div>
+ <div className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic">Product Identity: {stock.variant.product.id.slice(-8).toUpperCase()}</div>
  </div>
  </div>
  </td>
@@ -74,14 +74,14 @@ export default async function AdminInventoryPage() {
  <td className="px-10 py-10">
  <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-surface-container-low border-2 border-surface-container-low shadow-inner">
  <Warehouse size={16} className="text-jumia-orange opacity-60" />
- <span className="text-[10px] font-semibold text-on-surface uppercase tracking-[0.2em]">{stock.warehouse.name.toUpperCase()}</span>
+ <span className="text-[10px] font-semibold text-on-surface uppercase ">{stock.warehouse.name.toUpperCase()}</span>
  </div>
  </td>
  <td className="px-10 py-10">
  <div className="space-y-2">
  <div className="flex items-end gap-3 leading-none">
  <span className="text-3xl font-semibold text-on-surface tracking-tighter">{stock.qtyOnHand}</span>
- <span className="text-[10px] font-semibold text-on-surface-variant/30 uppercase tracking-[0.4em] mb-1 italic">Units</span>
+ <span className="text-[10px] font-semibold text-on-surface-variant/30 uppercase  mb-1 italic">Units</span>
  </div>
  <div className="flex items-center gap-2 text-[9px] font-semibold text-jumia-orange uppercase tracking-widest italic bg-jumia-orange/5 w-fit px-2 py-0.5 rounded-lg border border-jumia-orange/10">
  <Activity size={10} /> {stock.qtyReserved} Reserved
@@ -90,12 +90,12 @@ export default async function AdminInventoryPage() {
  </td>
  <td className="px-10 py-10">
  {stock.qtyOnHand <= 10 ? (
- <div className="inline-flex items-center gap-3 h-12 px-6 rounded-full text-[9px] font-semibold uppercase tracking-[0.4em] italic bg-error/5 text-error border-2 border-error/10 shadow-xl shadow-error/5 animate-pulse">
+ <div className="inline-flex items-center gap-3 h-12 px-6 rounded-full text-[9px] font-semibold uppercase  italic bg-error/5 text-error border-2 border-error/10 shadow-xl shadow-error/5 animate-pulse">
  <AlertTriangle size={16} />
  Critical depletion
  </div>
  ) : (
- <div className="inline-flex items-center gap-3 h-12 px-6 rounded-full text-[9px] font-semibold uppercase tracking-[0.4em] italic bg-success/5 text-success border-2 border-success/10 shadow-xl shadow-success/5">
+ <div className="inline-flex items-center gap-3 h-12 px-6 rounded-full text-[9px] font-semibold uppercase  italic bg-success/5 text-success border-2 border-success/10 shadow-xl shadow-success/5">
  <CheckCircle size={16} />
  Protocol Nominal
  </div>
@@ -111,7 +111,7 @@ export default async function AdminInventoryPage() {
  <Warehouse size={48} />
  </div>
  <h3 className="text-3xl font-semibold text-on-surface uppercase tracking-tighter">Inventory Null</h3>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-6 italic leading-relaxed">NO STOCK ENTITIES DETECTED WITHIN THE CENTRAL DISTRIBUTION MATRIX.</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-6 italic leading-relaxed">NO STOCK ENTITIES DETECTED WITHIN THE CENTRAL DISTRIBUTION MATRIX.</p>
  </div>
  )}
  </div>
@@ -126,15 +126,15 @@ export default async function AdminInventoryPage() {
  </div>
  <div>
  <h3 className="text-2xl font-semibold uppercase tracking-tighter mb-2">Inventory <span className="text-jumia-orange">Integrity</span></h3>
- <p className="text-[10px] font-semibold uppercase tracking-[0.2em] italic opacity-40 max-w-3xl leading-loose">
+ <p className="text-[10px] font-semibold uppercase  italic opacity-40 max-w-3xl leading-loose">
  STOCK MAGNITUDE IS SYNCED EVERY 60 SECONDS ACROSS ALL DISTRIBUTION NODES. DISCREPANCIES TRIGGER AUTOMATIC OPERATIONAL AUDITS.
  </p>
  </div>
  </div>
  <div className="flex items-center gap-6 bg-white/5 px-8 py-5 rounded border-2 border-white/10 shrink-0">
  <div className="flex flex-col items-end">
- <span className="text-[10px] font-semibold uppercase tracking-[0.4em]">Node-Alpha Sync</span>
- <span className="text-[9px] font-semibold text-jumia-orange uppercase tracking-[0.2em] italic mt-1">In Stock</span>
+ <span className="text-[10px] font-semibold uppercase ">Node-Alpha Sync</span>
+ <span className="text-[9px] font-semibold text-jumia-orange uppercase  italic mt-1">In Stock</span>
  </div>
  <Activity size={24} className="text-jumia-orange animate-pulse" />
  </div>

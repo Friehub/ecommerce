@@ -59,7 +59,7 @@ function SearchResults() {
   const FilterContent = () => (
     <div className="p-5 space-y-6">
       <div>
-        <h4 className="text-[10px] font-semibold uppercase text-on-surface-variant mb-6 tracking-[0.4em] opacity-40 italic">Valuation (₦)</h4>
+        <h4 className="text-[10px] font-semibold uppercase text-on-surface-variant mb-6  opacity-40 italic">Valuation (₦)</h4>
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
             <input 
@@ -79,7 +79,7 @@ function SearchResults() {
           </div>
           <button 
             onClick={() => updateFilters({ minPrice, maxPrice })}
-            className="w-full bg-jumia-orange text-white py-3.5 rounded-xl text-[9px] font-semibold uppercase tracking-[0.3em] shadow-xl hover:bg-jumia-orange-dark transition-all active:scale-95"
+            className="w-full bg-jumia-orange text-white py-3.5 rounded-xl text-[9px] font-semibold uppercase  shadow-xl hover:bg-jumia-orange-dark transition-all active:scale-95"
           >
             Apply Range
           </button>
@@ -88,7 +88,7 @@ function SearchResults() {
       
       {brands && brands.length > 0 && (
         <div className="pt-6 border-t-2 border-surface-container-low">
-          <h4 className="text-[10px] font-semibold uppercase text-on-surface-variant mb-6 tracking-[0.4em] opacity-40 italic">Manufacturer</h4>
+          <h4 className="text-[10px] font-semibold uppercase text-on-surface-variant mb-6  opacity-40 italic">Manufacturer</h4>
           <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
             <label className="flex items-center gap-4 cursor-pointer group">
               <input 
@@ -124,7 +124,7 @@ function SearchResults() {
 
       <button 
         onClick={() => setIsFilterOpen(false)}
-        className="w-full py-5 bg-jumia-orange text-white rounded-2xl font-semibold text-[10px] uppercase tracking-[0.4em] mt-8 lg:hidden shadow-2xl shadow-primary-container/20 active:scale-95 transition-all"
+        className="w-full py-5 bg-jumia-orange text-white rounded-2xl font-semibold text-[10px] uppercase  mt-8 lg:hidden shadow-2xl shadow-primary-container/20 active:scale-95 transition-all"
       >
         Close Console
       </button>
@@ -138,7 +138,7 @@ function SearchResults() {
         <div className="lg:hidden flex gap-4 mb-8">
           <button 
             onClick={() => setIsFilterOpen(true)}
-            className="flex-1 flex items-center justify-center gap-3 bg-surface-container-lowest border border-surface-container-low py-4 rounded-2xl text-[10px] font-semibold uppercase tracking-[0.3em] text-on-surface active:scale-95 transition-all shadow-soft"
+            className="flex-1 flex items-center justify-center gap-3 bg-surface-container-lowest border border-surface-container-low py-4 rounded-2xl text-[10px] font-semibold uppercase  text-on-surface active:scale-95 transition-all shadow-soft"
           >
             <SlidersHorizontal size={18} className="text-jumia-orange" />
             Precision Filters
@@ -151,7 +151,7 @@ function SearchResults() {
             <div className="p-8 bg-surface-container-low/30 border-b-2 border-surface-container-low flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Filter size={18} className="text-jumia-orange" />
-                <h3 className="font-semibold text-[10px] uppercase tracking-[0.3em] text-on-surface">Precision Filters</h3>
+                <h3 className="font-semibold text-[10px] uppercase  text-on-surface">Precision Filters</h3>
               </div>
             </div>
             <FilterContent />
@@ -182,7 +182,7 @@ function SearchResults() {
               <h1 className="text-4xl font-semibold text-on-surface leading-none tracking-tighter uppercase mb-2">
                 {query ? query : 'Global Inventory'}
               </h1>
-              <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] italic">
+              <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic">
                 {products?.results?.length || 0} Entities Successfully Located
               </p>
             </div>
@@ -207,7 +207,7 @@ function SearchResults() {
           {/* Active Filter Chips */}
           {(minPriceParam || maxPriceParam || brandIdParam) && (
             <div className="flex flex-wrap items-center gap-4 mb-10 animate-in fade-in slide-in-from-left-4 duration-700">
-              <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-on-surface-variant opacity-40 mr-2">Applied Constraints:</span>
+              <span className="text-[9px] font-semibold uppercase  text-on-surface-variant opacity-40 mr-2">Applied Constraints:</span>
               {minPriceParam && (
                 <button 
                   onClick={() => updateFilters({ minPrice: '' })}
@@ -262,10 +262,10 @@ function SearchResults() {
                 <SearchIcon size={48} />
               </div>
               <h3 className="font-semibold text-4xl text-on-surface leading-none uppercase tracking-tighter">Inventory Void</h3>
-              <p className="text-on-surface-variant font-semibold text-[11px] mt-6 max-w-xs mx-auto uppercase tracking-[0.4em] opacity-40 leading-relaxed italic">
+              <p className="text-on-surface-variant font-semibold text-[11px] mt-6 max-w-xs mx-auto uppercase  opacity-40 leading-relaxed italic">
                 The current search vector returned zero matches in the global grid.
               </p>
-              <Link href="/" className="mt-16 inline-flex px-14 py-6 bg-jumia-orange text-white rounded font-semibold text-[11px] tracking-[0.4em] uppercase transition-all duration-500 hover:shadow-2xl hover:scale-105 active:scale-95 shadow-xl">
+              <Link href="/" className="mt-16 inline-flex px-14 py-6 bg-jumia-orange text-white rounded font-semibold text-[11px]  uppercase transition-all duration-500 hover:shadow-2xl hover:scale-105 active:scale-95 shadow-xl">
                 Return to Hub
               </Link>
             </div>
@@ -282,7 +282,7 @@ export default function SearchPage() {
       <Suspense fallback={
         <div className="container mx-auto px-4 py-40 text-center animate-in fade-in duration-700">
           <div className="w-24 h-24 border-8 border-surface-container-low border-t-primary-container rounded-full animate-spin mx-auto mb-10 shadow-2xl" />
-          <p className="font-semibold text-[10px] uppercase tracking-[0.4em] text-on-surface-variant opacity-40 italic">Querying Central Grid...</p>
+          <p className="font-semibold text-[10px] uppercase  text-on-surface-variant opacity-40 italic">Querying Central Grid...</p>
         </div>
       }>
         <SearchResults />

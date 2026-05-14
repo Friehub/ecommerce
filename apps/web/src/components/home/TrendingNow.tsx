@@ -29,7 +29,7 @@ export const TrendingNow = () => {
  </div>
  <div>
  <h2 className="text-2xl font-semibold text-on-surface uppercase tracking-tighter leading-none">Trending Now</h2>
- <p className="text-[10px] text-on-surface-variant font-semibold uppercase tracking-[0.4em] mt-1 opacity-40">Market Velocity Leaders</p>
+ <p className="text-[10px] text-on-surface-variant font-semibold uppercase  mt-1 opacity-40">Market Velocity Leaders</p>
  </div>
  </div>
  </div>

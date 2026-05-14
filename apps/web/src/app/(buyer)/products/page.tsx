@@ -25,17 +25,17 @@ export default async function ProductsPage({
  </div>
  <div>
  <h1 className="text-4xl md:text-5xl font-semibold text-on-surface uppercase tracking-tighter leading-none">Global <span className="text-jumia-orange">Catalog</span></h1>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-4 italic">Querying verified inventory from the central fulfillment grid.</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-4 italic">Querying verified inventory from the central fulfillment grid.</p>
  </div>
  </div>
  </div>
  <div className="flex items-center gap-4">
- <button className="h-14 px-8 bg-surface-container-low border-2 border-surface-container-low rounded-2xl text-[10px] font-semibold uppercase tracking-[0.3em] flex items-center gap-3 hover:border-jumia-orange/20 transition-all">
+ <button className="h-14 px-8 bg-surface-container-low border-2 border-surface-container-low rounded-2xl text-[10px] font-semibold uppercase  flex items-center gap-3 hover:border-jumia-orange/20 transition-all">
  <Filter size={16} /> Filter Nodes
  </button>
  <div className="flex items-center gap-2 bg-surface-container-low/30 px-6 py-4 rounded-sm border-2 border-surface-container-low">
  <Activity size={16} className="text-jumia-orange animate-pulse" />
- <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-on-surface-variant">{products.length} Units Found</span>
+ <span className="text-[10px] font-semibold uppercase  text-on-surface-variant">{products.length} Units Found</span>
  </div>
  </div>
  </header>
@@ -44,7 +44,7 @@ export default async function ProductsPage({
  {products.map((product, idx) => (
  <div 
  key={product.id} 
- className="bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-soft overflow-hidden group hover:shadow-2xl hover:border-jumia-orange/20 transition-all duration-700 animate-in fade-in slide-in-from-bottom-8"
+ className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden group hover:shadow-2xl hover:border-jumia-orange/20 transition-all duration-700 animate-in fade-in slide-in-from-bottom-8"
  style={{ animationDelay: `${idx * 50}ms` }}
  >
  <Link href={`/products/${product.slug}`} className="block relative aspect-square overflow-hidden bg-surface-container-low">
@@ -58,17 +58,17 @@ export default async function ProductsPage({
  ) : (
  <div className="w-full h-full flex flex-col items-center justify-center gap-4 opacity-20 group-hover:opacity-40 transition-opacity">
  <Package size={64} strokeWidth={1} />
- <span className="text-[10px] font-semibold uppercase tracking-[0.4em]">Asset Null</span>
+ <span className="text-[10px] font-semibold uppercase ">Asset Null</span>
  </div>
  )}
  
  {/* Status Badges */}
  <div className="absolute top-6 left-6 z-20 flex flex-col gap-2">
- <div className="bg-jumia-orange text-white text-[9px] font-semibold uppercase tracking-[0.3em] px-4 py-2 rounded-xl shadow-2xl backdrop-blur-md border border-white/10">
+ <div className="bg-jumia-orange text-white text-[9px] font-semibold uppercase  px-4 py-2 rounded-xl shadow-2xl backdrop-blur-md border border-white/10">
  NEW BATCH
  </div>
  {idx % 3 === 0 && (
- <div className="bg-jumia-orange text-white text-[9px] font-semibold uppercase tracking-[0.3em] px-4 py-2 rounded-xl shadow-2xl border border-white/10">
+ <div className="bg-jumia-orange text-white text-[9px] font-semibold uppercase  px-4 py-2 rounded-xl shadow-2xl border border-white/10">
  TRENDING
  </div>
  )}
@@ -79,17 +79,17 @@ export default async function ProductsPage({
  <div className="space-y-2">
  <div className="flex items-center gap-2 text-jumia-orange">
  <Star size={12} fill="currentColor" />
- <span className="text-[9px] font-semibold uppercase tracking-[0.3em]">4.9 Diagnostic Rating</span>
+ <span className="text-[9px] font-semibold uppercase ">4.9 Diagnostic Rating</span>
  </div>
  <h2 className="text-xl font-semibold text-on-surface uppercase tracking-tighter truncate group-hover:text-jumia-orange transition-colors">
  {product.title}
  </h2>
- <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic">SKU: {product.id.slice(-8).toUpperCase()}</p>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase  italic">SKU: {product.id.slice(-8).toUpperCase()}</p>
  </div>
 
  <div className="flex items-end justify-between gap-4 pt-4 border-t-2 border-surface-container-low">
  <div className="space-y-1">
- <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic">Current Magnitude</p>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase  italic">Current Magnitude</p>
  <p className="text-2xl font-semibold text-jumia-orange tracking-tighter">
  ₦{product.variants[0]?.price.toLocaleString()}
  </p>
@@ -112,7 +112,7 @@ export default async function ProductsPage({
  <Package size={48} className="text-on-surface-variant/20" />
  </div>
  <h3 className="text-3xl font-semibold text-on-surface uppercase tracking-tighter">Catalog Empty</h3>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.5em] mt-6 italic">NO ASSETS MATCHING YOUR CURRENT SEARCH PARAMETERS WERE DETECTED.</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-6 italic">NO ASSETS MATCHING YOUR CURRENT SEARCH PARAMETERS WERE DETECTED.</p>
  </div>
  )}
  </div>

@@ -37,8 +37,12 @@ const CountdownTimer = ({ endTime }: { endTime: any }) => {
   }, [endTime]);
 
   return (
-    <div className="bg-white text-red-600 px-2 py-1 rounded font-bold text-xs">
-      {timeLeft.h}h : {timeLeft.m}m : {timeLeft.s}s
+    <div className="flex gap-1.5 items-center">
+      <div className="bg-white text-red-600 px-1.5 py-1 rounded-sm font-black text-xs min-w-[28px] text-center">{timeLeft.h}</div>
+      <span className="text-white font-black">:</span>
+      <div className="bg-white text-red-600 px-1.5 py-1 rounded-sm font-black text-xs min-w-[28px] text-center">{timeLeft.m}</div>
+      <span className="text-white font-black">:</span>
+      <div className="bg-white text-red-600 px-1.5 py-1 rounded-sm font-black text-xs min-w-[28px] text-center">{timeLeft.s}</div>
     </div>
   );
 };
@@ -48,11 +52,11 @@ export const FlashSales = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant overflow-hidden">
-        <div className="bg-red-600 h-12 w-full animate-pulse" />
+      <div className="bg-white rounded-sm border border-j-border overflow-hidden mt-8">
+        <div className="bg-red-600 h-14 w-full animate-pulse" />
         <div className="p-4 flex gap-4 overflow-hidden">
           {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className="min-w-[180px] h-[240px] rounded" />
+            <Skeleton key={i} className="min-w-[200px] h-[300px] rounded-sm" />
           ))}
         </div>
       </div>
@@ -67,26 +71,34 @@ export const FlashSales = () => {
   }, new Date(flashSales[0].endTime));
 
   return (
-    <section className="bg-j-surface-container-lowest rounded border border-j-outline-variant overflow-hidden">
+    <section className="bg-white rounded-sm border border-j-border overflow-hidden mt-8 shadow-sm group">
       {/* Header */}
-      <div className="bg-red-600 px-4 py-3 flex items-center justify-between text-white">
-        <div className="flex items-center gap-3">
-          <Zap size={20} className="fill-white" />
-          <h3 className="text-headline-sm font-bold">Flash Sales</h3>
+      <div className="bg-red-600 px-6 py-4 flex flex-col md:flex-row items-center justify-between text-white gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <Zap size={24} className="fill-white text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-black uppercase tracking-tighter italic">Flash <span className="text-white/80">Sales</span></h3>
+            <p className="text-[10px] font-black uppercase opacity-70 tracking-widest">Top Deals. Limited Time.</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-label-bold font-bold">
-          <span className="hidden sm:inline uppercase">Time Left:</span>
-          <CountdownTimer endTime={earliestEnd} />
+        
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] font-black uppercase tracking-wider text-white/90">Ends in:</span>
+            <CountdownTimer endTime={earliestEnd} />
+          </div>
+          <Link href="/flash-sales" className="hidden md:flex items-center gap-2 text-xs font-black uppercase tracking-wider hover:bg-white/10 px-4 py-2 rounded-sm transition-colors border border-white/20">
+            See All <ChevronRight size={16} />
+          </Link>
         </div>
-        <Link href="/flash-sales" className="text-label-bold font-bold hover:underline uppercase text-xs">
-          See All &gt;
-        </Link>
       </div>
 
       {/* Product List */}
-      <div className="p-4 flex gap-4 overflow-x-auto snap-x hide-scrollbar">
+      <div className="p-4 md:p-6 flex gap-6 overflow-x-auto snap-x hide-scrollbar scroll-smooth">
         {flashSales.map((fs: any) => (
-          <div key={fs.id} className="min-w-[180px] w-[180px] flex-shrink-0 snap-start">
+          <div key={fs.id} className="min-w-[200px] w-[200px] flex-shrink-0 snap-start">
             <ProductCard 
               product={{
                 ...fs.variant.product,

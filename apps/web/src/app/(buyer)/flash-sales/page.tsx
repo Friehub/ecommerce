@@ -32,7 +32,7 @@ const CountdownTimer = ({ endTime }: { endTime: any }) => {
  return () => clearInterval(timer);
  }, [endTime]);
 
- return <span className="font-mono tracking-[0.2em]">{timeLeft || '00 : 00 : 00'}</span>;
+ return <span className="font-mono ">{timeLeft || '00 : 00 : 00'}</span>;
 };
 
 export default function FlashSalesPage() {
@@ -58,7 +58,7 @@ export default function FlashSalesPage() {
  return (
     <div className="bg-background min-h-screen pb-32 select-none animate-in fade-in duration-1000">
       <div className="container py-12">
-        <div className="flex items-center gap-4 mb-12 font-semibold text-on-surface-variant/40 text-[10px] uppercase tracking-[0.4em] italic">
+        <div className="flex items-center gap-4 mb-12 font-semibold text-on-surface-variant/40 text-[10px] uppercase  italic">
           <Link href="/" className="hover:text-jumia-orange transition-colors">Hub.Node</Link>
           <ChevronRight size={14} className="opacity-20" />
           <span className="text-on-surface">Flash.Auctions</span>
@@ -78,13 +78,13 @@ export default function FlashSalesPage() {
                 </h1>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-white animate-ping" />
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.5em] opacity-60">High-Frequency Protocol Active</p>
+                  <p className="text-[10px] font-semibold uppercase  opacity-60">High-Frequency Protocol Active</p>
                 </div>
               </div>
             </div>
             {flashSales && flashSales.length > 0 && (
               <div className="flex flex-col items-center md:items-end gap-4 relative z-10">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.5em] opacity-40 italic">Temporal Sync Window</span>
+                <span className="text-[10px] font-semibold uppercase  opacity-40 italic">Temporal Sync Window</span>
                 <div className="bg-white/10 backdrop-blur-md text-white px-10 py-6 rounded text-2xl font-semibold shadow-2xl border border-white/20 flex items-center gap-6">
                   <Clock size={24} className="animate-spin-slow opacity-60" />
                   <CountdownTimer endTime={earliestEnd} />
@@ -114,8 +114,8 @@ export default function FlashSalesPage() {
  <Zap size={48} className="text-on-surface-variant/10 group-hover:text-jumia-orange transition-colors" />
  </div>
  <h2 className="text-3xl font-semibold text-on-surface uppercase tracking-tighter">Frequency Silent</h2>
- <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase tracking-[0.4em] mt-4 mb-12 italic">No active flash protocols detected at this timestamp.</p>
- <Link href="/" className="inline-flex items-center gap-4 px-12 py-5 bg-jumia-orange text-white rounded-2xl font-semibold text-[11px] uppercase tracking-[0.3em] shadow-2xl hover:scale-105 active:scale-95 transition-all">
+ <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase  mt-4 mb-12 italic">No active flash protocols detected at this timestamp.</p>
+ <Link href="/" className="inline-flex items-center gap-4 px-12 py-5 bg-jumia-orange text-white rounded-2xl font-semibold text-[11px] uppercase  shadow-2xl hover:scale-105 active:scale-95 transition-all">
  Return to Hub <ArrowRight size={18} />
  </Link>
  </div>

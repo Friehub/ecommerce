@@ -105,15 +105,15 @@ export default function CheckoutPage() {
 
   if (status === 'loading' || isAddressesLoading) {
     return (
-      <div className="max-w-container-max mx-auto px-margin-desktop py-8">
-        <Skeleton className="h-8 w-48 mb-8" />
+      <div className="max-w-[1184px] mx-auto px-4 py-8">
+        <Skeleton className="h-10 w-64 mb-10 rounded-sm" />
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1 space-y-6">
-            <Skeleton className="h-64" />
-            <Skeleton className="h-64" />
+            <Skeleton className="h-64 rounded-sm" />
+            <Skeleton className="h-64 rounded-sm" />
           </div>
-          <div className="w-full lg:w-[350px]">
-            <Skeleton className="h-96" />
+          <div className="w-full lg:w-[380px]">
+            <Skeleton className="h-96 rounded-sm" />
           </div>
         </div>
       </div>
@@ -121,25 +121,25 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="bg-j-background min-h-screen pb-12">
+    <div className="bg-j-background min-h-screen pb-20">
       {/* Toast */}
       {toast && (
-        <div className={`fixed top-6 right-6 z-[100] px-6 py-4 rounded shadow-xl flex items-center gap-3 border ${
+        <div className={`fixed top-10 right-10 z-[100] px-8 py-5 rounded-sm shadow-2xl flex items-center gap-4 border-2 transition-all animate-in slide-in-from-right ${
           toast.type === 'success' ? 'bg-white border-j-success text-j-success' : 'bg-white border-j-error text-j-error'
         }`}>
-          {toast.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
-          <span className="font-bold text-body-md uppercase">{toast.message}</span>
-          <button onClick={() => setToast(null)} className="ml-2"><X size={16} /></button>
+          {toast.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
+          <span className="font-black text-sm uppercase tracking-widest">{toast.message}</span>
+          <button onClick={() => setToast(null)} className="ml-4 hover:scale-110 transition-transform"><X size={18} /></button>
         </div>
       )}
 
       {/* Address Modal */}
       {showAddressModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded border border-j-outline-variant w-full max-w-xl overflow-hidden shadow-2xl">
-            <div className="p-4 border-b border-j-outline-variant flex items-center justify-between bg-j-surface-container-low">
-              <h3 className="font-bold uppercase text-label-bold">Add New Address</h3>
-              <button onClick={() => setShowAddressModal(false)}><X size={20} /></button>
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-sm border border-j-border w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="p-5 border-b border-j-border flex items-center justify-between bg-j-background">
+              <h3 className="font-black uppercase text-sm tracking-widest">Add New Address</h3>
+              <button onClick={() => setShowAddressModal(false)} className="hover:text-jumia-orange transition-colors"><X size={24} /></button>
             </div>
             
             <form 
@@ -158,14 +158,14 @@ export default function CheckoutPage() {
                   isDefault: true,
                 });
               }}
-              className="p-6 grid grid-cols-2 gap-4"
+              className="p-8 grid grid-cols-2 gap-6"
             >
               <div className="col-span-2 flex gap-4 mb-2">
                 <button 
                   type="button"
                   onClick={() => setAddressType('HOME')}
-                  className={`flex-1 p-3 rounded border font-bold text-label-bold uppercase flex items-center justify-center gap-2 ${
-                    addressType === 'HOME' ? 'border-jumia-orange text-jumia-orange bg-jumia-orange/5' : 'border-j-outline-variant text-j-text-muted'
+                  className={`flex-1 p-4 rounded-sm border-2 font-black text-[11px] uppercase flex items-center justify-center gap-3 transition-all ${
+                    addressType === 'HOME' ? 'border-jumia-orange text-jumia-orange bg-orange-50' : 'border-j-border text-j-text-muted hover:border-j-text-muted'
                   }`}
                 >
                   <Home size={18} /> Home
@@ -173,24 +173,24 @@ export default function CheckoutPage() {
                 <button 
                   type="button"
                   onClick={() => setAddressType('OFFICE')}
-                  className={`flex-1 p-3 rounded border font-bold text-label-bold uppercase flex items-center justify-center gap-2 ${
-                    addressType === 'OFFICE' ? 'border-jumia-orange text-jumia-orange bg-jumia-orange/5' : 'border-j-outline-variant text-j-text-muted'
+                  className={`flex-1 p-4 rounded-sm border-2 font-black text-[11px] uppercase flex items-center justify-center gap-3 transition-all ${
+                    addressType === 'OFFICE' ? 'border-jumia-orange text-jumia-orange bg-orange-50' : 'border-j-border text-j-text-muted hover:border-j-text-muted'
                   }`}
                 >
                   <Briefcase size={18} /> Office
                 </button>
               </div>
 
-              <input required name="firstName" placeholder="First Name" className="border border-j-outline-variant rounded p-3 text-body-md" />
-              <input required name="lastName" placeholder="Last Name" className="border border-j-outline-variant rounded p-3 text-body-md" />
-              <input required name="phone" placeholder="Phone Number" className="col-span-2 border border-j-outline-variant rounded p-3 text-body-md" />
-              <input required name="streetAddress" placeholder="Street Address" className="col-span-2 border border-j-outline-variant rounded p-3 text-body-md" />
+              <input required name="firstName" placeholder="First Name" className="bg-j-background border-2 border-j-border rounded-sm p-4 text-[13px] font-bold focus:border-jumia-orange outline-none" />
+              <input required name="lastName" placeholder="Last Name" className="bg-j-background border-2 border-j-border rounded-sm p-4 text-[13px] font-bold focus:border-jumia-orange outline-none" />
+              <input required name="phone" placeholder="Phone Number" className="col-span-2 bg-j-background border-2 border-j-border rounded-sm p-4 text-[13px] font-bold focus:border-jumia-orange outline-none" />
+              <input required name="streetAddress" placeholder="Street Address" className="col-span-2 bg-j-background border-2 border-j-border rounded-sm p-4 text-[13px] font-bold focus:border-jumia-orange outline-none" />
               
               <select 
                 required 
                 value={selectedState}
                 onChange={(e) => { setSelectedState(e.target.value); setSelectedCity(''); }}
-                className="border border-j-outline-variant rounded p-3 text-body-md"
+                className="bg-j-background border-2 border-j-border rounded-sm p-4 text-[13px] font-bold focus:border-jumia-orange outline-none cursor-pointer"
               >
                 <option value="">Select State</option>
                 {NIGERIA_STATES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -200,7 +200,7 @@ export default function CheckoutPage() {
                 required 
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
-                className="border border-j-outline-variant rounded p-3 text-body-md"
+                className="bg-j-background border-2 border-j-border rounded-sm p-4 text-[13px] font-bold focus:border-jumia-orange outline-none cursor-pointer disabled:opacity-50"
                 disabled={!selectedState}
               >
                 <option value="">Select City</option>
@@ -210,7 +210,7 @@ export default function CheckoutPage() {
               <button 
                 type="submit"
                 disabled={addAddressMutation.isLoading}
-                className="col-span-2 mt-4 bg-jumia-orange text-white py-3 rounded font-bold uppercase hover:bg-jumia-orange-dark transition-all disabled:opacity-50"
+                className="col-span-2 mt-4 bg-jumia-orange text-white py-4 rounded-sm font-black uppercase tracking-widest shadow-lg hover:bg-orange-600 transition-all disabled:opacity-50 active:scale-95"
               >
                 {addAddressMutation.isLoading ? 'Saving...' : 'Save Address'}
               </button>
@@ -219,74 +219,81 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      <div className="max-w-container-max mx-auto px-margin-desktop py-4">
+      <div className="max-w-[1184px] mx-auto px-4 py-8">
         {/* Breadcrumbs */}
-        <div className="flex items-center gap-2 mb-6 text-body-sm text-j-text-muted">
-          <Link href="/cart" className="hover:text-jumia-orange font-bold uppercase">Cart</Link>
-          <ChevronRight size={14} />
-          <span className="text-j-text font-bold uppercase">Checkout</span>
+        <div className="flex items-center gap-2 mb-8 text-[10px] font-black text-j-text-muted uppercase tracking-widest">
+          <Link href="/cart" className="hover:text-jumia-orange transition-colors">Cart</Link>
+          <ChevronRight size={12} />
+          <span className="text-j-text">Checkout</span>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-gutter">
-          <div className="flex-1 flex flex-col gap-4">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex-1 flex flex-col gap-6">
             {/* 1. Address Section */}
-            <div className="bg-white rounded border border-j-outline-variant shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-j-outline-variant bg-j-surface-container-low flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="bg-j-success text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                  <h2 className="text-label-bold font-bold uppercase">Address Details</h2>
+            <div className="bg-white rounded-sm border border-j-border shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-j-border bg-j-background flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <span className="bg-j-success text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shadow-sm">1</span>
+                  <h2 className="text-sm font-black uppercase tracking-widest">Address Details</h2>
                 </div>
                 <button 
                   onClick={() => setShowAddressModal(true)}
-                  className="text-jumia-orange font-bold text-label-bold uppercase hover:underline"
+                  className="text-jumia-orange font-black text-[11px] uppercase tracking-widest hover:text-orange-700 transition-colors"
                 >
                   Change &gt;
                 </button>
               </div>
-              <div className="p-4">
+              <div className="p-6">
                 {addresses && addresses.length > 0 ? (
-                  <div className="flex flex-col gap-1">
-                    <p className="font-bold text-body-md uppercase">{addresses[0].firstName} {addresses[0].lastName}</p>
-                    <p className="text-body-sm text-j-text-muted">{addresses[0].streetAddress} | {addresses[0].city} | {addresses[0].state}</p>
-                    <p className="text-body-sm text-j-text-muted mt-1">{addresses[0].phone}</p>
+                  <div className="flex flex-col gap-2">
+                    <p className="font-black text-sm uppercase tracking-tight text-j-text">{addresses[0].firstName} {addresses[0].lastName}</p>
+                    <p className="text-[12px] text-j-text-muted font-bold leading-relaxed">{addresses[0].streetAddress} | {addresses[0].city} | {addresses[0].state}</p>
+                    <p className="text-[11px] text-j-text font-black mt-2 opacity-80">{addresses[0].phone}</p>
                   </div>
                 ) : (
                   <button 
                     onClick={() => setShowAddressModal(true)}
-                    className="w-full py-8 border-2 border-dashed border-j-outline-variant rounded flex flex-col items-center gap-2 text-j-text-muted hover:text-jumia-orange hover:border-jumia-orange transition-all"
+                    className="w-full py-12 border-2 border-dashed border-j-border rounded-sm flex flex-col items-center gap-3 text-j-text-muted hover:text-jumia-orange hover:border-jumia-orange transition-all group"
                   >
-                    <Plus size={24} />
-                    <span className="font-bold uppercase text-label-bold">Add Delivery Address</span>
+                    <div className="w-12 h-12 rounded-full bg-j-background flex items-center justify-center group-hover:bg-orange-50 transition-colors">
+                      <Plus size={24} />
+                    </div>
+                    <span className="font-black uppercase text-[11px] tracking-widest">Add Delivery Address</span>
                   </button>
                 )}
               </div>
             </div>
 
             {/* 2. Delivery Method */}
-            <div className="bg-white rounded border border-j-outline-variant shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-j-outline-variant bg-j-surface-container-low flex items-center gap-2">
-                <span className="bg-j-success text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                <h2 className="text-label-bold font-bold uppercase">Delivery Method</h2>
+            <div className="bg-white rounded-sm border border-j-border shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-j-border bg-j-background flex items-center gap-4">
+                <span className="bg-j-success text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shadow-sm">2</span>
+                <h2 className="text-sm font-black uppercase tracking-widest">Delivery Method</h2>
               </div>
-              <div className="p-4 flex flex-col gap-4">
-                <div className="flex gap-3 p-3 border border-jumia-orange bg-jumia-orange/5 rounded">
-                  <CheckCircle2 className="text-jumia-orange" size={20} />
-                  <div>
-                    <h4 className="text-body-md font-bold">Door Delivery</h4>
-                    <p className="text-body-sm text-j-text-muted mt-1">Delivery scheduled between 20 May & 22 May</p>
+              <div className="p-6">
+                <div className="flex gap-4 p-5 border-2 border-jumia-orange bg-orange-50 rounded-sm relative group">
+                  <div className="bg-jumia-orange text-white p-2 rounded-full shrink-0">
+                    <Truck size={20} />
                   </div>
-                  <span className="ml-auto font-bold text-body-md uppercase">₦ {shipping.toLocaleString()}</span>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-black uppercase tracking-tight">Door Delivery</h4>
+                    <p className="text-[11px] text-j-text-muted font-bold mt-1 uppercase tracking-widest opacity-70">Scheduled between 20 May & 22 May</p>
+                  </div>
+                  <span className="font-black text-sm text-j-text uppercase tracking-tight">₦ {shipping.toLocaleString()}</span>
+                  <div className="absolute -top-3 -right-3">
+                     <CheckCircle2 className="text-jumia-orange fill-white" size={24} />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* 3. Payment Method */}
-            <div className="bg-white rounded border border-j-outline-variant shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-j-outline-variant bg-j-surface-container-low flex items-center gap-2">
-                <span className="bg-j-success text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">3</span>
-                <h2 className="text-label-bold font-bold uppercase">Payment Method</h2>
+            <div className="bg-white rounded-sm border border-j-border shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-j-border bg-j-background flex items-center gap-4">
+                <span className="bg-j-success text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shadow-sm">3</span>
+                <h2 className="text-sm font-black uppercase tracking-widest">Payment Method</h2>
               </div>
-              <div className="p-4 flex flex-col gap-4">
+              <div className="p-6 flex flex-col gap-4">
                 {[
                   { id: 'POD', label: 'Cash on Delivery', icon: <ShoppingBag size={20} /> },
                   { id: 'CARD', label: 'Pay with Card / Transfer', icon: <CreditCard size={20} /> },
@@ -294,19 +301,21 @@ export default function CheckoutPage() {
                   <button
                     key={m.id}
                     onClick={() => setPaymentMethod(m.id as any)}
-                    className={`flex items-center gap-4 p-4 border rounded transition-all ${
-                      paymentMethod === m.id ? 'border-jumia-orange bg-jumia-orange/5' : 'border-j-outline-variant'
+                    className={`flex items-center gap-5 p-5 border-2 rounded-sm transition-all text-left group ${
+                      paymentMethod === m.id ? 'border-jumia-orange bg-orange-50' : 'border-j-border hover:border-j-text-muted'
                     }`}
                   >
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      paymentMethod === m.id ? 'border-jumia-orange' : 'border-j-outline-variant'
+                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                      paymentMethod === m.id ? 'border-jumia-orange bg-white' : 'border-j-border'
                     }`}>
-                      {paymentMethod === m.id && <div className="w-2.5 h-2.5 bg-jumia-orange rounded-full" />}
+                      {paymentMethod === m.id && <div className="w-3 h-3 bg-jumia-orange rounded-full" />}
                     </div>
-                    <div className="flex-1 text-left">
-                      <p className="font-bold text-body-md uppercase">{m.label}</p>
+                    <div className="flex-1">
+                      <p className={`font-black text-[13px] uppercase tracking-tight transition-colors ${paymentMethod === m.id ? 'text-jumia-orange' : 'text-j-text'}`}>{m.label}</p>
                     </div>
-                    {m.icon}
+                    <div className={`p-2 rounded-full transition-colors ${paymentMethod === m.id ? 'bg-jumia-orange text-white' : 'bg-j-background text-j-text-muted'}`}>
+                      {m.icon}
+                    </div>
                   </button>
                 ))}
               </div>
@@ -314,39 +323,39 @@ export default function CheckoutPage() {
           </div>
 
           {/* Right Sidebar: Summary */}
-          <div className="w-full lg:w-[350px]">
-            <div className="bg-white rounded border border-j-outline-variant shadow-sm p-4 sticky top-24 flex flex-col gap-4">
-              <h3 className="text-label-bold font-bold uppercase text-j-text-muted border-b border-j-outline-variant pb-3">Order Summary</h3>
+          <div className="w-full lg:w-[380px] shrink-0">
+            <div className="bg-white rounded-sm border border-j-border shadow-sm p-6 sticky top-24 flex flex-col gap-6 overflow-hidden">
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-j-text-muted border-b border-j-border pb-4">Order Summary</h3>
               
-              <div className="flex flex-col gap-3">
-                <div className="flex justify-between text-body-md">
-                  <span className="text-j-text-muted">Items ({totalItems})</span>
-                  <span className="text-j-text font-bold">₦ {subtotal.toLocaleString()}</span>
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-j-text-muted font-black uppercase tracking-tight">Items ({totalItems})</span>
+                  <span className="text-j-text font-black text-lg">₦ {subtotal.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-body-sm">
-                  <span className="text-j-text-muted">Delivery Fee</span>
-                  <span className="text-j-text font-bold">₦ {shipping.toLocaleString()}</span>
+                <div className="flex justify-between text-[11px] text-j-text-muted">
+                  <span className="font-black uppercase tracking-tight">Delivery Fee</span>
+                  <span className="font-black">₦ {shipping.toLocaleString()}</span>
                 </div>
-                <div className="border-t border-j-outline-variant pt-3 flex justify-between items-center">
-                  <span className="text-body-lg font-bold text-j-text">Total</span>
-                  <span className="text-price-sm text-j-text font-extrabold">₦ {total.toLocaleString()}</span>
+                <div className="pt-6 border-t-2 border-j-border border-dashed flex justify-between items-center">
+                  <span className="text-sm font-black text-j-text uppercase tracking-widest">Total Amount</span>
+                  <span className="text-2xl font-black text-jumia-orange">₦ {total.toLocaleString()}</span>
                 </div>
               </div>
 
               <button 
                 onClick={handlePlaceOrder}
                 disabled={isPlacingOrder || !cart?.items.length}
-                className="w-full bg-jumia-orange text-white py-3.5 rounded font-bold uppercase shadow-sm hover:bg-jumia-orange-dark transition-all disabled:opacity-50 mt-4"
+                className="w-full bg-jumia-orange text-white py-4 rounded-sm font-black uppercase tracking-widest shadow-lg hover:bg-orange-600 transition-all disabled:opacity-50 active:scale-[0.98] mt-2"
               >
                 {isPlacingOrder ? 'Confirming...' : 'Confirm Order'}
               </button>
 
-              <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-j-outline-variant">
-                <div className="flex items-center gap-2 text-[10px] font-bold text-j-text-muted uppercase">
-                  <ShieldCheck size={14} className="text-j-success" />
+              <div className="flex flex-col gap-3 mt-4 p-4 bg-j-background rounded-sm border border-j-border border-dashed">
+                <div className="flex items-center gap-3 text-[10px] font-black text-j-success uppercase tracking-tighter italic">
+                  <ShieldCheck size={16} />
                   Jumia SafePay Guaranteed
                 </div>
-                <p className="text-[10px] text-j-text-muted">Return for free within 15 days for Official Store items.</p>
+                <p className="text-[9px] text-j-text-muted font-black uppercase tracking-tighter leading-tight opacity-70">Return for free within 15 days for Official Store items.</p>
               </div>
             </div>
           </div>

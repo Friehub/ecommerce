@@ -28,131 +28,143 @@ export default async function ProductDetailPage({
 
   return (
     <div className="bg-j-background min-h-screen pb-12">
-      <div className="max-w-container-max mx-auto px-margin-desktop py-4">
+      <div className="max-w-[1184px] mx-auto px-4 py-4">
         {/* Breadcrumbs */}
-        <div className="flex items-center gap-2 mb-4 text-body-sm text-j-text-muted">
-          <Link href="/" className="hover:text-jumia-orange">Home</Link>
-          <ChevronRight size={14} />
-          <Link href={`/category/${product.category.slug}`} className="hover:text-jumia-orange">{product.category.name}</Link>
-          <ChevronRight size={14} />
-          <span className="text-j-text truncate">{product.title}</span>
+        <div className="flex items-center gap-2 mb-4 text-[10px] font-bold text-j-text-muted uppercase tracking-tight">
+          <Link href="/" className="hover:text-jumia-orange transition-colors">Home</Link>
+          <ChevronRight size={10} />
+          <Link href={`/category/${product.category.slug}`} className="hover:text-jumia-orange transition-colors">{product.category.name}</Link>
+          <ChevronRight size={10} />
+          <span className="text-j-text truncate max-w-[200px]">{product.title}</span>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-gutter">
+        <div className="flex flex-col lg:flex-row gap-4">
           {/* Main Info Card */}
-          <div className="flex-1 bg-j-surface-container-lowest rounded border border-j-outline-variant shadow-sm overflow-hidden">
-            <div className="flex flex-col md:flex-row p-4 md:p-6 gap-6 md:gap-10">
+          <div className="flex-1 bg-white rounded-sm border border-j-border shadow-sm overflow-hidden">
+            <div className="flex flex-col md:flex-row p-4 md:p-6 gap-6 md:gap-8">
               {/* Left: Gallery */}
-              <div className="w-full md:w-[400px]">
+              <div className="w-full md:w-[380px] shrink-0">
                 <ProductGallery images={product.media} />
-                <div className="mt-6 pt-6 border-t border-j-outline-variant">
-                  <h4 className="text-body-md font-bold mb-4 uppercase">Share this product</h4>
+                <div className="mt-8 pt-6 border-t border-j-border">
+                  <h4 className="text-[10px] font-black mb-4 uppercase tracking-wider text-j-text-muted">Share this product</h4>
                   <div className="flex gap-4">
-                    <button className="p-2 border border-j-outline-variant rounded-full hover:bg-j-surface-container-low transition-colors">
-                      <Share2 size={18} className="text-j-text" />
+                    <button className="w-10 h-10 border border-j-border rounded-full flex items-center justify-center hover:bg-orange-50 hover:text-jumia-orange transition-all text-j-text-muted">
+                      <Share2 size={18} />
                     </button>
                   </div>
                 </div>
               </div>
 
               {/* Right: Info */}
-              <div className="flex-1 flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
+              <div className="flex-1 flex flex-col gap-6">
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-body-sm text-blue-600 font-medium hover:underline cursor-pointer">
+                    <span className="text-[11px] text-blue-600 font-black uppercase tracking-tight hover:underline cursor-pointer">
                       Brand: {product.brand.name}
                     </span>
                     {product.isOfficial && (
-                      <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                      <span className="bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-sm uppercase tracking-tighter italic">
                         Official Store
                       </span>
                     )}
                   </div>
-                  <h1 className="text-headline-md font-bold text-j-text">
+                  <h1 className="text-xl md:text-2xl font-bold text-j-text leading-tight">
                     {product.title}
                   </h1>
                 </div>
 
                 {/* Rating */}
-                <div className="flex items-center gap-2 border-b border-j-outline-variant pb-4">
-                  <div className="flex gap-0.5 text-jumia-orange">
+                <div className="flex items-center gap-3 border-b border-j-border pb-6">
+                  <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (
                       <Star 
                         key={i} 
                         size={14} 
-                        fill={i < Math.round(Number(product.averageRating) || 0) ? "currentColor" : "none"} 
-                        className={i < Math.round(Number(product.averageRating) || 0) ? "text-jumia-orange" : "text-j-outline-variant"} 
+                        fill={i < Math.round(Number(product.averageRating) || 0) ? "#f68b1e" : "none"} 
+                        className={i < Math.round(Number(product.averageRating) || 0) ? "text-jumia-orange" : "text-j-border"} 
                       />
                     ))}
                   </div>
-                  <span className="text-body-sm text-blue-600 hover:underline cursor-pointer">
+                  <span className="text-[11px] text-blue-600 font-bold hover:underline cursor-pointer uppercase tracking-tight">
                     ({product.reviewCount || 0} verified ratings)
                   </span>
                 </div>
 
                 {/* Price Area */}
-                <div className="py-2 border-b border-j-outline-variant">
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-price-lg font-extrabold text-j-text">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-4">
+                    <span className="text-2xl font-black text-j-text">
                       ₦ {price.toLocaleString()}
                     </span>
                     {discount > 0 && (
-                      <span className="bg-jumia-orange/10 text-jumia-orange text-body-sm font-bold px-1.5 py-0.5 rounded">
+                      <span className="bg-orange-50 text-jumia-orange text-[10px] font-black px-2 py-1 rounded-sm border border-orange-100">
                         -{discount}%
                       </span>
                     )}
                   </div>
                   {originalPrice > price && (
-                    <p className="text-body-md text-j-text-muted line-through">
+                    <p className="text-sm text-j-text-muted line-through font-bold">
                       ₦ {originalPrice.toLocaleString()}
                     </p>
                   )}
-                  <p className="text-body-sm text-j-text mt-1">
-                    {product.inventory > 0 ? `+ shipping from ₦ 500 to Lagos` : 'Out of Stock'}
-                  </p>
+                  <div className="bg-j-background p-2 rounded-sm inline-block">
+                    <p className="text-[10px] text-j-text font-bold uppercase tracking-tight">
+                      {product.inventory > 0 ? `+ shipping from ₦ 500 to Lagos` : 'Out of Stock'}
+                    </p>
+                  </div>
                 </div>
 
-                <ProductActions product={product} />
+                <div className="pt-4">
+                  <ProductActions product={product} />
+                </div>
               </div>
             </div>
           </div>
 
           {/* Sidebar: Delivery & Seller */}
-          <div className="w-full lg:w-[300px] flex flex-col gap-gutter">
+          <div className="w-full lg:w-[320px] flex flex-col gap-4">
             {/* Delivery Info */}
-            <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-j-outline-variant bg-j-surface-container-low">
-                <h3 className="text-label-bold font-bold uppercase">Delivery & Returns</h3>
+            <div className="bg-white rounded-sm border border-j-border shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-j-border bg-j-background">
+                <h3 className="text-[11px] font-black uppercase tracking-wider">Delivery & Returns</h3>
               </div>
-              <div className="p-4 flex flex-col gap-6">
-                <div className="flex gap-3">
-                  <Truck size={24} className="text-j-text shrink-0" />
+              <div className="p-4 space-y-6">
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 bg-j-background rounded-sm flex items-center justify-center shrink-0">
+                    <Truck size={20} className="text-j-text" />
+                  </div>
                   <div>
-                    <h4 className="text-body-sm font-bold">Door Delivery</h4>
-                    <p className="text-body-sm text-j-text-muted mt-0.5">Ready for delivery between 22 May & 24 May</p>
+                    <h4 className="text-[11px] font-black uppercase tracking-tight">Door Delivery</h4>
+                    <p className="text-[10px] text-j-text-muted mt-1 font-bold">Ready for delivery between 22 May & 24 May</p>
                   </div>
                 </div>
-                <div className="flex gap-3">
-                  <RotateCcw size={24} className="text-j-text shrink-0" />
+                <div className="flex gap-4 pt-4 border-t border-j-border">
+                  <div className="w-10 h-10 bg-j-background rounded-sm flex items-center justify-center shrink-0">
+                    <RotateCcw size={20} className="text-j-text" />
+                  </div>
                   <div>
-                    <h4 className="text-body-sm font-bold">Return Policy</h4>
-                    <p className="text-body-sm text-j-text-muted mt-0.5">Free return within 15 days for Official Store items and 7 days for other items.</p>
+                    <h4 className="text-[11px] font-black uppercase tracking-tight">Return Policy</h4>
+                    <p className="text-[10px] text-j-text-muted mt-1 font-bold">Free return within 15 days for Official Store items and 7 days for other items.</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Seller Info */}
-            <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-j-outline-variant bg-j-surface-container-low">
-                <h3 className="text-label-bold font-bold uppercase">Seller Information</h3>
+            <div className="bg-white rounded-sm border border-j-border shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-j-border bg-j-background text-j-text">
+                <h3 className="text-[11px] font-black uppercase tracking-wider">Seller Information</h3>
               </div>
-              <div className="p-4 flex flex-col gap-4">
+              <div className="p-4 space-y-4">
                 <div className="flex flex-col">
-                  <h4 className="text-body-md font-bold">{product.seller.businessName || "Verified Merchant"}</h4>
-                  <p className="text-body-sm text-j-success font-medium mt-1">98% Seller Score</p>
+                  <h4 className="text-sm font-black text-j-text uppercase tracking-tight">{product.seller.businessName || "Verified Merchant"}</h4>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="bg-green-50 text-j-success text-[10px] font-black px-2 py-0.5 rounded-sm border border-green-100 uppercase italic">
+                      98% <span className="font-normal not-italic">Seller Score</span>
+                    </div>
+                  </div>
                 </div>
-                <button className="w-full border border-jumia-orange text-jumia-orange py-2 rounded font-bold text-label-bold uppercase hover:bg-jumia-orange/5 transition-all">
+                <button className="w-full border-2 border-jumia-orange text-jumia-orange py-2.5 rounded-sm font-black text-[11px] uppercase tracking-wider hover:bg-orange-50 transition-all shadow-sm active:scale-[0.98]">
                   Follow Store
                 </button>
               </div>
@@ -161,34 +173,34 @@ export default async function ProductDetailPage({
         </div>
 
         {/* Details & Reviews */}
-        <div className="mt-gutter flex flex-col lg:flex-row gap-gutter">
-          <div className="flex-1 flex flex-col gap-gutter">
+        <div className="mt-4 flex flex-col lg:flex-row gap-4">
+          <div className="flex-1 flex flex-col gap-4">
             {/* Description */}
-            <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-j-outline-variant bg-j-surface-container-low">
-                <h3 className="text-label-bold font-bold uppercase">Product Details</h3>
+            <div className="bg-white rounded-sm border border-j-border shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-j-border bg-j-background">
+                <h3 className="text-[11px] font-black uppercase tracking-wider">Product Details</h3>
               </div>
-              <div className="p-4 prose prose-sm max-w-none text-j-text">
+              <div className="p-6 prose prose-sm max-w-none text-j-text font-medium leading-relaxed">
                 <div dangerouslySetInnerHTML={{ __html: product.description }} />
               </div>
             </div>
 
             {/* Specifications */}
-            <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-j-outline-variant bg-j-surface-container-low">
-                <h3 className="text-label-bold font-bold uppercase">Specifications</h3>
+            <div className="bg-white rounded-sm border border-j-border shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-j-border bg-j-background">
+                <h3 className="text-[11px] font-black uppercase tracking-wider">Specifications</h3>
               </div>
-              <div className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
                   {Object.entries(product.variants[0]?.attributes || {}).map(([key, value]) => (
-                    <div key={key} className="flex justify-between py-2 border-b border-j-outline-variant/30 text-body-sm">
-                      <span className="font-bold text-j-text-muted">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>
-                      <span className="text-j-text">{value as string}</span>
+                    <div key={key} className="flex justify-between py-2 border-b border-j-border text-[11px]">
+                      <span className="font-bold text-j-text-muted uppercase tracking-tight shrink-0 mr-4">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                      <span className="text-j-text font-black text-right">{value as string}</span>
                     </div>
                   ))}
-                  <div className="flex justify-between py-2 border-b border-j-outline-variant/30 text-body-sm">
-                    <span className="font-bold text-j-text-muted">SKU:</span>
-                    <span className="text-j-text uppercase">{product.variants[0]?.sku}</span>
+                  <div className="flex justify-between py-2 border-b border-j-border text-[11px]">
+                    <span className="font-bold text-j-text-muted uppercase tracking-tight">SKU:</span>
+                    <span className="text-j-text font-black uppercase">{product.variants[0]?.sku}</span>
                   </div>
                 </div>
               </div>
@@ -196,12 +208,12 @@ export default async function ProductDetailPage({
           </div>
 
           {/* Reviews Side (on large screen) */}
-          <div className="w-full lg:w-[300px]">
-            <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-j-outline-variant bg-j-surface-container-low">
-                <h3 className="text-label-bold font-bold uppercase">Verified Reviews</h3>
+          <div className="w-full lg:w-[320px] shrink-0">
+            <div className="bg-white rounded-sm border border-j-border shadow-sm overflow-hidden h-full">
+              <div className="p-4 border-b border-j-border bg-j-background">
+                <h3 className="text-[11px] font-black uppercase tracking-wider">Verified Reviews</h3>
               </div>
-              <div className="p-4">
+              <div className="p-6">
                 <ProductReviews productId={product.id} />
               </div>
             </div>

@@ -38,7 +38,7 @@ export default function AdminReturnsPage() {
  <div className="bg-background min-h-screen flex items-center justify-center">
  <div className="flex flex-col items-center gap-6">
  <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Syncing Return Pipeline</p>
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant opacity-40 animate-pulse">Syncing Return Pipeline</p>
  </div>
  </div>
  );
@@ -51,15 +51,15 @@ export default function AdminReturnsPage() {
  <div>
  <div className="flex items-center gap-3 mb-4">
  <RotateCcw size={24} className="text-jumia-orange" />
- <h2 className="text-[10px] font-semibold text-jumia-orange uppercase tracking-[0.4em]">Protocol Reversal</h2>
+ <h2 className="text-[10px] font-semibold text-jumia-orange uppercase ">Protocol Reversal</h2>
  </div>
  <h1 className="text-4xl font-semibold text-on-surface uppercase tracking-tighter leading-none">Returns <span className="text-jumia-orange">Queue</span></h1>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-4 italic">Management of order reversals, diagnostic checks, and refund settlements.</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-4 italic">Management of order reversals, diagnostic checks, and refund settlements.</p>
  </div>
  <div className="flex items-center gap-6">
  <div className="flex items-center gap-3 px-6 py-3 bg-jumia-orange/10 text-jumia-orange rounded-sm border-2 border-jumia-orange/20 shadow-xl shadow-primary-container/5">
  <Activity size={18} />
- <span className="text-[10px] font-semibold uppercase tracking-[0.3em]">{returns?.length || 0} PENDING NODES</span>
+ <span className="text-[10px] font-semibold uppercase ">{returns?.length || 0} PENDING NODES</span>
  </div>
  </div>
  </div>
@@ -67,7 +67,7 @@ export default function AdminReturnsPage() {
  <div className="space-y-8">
  {returns && returns.length > 0 ? (
  returns.map((req: any, index: number) => (
- <div key={req.id} className="bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-soft overflow-hidden group animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: `${index * 50}ms` }}>
+ <div key={req.id} className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden group animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: `${index * 50}ms` }}>
  <div className="p-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
  
  {/* Product Info */}
@@ -103,7 +103,7 @@ export default function AdminReturnsPage() {
  </div>
  <div>
  <p className="text-[10px] font-semibold text-on-surface uppercase tracking-tight leading-none">{req.orderLine.package.order.user.firstName} {req.orderLine.package.order.user.lastName}</p>
- <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase mt-2 tracking-[0.2em] italic">Verified Entity</p>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase mt-2  italic">Verified Entity</p>
  </div>
  </div>
  </div>
@@ -130,12 +130,12 @@ export default function AdminReturnsPage() {
  
  {/* Footer bar */}
  <div className="px-10 py-5 bg-surface-container-low/30 border-t-4 border-surface-container-low flex items-center justify-between">
- <div className="flex items-center gap-6 text-[9px] font-semibold uppercase tracking-[0.3em] text-on-surface-variant/40 italic">
+ <div className="flex items-center gap-6 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">
  <span>Requested {new Date(req.createdAt).toLocaleDateString()}</span>
  <div className="w-1.5 h-1.5 bg-jumia-orange/20 rounded-full" />
  <span className="text-jumia-orange">Diagnostic Checklist Required</span>
  </div>
- <Link href={`/admin/orders/${req.orderLine.package.orderId}`} className="text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface hover:text-jumia-orange flex items-center gap-3 transition-all group">
+ <Link href={`/admin/orders/${req.orderLine.package.orderId}`} className="text-[9px] font-semibold uppercase  text-on-surface hover:text-jumia-orange flex items-center gap-3 transition-all group">
  Audit Full Order <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
  </Link>
  </div>
@@ -147,7 +147,7 @@ export default function AdminReturnsPage() {
  <RotateCcw size={40} />
  </div>
  <h3 className="font-semibold text-3xl text-on-surface uppercase tracking-tighter mb-4">Pipeline <span className="text-success">Clear</span></h3>
- <p className="text-on-surface-variant/40 font-semibold text-[10px] uppercase tracking-[0.4em] italic">NO PENDING RETURN REQUESTS DETECTED IN THE LOGISTICS QUEUE.</p>
+ <p className="text-on-surface-variant/40 font-semibold text-[10px] uppercase  italic">NO PENDING RETURN REQUESTS DETECTED IN THE LOGISTICS QUEUE.</p>
  </div>
  )}
  </div>

@@ -131,7 +131,7 @@ export default function SellerFinance() {
  </div>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
  {[...Array(3)].map((_, i) => (
- <Skeleton key={i} className="h-52 w-full rounded-[48px]" />
+ <Skeleton key={i} className="h-52 w-full rounded" />
  ))}
  </div>
  <div className="space-y-16">
@@ -178,18 +178,18 @@ export default function SellerFinance() {
  <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30">
  <Cpu size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Automated Capital Management Nexus</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Automated Capital Management Nexus</span>
  </div>
  <h1 className="text-5xl md:text-8xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Financial <br />
  <span className="text-jumia-orange italic">Engine.</span>
  </h1>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Real-time Settlement Control • Advanced Revenue Synchronization</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Real-time Settlement Control • Advanced Revenue Synchronization</p>
  </div>
  <button 
  onClick={() => setShowWithdrawModal(true)}
  disabled={!stats?.availableBalance || Number(stats.availableBalance) <= 0}
- className="bg-jumia-orange text-white px-12 py-6 rounded text-[10px] font-semibold uppercase tracking-[0.3em] hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 disabled:opacity-20 disabled:grayscale disabled:scale-100 flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000"
+ className="bg-jumia-orange text-white px-12 py-6 rounded text-[10px] font-semibold uppercase  hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 disabled:opacity-20 disabled:grayscale disabled:scale-100 flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000"
  >
  <ArrowUpRight size={20} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-500" />
  Execute Withdrawal
@@ -199,7 +199,7 @@ export default function SellerFinance() {
  {/* Stats Grid */}
  <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
  {financeStats.map((stat, idx) => (
- <div key={stat.name} className="bg-surface-container-lowest p-10 rounded-[48px] border border-surface-container-low flex flex-col justify-between h-[220px] hover:translate-y-[-12px] transition-all duration-700 shadow-soft group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${idx * 150}ms` }}>
+ <div key={stat.name} className="bg-surface-container-lowest p-10 rounded border border-surface-container-low flex flex-col justify-between h-[220px] hover:translate-y-[-12px] transition-all duration-700 shadow-soft group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${idx * 150}ms` }}>
  <div className="flex justify-between items-start">
  <div className={`w-14 h-14 rounded bg-surface-container-low flex items-center justify-center border-2 border-outline-variant/5 group-hover:scale-110 group-hover:border-jumia-orange/20 transition-all duration-1000 shadow-inner`}>
  <stat.icon className={stat.color} size={28} strokeWidth={2.5} />
@@ -209,7 +209,7 @@ export default function SellerFinance() {
  </span>
  </div>
  <div>
- <p className="text-on-surface-variant/40 text-[9px] font-semibold uppercase tracking-[0.4em] mb-3 italic">{stat.name}</p>
+ <p className="text-on-surface-variant/40 text-[9px] font-semibold uppercase  mb-3 italic">{stat.name}</p>
  <h3 className={`text-3xl font-semibold tracking-tighter leading-none ${stat.color}`}>{stat.value}</h3>
  </div>
  </div>
@@ -226,13 +226,13 @@ export default function SellerFinance() {
  <History size={24} className="text-on-surface-variant" />
  </div>
  <div>
- <h3 className="text-sm font-semibold text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Audit Trail</h3>
- <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Granular Resource Allocation Log</p>
+ <h3 className="text-sm font-semibold text-on-surface uppercase  leading-none mb-2">Audit Trail</h3>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase  italic">Granular Resource Allocation Log</p>
  </div>
  </div>
  <button 
  onClick={handleExport}
- className="bg-jumia-orange text-white px-8 py-3 rounded-full text-[9px] font-semibold uppercase tracking-[0.3em] flex items-center gap-4 transition-all hover:bg-jumia-orange-dark active:scale-95 shadow-lg group italic"
+ className="bg-jumia-orange text-white px-8 py-3 rounded-full text-[9px] font-semibold uppercase  flex items-center gap-4 transition-all hover:bg-jumia-orange-dark active:scale-95 shadow-lg group italic"
  >
  <Download size={16} className="group-hover:translate-y-0.5 transition-transform duration-500" />
  Export Assets
@@ -241,7 +241,7 @@ export default function SellerFinance() {
  <div className="overflow-x-auto">
  <table className="w-full text-left border-collapse min-w-[1000px]">
  <thead>
- <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] bg-surface-container-low/20 italic">
+ <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-semibold uppercase  bg-surface-container-low/20 italic">
  <th className="px-12 py-8">Timestamp</th>
  <th className="px-12 py-8">Operation</th>
  <th className="px-12 py-8">Resource ID</th>
@@ -263,14 +263,14 @@ export default function SellerFinance() {
  <span className="text-[13px] font-semibold text-on-surface uppercase tracking-widest">{entry.type}</span>
  </div>
  </td>
- <td className="px-12 py-10 text-on-surface-variant/40 text-[11px] font-semibold uppercase tracking-[0.2em] italic">
+ <td className="px-12 py-10 text-on-surface-variant/40 text-[11px] font-semibold uppercase  italic">
  {entry.orderLineId ? `#${entry.orderLineId.slice(-8).toUpperCase()}` : 'SYSTEM'}
  </td>
  <td className={`px-12 py-10 text-right font-semibold text-2xl tracking-tighter ${Number(entry.amount) >= 0 ? 'text-success' : 'text-error'}`}>
  {Number(entry.amount) >= 0 ? '+' : ''}₦{Number(entry.amount).toLocaleString()}
  </td>
  <td className="px-12 py-10">
- <span className={`inline-flex items-center px-6 py-2 rounded-full text-[9px] font-semibold uppercase tracking-[0.3em] border-2 shadow-sm italic ${
+ <span className={`inline-flex items-center px-6 py-2 rounded-full text-[9px] font-semibold uppercase  border-2 shadow-sm italic ${
  entry.status === 'AVAILABLE' ? 'bg-success-container/10 text-success border-success/20' : 'bg-surface-container-low text-on-surface-variant/30 border-outline-variant/10'
  }`}>
  {entry.status}
@@ -291,15 +291,15 @@ export default function SellerFinance() {
  <Receipt size={24} className="text-on-surface-variant" />
  </div>
  <div>
- <h3 className="text-sm font-semibold text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Settlement Pipeline</h3>
- <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Active Capital Extraction Logistics</p>
+ <h3 className="text-sm font-semibold text-on-surface uppercase  leading-none mb-2">Settlement Pipeline</h3>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase  italic">Active Capital Extraction Logistics</p>
  </div>
  </div>
  </div>
  <div className="overflow-x-auto">
  <table className="w-full text-left border-collapse min-w-[1000px]">
  <thead>
- <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] bg-surface-container-low/20 italic">
+ <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-semibold uppercase  bg-surface-container-low/20 italic">
  <th className="px-12 py-8">Request ID</th>
  <th className="px-12 py-8">Execution Timestamp</th>
  <th className="px-12 py-8">Net Settlement</th>
@@ -319,7 +319,7 @@ export default function SellerFinance() {
  ₦{Number(payout.amount).toLocaleString()}
  </td>
  <td className="px-12 py-10">
- <span className={`inline-flex items-center px-8 py-3 rounded-full text-[9px] font-semibold uppercase tracking-[0.4em] border-2 shadow-sm italic transition-all duration-700 ${
+ <span className={`inline-flex items-center px-8 py-3 rounded-full text-[9px] font-semibold uppercase  border-2 shadow-sm italic transition-all duration-700 ${
  payout.status === 'COMPLETED' ? 'bg-success-container/10 text-success border-success/20' : 
  payout.status === 'REJECTED' ? 'bg-error-container/10 text-error border-error/20' :
  'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20'
@@ -345,8 +345,8 @@ export default function SellerFinance() {
  <CreditCard size={24} className="text-jumia-orange" />
  </div>
  <div>
- <h3 className="text-sm font-semibold text-white uppercase tracking-[0.4em] leading-none mb-2">Settlement Nexus</h3>
- <p className="text-[9px] font-semibold text-white/30 uppercase tracking-[0.2em] italic">Institutional Credential Configuration</p>
+ <h3 className="text-sm font-semibold text-white uppercase  leading-none mb-2">Settlement Nexus</h3>
+ <p className="text-[9px] font-semibold text-white/30 uppercase  italic">Institutional Credential Configuration</p>
  </div>
  </div>
  </div>
@@ -364,7 +364,7 @@ export default function SellerFinance() {
  className="grid grid-cols-1 md:grid-cols-3 gap-12"
  >
  <div className="space-y-4">
- <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-[0.4em] italic ml-1">Merchant Institution</label>
+ <label className="block text-[10px] font-semibold text-white/30 uppercase  italic ml-1">Merchant Institution</label>
  <div className="relative group">
  <Building2 size={20} className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-jumia-orange transition-all duration-500" />
  <select 
@@ -383,18 +383,18 @@ export default function SellerFinance() {
  </div>
  </div>
  <div className="space-y-4">
- <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-[0.4em] italic ml-1">Vault Sequence</label>
+ <label className="block text-[10px] font-semibold text-white/30 uppercase  italic ml-1">Vault Sequence</label>
  <input 
  name="accountNumber" 
  type="text" 
  defaultValue={account?.bankAccountNumber || ''}
  placeholder="0000000000"
- className="w-full bg-white/5 border border-white/5 rounded px-8 py-6 text-[14px] font-semibold text-white uppercase tracking-[0.3em] focus:outline-none focus:border-jumia-orange/20 focus:ring-8 focus:ring-primary-container/5 transition-all hover:bg-white/10 placeholder:font-normal placeholder:text-white/40"
+ className="w-full bg-white/5 border border-white/5 rounded px-8 py-6 text-[14px] font-semibold text-white uppercase  focus:outline-none focus:border-jumia-orange/20 focus:ring-8 focus:ring-primary-container/5 transition-all hover:bg-white/10 placeholder:font-normal placeholder:text-white/40"
  required 
  />
  </div>
  <div className="space-y-4">
- <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-[0.4em] italic ml-1">Legal Identity</label>
+ <label className="block text-[10px] font-semibold text-white/30 uppercase  italic ml-1">Legal Identity</label>
  <input 
  name="accountName" 
  type="text" 
@@ -408,7 +408,7 @@ export default function SellerFinance() {
  <button 
  type="submit"
  disabled={updateAccount.isLoading}
- className="bg-white text-on-surface px-14 py-6 rounded text-[11px] font-semibold uppercase tracking-[0.4em] hover:bg-jumia-orange-dark hover:text-white transition-all shadow-2xl active:scale-95 disabled:opacity-20 flex items-center gap-6 group"
+ className="bg-white text-on-surface px-14 py-6 rounded text-[11px] font-semibold uppercase  hover:bg-jumia-orange-dark hover:text-white transition-all shadow-2xl active:scale-95 disabled:opacity-20 flex items-center gap-6 group"
  >
  {updateAccount.isLoading ? <Loader2 className="animate-spin" size={20} /> : <CheckCircle2 size={20} className="group-hover:scale-125 transition-transform duration-500" />}
  Synchronize Credentials
@@ -430,8 +430,8 @@ export default function SellerFinance() {
  <PiggyBank size={28} />
  </div>
  <div>
- <h3 className="text-sm font-semibold text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Settlement Request</h3>
- <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Execute Capital Extraction</p>
+ <h3 className="text-sm font-semibold text-on-surface uppercase  leading-none mb-2">Settlement Request</h3>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase  italic">Execute Capital Extraction</p>
  </div>
  </div>
  <button 
@@ -444,14 +444,14 @@ export default function SellerFinance() {
  
  <div className="p-14 space-y-12">
  <div className="bg-surface-container-low p-10 rounded border-2 border-outline-variant/5 shadow-inner">
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mb-6 italic ml-1">Institutional Destination</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mb-6 italic ml-1">Institutional Destination</p>
  <div className="flex items-center gap-8">
  <div className="w-16 h-16 bg-jumia-orange text-white rounded flex items-center justify-center shadow-2xl border border-surface-container-low">
  <Building2 size={28} />
  </div>
  <div>
  <h4 className="text-xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-2">{account?.bankAccountName || 'NO ACCOUNT LINKED'}</h4>
- <p className="text-[11px] font-semibold text-on-surface-variant/40 tracking-[0.3em] uppercase italic flex items-center gap-3">
+ <p className="text-[11px] font-semibold text-on-surface-variant/40  uppercase italic flex items-center gap-3">
  <Globe size={14} className="opacity-40" /> {account?.bankAccountNumber || '••••••••••'}
  </p>
  </div>
@@ -460,8 +460,8 @@ export default function SellerFinance() {
 
  <div className="space-y-6">
  <div className="flex justify-between items-end px-4">
- <label className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] italic">Request Magnitude (₦)</label>
- <p className="text-[10px] font-semibold text-success uppercase tracking-[0.3em] border-b-2 border-success/20 pb-1 italic">MAX: ₦{Number(stats?.availableBalance || 0).toLocaleString()}</p>
+ <label className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic">Request Magnitude (₦)</label>
+ <p className="text-[10px] font-semibold text-success uppercase  border-b-2 border-success/20 pb-1 italic">MAX: ₦{Number(stats?.availableBalance || 0).toLocaleString()}</p>
  </div>
  <div className="relative group">
  <span className="absolute left-8 top-1/2 -translate-y-1/2 text-4xl font-semibold text-on-surface-variant/10 group-focus-within:text-jumia-orange/20 transition-colors duration-500 italic">₦</span>
@@ -479,7 +479,7 @@ export default function SellerFinance() {
  <div className="w-10 h-10 rounded-full bg-jumia-orange/20 flex items-center justify-center shrink-0">
  <Info size={20} className="text-jumia-orange" />
  </div>
- <p className="text-[11px] font-semibold text-on-surface-variant/60 uppercase tracking-[0.1em] italic leading-relaxed">
+ <p className="text-[11px] font-semibold text-on-surface-variant/60 uppercase  italic leading-relaxed">
  Institutional latency typically range between <span className="text-jumia-orange">24-48 business cycles</span> for full synchronization of assets.
  </p>
  </div>
@@ -487,7 +487,7 @@ export default function SellerFinance() {
  <button 
  onClick={handleWithdraw}
  disabled={isWithdrawing || !withdrawAmount}
- className="w-full bg-jumia-orange text-white py-8 rounded-[36px] text-[13px] font-semibold uppercase tracking-[0.5em] hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 disabled:opacity-20 flex items-center justify-center gap-6 group overflow-hidden relative"
+ className="w-full bg-jumia-orange text-white py-8 rounded-[36px] text-[13px] font-semibold uppercase  hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 disabled:opacity-20 flex items-center justify-center gap-6 group overflow-hidden relative"
  >
  <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
  {isWithdrawing ? <Loader2 className="animate-spin" size={24} /> : <ShieldCheck size={24} className="group-hover:scale-125 transition-transform duration-500" />}

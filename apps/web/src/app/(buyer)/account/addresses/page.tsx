@@ -3,304 +3,300 @@
 import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { 
- MapPin, 
- Plus, 
- ChevronLeft,
- Loader2,
- Trash2,
- Edit2,
- CheckCircle2,
- Home,
- Briefcase,
- X
+  MapPin, 
+  Plus, 
+  ChevronLeft,
+  Loader2,
+  Trash2,
+  Edit2,
+  CheckCircle2,
+  Home,
+  Briefcase,
+  X
 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/trpc/react';
 import { useToast } from '@/hooks/useToast';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
-// Shared AddAddressForm logic (simplified for standalone use)
+// Shared AddAddressForm logic
 function AddAddressModal({ isOpen, onClose, onSuccess }: { isOpen: boolean, onClose: () => void, onSuccess: () => void }) {
- const { toast } = useToast();
- const createAddress = api.iam.addAddress.useMutation({
- onSuccess: () => {
- toast({ title: 'Location Verified', message: 'Primary distribution node added to your profile.', type: 'success' });
- onSuccess();
- onClose();
- },
- onError: (err) => {
- toast({ title: 'Linkage Failed', message: err.message, type: 'error' });
- }
- });
+  const { toast } = useToast();
+  const createAddress = api.iam.addAddress.useMutation({
+    onSuccess: () => {
+      toast({ title: 'Address Added', message: 'Your address has been added successfully.', type: 'success' });
+      onSuccess();
+      onClose();
+    },
+    onError: (err) => {
+      toast({ title: 'Error', message: err.message, type: 'error' });
+    }
+  });
 
- const [formData, setFormData] = useState({
- firstName: '',
- lastName: '',
- phone: '',
- streetAddress: '',
- city: '',
- state: '',
- addressType: 'HOME' as 'HOME' | 'OFFICE',
- isDefault: false
- });
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    phone: '',
+    streetAddress: '',
+    city: '',
+    state: '',
+    addressType: 'HOME' as 'HOME' | 'OFFICE',
+    isDefault: false
+  });
 
- if (!isOpen) return null;
+  if (!isOpen) return null;
 
- return (
- <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
- <div className="absolute inset-0 bg-jumia-orange/40 backdrop-blur-md" onClick={onClose} />
- <div className="relative w-full max-w-xl bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
- <div className="p-8 md:p-12 border-b-2 border-outline-variant/30 flex items-center justify-between bg-surface-container-low/30">
- <div>
- <h2 className="text-2xl font-semibold text-on-surface uppercase tracking-tighter">Register Node</h2>
- <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-[0.3em] opacity-40 mt-1 italic">Adding new logistics endpoint</p>
- </div>
- <button onClick={onClose} className="w-12 h-12 bg-surface-container-low rounded-2xl flex items-center justify-center hover:bg-error/10 hover:text-error transition-all">
- <X size={20} />
- </button>
- </div>
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative w-full max-w-xl bg-white rounded-sm border border-j-border shadow-2xl overflow-hidden">
+        <div className="p-6 border-b border-j-border flex items-center justify-between bg-j-surface-container-low">
+          <div>
+            <h2 className="text-xl font-black text-j-text uppercase tracking-tight">Add New Address</h2>
+            <p className="text-[10px] font-bold text-j-text-muted uppercase mt-1">Enter your shipping details</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-j-border rounded-full transition-colors">
+            <X size={20} />
+          </button>
+        </div>
 
- <form onSubmit={(e) => { e.preventDefault(); createAddress.mutate(formData); }} className="p-8 md:p-12 space-y-8">
- <div className="grid grid-cols-2 gap-6">
- <div className="space-y-2">
- <label className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest ml-4">Codename (First)</label>
- <input 
- required 
- className="w-full h-16 bg-surface-container-low border-2 border-outline-variant/30 rounded px-6 text-sm font-semibold uppercase tracking-tight focus:border-jumia-orange/40 focus:ring-0 transition-all" 
- value={formData.firstName}
- onChange={e => setFormData({...formData, firstName: e.target.value})}
- />
- </div>
- <div className="space-y-2">
- <label className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest ml-4">Surname</label>
- <input 
- required 
- className="w-full h-16 bg-surface-container-low border-2 border-outline-variant/30 rounded px-6 text-sm font-semibold uppercase tracking-tight focus:border-jumia-orange/40 focus:ring-0 transition-all" 
- value={formData.lastName}
- onChange={e => setFormData({...formData, lastName: e.target.value})}
- />
- </div>
- </div>
+        <form onSubmit={(e) => { e.preventDefault(); createAddress.mutate(formData); }} className="p-6 md:p-8 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Input 
+              label="First Name"
+              required 
+              value={formData.firstName}
+              onChange={e => setFormData({...formData, firstName: e.target.value})}
+              placeholder="John"
+            />
+            <Input 
+              label="Last Name"
+              required 
+              value={formData.lastName}
+              onChange={e => setFormData({...formData, lastName: e.target.value})}
+              placeholder="Doe"
+            />
+          </div>
 
- <div className="space-y-2">
- <label className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest ml-4">Communication Line</label>
- <input 
- required 
- type="tel"
- placeholder="+234..."
- className="w-full h-16 bg-surface-container-low border-2 border-outline-variant/30 rounded px-6 text-sm font-semibold tracking-tight focus:border-jumia-orange/40 focus:ring-0 transition-all" 
- value={formData.phone}
- onChange={e => setFormData({...formData, phone: e.target.value})}
- />
- </div>
+          <Input 
+            label="Phone Number"
+            required 
+            type="tel"
+            placeholder="08012345678"
+            value={formData.phone}
+            onChange={e => setFormData({...formData, phone: e.target.value})}
+          />
 
- <div className="space-y-2">
- <label className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest ml-4">Street Protocol</label>
- <input 
- required 
- className="w-full h-16 bg-surface-container-low border-2 border-outline-variant/30 rounded px-6 text-sm font-semibold uppercase tracking-tight focus:border-jumia-orange/40 focus:ring-0 transition-all" 
- value={formData.streetAddress}
- onChange={e => setFormData({...formData, streetAddress: e.target.value})}
- />
- </div>
+          <Input 
+            label="Street Address"
+            required 
+            value={formData.streetAddress}
+            onChange={e => setFormData({...formData, streetAddress: e.target.value})}
+            placeholder="No. 123 Jumia Street"
+          />
 
- <div className="grid grid-cols-2 gap-6">
- <div className="space-y-2">
- <label className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest ml-4">Sector (City)</label>
- <input 
- required 
- className="w-full h-16 bg-surface-container-low border-2 border-outline-variant/30 rounded px-6 text-sm font-semibold uppercase tracking-tight focus:border-jumia-orange/40 focus:ring-0 transition-all" 
- value={formData.city}
- onChange={e => setFormData({...formData, city: e.target.value})}
- />
- </div>
- <div className="space-y-2">
- <label className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest ml-4">Territory (State)</label>
- <input 
- required 
- className="w-full h-16 bg-surface-container-low border-2 border-outline-variant/30 rounded px-6 text-sm font-semibold uppercase tracking-tight focus:border-jumia-orange/40 focus:ring-0 transition-all" 
- value={formData.state}
- onChange={e => setFormData({...formData, state: e.target.value})}
- />
- </div>
- </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Input 
+              label="City"
+              required 
+              value={formData.city}
+              onChange={e => setFormData({...formData, city: e.target.value})}
+              placeholder="Lagos"
+            />
+            <Input 
+              label="State"
+              required 
+              value={formData.state}
+              onChange={e => setFormData({...formData, state: e.target.value})}
+              placeholder="Lagos"
+            />
+          </div>
 
- <div className="flex gap-4">
- {(['HOME', 'OFFICE'] as const).map(type => (
- <button
- key={type}
- type="button"
- onClick={() => setFormData({...formData, addressType: type})}
- className={`flex-1 h-14 rounded-2xl text-[10px] font-semibold uppercase tracking-widest transition-all border-2 ${
- formData.addressType === type 
- ? 'bg-jumia-orange text-white border-jumia-orange' 
- : 'bg-surface-container-low text-on-surface-variant border-outline-variant/30'
- }`}
- >
- {type}
- </button>
- ))}
- </div>
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase text-j-text-muted ml-1">Address Type</label>
+            <div className="flex gap-4">
+              {(['HOME', 'OFFICE'] as const).map(type => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setFormData({...formData, addressType: type})}
+                  className={`flex-1 h-12 rounded-sm text-xs font-black uppercase tracking-wider transition-all border ${
+                    formData.addressType === type 
+                      ? 'bg-jumia-orange text-white border-jumia-orange' 
+                      : 'bg-white text-j-text-muted border-j-border hover:bg-j-surface-container-low'
+                  }`}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+          </div>
 
- <button 
- type="submit"
- disabled={createAddress.isLoading}
- className="w-full h-16 bg-jumia-orange text-white rounded font-semibold text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-jumia-orange-dark transition-all active:scale-95 disabled:opacity-50"
- >
- {createAddress.isLoading ? <Loader2 className="animate-spin" size={20} /> : 'Finalize Registration'}
- </button>
- </form>
- </div>
- </div>
- );
+          <div className="pt-4">
+            <Button 
+              type="submit"
+              isLoading={createAddress.isLoading}
+              className="w-full h-14 font-black uppercase"
+            >
+              Save Address
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default function AddressesPage() {
- const { data: session, status } = useSession();
- const router = useRouter();
- const { toast } = useToast();
- const { data: addresses, isLoading } = api.iam.getAddresses.useQuery(undefined, {
- enabled: !!session
- });
- 
- const [isAddModalOpen, setIsAddModalOpen] = useState(false);
- const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
- const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { toast } = useToast();
+  const { data: addresses, isLoading } = api.iam.getAddresses.useQuery(undefined, {
+    enabled: !!session
+  });
+  
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
 
- if (status === 'loading' || isLoading) {
- return (
- <div className="min-h-screen flex items-center justify-center bg-background">
- <Loader2 className="animate-spin text-jumia-orange" size={40} />
- </div>
- );
- }
+  if (status === 'loading' || isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-j-background gap-4">
+        <div className="w-12 h-12 border-4 border-j-border border-t-jumia-orange rounded-full animate-spin" />
+        <p className="text-xs font-bold uppercase text-j-text-muted">Loading addresses...</p>
+      </div>
+    );
+  }
 
- if (!session) {
- router.push('/login');
- return null;
- }
+  if (!session) {
+    router.push('/login');
+    return null;
+  }
 
- const utils = api.useUtils();
- const deleteMutation = api.iam.deleteAddress.useMutation({
- onSuccess: () => {
- toast({ title: 'Node Decommissioned', message: 'Address has been successfully removed.', type: 'success' });
- utils.iam.getAddresses.invalidate();
- setIsDeleteModalOpen(false);
- },
- onError: (err) => {
- toast({ title: 'Removal Failed', message: err.message, type: 'error' });
- }
- });
+  const utils = api.useUtils();
+  const deleteMutation = api.iam.deleteAddress.useMutation({
+    onSuccess: () => {
+      toast({ title: 'Address Deleted', message: 'Address has been successfully removed.', type: 'success' });
+      utils.iam.getAddresses.invalidate();
+      setIsDeleteModalOpen(false);
+    },
+    onError: (err) => {
+      toast({ title: 'Error', message: err.message, type: 'error' });
+    }
+  });
 
- const handleDelete = (id: string) => {
- setAddressToDelete(id);
- setIsDeleteModalOpen(true);
- };
+  const handleDelete = (id: string) => {
+    setAddressToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
 
- return (
- <div className="bg-background min-h-screen py-12">
- <div className="container mx-auto px-4 max-w-4xl">
- <Link 
- href="/account" 
- className="inline-flex items-center gap-2 text-on-surface-variant hover:text-jumia-orange font-semibold text-[10px] uppercase tracking-[0.2em] mb-10 transition-all group"
- >
- <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Intelligence
- </Link>
+  return (
+    <div className="bg-j-background min-h-screen py-12">
+      <div className="container mx-auto px-4 max-w-4xl">
+        <button 
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 text-j-text-muted hover:text-j-text mb-8 transition-colors group"
+        >
+          <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-xs font-bold uppercase">Back</span>
+        </button>
 
- <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
- <div>
- <h1 className="text-3xl md:text-4xl font-semibold text-on-surface uppercase tracking-tighter leading-none">Logistic Matrix</h1>
- <p className="text-[10px] text-on-surface-variant font-semibold mt-3 uppercase tracking-[0.4em] opacity-40 italic">Managing primary and secondary distribution nodes</p>
- </div>
- <button 
- onClick={() => setIsAddModalOpen(true)}
- className="bg-jumia-orange text-white px-8 py-5 rounded font-semibold text-xs uppercase tracking-[0.3em] shadow-xl shadow-primary-container/20 hover:shadow-2xl transition-all active:scale-95 flex items-center gap-3 group"
- >
- <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Add New Node
- </button>
- </div>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
+          <div>
+            <h1 className="text-3xl font-black text-j-text uppercase tracking-tight">Address <span className="text-jumia-orange">Book</span></h1>
+            <p className="text-[10px] text-j-text-muted font-bold mt-2 uppercase tracking-wide">Manage your shipping addresses</p>
+          </div>
+          <Button 
+            onClick={() => setIsAddModalOpen(true)}
+            className="h-14 px-8 font-black uppercase"
+          >
+            <Plus size={18} className="mr-2" /> Add New Address
+          </Button>
+        </div>
 
- <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
- {addresses && addresses.length > 0 ? (
- addresses.map((address: any) => (
- <div 
- key={address.id}
- className={`bg-surface-container-lowest rounded border p-8 relative transition-all shadow-soft group ${
- address.isDefault ? 'border-jumia-orange shadow-2xl shadow-primary-container/10' : 'border-surface-container-low hover:border-jumia-orange/20'
- }`}
- >
- {address.isDefault && (
- <div className="absolute top-6 right-6 flex items-center gap-2 text-jumia-orange text-[8px] font-semibold uppercase tracking-[0.2em] bg-jumia-orange/5 px-3 py-1.5 rounded-xl border border-jumia-orange/20 italic">
- <CheckCircle2 size={12} /> Primary
- </div>
- )}
- 
- <div className="flex items-center gap-4 mb-8">
- <div className="w-14 h-14 bg-surface-container-low text-jumia-orange rounded-sm flex items-center justify-center border-2 border-outline-variant/10 shadow-lg group-hover:scale-110 transition-transform duration-500">
- {address.addressType === 'HOME' ? <Home size={24} /> : <Briefcase size={24} />}
- </div>
- <div>
- <h3 className="font-semibold text-xs text-on-surface uppercase tracking-widest">{address.addressType}</h3>
- <p className="text-[9px] font-semibold text-on-surface-variant uppercase tracking-[0.2em] mt-1 opacity-40">{address.firstName} {address.lastName}</p>
- </div>
- </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {addresses && addresses.length > 0 ? (
+            addresses.map((address: any) => (
+              <div 
+                key={address.id}
+                className={`bg-white rounded-sm border p-6 relative transition-all shadow-sm ${
+                  address.isDefault ? 'border-jumia-orange' : 'border-j-border hover:border-jumia-orange/30'
+                }`}
+              >
+                {address.isDefault && (
+                  <div className="absolute top-4 right-4 flex items-center gap-1.5 text-jumia-orange text-[9px] font-black uppercase bg-orange-50 px-3 py-1.5 rounded-sm border border-jumia-orange/20">
+                    <CheckCircle2 size={12} /> Default
+                  </div>
+                )}
+                
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-j-surface-container-low text-j-text rounded-sm flex items-center justify-center border border-j-border">
+                    {address.addressType === 'HOME' ? <Home size={20} /> : <Briefcase size={20} />}
+                  </div>
+                  <div>
+                    <h3 className="font-black text-xs text-j-text uppercase tracking-wider">{address.addressType}</h3>
+                    <p className="text-[10px] font-bold text-j-text-muted uppercase mt-1">{address.firstName} {address.lastName}</p>
+                  </div>
+                </div>
 
- <div className="space-y-2 mb-8 h-24">
- <p className="text-xs font-bold text-on-surface-variant uppercase tracking-tight leading-relaxed">{address.streetAddress}</p>
- {address.landmark && <p className="text-[9px] text-jumia-orange font-semibold uppercase tracking-widest opacity-60 italic">Near {address.landmark}</p>}
- <p className="text-[10px] font-semibold text-on-surface uppercase tracking-widest">{address.city}, {address.state}</p>
- <p className="text-sm font-semibold text-on-surface pt-4 tracking-tighter">{address.phone}</p>
- </div>
+                <div className="space-y-1 mb-6 min-h-[80px]">
+                  <p className="text-xs font-bold text-j-text uppercase tracking-tight leading-relaxed line-clamp-2">{address.streetAddress}</p>
+                  {address.landmark && <p className="text-[10px] text-jumia-orange font-bold uppercase tracking-wider">Near {address.landmark}</p>}
+                  <p className="text-[10px] font-bold text-j-text-muted uppercase">{address.city}, {address.state}</p>
+                  <p className="text-sm font-black text-j-text pt-4">{address.phone}</p>
+                </div>
 
- <div className="flex items-center gap-4 border-t-2 border-outline-variant/30 pt-6">
- <button 
- className="flex-1 flex items-center justify-center gap-2 py-4 text-[9px] font-semibold uppercase tracking-widest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-2xl transition-all border-2 border-transparent"
- >
- <Edit2 size={14} /> Update
- </button>
- <button 
- onClick={() => handleDelete(address.id)}
- className="flex-1 flex items-center justify-center gap-2 py-4 text-[9px] font-semibold uppercase tracking-widest text-error hover:bg-error/10 rounded-2xl transition-all border-2 border-error/5"
- >
- <Trash2 size={14} /> Remove
- </button>
- </div>
- </div>
- ))
- ) : (
- <div className="col-span-full bg-surface-container-low/30 rounded-[48px] border border-dashed border-outline-variant/30 p-20 text-center animate-in fade-in zoom-in-95 duration-700">
- <div className="w-24 h-24 bg-surface-container-low text-jumia-orange/20 rounded flex items-center justify-center mx-auto mb-8 border border-outline-variant/10 shadow-inner">
- <MapPin size={40} />
- </div>
- <h2 className="text-2xl font-semibold text-on-surface uppercase tracking-tighter">Zero Nodes Detected</h2>
- <p className="text-[10px] text-on-surface-variant font-semibold mt-3 mb-10 uppercase tracking-[0.3em] opacity-40 italic">Initialize your distribution matrix to accelerate checkout</p>
- <button 
- onClick={() => setIsAddModalOpen(true)}
- className="text-jumia-orange font-semibold text-xs uppercase tracking-[0.4em] hover:underline"
- >
- Begin Initialization
- </button>
- </div>
- )}
- </div>
- </div>
+                <div className="flex items-center gap-4 border-t border-j-border pt-4">
+                  <button className="flex-1 flex items-center justify-center gap-2 py-2 text-[10px] font-black uppercase tracking-wider text-j-text-muted hover:text-j-text transition-colors">
+                    <Edit2 size={14} /> Edit
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(address.id)}
+                    className="flex-1 flex items-center justify-center gap-2 py-2 text-[10px] font-black uppercase tracking-wider text-j-error hover:text-red-700 transition-colors"
+                  >
+                    <Trash2 size={14} /> Remove
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full bg-white rounded-sm border border-dashed border-j-border p-16 text-center">
+              <div className="w-20 h-20 bg-j-surface-container-low text-j-text-muted rounded-full flex items-center justify-center mx-auto mb-6">
+                <MapPin size={32} />
+              </div>
+              <h2 className="text-xl font-black text-j-text uppercase tracking-tight">No Addresses Found</h2>
+              <p className="text-xs font-bold text-j-text-muted mt-2 mb-8 uppercase max-w-[280px] mx-auto">
+                Add a shipping address to speed up your checkout process.
+              </p>
+              <Button 
+                onClick={() => setIsAddModalOpen(true)}
+                variant="outline"
+                className="font-black"
+              >
+                Add Address
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
 
- <AddAddressModal 
- isOpen={isAddModalOpen} 
- onClose={() => setIsAddModalOpen(false)} 
- onSuccess={() => utils.iam.getAddresses.invalidate()} 
- />
+      <AddAddressModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onSuccess={() => utils.iam.getAddresses.invalidate()} 
+      />
 
- <ConfirmModal 
- isOpen={isDeleteModalOpen}
- onCancel={() => setIsDeleteModalOpen(false)}
- onConfirm={() => addressToDelete && deleteMutation.mutate({ id: addressToDelete })}
- title="Decommission Node?"
- message="Are you certain you want to remove this logistics endpoint? This action is irreversible."
- confirmLabel="Confirm Removal"
- variant="danger"
- />
- </div>
- );
+      <ConfirmModal 
+        isOpen={isDeleteModalOpen}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => addressToDelete && deleteMutation.mutate({ id: addressToDelete })}
+        title="Delete Address?"
+        message="Are you sure you want to delete this shipping address?"
+        confirmLabel="Delete"
+        variant="danger"
+      />
+    </div>
+  );
 }

@@ -177,8 +177,8 @@ export default function AdminBannersPage() {
       <div className="max-w-[1400px] mx-auto px-6 py-16 space-y-12 animate-pulse bg-background min-h-screen">
         <div className="h-20 w-1/3 bg-surface-container-low rounded-2xl" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          <div className="h-[500px] bg-surface-container-low rounded-[48px]" />
-          <div className="lg:col-span-2 h-[500px] bg-surface-container-low rounded-[48px]" />
+          <div className="h-[500px] bg-surface-container-low rounded" />
+          <div className="lg:col-span-2 h-[500px] bg-surface-container-low rounded" />
         </div>
       </div>
     );
@@ -193,7 +193,7 @@ export default function AdminBannersPage() {
             <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30 shadow-inner">
               <Monitor size={24} className="text-jumia-orange" />
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">CMS Control & Visual Matrix</span>
+            <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">CMS Control & Visual Matrix</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
             Banner <br />
@@ -209,13 +209,13 @@ export default function AdminBannersPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Management Form */}
-        <div className="bg-surface-container-lowest p-10 rounded-[48px] border border-surface-container-low shadow-soft h-fit sticky top-8">
+        <div className="bg-surface-container-lowest p-10 rounded border border-surface-container-low shadow-soft h-fit sticky top-8">
           <div className="flex items-center justify-between mb-10 pb-6 border-b-4 border-surface-container-low">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-jumia-orange/10 text-jumia-orange rounded-2xl border-2 border-jumia-orange/20 shadow-inner">
                 {editingId ? <Settings2 size={20} /> : <Plus size={20} />}
               </div>
-              <h2 className="text-sm font-semibold text-on-surface uppercase tracking-[0.3em] italic">
+              <h2 className="text-sm font-semibold text-on-surface uppercase  italic">
                 {editingId ? 'Modify Node' : 'Deploy Node'}
               </h2>
             </div>
@@ -231,7 +231,7 @@ export default function AdminBannersPage() {
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-4">
-              <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+              <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic px-2">
                 Identity Label
               </label>
               <input
@@ -244,7 +244,7 @@ export default function AdminBannersPage() {
             </div>
 
             <div className="space-y-4">
-              <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+              <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic px-2">
                 Visual Payload (Image)
               </label>
               <div className="group relative w-full h-48 bg-surface-container-low border border-dashed border-surface-container-low rounded overflow-hidden flex flex-col items-center justify-center transition-all hover:border-jumia-orange/30">
@@ -273,7 +273,7 @@ export default function AdminBannersPage() {
             </div>
 
             <div className="space-y-4">
-              <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+              <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic px-2">
                 Routing Link
               </label>
               <div className="relative">
@@ -289,7 +289,7 @@ export default function AdminBannersPage() {
             </div>
 
             <div className="space-y-4">
-              <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+              <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic px-2">
                 Matrix Position
               </label>
               <input
@@ -303,7 +303,7 @@ export default function AdminBannersPage() {
             <button
               type="submit"
               disabled={createBannerMutation.isPending || updateBannerMutation.isPending}
-              className="w-full bg-jumia-orange text-white py-6 rounded text-[11px] font-semibold uppercase tracking-[0.4em] italic hover:bg-jumia-orange-dark transition-all duration-700 shadow-3xl disabled:opacity-50 flex items-center justify-center gap-3"
+              className="w-full bg-jumia-orange text-white py-6 rounded text-[11px] font-semibold uppercase  italic hover:bg-jumia-orange-dark transition-all duration-700 shadow-3xl disabled:opacity-50 flex items-center justify-center gap-3"
             >
               {(createBannerMutation.isPending || updateBannerMutation.isPending) && <Loader2 size={18} className="animate-spin text-jumia-orange" />}
               {editingId ? 'Update Node' : 'Deploy Node'}
@@ -314,12 +314,12 @@ export default function AdminBannersPage() {
         {/* List */}
         <div className="lg:col-span-2 space-y-8 animate-in slide-in-from-bottom-8 duration-1000">
           <div className="flex items-center justify-between px-4">
-            <h3 className="text-xs font-semibold text-on-surface uppercase tracking-[0.4em] italic opacity-40">Visual Node Registry</h3>
+            <h3 className="text-xs font-semibold text-on-surface uppercase  italic opacity-40">Visual Node Registry</h3>
           </div>
 
           <div className="grid gap-8">
             {banners?.map((banner) => (
-              <div key={banner.id} className="bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-soft overflow-hidden group hover:border-jumia-orange/20 transition-all duration-700">
+              <div key={banner.id} className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden group hover:border-jumia-orange/20 transition-all duration-700">
                 <div className="relative h-64 w-full">
                   <Image src={banner.imageUrl} alt={banner.title} fill className="object-cover group-hover:scale-105 transition-transform duration-[2000ms]" />
                   <div className="absolute inset-0 bg-gradient-to-t from-on-surface via-transparent to-transparent opacity-60" />
@@ -332,7 +332,7 @@ export default function AdminBannersPage() {
                         </span>
                         <h4 className="text-2xl font-semibold text-white uppercase tracking-tighter italic">{banner.title}</h4>
                       </div>
-                      <p className="text-[10px] font-semibold text-white/40 uppercase tracking-[0.3em] italic">{banner.link || 'Internal Route Unassigned'}</p>
+                      <p className="text-[10px] font-semibold text-white/40 uppercase  italic">{banner.link || 'Internal Route Unassigned'}</p>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -370,8 +370,8 @@ export default function AdminBannersPage() {
                   <Monitor size={48} />
                 </div>
                 <div className="space-y-2">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.6em] text-on-surface-variant/20 italic">Visual Registry Clear</p>
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/10 italic">No nodes currently active in the matrix</p>
+                  <p className="text-[12px] font-semibold uppercase  text-on-surface-variant/20 italic">Visual Registry Clear</p>
+                  <p className="text-[9px] font-semibold uppercase  text-on-surface-variant/10 italic">No nodes currently active in the matrix</p>
                 </div>
               </div>
             )}

@@ -16,7 +16,7 @@ export default function OfficialStoresPage() {
  <div className="container py-32 text-center">
  <div className="flex flex-col items-center gap-6">
  <div className="w-16 h-16 border border-jumia-orange border-t-transparent rounded-full animate-spin" />
- <p className="text-on-surface-variant font-semibold uppercase tracking-[0.4em] text-[10px] animate-pulse italic">Synchronizing Authentic Nodes...</p>
+ <p className="text-on-surface-variant font-semibold uppercase  text-[10px] animate-pulse italic">Synchronizing Authentic Nodes...</p>
  </div>
  </div>
  </div>
@@ -44,7 +44,7 @@ export default function OfficialStoresPage() {
  <div className="bg-jumia-orange/20 backdrop-blur-xl p-2.5 rounded-2xl border border-jumia-orange/30 shadow-2xl shadow-primary-container/20">
  <ShieldCheck size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Certified Sovereign Partners</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Certified Sovereign Partners</span>
  </div>
  <h1 className="text-5xl md:text-8xl font-semibold uppercase tracking-tighter leading-[0.85] mb-8">
  Authenticity <br />
@@ -68,7 +68,7 @@ export default function OfficialStoresPage() {
  <div className="container -mt-16 relative z-20">
  {/* Filter Bar */}
  <div className="bg-surface-container-lowest p-3 rounded shadow-soft border border-surface-container-low flex flex-col md:flex-row items-center gap-4 mb-16 animate-in slide-in-from-bottom-8 duration-700 delay-300">
- <div className="flex-1 px-6 py-3 text-[10px] font-semibold text-on-surface-variant uppercase tracking-[0.3em] italic border-r-0 md:border-r border-outline-variant/30 text-center md:text-left">
+ <div className="flex-1 px-6 py-3 text-[10px] font-semibold text-on-surface-variant uppercase  italic border-r-0 md:border-r border-outline-variant/30 text-center md:text-left">
  {brands?.length || 0} Flagship Nodes Identified
  </div>
  <div className="px-6 py-3 flex items-center gap-6 overflow-x-auto scrollbar-hide w-full md:w-auto">
@@ -88,7 +88,7 @@ export default function OfficialStoresPage() {
  <Link 
  key={brand.id} 
  href={`/search?brandId=${brand.id}`}
- className="group bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-soft hover:shadow-2xl hover:border-jumia-orange/20 transition-all duration-700 overflow-hidden flex flex-col h-full animate-in fade-in slide-in-from-bottom-8"
+ className="group bg-surface-container-lowest rounded border border-surface-container-low shadow-soft hover:shadow-2xl hover:border-jumia-orange/20 transition-all duration-700 overflow-hidden flex flex-col h-full animate-in fade-in slide-in-from-bottom-8"
  style={{ animationDelay: `${idx * 100}ms` }}
  >
  {/* Brand Banner */}
@@ -134,9 +134,9 @@ export default function OfficialStoresPage() {
  <div className="mt-auto pt-8 border-t border-outline-variant/30 flex items-center justify-between">
  <div className="flex items-center gap-2">
  <Sparkles size={14} className="text-jumia-orange" />
- <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant italic">Protocol Verified</span>
+ <span className="text-[9px] font-semibold uppercase  text-on-surface-variant italic">Protocol Verified</span>
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-jumia-orange flex items-center gap-2 group-hover:translate-x-2 transition-transform duration-500">
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange flex items-center gap-2 group-hover:translate-x-2 transition-transform duration-500">
  Deploy
  <ArrowRight size={14} />
  </span>
@@ -149,8 +149,8 @@ export default function OfficialStoresPage() {
  <div className="py-40 text-center px-8 bg-surface-container-low/30 border border-dashed border-outline-variant/30 rounded-[64px] animate-in fade-in zoom-in-95 duration-1000">
  <ShoppingBag className="mx-auto text-on-surface-variant opacity-10 mb-10 group-hover:scale-110 transition-transform" size={80} />
  <h2 className="text-4xl font-semibold text-on-surface uppercase tracking-tighter leading-none mb-4">Node Registry Empty</h2>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] max-w-sm mx-auto mb-12 opacity-40 italic">System is currently onboarding new brand entities. Synchronization required.</p>
- <Link href="/" className="inline-flex items-center gap-4 px-16 py-6 bg-jumia-orange text-white rounded font-semibold text-xs uppercase tracking-[0.3em] shadow-2xl shadow-on-surface/30 hover:bg-jumia-orange-dark transition-all hover:scale-105 active:scale-95 group">
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  max-w-sm mx-auto mb-12 opacity-40 italic">System is currently onboarding new brand entities. Synchronization required.</p>
+ <Link href="/" className="inline-flex items-center gap-4 px-16 py-6 bg-jumia-orange text-white rounded font-semibold text-xs uppercase  shadow-2xl shadow-on-surface/30 hover:bg-jumia-orange-dark transition-all hover:scale-105 active:scale-95 group">
  Return to Nexus
  <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
  </Link>

@@ -75,7 +75,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             
             <div className="flex-1 min-w-0 flex flex-col justify-center">
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-[9px] font-semibold text-jumia-orange uppercase tracking-[0.4em] italic">System Alert</span>
+                <span className="text-[9px] font-semibold text-jumia-orange uppercase  italic">System Alert</span>
                 <div className="h-[1px] flex-1 bg-white/10" />
               </div>
               <h4 className="text-sm font-semibold text-white uppercase tracking-tighter truncate leading-none mb-2">{n.title}</h4>

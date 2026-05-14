@@ -59,7 +59,7 @@ export default function AdminUsersPage() {
  </div>
  <div className="h-12 w-48 bg-surface-container-low rounded-xl" />
  </div>
- <div className="bg-surface-container-low rounded-[48px] h-[600px] border border-surface-container-lowest" />
+ <div className="bg-surface-container-low rounded h-[600px] border border-surface-container-lowest" />
  </div>
  );
  }
@@ -73,7 +73,7 @@ export default function AdminUsersPage() {
  <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30 shadow-inner">
  <ShieldCheck size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">User Access Protocol & Directory Registry</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">User Access Protocol & Directory Registry</span>
  </div>
  <h1 className="text-5xl md:text-7xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  User <br />
@@ -81,7 +81,7 @@ export default function AdminUsersPage() {
  </h1>
  </div>
 
- <button className="bg-jumia-orange text-white px-10 py-5 rounded-2xl font-semibold text-[11px] hover:bg-jumia-orange-dark transition-all duration-700 shadow-3xl uppercase tracking-[0.4em] italic flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000">
+ <button className="bg-jumia-orange text-white px-10 py-5 rounded-2xl font-semibold text-[11px] hover:bg-jumia-orange-dark transition-all duration-700 shadow-3xl uppercase  italic flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000">
  <UserPlus size={18} className="group-hover:rotate-12 transition-transform" /> 
  Append Staff Entity
  </button>
@@ -101,7 +101,7 @@ export default function AdminUsersPage() {
  <div className="flex gap-4 w-full lg:w-auto">
  <div className="relative flex-1 lg:flex-none">
  <Filter className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant/20" size={16} />
- <select className="bg-surface-container-low border border-surface-container-lowest rounded-2xl pl-12 pr-10 py-4 text-[10px] font-semibold focus:outline-none focus:border-jumia-orange/20 text-on-surface-variant appearance-none cursor-pointer uppercase tracking-[0.2em] shadow-inner w-full">
+ <select className="bg-surface-container-low border border-surface-container-lowest rounded-2xl pl-12 pr-10 py-4 text-[10px] font-semibold focus:outline-none focus:border-jumia-orange/20 text-on-surface-variant appearance-none cursor-pointer uppercase  shadow-inner w-full">
  <option>ALL ROLES</option>
  <option>ADMIN</option>
  <option>STAFF</option>
@@ -114,7 +114,7 @@ export default function AdminUsersPage() {
  <div className="overflow-x-auto custom-scrollbar">
  <table className="w-full text-left border-collapse min-w-[900px]">
  <thead>
- <tr className="bg-surface-container-low/10 text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/30 border-b-4 border-surface-container-low">
+ <tr className="bg-surface-container-low/10 text-[10px] font-semibold uppercase  text-on-surface-variant/30 border-b-4 border-surface-container-low">
  <th className="px-10 py-8 italic">Entity Identity</th>
  <th className="px-10 py-8 italic">Protocol Role</th>
  <th className="px-10 py-8 italic">Registry Status</th>
@@ -133,14 +133,14 @@ export default function AdminUsersPage() {
  <div className="font-semibold text-sm md:text-base text-on-surface uppercase tracking-tight leading-none mb-1 group-hover/row:translate-x-2 transition-transform duration-700">
  {user.firstName} {user.lastName}
  </div>
- <div className="flex items-center gap-2 text-[9px] font-semibold text-on-surface-variant/30 uppercase tracking-[0.2em] italic">
+ <div className="flex items-center gap-2 text-[9px] font-semibold text-on-surface-variant/30 uppercase  italic">
  <Mail size={10} /> {user.email}
  </div>
  </div>
  </div>
  </td>
  <td className="px-10 py-8">
- <span className={`text-[10px] px-4 py-1.5 rounded-full font-semibold border-2 uppercase tracking-[0.2em] italic transition-all duration-700 ${
+ <span className={`text-[10px] px-4 py-1.5 rounded-full font-semibold border-2 uppercase  italic transition-all duration-700 ${
  user.role === 'ADMIN' ? 'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20 shadow-[0_0_15px_rgba(246,139,30,0.2)]' :
  user.role === 'MODERATOR' ? 'bg-jumia-orange text-white border-on-surface' :
  user.role === 'SELLER' ? 'bg-surface-container-low text-on-surface-variant border-surface-container-lowest' :
@@ -152,7 +152,7 @@ export default function AdminUsersPage() {
  <td className="px-10 py-8">
  <div className="flex items-center gap-4">
  <div className={`w-2.5 h-2.5 rounded-full ${user.isActive ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-error shadow-[0_0_10px_rgba(239,68,68,0.5)]'} animate-pulse`} />
- <span className={`text-[10px] font-semibold uppercase tracking-[0.2em] italic ${
+ <span className={`text-[10px] font-semibold uppercase  italic ${
  user.isActive ? 'text-green-500 opacity-60' : 'text-error opacity-60'
  }`}>
  {user.isActive ? 'LIVE ACCESS' : 'SUSPENDED'}

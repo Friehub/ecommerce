@@ -27,11 +27,11 @@ function NewDisputePageContent() {
  if (!orderId) {
  return (
  <div className="bg-background min-h-screen flex items-center justify-center p-6">
- <div className="bg-surface-container-lowest p-16 rounded-[48px] border border-surface-container-low shadow-soft text-center max-w-lg w-full">
+ <div className="bg-surface-container-lowest p-16 rounded border border-surface-container-low shadow-soft text-center max-w-lg w-full">
  <AlertCircle className="mx-auto text-error mb-8" size={64} />
  <h2 className="text-3xl font-semibold text-on-surface uppercase tracking-tighter mb-4">Null <span className="text-error">Context</span></h2>
- <p className="text-on-surface-variant/40 text-[11px] font-semibold uppercase tracking-[0.3em] mb-10 italic">NO ORDER IDENTITY PROVIDED FOR DISPUTE INITIALIZATION.</p>
- <Link href="/account/orders" className="h-16 px-12 bg-jumia-orange text-white rounded-2xl font-semibold text-[10px] uppercase tracking-[0.4em] hover:bg-jumia-orange-dark transition-all flex items-center justify-center gap-4 mx-auto w-fit">
+ <p className="text-on-surface-variant/40 text-[11px] font-semibold uppercase  mb-10 italic">NO ORDER IDENTITY PROVIDED FOR DISPUTE INITIALIZATION.</p>
+ <Link href="/account/orders" className="h-16 px-12 bg-jumia-orange text-white rounded-2xl font-semibold text-[10px] uppercase  hover:bg-jumia-orange-dark transition-all flex items-center justify-center gap-4 mx-auto w-fit">
  Return to Orders <ArrowRight size={18} />
  </Link>
  </div>
@@ -44,7 +44,7 @@ function NewDisputePageContent() {
  <div className="bg-background min-h-screen flex items-center justify-center">
  <div className="flex flex-col items-center gap-6">
  <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant opacity-40">Fetching Order Manifest</p>
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant opacity-40">Fetching Order Manifest</p>
  </div>
  </div>
  );
@@ -61,7 +61,7 @@ function NewDisputePageContent() {
  return (
  <div className="bg-background min-h-screen pb-24 select-none">
  <div className="container py-12 max-w-3xl mx-auto px-6">
- <Link href={`/account/orders/${orderId}`} className="flex items-center gap-3 text-on-surface-variant/40 hover:text-on-surface transition-colors font-semibold text-[10px] uppercase tracking-[0.4em] mb-12 group">
+ <Link href={`/account/orders/${orderId}`} className="flex items-center gap-3 text-on-surface-variant/40 hover:text-on-surface transition-colors font-semibold text-[10px] uppercase  mb-12 group">
  <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
  Back to Order Manifest
  </Link>
@@ -74,14 +74,14 @@ function NewDisputePageContent() {
  <div>
  <h1 className="text-4xl font-semibold text-on-surface tracking-tighter uppercase leading-none">Initiate <span className="text-error">Conflict</span></h1>
  <div className="flex items-center gap-3 mt-3">
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic">Node #{orderId.slice(-8).toUpperCase()}</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic">Node #{orderId.slice(-8).toUpperCase()}</p>
  </div>
  </div>
  </div>
 
  <form onSubmit={handleSubmit} className="space-y-10">
  <div className="space-y-4">
- <label className="block text-[10px] font-semibold text-on-surface-variant/60 uppercase tracking-[0.3em] ml-2 italic">Conflict Taxonomy</label>
+ <label className="block text-[10px] font-semibold text-on-surface-variant/60 uppercase  ml-2 italic">Conflict Taxonomy</label>
  <select 
  value={reason}
  onChange={(e) => setReason(e.target.value)}
@@ -99,7 +99,7 @@ function NewDisputePageContent() {
  </div>
 
  <div className="space-y-4">
- <label className="block text-[10px] font-semibold text-on-surface-variant/60 uppercase tracking-[0.3em] ml-2 italic">Incident Log</label>
+ <label className="block text-[10px] font-semibold text-on-surface-variant/60 uppercase  ml-2 italic">Incident Log</label>
  <textarea 
  value={description}
  onChange={(e) => setDescription(e.target.value)}
@@ -122,7 +122,7 @@ function NewDisputePageContent() {
  <button 
  type="submit"
  disabled={createDispute.isLoading}
- className="w-full h-20 bg-jumia-orange text-white rounded font-semibold uppercase tracking-[0.4em] text-xs transition-all flex items-center justify-center gap-4 shadow-2xl hover:bg-jumia-orange-dark active:scale-95 disabled:opacity-30 group"
+ className="w-full h-20 bg-jumia-orange text-white rounded font-semibold uppercase  text-xs transition-all flex items-center justify-center gap-4 shadow-2xl hover:bg-jumia-orange-dark active:scale-95 disabled:opacity-30 group"
  >
  {createDispute.isLoading ? 'Initalizing Node...' : (
  <>

@@ -84,7 +84,7 @@ export default function AgentDashboard() {
  <div className="bg-background min-h-screen flex items-center justify-center">
  <div className="flex flex-col items-center gap-6">
  <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Syncing Mission Data</p>
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant opacity-40 animate-pulse">Syncing Mission Data</p>
  </div>
  </div>
  );
@@ -102,7 +102,7 @@ export default function AgentDashboard() {
           <div>
             <div className="flex items-center gap-4 mb-2">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-ping" />
-              <span className="text-[10px] font-semibold uppercase tracking-[0.4em] text-jumia-orange italic">Operational Link: Active</span>
+              <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Operational Link: Active</span>
             </div>
             <h1 className="text-4xl font-semibold uppercase tracking-tighter leading-[0.8]">
               Agent <br />
@@ -119,11 +119,11 @@ export default function AgentDashboard() {
         {/* Statistics HUD */}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-surface-container-low p-6 rounded border border-surface-container-lowest shadow-soft">
-            <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] mb-2 italic">Active Payload</p>
+            <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase  mb-2 italic">Active Payload</p>
             <p className="text-3xl font-semibold text-on-surface tracking-tighter">{activePayload.length}</p>
           </div>
           <div className="bg-surface-container-low p-6 rounded border border-surface-container-lowest shadow-soft">
-            <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] mb-2 italic">Mission Success</p>
+            <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase  mb-2 italic">Mission Success</p>
             <p className="text-3xl font-semibold text-success tracking-tighter">{completedTasks.length}</p>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function AgentDashboard() {
         {/* SHIPMENT MATRIX */}
         <div className="space-y-10">
           <div className="flex items-center justify-between px-4">
-            <h2 className="text-sm font-semibold text-on-surface uppercase tracking-[0.3em]">Operational Queue</h2>
+            <h2 className="text-sm font-semibold text-on-surface uppercase ">Operational Queue</h2>
             <div className="flex items-center gap-2 text-[10px] font-semibold text-on-surface-variant/30 uppercase tracking-widest italic">
               <Clock size={12} /> {format(new Date(), 'HH:mm')} Zulu
             </div>
@@ -139,13 +139,13 @@ export default function AgentDashboard() {
 
           {activePayload.length > 0 ? (
             activePayload.map((shipment, idx) => (
-              <div key={shipment.id} className="bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-soft overflow-hidden group/card hover:border-jumia-orange/20 transition-all duration-700">
+              <div key={shipment.id} className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden group/card hover:border-jumia-orange/20 transition-all duration-700">
                 <div className="p-8 border-b-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/20">
                   <div className="flex items-center gap-4">
                     <span className="w-2 h-2 rounded-full bg-jumia-orange animate-pulse" />
-                    <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-[0.3em]">UNIT-{(shipment as any).id.slice(-6).toUpperCase()}</span>
+                    <span className="text-[11px] font-semibold text-on-surface-variant uppercase ">UNIT-{(shipment as any).id.slice(-6).toUpperCase()}</span>
                   </div>
-                  <span className={`text-[8px] px-3 py-1.5 rounded-lg font-semibold uppercase tracking-[0.3em] border-2 ${
+                  <span className={`text-[8px] px-3 py-1.5 rounded-lg font-semibold uppercase  border-2 ${
                     shipment.status === 'FAILED' ? 'bg-error/5 text-error border-error/10' : 'bg-jumia-orange/5 text-jumia-orange border-jumia-orange/10'
                   }`}>
                     {shipment.status.replace('_', ' ')}
@@ -158,13 +158,13 @@ export default function AgentDashboard() {
                       <MapPin size={28} className="text-jumia-orange group-hover:text-white" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] mb-2 italic">Delivery Node</p>
+                      <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mb-2 italic">Delivery Node</p>
                       <p className="text-base font-semibold text-on-surface uppercase tracking-tighter leading-tight mb-4">
                         {(shipment as any).package?.order?.address?.address || "Lagos Island, Custom Street, No 12."}
                       </p>
                       <button 
                         onClick={() => startNavigation((shipment as any).package?.order?.address?.address || "Lagos Island, Custom Street, No 12.")}
-                        className="flex items-center gap-3 text-jumia-orange text-[10px] font-semibold uppercase tracking-[0.3em] hover:bg-jumia-orange-dark/5 px-4 py-2 rounded-xl transition-all"
+                        className="flex items-center gap-3 text-jumia-orange text-[10px] font-semibold uppercase  hover:bg-jumia-orange-dark/5 px-4 py-2 rounded-xl transition-all"
                       >
                         <Navigation size={14} /> Protocol: Map Link
                       </button>
@@ -176,7 +176,7 @@ export default function AgentDashboard() {
                       <Package size={28} className="text-on-surface-variant/20" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] mb-2 italic">Cargo Specifications</p>
+                      <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mb-2 italic">Cargo Specifications</p>
                       <div className="flex items-center gap-3">
                         <span className="text-sm font-semibold text-on-surface uppercase tracking-widest italic">Asset Payload Locked</span>
                       </div>
@@ -189,7 +189,7 @@ export default function AgentDashboard() {
                   {shipment.status === 'PENDING' && (
                     <button 
                       onClick={() => updateStatus.mutate({ shipmentId: shipment.id, status: 'PICKED_UP' })}
-                      className="h-20 bg-jumia-orange text-white rounded font-semibold text-[11px] uppercase tracking-[0.5em] hover:bg-jumia-orange-dark transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 group"
+                      className="h-20 bg-jumia-orange text-white rounded font-semibold text-[11px] uppercase  hover:bg-jumia-orange-dark transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 group"
                     >
                       Authorize Pickup <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
                     </button>
@@ -200,7 +200,7 @@ export default function AgentDashboard() {
                       {shipment.status !== 'OUT_FOR_DELIVERY' && (
                         <button 
                           onClick={() => updateStatus.mutate({ shipmentId: shipment.id, status: 'OUT_FOR_DELIVERY' })}
-                          className="h-16 bg-surface-container-lowest border border-surface-container-low text-on-surface font-semibold text-[10px] uppercase tracking-[0.3em] hover:border-jumia-orange/20 transition-all rounded"
+                          className="h-16 bg-surface-container-lowest border border-surface-container-low text-on-surface font-semibold text-[10px] uppercase  hover:border-jumia-orange/20 transition-all rounded"
                         >
                           Protocol: Set Out for Delivery
                         </button>
@@ -210,7 +210,7 @@ export default function AgentDashboard() {
                         <button 
                           onClick={() => handleDelivery(shipment.id)}
                           disabled={uploading === shipment.id}
-                          className="flex-1 h-24 bg-jumia-orange text-white rounded font-semibold text-[11px] uppercase tracking-[0.4em] hover:bg-jumia-orange-dark transition-all disabled:opacity-20 flex items-center justify-center gap-6 shadow-2xl group"
+                          className="flex-1 h-24 bg-jumia-orange text-white rounded font-semibold text-[11px] uppercase  hover:bg-jumia-orange-dark transition-all disabled:opacity-20 flex items-center justify-center gap-6 shadow-2xl group"
                         >
                           {uploading === shipment.id ? <Loader2 className="animate-spin" size={24} /> : <Camera size={28} />}
                           {uploading === shipment.id ? 'TX...' : 'COMMIT'}
@@ -249,7 +249,7 @@ export default function AgentDashboard() {
                       <button 
                         onClick={() => handleFailure(shipment.id)}
                         disabled={!failureNote}
-                        className="flex-1 h-16 bg-error text-white rounded-2xl font-semibold text-[10px] uppercase tracking-[0.3em] shadow-xl disabled:opacity-20"
+                        className="flex-1 h-16 bg-error text-white rounded-2xl font-semibold text-[10px] uppercase  shadow-xl disabled:opacity-20"
                       >
                         Transmit Final Void
                       </button>
@@ -265,9 +265,9 @@ export default function AgentDashboard() {
               </div>
             ))
           ) : (
-            <div className="py-20 text-center border border-dashed border-surface-container-low rounded-[48px]">
+            <div className="py-20 text-center border border-dashed border-surface-container-low rounded">
               <CheckCircle2 size={48} className="mx-auto text-success/20 mb-6" />
-              <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/20 italic">Queue Cleared: Operational Readiness Nominal.</p>
+              <p className="text-[10px] font-semibold uppercase  text-on-surface-variant/20 italic">Queue Cleared: Operational Readiness Nominal.</p>
             </div>
           )}
         </div>
@@ -275,7 +275,7 @@ export default function AgentDashboard() {
         {/* COMPLETED TASKS (Collapsed) */}
         {completedTasks.length > 0 && (
           <div className="space-y-6 pt-10 border-t-4 border-surface-container-low/30">
-            <h3 className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.5em] italic px-4">Archived Missions ({completedTasks.length})</h3>
+            <h3 className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic px-4">Archived Missions ({completedTasks.length})</h3>
             <div className="space-y-4 opacity-40 hover:opacity-100 transition-opacity">
               {completedTasks.map(task => (
                 <div key={task.id} className="bg-surface-container-low/50 p-6 rounded border-2 border-surface-container-low flex items-center justify-between">
@@ -303,7 +303,7 @@ export default function AgentDashboard() {
               <p className="text-xs font-semibold text-white tracking-tighter">0.02ms Protocol Link</p>
             </div>
           </div>
-          <button className="bg-white text-on-surface px-6 py-3 rounded-xl text-[10px] font-semibold uppercase tracking-[0.3em] hover:bg-jumia-orange-dark hover:text-white transition-all shadow-xl">
+          <button className="bg-white text-on-surface px-6 py-3 rounded-xl text-[10px] font-semibold uppercase  hover:bg-jumia-orange-dark hover:text-white transition-all shadow-xl">
             Audit Logs
           </button>
         </div>

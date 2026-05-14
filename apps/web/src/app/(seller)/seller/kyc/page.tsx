@@ -91,7 +91,7 @@ export default function SellerKYCPage() {
  </div>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
  {[...Array(4)].map((_, i) => (
- <Skeleton key={i} className="h-72 w-full rounded-[48px]" />
+ <Skeleton key={i} className="h-72 w-full rounded" />
  ))}
  </div>
  </div>
@@ -121,16 +121,16 @@ export default function SellerKYCPage() {
  <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30">
  <Fingerprint size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Neural Identity Nexus & Compliance Authority</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Neural Identity Nexus & Compliance Authority</span>
  </div>
  <h1 className="text-5xl md:text-8xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Compliance <br />
  <span className="text-jumia-orange italic">Nexus.</span>
  </h1>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Automated Merchant Authorization • Global Identity Synchronization</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Automated Merchant Authorization • Global Identity Synchronization</p>
  </div>
  {isVerified && (
- <div className="bg-success-container/10 text-success px-12 py-5 rounded flex items-center gap-4 text-[11px] font-semibold uppercase tracking-[0.4em] border-2 border-success/20 shadow-2xl shadow-success/5 animate-in slide-in-from-right-8 duration-1000 italic">
+ <div className="bg-success-container/10 text-success px-12 py-5 rounded flex items-center gap-4 text-[11px] font-semibold uppercase  border-2 border-success/20 shadow-2xl shadow-success/5 animate-in slide-in-from-right-8 duration-1000 italic">
  <ShieldCheck size={22} className="animate-pulse" /> Verified Merchant
  </div>
  )}
@@ -143,7 +143,7 @@ export default function SellerKYCPage() {
  </div>
  <div className="text-center md:text-left">
  <h3 className="text-2xl font-semibold text-on-surface uppercase tracking-tighter leading-none mb-3">Authorization Required</h3>
- <p className="text-[12px] font-semibold text-on-surface-variant uppercase tracking-[0.1em] opacity-60 leading-relaxed max-w-3xl italic">
+ <p className="text-[12px] font-semibold text-on-surface-variant uppercase  opacity-60 leading-relaxed max-w-3xl italic">
  Merchant registry requires a valid <span className="text-jumia-orange opacity-100 border-b-2 border-jumia-orange/20 pb-0.5">Sovereign Identity Card</span> and <span className="text-jumia-orange opacity-100 border-b-2 border-jumia-orange/20 pb-0.5">Financial Liquidity Statement</span> for high-throughput node activation and settlement synchronization.
  </p>
  </div>
@@ -159,7 +159,7 @@ export default function SellerKYCPage() {
  <div className="w-20 h-20 bg-surface-container-low rounded flex items-center justify-center text-on-surface-variant/20 group-hover:text-jumia-orange transition-all duration-1000 border-2 border-outline-variant/5 shadow-inner">
  <FileText size={40} strokeWidth={1.5} />
  </div>
- <div className={`px-6 py-2.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.4em] border-2 shadow-sm italic transition-all duration-700 ${
+ <div className={`px-6 py-2.5 rounded-full text-[10px] font-semibold uppercase  border-2 shadow-sm italic transition-all duration-700 ${
  status === 'APPROVED' ? 'bg-success-container/10 text-success border-success/20' :
  status === 'PENDING' ? 'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20 animate-pulse' :
  status === 'REJECTED' ? 'bg-error-container/10 text-error border-error/20' :
@@ -170,10 +170,10 @@ export default function SellerKYCPage() {
  </div>
  
  <h3 className="font-semibold text-on-surface uppercase tracking-tighter text-2xl mb-3 group-hover:text-jumia-orange transition-colors duration-500">{docType.label}</h3>
- <p className="text-[11px] text-on-surface-variant/40 font-semibold uppercase tracking-[0.3em] mb-12 italic">{docType.desc}</p>
+ <p className="text-[11px] text-on-surface-variant/40 font-semibold uppercase  mb-12 italic">{docType.desc}</p>
 
  {status === 'APPROVED' ? (
- <div className="flex items-center gap-4 text-success text-[11px] font-semibold uppercase tracking-[0.4em] bg-success-container/10 p-6 rounded border-2 border-success/20 italic shadow-inner">
+ <div className="flex items-center gap-4 text-success text-[11px] font-semibold uppercase  bg-success-container/10 p-6 rounded border-2 border-success/20 italic shadow-inner">
  <ShieldCheck size={22} className="animate-bounce-subtle" /> Asset Verification Secured
  </div>
  ) : (
@@ -188,7 +188,7 @@ export default function SellerKYCPage() {
  }}
  disabled={!!uploading}
  />
- <button className={`w-full py-7 rounded-[36px] border border-dashed border-outline-variant/10 flex items-center justify-center gap-5 text-[11px] font-semibold uppercase tracking-[0.4em] transition-all duration-700 italic relative ${uploading === docType.id ? 'bg-surface-container-low' : 'group-hover/upload:bg-jumia-orange group-hover/upload:text-white group-hover/upload:border-on-surface group-hover/upload:shadow-2xl'}`}>
+ <button className={`w-full py-7 rounded-[36px] border border-dashed border-outline-variant/10 flex items-center justify-center gap-5 text-[11px] font-semibold uppercase  transition-all duration-700 italic relative ${uploading === docType.id ? 'bg-surface-container-low' : 'group-hover/upload:bg-jumia-orange group-hover/upload:text-white group-hover/upload:border-on-surface group-hover/upload:shadow-2xl'}`}>
  {uploading === docType.id ? (
  <Loader2 size={24} className="animate-spin text-jumia-orange" />
  ) : (
@@ -212,12 +212,12 @@ export default function SellerKYCPage() {
  <div className="w-12 h-12 bg-jumia-orange text-white rounded-2xl flex items-center justify-center shadow-2xl border-2 border-white/10">
  <Lock size={24} />
  </div>
- <span className="text-[12px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">High-Fidelity Encryption Protocol Active</span>
+ <span className="text-[12px] font-semibold uppercase  text-jumia-orange italic">High-Fidelity Encryption Protocol Active</span>
  </div>
  <h2 className="text-6xl md:text-7xl font-semibold uppercase tracking-tighter leading-[0.85] max-w-3xl">
  Sovereign Data <br />Protection <span className="text-jumia-orange italic">Engaged.</span>
  </h2>
- <p className="text-base text-white/40 font-semibold uppercase tracking-[0.1em] max-w-2xl leading-relaxed italic border-l-4 border-jumia-orange/30 pl-10">
+ <p className="text-base text-white/40 font-semibold uppercase  max-w-2xl leading-relaxed italic border-l-4 border-jumia-orange/30 pl-10">
  All identity assets are encrypted at rest via specialized hardware security modules. Data access is strictly compartmentalized and audited by authorized compliance nodes.
  </p>
  <div className="flex items-center gap-8 pt-6">
@@ -229,7 +229,7 @@ export default function SellerKYCPage() {
  ))}
  </div>
  <div>
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] opacity-40 mb-1">Institutional Integrity</p>
+ <p className="text-[10px] font-semibold uppercase  opacity-40 mb-1">Institutional Integrity</p>
  <div className="flex items-center gap-3">
  <Globe size={14} className="text-jumia-orange" />
  <span className="text-[13px] font-semibold uppercase tracking-tighter text-white/60">System Trust Verified: 99.99%</span>

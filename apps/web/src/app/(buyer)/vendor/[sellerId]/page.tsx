@@ -22,7 +22,7 @@ function SellerStorefrontContent({ sellerId }: { sellerId: string }) {
  <div className="bg-background min-h-screen flex items-center justify-center">
  <div className="flex flex-col items-center gap-6">
  <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Syncing Vendor Node</p>
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant opacity-40 animate-pulse">Syncing Vendor Node</p>
  </div>
  </div>
  );
@@ -43,11 +43,11 @@ function SellerStorefrontContent({ sellerId }: { sellerId: string }) {
  <div className="flex-1 text-center md:text-left relative z-10">
  <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
  <h1 className="text-4xl md:text-5xl font-semibold text-on-surface uppercase tracking-tighter leading-none">{seller.businessName}</h1>
- <span className="bg-jumia-orange text-white px-4 py-1.5 rounded-full text-[9px] font-semibold uppercase tracking-[0.3em] shadow-xl w-fit mx-auto md:mx-0 border-2 border-white/10">
+ <span className="bg-jumia-orange text-white px-4 py-1.5 rounded-full text-[9px] font-semibold uppercase  shadow-xl w-fit mx-auto md:mx-0 border-2 border-white/10">
  {seller.tier} NODE
  </span>
  </div>
- <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic">
+ <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic">
  <div className="flex items-center gap-2 px-4 py-2 bg-surface-container-low rounded-xl border-2 border-surface-container-low">
  <Star size={16} className="text-jumia-orange fill-primary-container" />
  <span className="text-on-surface">{seller.rating.toFixed(1)}</span>
@@ -65,7 +65,7 @@ function SellerStorefrontContent({ sellerId }: { sellerId: string }) {
  </div>
  <div className="bg-surface-container-low/30 px-10 py-8 rounded border border-surface-container-low text-center shrink-0 min-w-[180px] shadow-inner">
  <div className="text-4xl font-semibold text-on-surface tracking-tighter leading-none mb-2">{seller.productCount}</div>
- <div className="text-[9px] text-on-surface-variant/40 uppercase font-semibold tracking-[0.4em] italic">Active Nodes</div>
+ <div className="text-[9px] text-on-surface-variant/40 uppercase font-semibold  italic">Active Nodes</div>
  </div>
  </div>
 
@@ -85,7 +85,7 @@ function SellerStorefrontContent({ sellerId }: { sellerId: string }) {
  <div className="bg-surface-container-lowest rounded-[56px] border border-surface-container-low p-32 text-center shadow-soft animate-in zoom-in-95 duration-1000">
  <Package className="mx-auto text-surface-container-low mb-10 opacity-40" size={80} />
  <h3 className="text-3xl font-semibold text-on-surface uppercase tracking-tighter mb-4">Inventory <span className="text-jumia-orange">Null</span></h3>
- <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase tracking-[0.4em] italic leading-relaxed max-w-sm mx-auto">NO ACTIVE PRODUCTS DETECTED WITHIN THIS VENDOR'S SYSTEMIC CATALOG.</p>
+ <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase  italic leading-relaxed max-w-sm mx-auto">NO ACTIVE PRODUCTS DETECTED WITHIN THIS VENDOR'S SYSTEMIC CATALOG.</p>
  </div>
  ) : (
  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
@@ -136,12 +136,12 @@ function SellerStorefrontContent({ sellerId }: { sellerId: string }) {
  </div>
  <div>
  <h3 className="text-2xl font-semibold uppercase tracking-tighter mb-2">Vendor <span className="text-jumia-orange">Integrity</span></h3>
- <p className="text-[10px] font-semibold uppercase tracking-[0.2em] italic opacity-40 max-w-xl leading-loose">
+ <p className="text-[10px] font-semibold uppercase  italic opacity-40 max-w-xl leading-loose">
  EVERY ACQUISITION FROM THIS NODE IS PROTECTED BY JUMIA CENTRAL COMMAND SETTLEMENT PROTOCOLS AND RETURN GUARANTEES.
  </p>
  </div>
  </div>
- <button className="h-16 px-10 bg-jumia-orange text-white rounded-2xl font-semibold text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-on-surface transition-all active:scale-95 shadow-xl shadow-primary-container/20 shrink-0">
+ <button className="h-16 px-10 bg-jumia-orange text-white rounded-2xl font-semibold text-[10px] uppercase  hover:bg-white hover:text-on-surface transition-all active:scale-95 shadow-xl shadow-primary-container/20 shrink-0">
  Systemic Message
  </button>
  </div>

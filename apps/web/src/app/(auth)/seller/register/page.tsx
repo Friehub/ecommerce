@@ -37,7 +37,7 @@ export default function SellerRegistrationKYCPage() {
  <div className={`h-1.5 w-12 rounded-full transition-all duration-500 ${step === 1 ? 'bg-jumia-orange' : 'bg-success'}`} />
  <div className={`h-1.5 w-12 rounded-full transition-all duration-500 ${step === 2 ? 'bg-jumia-orange' : 'bg-white/20'}`} />
  </div>
- <p className="text-primary-fixed-dim/80 text-[10px] font-semibold uppercase tracking-[0.3em] mt-4">
+ <p className="text-primary-fixed-dim/80 text-[10px] font-semibold uppercase  mt-4">
  {step === 1 ? 'Step 1: Store Information' : 'Step 2: KYC Verification'}
  </p>
  </div>
@@ -119,7 +119,7 @@ export default function SellerRegistrationKYCPage() {
  <CheckSquare size={32} />
  </div>
  <span className="font-semibold text-sm text-on-surface block truncate max-w-full px-4">{cacDoc.name}</span>
- <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-jumia-orange mt-3 bg-white px-4 py-1.5 rounded-full border border-jumia-orange/10 shadow-sm">
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange mt-3 bg-white px-4 py-1.5 rounded-full border border-jumia-orange/10 shadow-sm">
  Attached Successfully
  </span>
  </>
@@ -154,7 +154,7 @@ export default function SellerRegistrationKYCPage() {
  <button 
  type="button"
  onClick={() => setStep(1)}
- className="w-full text-center text-[10px] text-on-surface-variant font-semibold uppercase tracking-[0.2em] hover:text-jumia-orange transition-all cursor-pointer mt-4 opacity-40"
+ className="w-full text-center text-[10px] text-on-surface-variant font-semibold uppercase  hover:text-jumia-orange transition-all cursor-pointer mt-4 opacity-40"
  >
  ← Back to Information
  </button>

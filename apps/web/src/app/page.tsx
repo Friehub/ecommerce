@@ -16,47 +16,52 @@ import { Skeleton } from '@/components/ui/Skeleton';
 export default function Home() {
   return (
     <main className="min-h-screen pb-12 bg-j-background">
-      <div className="max-w-container-max mx-auto px-margin-desktop py-stack-lg flex flex-col gap-stack-lg">
+      <div className="max-w-[1184px] mx-auto px-4 py-6 flex flex-col gap-8">
         {/* Hero Section (Sidebar + Carousel + Right Bar) */}
-        <div className="flex flex-col lg:flex-row gap-gutter">
+        <div className="flex flex-col lg:flex-row gap-4 h-[450px]">
           {/* SideNavBar */}
-          <aside className="hidden lg:block w-64">
+          <aside className="hidden lg:block w-52 shrink-0">
             <CategorySidebar />
           </aside>
 
           {/* Hero Carousel */}
-          <div className="flex-1 min-h-[400px]">
+          <div className="flex-1 min-w-0">
             <HeroCarousel />
           </div>
 
           {/* Right Sidebar Quick Links */}
-          <div className="hidden lg:flex flex-col w-56 gap-gutter h-full">
+          <div className="hidden lg:flex flex-col w-56 gap-4 h-full">
             <Link 
               href="/help" 
-              className="flex-1 bg-j-surface-container-lowest rounded p-4 flex items-center gap-3 border border-j-outline-variant hover:shadow-sm transition-shadow group"
+              className="flex-1 bg-white rounded-sm p-4 flex flex-col justify-center items-center gap-3 border border-j-border hover:shadow-lg transition-all group"
             >
-              <HelpCircle size={32} className="text-jumia-orange group-hover:scale-110 transition-transform" />
-              <div>
-                <span className="text-label-bold block font-bold">Help Center</span>
-                <span className="text-body-sm text-j-text-muted">Customer care guide</span>
+              <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center text-jumia-orange group-hover:scale-110 transition-transform">
+                <HelpCircle size={24} />
+              </div>
+              <div className="text-center">
+                <span className="text-[11px] font-black uppercase tracking-wider block">Help Center</span>
+                <span className="text-[9px] font-bold text-j-text-muted uppercase">Customer care guide</span>
               </div>
             </Link>
             
             <Link 
-              href="/seller/register" 
-              className="flex-1 bg-j-surface-container-lowest rounded p-4 flex items-center gap-3 border border-j-outline-variant hover:shadow-sm transition-shadow group"
+              href="/seller" 
+              className="flex-1 bg-white rounded-sm p-4 flex flex-col justify-center items-center gap-3 border border-j-border hover:shadow-lg transition-all group"
             >
-              <Store size={32} className="text-jumia-orange group-hover:scale-110 transition-transform" />
-              <div>
-                <span className="text-label-bold block font-bold">Sell on Jumia</span>
-                <span className="text-body-sm text-j-text-muted">Open your store</span>
+              <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center text-jumia-orange group-hover:scale-110 transition-transform">
+                <Store size={24} />
+              </div>
+              <div className="text-center">
+                <span className="text-[11px] font-black uppercase tracking-wider block">Sell on Jumia</span>
+                <span className="text-[9px] font-bold text-j-text-muted uppercase">Open your store</span>
               </div>
             </Link>
             
-            <div className="flex-1 bg-jumia-orange/5 rounded p-4 border border-jumia-orange/20 relative overflow-hidden group cursor-pointer">
-              <div className="relative z-10 flex flex-col justify-center h-full">
-                <span className="text-label-bold block font-bold text-jumia-orange">Jumia Food</span>
-                <span className="text-body-sm text-j-text-muted">Delivery near you</span>
+            <div className="flex-1 bg-jumia-orange rounded-sm p-4 relative overflow-hidden group cursor-pointer shadow-sm hover:shadow-lg transition-all">
+               <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform" />
+               <div className="relative z-10 flex flex-col justify-center h-full text-white">
+                <span className="text-lg font-black uppercase tracking-tighter italic leading-tight">Jumia <br/>Food</span>
+                <span className="text-[9px] font-black uppercase opacity-80 mt-2">Delivery near you</span>
               </div>
             </div>
           </div>
@@ -72,7 +77,7 @@ export default function Home() {
         <AdBanners />
 
         {/* Dynamic Product Sections from Live Category Tree */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-0">
           <HomepageDynamicSections />
         </div>
       </div>
@@ -85,13 +90,13 @@ function HomepageDynamicSections() {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-8 mt-8">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-j-surface-container-lowest rounded border border-j-outline-variant p-4">
-            <Skeleton className="h-10 w-48 mb-4" />
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+          <div key={i} className="bg-white rounded-sm border border-j-border p-6">
+            <Skeleton className="h-8 w-48 mb-6" />
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
               {[...Array(6)].map((_, j) => (
-                <Skeleton key={j} className="aspect-square rounded" />
+                <Skeleton key={j} className="aspect-[3/4] rounded-sm" />
               ))}
             </div>
           </div>
@@ -101,14 +106,15 @@ function HomepageDynamicSections() {
   }
 
   return (
-    <div className="space-y-4">
-      {categories?.slice(0, 8).map((category: any) => (
+    <>
+      {categories?.slice(0, 8).map((category: any, idx: number) => (
         <ProductSection 
           key={category.id} 
           title={category.name} 
           categoryId={category.id} 
+          color={idx % 2 === 0 ? 'blue' : 'orange'}
         />
       ))}
-    </div>
+    </>
   );
 }

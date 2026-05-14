@@ -11,29 +11,32 @@ module.exports = {
         // Core Jumia Palette
         'jumia-orange': '#f68b1e',
         'jumia-orange-dark': '#df7d1b',
-        'j-primary': '#914d00',
+        'jumia-blue': '#2a5bd7',
+        'jumia-red': '#e61601',
+        'j-primary': '#f68b1e',
         'j-on-primary': '#ffffff',
         
         // Surfaces & Backgrounds
-        'j-background': '#f9f9fa',
-        'j-surface': '#f9f9fa',
-        'j-surface-container': '#eeeeef',
-        'j-surface-container-low': '#f3f3f4',
-        'j-surface-container-high': '#e8e8e9',
-        'j-surface-container-highest': '#e2e2e3',
+        'j-background': '#f1f1f2',
+        'j-surface': '#ffffff',
+        'j-border': '#e5e5e5',
+        'j-surface-container': '#f1f1f2',
+        'j-surface-container-low': '#f5f5f5',
+        'j-surface-container-high': '#ebebeb',
+        'j-surface-container-highest': '#e1e1e1',
         'j-surface-container-lowest': '#ffffff',
         
         // Text & Content
-        'j-text': '#1a1c1d',
-        'j-text-muted': '#554335',
-        'j-secondary': '#5f5e5e',
+        'j-text': '#282828',
+        'j-text-muted': '#75757a',
+        'j-secondary': '#75757a',
         
         // Utilities
-        'j-outline': '#897363',
-        'j-outline-variant': '#dcc2af',
-        'j-error': '#ba1a1a',
-        'j-success': '#006d36', // Tertiary in Stitch
-        'j-success-container': '#3abd6b',
+        'j-outline': '#e5e5e5',
+        'j-outline-variant': '#f1f1f2',
+        'j-error': '#f44336',
+        'j-success': '#31b665',
+        'j-success-container': '#e8f5e9',
       },
       borderRadius: {
         'none': '0',

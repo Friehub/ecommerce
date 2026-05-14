@@ -24,7 +24,7 @@ export default function LogisticsAdminPage() {
  <div className="bg-background min-h-screen flex items-center justify-center">
  <div className="flex flex-col items-center gap-6">
  <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Syncing Transit Notifications</p>
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant opacity-40 animate-pulse">Syncing Transit Notifications</p>
  </div>
  </div>
  );
@@ -41,13 +41,13 @@ export default function LogisticsAdminPage() {
  </div>
  <div>
  <h1 className="text-4xl md:text-5xl font-semibold text-on-surface uppercase tracking-tighter leading-none">Logistics <span className="text-jumia-orange">Command</span></h1>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-4 italic">Operational Control Center for Global Transit and Asset Deployment.</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-4 italic">Operational Control Center for Global Transit and Asset Deployment.</p>
  </div>
  </div>
  </div>
  <div className="flex items-center gap-4 bg-surface-container-low/30 px-8 py-4 rounded border-2 border-surface-container-low">
  <Activity size={20} className="text-jumia-orange animate-pulse" />
- <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-on-surface-variant">Active Notifications: {shipments?.length || 0} Assets</span>
+ <span className="text-[10px] font-semibold uppercase  text-on-surface-variant">Active Notifications: {shipments?.length || 0} Assets</span>
  </div>
  </div>
 
@@ -56,11 +56,11 @@ export default function LogisticsAdminPage() {
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-surface-container-low/30 border-b-4 border-surface-container-low">
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Asset Identity</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Destination Node</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Notifications Status</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Assigned Agent</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic text-right">Operations</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Asset Identity</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Destination Node</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Notifications Status</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Assigned Agent</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic text-right">Operations</th>
  </tr>
  </thead>
  <tbody className="divide-y-4 divide-surface-container-low">
@@ -73,7 +73,7 @@ export default function LogisticsAdminPage() {
  </div>
  <div>
  <div className="text-lg font-semibold text-on-surface uppercase tracking-tighter leading-none group-hover:text-jumia-orange transition-colors mb-2">#{shipment.packageId.slice(0, 12).toUpperCase()}</div>
- <div className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic">Asset Hash: {shipment.id.slice(-8).toUpperCase()}</div>
+ <div className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic">Asset Hash: {shipment.id.slice(-8).toUpperCase()}</div>
  </div>
  </div>
  </td>
@@ -84,7 +84,7 @@ export default function LogisticsAdminPage() {
  </div>
  </td>
  <td className="px-10 py-10">
- <div className={`inline-flex items-center gap-3 h-10 px-6 rounded-full text-[9px] font-semibold uppercase tracking-[0.3em] italic border-2 shadow-xl ${
+ <div className={`inline-flex items-center gap-3 h-10 px-6 rounded-full text-[9px] font-semibold uppercase  italic border-2 shadow-xl ${
  shipment.status === 'DELIVERED' 
  ? 'bg-success/5 text-success border-success/10' 
  : 'bg-jumia-orange/5 text-jumia-orange border-jumia-orange/10'
@@ -124,7 +124,7 @@ export default function LogisticsAdminPage() {
  <button 
  onClick={() => handleAssign(shipment.id)}
  disabled={!selectedAgent[shipment.id] || assignAgent.isLoading}
- className="h-16 px-10 bg-jumia-orange text-white rounded font-semibold text-[10px] uppercase tracking-[0.4em] hover:bg-jumia-orange-dark disabled:opacity-20 transition-all active:scale-95 shadow-2xl flex items-center gap-4 ml-auto group/btn"
+ className="h-16 px-10 bg-jumia-orange text-white rounded font-semibold text-[10px] uppercase  hover:bg-jumia-orange-dark disabled:opacity-20 transition-all active:scale-95 shadow-2xl flex items-center gap-4 ml-auto group/btn"
  >
  {assignAgent.isLoading ? <Loader2 className="animate-spin" size={18} /> : (
  <>
@@ -149,7 +149,7 @@ export default function LogisticsAdminPage() {
  <Clock size={48} />
  </div>
  <h3 className="text-2xl font-semibold text-on-surface uppercase tracking-tighter">Feed Idle</h3>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-6 italic leading-relaxed">SYNCHRONIZING GLOBAL SHIPMENT FEED NODES...</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-6 italic leading-relaxed">SYNCHRONIZING GLOBAL SHIPMENT FEED NODES...</p>
  </div>
  )}
  </div>
@@ -164,14 +164,14 @@ export default function LogisticsAdminPage() {
  </div>
  <div>
  <h3 className="text-2xl font-semibold uppercase tracking-tighter mb-2">Transit <span className="text-jumia-orange">Governance</span></h3>
- <p className="text-[10px] font-semibold uppercase tracking-[0.2em] italic opacity-40 max-w-3xl leading-loose">
+ <p className="text-[10px] font-semibold uppercase  italic opacity-40 max-w-3xl leading-loose">
  ALL OPERATIVE DEPLOYMENTS ARE IRREVOCABLE AND TRACKED VIA REAL-TIME GEOSPATIAL TELEMETRY NODES. ENSURE AGENT AVAILABILITY BEFORE MISSION ASSIGNMENT.
  </p>
  </div>
  </div>
  <div className="flex items-center gap-4 bg-white/5 px-8 py-5 rounded border-2 border-white/10 shrink-0">
  <Activity size={20} className="text-jumia-orange animate-pulse" />
- <span className="text-[10px] font-semibold uppercase tracking-[0.4em]">Logistics Protocol Active</span>
+ <span className="text-[10px] font-semibold uppercase ">Logistics Protocol Active</span>
  </div>
  </div>
  </div>

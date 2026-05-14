@@ -123,19 +123,19 @@ export default function SellerInsightsPage() {
  <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30">
  <Binary size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Neural Market Analysis Nexus</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Neural Market Analysis Nexus</span>
  </div>
  <h1 className="text-5xl md:text-8xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Market <br />
  <span className="text-jumia-orange italic">Intelligence.</span>
  </h1>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Real-time Advanced Analytics • Multi-Sector Pulse Synchronization</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Real-time Advanced Analytics • Multi-Sector Pulse Synchronization</p>
  </div>
  <div className="flex items-center gap-8 bg-surface-container-low/30 backdrop-blur-xl p-6 rounded border border-surface-container-lowest shadow-soft animate-in slide-in-from-right-8 duration-1000">
  <Calendar className="text-jumia-orange opacity-40" size={20} />
  <div className="text-right">
- <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] mb-1 italic">Active Intelligence Cycle</p>
- <p className="text-xs font-semibold text-on-surface uppercase tracking-[0.2em] italic">{format(new Date(), 'MMMM yyyy')}</p>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase  mb-1 italic">Active Intelligence Cycle</p>
+ <p className="text-xs font-semibold text-on-surface uppercase  italic">{format(new Date(), 'MMMM yyyy')}</p>
  </div>
  </div>
  </div>
@@ -143,7 +143,7 @@ export default function SellerInsightsPage() {
  {/* KPI Grid */}
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
  {kpis.map((kpi, idx) => (
- <div key={kpi.label} className="bg-surface-container-lowest p-10 rounded-[48px] border border-surface-container-low flex flex-col justify-between h-[220px] hover:translate-y-[-12px] transition-all duration-700 shadow-soft group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${idx * 150}ms` }}>
+ <div key={kpi.label} className="bg-surface-container-lowest p-10 rounded border border-surface-container-low flex flex-col justify-between h-[220px] hover:translate-y-[-12px] transition-all duration-700 shadow-soft group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${idx * 150}ms` }}>
  <div className="flex justify-between items-start">
  <div className={`w-14 h-14 rounded bg-surface-container-low flex items-center justify-center border-2 border-outline-variant/5 group-hover:scale-110 group-hover:border-jumia-orange/20 transition-all duration-1000 shadow-inner`}>
  <kpi.icon className={kpi.color} size={28} strokeWidth={2.5} />
@@ -153,7 +153,7 @@ export default function SellerInsightsPage() {
  </span>
  </div>
  <div>
- <p className="text-on-surface-variant/40 text-[9px] font-semibold uppercase tracking-[0.4em] mb-3 italic">{kpi.label}</p>
+ <p className="text-on-surface-variant/40 text-[9px] font-semibold uppercase  mb-3 italic">{kpi.label}</p>
  <h3 className="text-3xl font-semibold text-on-surface tracking-tighter leading-none">{kpi.val}</h3>
  </div>
  </div>
@@ -169,8 +169,8 @@ export default function SellerInsightsPage() {
  <FlameKindling size={24} />
  </div>
  <div>
- <h3 className="text-sm font-semibold text-on-surface uppercase tracking-[0.4em] leading-none mb-2">Operations Vitality</h3>
- <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] italic">Operational Efficiency Notifications</p>
+ <h3 className="text-sm font-semibold text-on-surface uppercase  leading-none mb-2">Operations Vitality</h3>
+ <p className="text-[9px] font-semibold text-on-surface-variant/40 uppercase  italic">Operational Efficiency Notifications</p>
  </div>
  </div>
 
@@ -186,7 +186,7 @@ export default function SellerInsightsPage() {
  <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center border-2 border-outline-variant/5">
  <item.icon size={16} className="text-on-surface-variant opacity-40 group-hover:opacity-100 group-hover:text-jumia-orange transition-all duration-500" />
  </div>
- <span className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-[0.3em] italic">{item.label}</span>
+ <span className="text-[10px] font-semibold text-on-surface-variant uppercase  italic">{item.label}</span>
  </div>
  <span className="text-2xl font-semibold text-on-surface tracking-tighter leading-none">{item.val}</span>
  </div>
@@ -209,8 +209,8 @@ export default function SellerInsightsPage() {
  <LineChart size={24} className="text-jumia-orange" />
  </div>
  <div>
- <h3 className="text-sm font-semibold text-white uppercase tracking-[0.4em] leading-none mb-2">Asset Alerts</h3>
- <p className="text-[9px] font-semibold text-white/30 uppercase tracking-[0.2em] italic">Predictive Threat Intelligence</p>
+ <h3 className="text-sm font-semibold text-white uppercase  leading-none mb-2">Asset Alerts</h3>
+ <p className="text-[9px] font-semibold text-white/30 uppercase  italic">Predictive Threat Intelligence</p>
  </div>
  </div>
 
@@ -223,7 +223,7 @@ export default function SellerInsightsPage() {
  </div>
  <div className="space-y-6">
  <p className="text-3xl font-semibold text-white tracking-tighter uppercase leading-none">Resource Depletion</p>
- <p className="text-[11px] font-semibold text-white/40 uppercase tracking-[0.3em] opacity-80 leading-relaxed italic max-w-[280px] mx-auto">
+ <p className="text-[11px] font-semibold text-white/40 uppercase  opacity-80 leading-relaxed italic max-w-[280px] mx-auto">
  {metrics.lowStockCount} Assets detected below safety threshold. Replenish to sustain market presence.
  </p>
  </div>
@@ -236,7 +236,7 @@ export default function SellerInsightsPage() {
  </div>
  <div className="space-y-6">
  <p className="text-3xl font-semibold text-white tracking-tighter uppercase leading-none">Operations Secure</p>
- <p className="text-[11px] font-semibold text-white/40 uppercase tracking-[0.3em] opacity-80 leading-relaxed italic max-w-[280px] mx-auto">
+ <p className="text-[11px] font-semibold text-white/40 uppercase  opacity-80 leading-relaxed italic max-w-[280px] mx-auto">
  Inventory levels remain synchronized and healthy. All asset nodes are reporting optimal operational status.
  </p>
  </div>
@@ -245,7 +245,7 @@ export default function SellerInsightsPage() {
  </div>
  </div>
 
- <button className="w-full mt-16 bg-white text-on-surface py-6 rounded text-[10px] font-semibold uppercase tracking-[0.4em] hover:bg-jumia-orange-dark hover:text-white transition-all duration-500 flex items-center justify-center gap-4 active:scale-95 shadow-2xl group relative z-10 overflow-hidden">
+ <button className="w-full mt-16 bg-white text-on-surface py-6 rounded text-[10px] font-semibold uppercase  hover:bg-jumia-orange-dark hover:text-white transition-all duration-500 flex items-center justify-center gap-4 active:scale-95 shadow-2xl group relative z-10 overflow-hidden">
  Optimize Catalog <ArrowUpRight size={20} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-500" />
  </button>
  </div>

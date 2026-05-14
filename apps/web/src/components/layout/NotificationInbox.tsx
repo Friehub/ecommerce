@@ -7,131 +7,125 @@ import { useSession } from 'next-auth/react';
 import { Skeleton } from '../ui/Skeleton';
 
 export function NotificationInbox() {
- const { data: session } = useSession();
- const [isOpen, setIsOpen] = useState(false);
- const dropdownRef = useRef<HTMLDivElement>(null);
- const utils = api.useUtils();
+  const { data: session } = useSession();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const utils = api.useUtils();
 
- const { data: notifications, isLoading } = api.notification.getUnread.useQuery(undefined, {
- enabled: !!session?.user,
- staleTime: 60000,
- });
+  const { data: notifications, isLoading } = api.notification.getUnread.useQuery(undefined, {
+    enabled: !!session?.user,
+    staleTime: 60000,
+  });
 
- const markAsReadMutation = api.notification.markAsRead.useMutation({
- onSuccess: () => {
- utils.notification.getUnread.invalidate();
- }
- });
+  const markAsReadMutation = api.notification.markAsRead.useMutation({
+    onSuccess: () => {
+      utils.notification.getUnread.invalidate();
+    }
+  });
 
- useEffect(() => {
- function handleClickOutside(event: MouseEvent) {
- if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
- setIsOpen(false);
- }
- }
- document.addEventListener('mousedown', handleClickOutside);
- return () => document.removeEventListener('mousedown', handleClickOutside);
- }, []);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
- if (!session?.user) return null;
+  if (!session?.user) return null;
 
- const unreadCount = notifications?.length || 0;
+  const unreadCount = notifications?.length || 0;
 
- const getIcon = (type: string) => {
-    if (type === 'ORDER_STATUS_CHANGED') return <div className="w-8 h-8 bg-success/5 rounded-xl flex items-center justify-center border border-success/10"><CheckCircle2 size={16} className="text-success" /></div>;
-    if (type === 'DISPUTE_OPENED') return <div className="w-8 h-8 bg-error-container/10 rounded-xl flex items-center justify-center border border-error/10"><AlertTriangle size={16} className="text-error" /></div>;
-    return <div className="w-8 h-8 bg-jumia-orange/5 rounded-xl flex items-center justify-center border border-jumia-orange/10"><Info size={16} className="text-jumia-orange" /></div>;
+  const getIcon = (type: string) => {
+    if (type === 'ORDER_STATUS_CHANGED') return <div className="w-8 h-8 bg-green-50 rounded flex items-center justify-center border border-green-100"><CheckCircle2 size={16} className="text-green-600" /></div>;
+    if (type === 'DISPUTE_OPENED') return <div className="w-8 h-8 bg-red-50 rounded flex items-center justify-center border border-red-100"><AlertTriangle size={16} className="text-j-error" /></div>;
+    return <div className="w-8 h-8 bg-jumia-orange/5 rounded flex items-center justify-center border border-jumia-orange/10"><Info size={16} className="text-jumia-orange" /></div>;
   };
 
- return (
- <div className="relative" ref={dropdownRef}>
- <button 
- onClick={() => setIsOpen(!isOpen)}
- className="relative group p-2 text-on-surface-variant hover:text-jumia-orange transition-all"
- >
- <div className="w-10 h-10 bg-surface-container-low rounded-2xl flex items-center justify-center border border-outline-variant group-hover:border-jumia-orange transition-colors shadow-sm">
- <Bell size={20} className="group-hover:scale-110 transition-transform" />
- </div>
- {unreadCount > 0 && (
- <span className="absolute -top-1 -right-1 bg-error text-white text-[10px] font-semibold w-5 h-5 rounded-full flex items-center justify-center border border-surface shadow-sm">
- {unreadCount > 9 ? '9+' : unreadCount}
- </span>
- )}
- </button>
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative p-2 text-j-text hover:text-jumia-orange transition-colors"
+      >
+        <Bell size={24} strokeWidth={1.5} />
+        {unreadCount > 0 && (
+          <span className="absolute top-1.5 right-1.5 bg-jumia-orange text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
+        )}
+      </button>
 
- {isOpen && (
- <div className="absolute right-0 mt-3 w-96 bg-surface-container-lowest rounded shadow-2xl border-2 border-outline-variant z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
- <div className="p-6 border-b border-outline-variant bg-surface flex justify-between items-center">
- <div className="flex flex-col">
- <h3 className="text-xs font-semibold text-on-surface uppercase tracking-[0.2em]">Notifications</h3>
- <p className="text-[10px] text-on-surface-variant font-semibold uppercase tracking-widest mt-0.5 italic">Real-time alerts</p>
- </div>
- {unreadCount > 0 && (
- <span className="text-[9px] text-jumia-orange font-semibold uppercase tracking-[0.2em] bg-jumia-orange/10 px-2 py-1 rounded-lg border border-jumia-orange/20">
- {unreadCount} Unread
- </span>
- )}
- </div>
- 
- <div className="max-h-[480px] overflow-y-auto divide-y divide-outline-variant/30 hide-scrollbar">
- {isLoading ? (
- <div className="p-8 space-y-4">
- {[...Array(3)].map((_, i) => (
- <div key={i} className="flex gap-3">
- <Skeleton className="w-8 h-8 rounded-xl shrink-0" />
- <div className="flex-1 space-y-2">
- <Skeleton className="h-4 w-full rounded-lg" />
- <Skeleton className="h-3 w-24 rounded-lg" />
- </div>
- </div>
- ))}
- </div>
- ) : unreadCount === 0 ? (
- <div className="py-16 text-center">
- <div className="w-16 h-16 bg-surface-container-low rounded-full flex items-center justify-center border-2 border-outline-variant/30 mx-auto mb-4">
- <MailOpen size={32} className="text-outline-variant" strokeWidth={1} />
- </div>
- <h4 className="text-xs font-semibold text-on-surface uppercase tracking-widest">All caught up</h4>
- <p className="text-[10px] text-on-surface-variant font-medium mt-1 italic">Check back later for premium updates.</p>
- </div>
- ) : (
- notifications?.map((notif, idx) => (
- <div key={notif.id} className="p-6 hover:bg-surface-container-low transition-all flex gap-4 relative group animate-in fade-in slide-in-from-bottom-2 duration-300" style={{ animationDelay: `${idx * 50}ms` }}>
- <div className="flex-shrink-0">
- {getIcon(notif.type)}
- </div>
- <div className="flex-1">
- <p className="text-sm text-on-surface font-semibold leading-snug uppercase tracking-tight line-clamp-2">{notif.message}</p>
- <div className="flex items-center gap-2 mt-2">
- <p className="text-[10px] text-on-surface-variant font-semibold uppercase tracking-widest opacity-60">
- {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
- </p>
- <div className="w-1 h-1 rounded-full bg-outline-variant opacity-40" />
- <p className="text-[10px] text-on-surface-variant font-semibold uppercase tracking-widest opacity-60">
- {new Date(notif.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
- </p>
- </div>
- </div>
- <button 
- onClick={() => markAsReadMutation.mutate({ notificationId: notif.id })}
- className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-error hover:bg-error-container/10 rounded-xl transition-all"
- title="Archive"
- >
- <X size={16} />
- </button>
- </div>
- ))
- )}
- </div>
- 
- <div className="p-4 bg-surface border-t border-outline-variant text-center">
- <button className="text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant hover:text-jumia-orange transition-colors">
- View All Communications
- </button>
- </div>
- </div>
- )}
- </div>
- );
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-80 bg-white rounded-sm shadow-xl border border-j-border z-50 overflow-hidden">
+          <div className="p-4 border-b border-j-border bg-j-surface-container-low flex justify-between items-center">
+            <div>
+              <h3 className="text-xs font-black text-j-text uppercase tracking-tight">Notifications</h3>
+              <p className="text-[10px] font-bold text-j-text-muted uppercase mt-0.5">Stay updated</p>
+            </div>
+            {unreadCount > 0 && (
+              <span className="text-[9px] text-jumia-orange font-black uppercase bg-orange-50 px-2 py-1 rounded-sm border border-jumia-orange/20">
+                {unreadCount} New
+              </span>
+            )}
+          </div>
+          
+          <div className="max-h-[360px] overflow-y-auto divide-y divide-j-border">
+            {isLoading ? (
+              <div className="p-4 space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex gap-3">
+                    <Skeleton className="w-8 h-8 rounded shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : unreadCount === 0 ? (
+              <div className="py-12 text-center">
+                <div className="w-12 h-12 bg-j-surface-container-low text-j-text-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                  <MailOpen size={24} />
+                </div>
+                <h4 className="text-xs font-black text-j-text uppercase tracking-tight">No new notifications</h4>
+                <p className="text-[10px] font-bold text-j-text-muted mt-1 uppercase">Check back later for updates</p>
+              </div>
+            ) : (
+              notifications?.map((notif, idx) => (
+                <div key={notif.id} className="p-4 hover:bg-j-surface-container-lowest transition-colors flex gap-3 relative group">
+                  <div className="shrink-0">
+                    {getIcon(notif.type)}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-bold text-j-text leading-snug line-clamp-2">{notif.message}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <p className="text-[9px] font-bold text-j-text-muted uppercase">
+                        {new Date(notif.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => markAsReadMutation.mutate({ notificationId: notif.id })}
+                    className="absolute top-4 right-4 text-j-text-muted hover:text-j-error opacity-0 group-hover:opacity-100 transition-all"
+                    title="Mark as read"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+          
+          <div className="p-3 bg-j-surface-container-low border-t border-j-border text-center">
+            <button className="text-[10px] font-black uppercase text-j-text hover:text-jumia-orange transition-colors">
+              View All
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 

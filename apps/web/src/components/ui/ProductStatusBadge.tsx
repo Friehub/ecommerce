@@ -35,7 +35,7 @@ export const ProductStatusBadge = ({ type, size = 'sm', className = '' }: Produc
  const iconSize = size === 'sm' ? 10 : 12;
 
  return (
- <div className={`inline-flex items-center gap-2 font-semibold uppercase tracking-[0.2em] border-2 rounded-[10px] ${config.styles} ${sizeStyles} ${className} shadow-soft backdrop-blur-sm transition-all hover:scale-105 active:scale-95 cursor-default group`}>
+ <div className={`inline-flex items-center gap-2 font-semibold uppercase  border-2 rounded-[10px] ${config.styles} ${sizeStyles} ${className} shadow-soft backdrop-blur-sm transition-all hover:scale-105 active:scale-95 cursor-default group`}>
  <Icon size={iconSize} className="group-hover:rotate-12 transition-transform" />
  <span className="italic">{config.label}</span>
  </div>

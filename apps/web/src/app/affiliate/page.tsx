@@ -73,7 +73,7 @@ export default function AffiliatePortal() {
         <div className="bg-surface-container-lowest p-12 rounded shadow-soft border border-surface-container-low text-center max-w-sm animate-in fade-in zoom-in-95">
           <Share2 className="mx-auto text-on-surface-variant/20 mb-8" size={64} />
           <h2 className="text-xl font-semibold text-on-surface uppercase tracking-tight mb-3">Exclusive Portal</h2>
-          <p className="text-on-surface-variant/60 text-[10px] font-semibold uppercase tracking-[0.2em] mb-10 leading-relaxed italic">Authentication required to initialize partner telemetry.</p>
+          <p className="text-on-surface-variant/60 text-[10px] font-semibold uppercase  mb-10 leading-relaxed italic">Authentication required to initialize partner telemetry.</p>
           <Link href="/login" className="block w-full py-5 bg-jumia-orange text-white rounded-2xl font-semibold text-[11px] uppercase tracking-widest hover:bg-jumia-orange-dark transition-all shadow-xl active:scale-95">
             Access Terminal
           </Link>
@@ -88,7 +88,7 @@ export default function AffiliatePortal() {
         <div className="flex flex-col items-center gap-6">
           <Activity className="text-jumia-orange animate-pulse" size={48} />
           <div className="text-center space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.5em] text-on-surface-variant/40 italic">Syncing Partner Ledger...</p>
+            <p className="text-[10px] font-semibold uppercase  text-on-surface-variant/40 italic">Syncing Partner Ledger...</p>
           </div>
         </div>
       </div>
@@ -104,18 +104,18 @@ export default function AffiliatePortal() {
           <div className="container relative z-10 text-center max-w-4xl mx-auto px-6">
             <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-xl px-6 py-2.5 rounded-2xl border-2 border-white/10 mb-12 animate-in slide-in-from-top-8 duration-700">
               <Sparkles size={16} className="text-jumia-orange" />
-              <span className="text-[10px] font-semibold uppercase tracking-[0.4em] text-white/60 italic">Monetize Your Influence</span>
+              <span className="text-[10px] font-semibold uppercase  text-white/60 italic">Monetize Your Influence</span>
             </div>
             <h1 className="text-5xl md:text-8xl font-semibold uppercase tracking-tighter leading-[0.8] mb-10 animate-in fade-in duration-1000">
               Partner with <br />
               <span className="text-jumia-orange italic">Jumia Network.</span>
             </h1>
-            <p className="text-white/40 font-semibold text-[11px] uppercase tracking-[0.2em] max-w-md mx-auto mb-16 leading-relaxed italic opacity-80">
+            <p className="text-white/40 font-semibold text-[11px] uppercase  max-w-md mx-auto mb-16 leading-relaxed italic opacity-80">
               Unlock elite revenue nodes and command up to <span className="text-white font-semibold">10% commission</span> on referred telemetry.
             </p>
 
             <div className="bg-white/5 backdrop-blur-xl rounded border-2 border-white/10 p-10 md:p-16 text-left max-w-2xl mx-auto animate-in slide-in-from-bottom-12 duration-1000">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.4em] text-white mb-8 flex items-center gap-4">
+              <h2 className="text-sm font-semibold uppercase  text-white mb-8 flex items-center gap-4">
                 <ShieldCheck size={20} className="text-jumia-orange" />
                 Partner Agreement
               </h2>
@@ -131,13 +131,13 @@ export default function AffiliatePortal() {
                 <div className={`mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${agreedToTerms ? 'bg-jumia-orange border-jumia-orange' : 'border-white/20 group-hover:border-white/40'}`}>
                   {agreedToTerms && <CheckCircle size={14} className="text-white" />}
                 </div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/60 group-hover:text-white transition-colors">I acknowledge the terms of the Jumia Network Partnership Protocol.</p>
+                <p className="text-[9px] font-semibold uppercase  text-white/60 group-hover:text-white transition-colors">I acknowledge the terms of the Jumia Network Partnership Protocol.</p>
               </div>
 
               <button 
                 onClick={() => registerMutation.mutate()}
                 disabled={registerMutation.isLoading || !agreedToTerms}
-                className="w-full bg-jumia-orange text-white py-6 rounded font-semibold text-[11px] uppercase tracking-[0.4em] hover:bg-white hover:text-on-surface transition-all transform active:scale-95 shadow-[0_0_50px_rgba(246,139,30,0.3)] disabled:opacity-20 disabled:cursor-not-allowed group flex items-center justify-center gap-4"
+                className="w-full bg-jumia-orange text-white py-6 rounded font-semibold text-[11px] uppercase  hover:bg-white hover:text-on-surface transition-all transform active:scale-95 shadow-[0_0_50px_rgba(246,139,30,0.3)] disabled:opacity-20 disabled:cursor-not-allowed group flex items-center justify-center gap-4"
               >
                 {registerMutation.isLoading ? <Loader2 className="animate-spin" size={20} /> : (
                   <>
@@ -160,7 +160,7 @@ export default function AffiliatePortal() {
               <div className="w-14 h-14 bg-jumia-orange/10 rounded-2xl flex items-center justify-center text-jumia-orange mb-8">
                 {benefit.icon}
               </div>
-              <h3 className="text-xs font-semibold uppercase tracking-[0.3em] text-on-surface mb-4">{benefit.title}</h3>
+              <h3 className="text-xs font-semibold uppercase  text-on-surface mb-4">{benefit.title}</h3>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant/40 leading-relaxed italic">{benefit.desc}</p>
             </div>
           ))}
@@ -195,17 +195,17 @@ export default function AffiliatePortal() {
               <div className="flex items-center gap-6">
                 <div className="bg-white/5 px-6 py-2.5 rounded-2xl border-2 border-white/10 flex items-center gap-3">
                   <span className="text-[9px] font-semibold text-white/30 uppercase tracking-widest">Protocol Tier</span>
-                  <span className="text-[10px] font-semibold text-jumia-orange uppercase italic tracking-[0.2em]">{profile.tier}</span>
+                  <span className="text-[10px] font-semibold text-jumia-orange uppercase italic ">{profile.tier}</span>
                 </div>
                 <div className="bg-white/5 px-6 py-2.5 rounded-2xl border-2 border-white/10 flex items-center gap-3">
                   <span className="text-[9px] font-semibold text-white/30 uppercase tracking-widest">Yield Rate</span>
-                  <span className="text-[10px] font-semibold text-white uppercase italic tracking-[0.2em]">{Number(profile.commissionRate)}%</span>
+                  <span className="text-[10px] font-semibold text-white uppercase italic ">{Number(profile.commissionRate)}%</span>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-8 bg-white/5 backdrop-blur-xl p-6 rounded border-2 border-white/10 shadow-2xl animate-in slide-in-from-right-8 duration-700">
               <div className="text-right hidden sm:block">
-                <p className="text-[9px] font-semibold text-white/20 uppercase tracking-[0.4em] mb-2 italic">Active Identity</p>
+                <p className="text-[9px] font-semibold text-white/20 uppercase  mb-2 italic">Active Identity</p>
                 <p className="text-xs font-semibold text-white uppercase tracking-tighter italic">{session?.user?.name || session?.user?.email}</p>
               </div>
               <div className="w-14 h-14 bg-jumia-orange text-white rounded-2xl flex items-center justify-center font-semibold text-xl border border-white/5 shadow-xl">
@@ -224,9 +224,9 @@ export default function AffiliatePortal() {
             { label: 'Pending Settlement', val: `₦${pendingEarned.toLocaleString()}`, icon: <Clock size={24} />, color: 'text-jumia-orange', badge: 'bg-jumia-orange/10 border-jumia-orange/20' },
             { label: 'Network Pulse', val: totalClicks.toLocaleString(), icon: <Activity size={24} />, color: 'text-secondary', badge: 'bg-secondary/10 border-secondary/20' }
           ].map((stat, i) => (
-            <div key={i} className="bg-surface-container-lowest p-10 rounded-[48px] border border-surface-container-low shadow-soft hover:translate-y-[-10px] transition-all duration-700 group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${i * 150}ms` }}>
+            <div key={i} className="bg-surface-container-lowest p-10 rounded border border-surface-container-low shadow-soft hover:translate-y-[-10px] transition-all duration-700 group animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${i * 150}ms` }}>
               <div className="flex items-center justify-between mb-10">
-                <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">{stat.label}</span>
+                <span className="text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">{stat.label}</span>
                 <div className={`${stat.color} ${stat.badge} p-3 rounded-2xl border-2 transition-transform group-hover:scale-110 duration-500`}>{stat.icon}</div>
               </div>
               <p className={`text-4xl font-semibold ${stat.color} tracking-tighter leading-none`}>{stat.val}</p>
@@ -240,14 +240,14 @@ export default function AffiliatePortal() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Link Generator */}
           <div className="lg:col-span-1">
-            <div className="bg-surface-container-lowest p-10 rounded-[48px] border border-surface-container-low shadow-soft sticky top-32">
-              <h3 className="text-sm font-semibold text-on-surface uppercase tracking-[0.4em] mb-10 pb-6 border-b-2 border-surface-container-low flex items-center gap-4">
+            <div className="bg-surface-container-lowest p-10 rounded border border-surface-container-low shadow-soft sticky top-32">
+              <h3 className="text-sm font-semibold text-on-surface uppercase  mb-10 pb-6 border-b-2 border-surface-container-low flex items-center gap-4">
                 <LinkIcon size={18} className="text-jumia-orange" />
                 Link Generator
               </h3>
               <div className="space-y-8">
                 <div className="space-y-3">
-                  <label className="block text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Destination Target</label>
+                  <label className="block text-[9px] font-semibold text-on-surface-variant/40 uppercase  ml-2 italic">Destination Target</label>
                   <div className="grid grid-cols-3 gap-2">
                     {[
                       { type: 'HOME', label: 'Home', icon: <Target size={14} /> },
@@ -266,7 +266,7 @@ export default function AffiliatePortal() {
                 </div>
                 {targetType !== 'HOME' && (
                   <div className="space-y-3">
-                    <label className="block text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] ml-2 italic">Asset ID / Slug</label>
+                    <label className="block text-[9px] font-semibold text-on-surface-variant/40 uppercase  ml-2 italic">Asset ID / Slug</label>
                     <input 
                       type="text" 
                       value={targetId}
@@ -279,7 +279,7 @@ export default function AffiliatePortal() {
                 <button 
                   onClick={() => generateMutation.mutate({ targetType, targetId: targetId || undefined })}
                   disabled={generateMutation.isLoading}
-                  className="w-full bg-jumia-orange text-white h-14 rounded-2xl font-semibold text-[11px] uppercase tracking-[0.3em] hover:bg-jumia-orange transition-all transform active:scale-95 shadow-xl shadow-primary-container/20 flex items-center justify-center gap-3 group"
+                  className="w-full bg-jumia-orange text-white h-14 rounded-2xl font-semibold text-[11px] uppercase  hover:bg-jumia-orange transition-all transform active:scale-95 shadow-xl shadow-primary-container/20 flex items-center justify-center gap-3 group"
                 >
                   {generateMutation.isLoading ? <Loader2 size={16} className="animate-spin" /> : (
                     <>
@@ -293,13 +293,13 @@ export default function AffiliatePortal() {
 
           <div className="lg:col-span-2 space-y-12">
             {/* Referral Link List */}
-            <div className="bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-soft overflow-hidden">
+            <div className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden">
               <div className="px-10 py-8 border-b-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/10">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-jumia-orange/5 rounded-xl flex items-center justify-center border-2 border-outline-variant/10">
                     <LinkIcon size={18} className="text-on-surface-variant opacity-40" />
                   </div>
-                  <h3 className="text-[10px] font-semibold text-on-surface uppercase tracking-[0.4em]">Active Trackers</h3>
+                  <h3 className="text-[10px] font-semibold text-on-surface uppercase ">Active Trackers</h3>
                 </div>
               </div>
               <div className="divide-y-4 divide-surface-container-low max-h-[600px] overflow-y-auto custom-scrollbar">
@@ -326,7 +326,7 @@ export default function AffiliatePortal() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-[8px] font-semibold text-white px-2 py-1 bg-jumia-orange rounded-md uppercase tracking-[0.1em]">{link.targetType}</span>
+                        <span className="text-[8px] font-semibold text-white px-2 py-1 bg-jumia-orange rounded-md uppercase ">{link.targetType}</span>
                         {link.targetId && <span className="text-[8px] font-semibold text-on-surface-variant/40 uppercase tracking-widest italic">{link.targetId}</span>}
                       </div>
                     </div>
@@ -339,20 +339,20 @@ export default function AffiliatePortal() {
                 {profile.links.length === 0 && (
                   <div className="py-32 text-center">
                     <LinkIcon size={48} className="mx-auto text-on-surface-variant opacity-5 mb-6" />
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/30 italic">No trackers initialized in current sector.</p>
+                    <p className="text-[10px] font-semibold uppercase  text-on-surface-variant/30 italic">No trackers initialized in current sector.</p>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Commission Matrix / Table */}
-            <div className="bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-soft overflow-hidden">
+            <div className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden">
               <div className="px-10 py-8 border-b-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/10">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-jumia-orange/5 rounded-xl flex items-center justify-center border-2 border-outline-variant/10">
                     <DollarSign size={18} className="text-on-surface-variant opacity-40" />
                   </div>
-                  <h3 className="text-[10px] font-semibold text-on-surface uppercase tracking-[0.4em]">Yield Log (Commission Ledger)</h3>
+                  <h3 className="text-[10px] font-semibold text-on-surface uppercase ">Yield Log (Commission Ledger)</h3>
                 </div>
               </div>
               
@@ -362,10 +362,10 @@ export default function AffiliatePortal() {
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="bg-surface-container-low/5 border-b-2 border-surface-container-low">
-                          <th className="px-10 py-6 text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em]">Status</th>
-                          <th className="px-10 py-6 text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em]">Transaction ID</th>
-                          <th className="px-10 py-6 text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em]">Timestamp</th>
-                          <th className="px-10 py-6 text-right text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em]">Yield</th>
+                          <th className="px-10 py-6 text-[9px] font-semibold text-on-surface-variant/40 uppercase ">Status</th>
+                          <th className="px-10 py-6 text-[9px] font-semibold text-on-surface-variant/40 uppercase ">Transaction ID</th>
+                          <th className="px-10 py-6 text-[9px] font-semibold text-on-surface-variant/40 uppercase ">Timestamp</th>
+                          <th className="px-10 py-6 text-right text-[9px] font-semibold text-on-surface-variant/40 uppercase ">Yield</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y-2 divide-surface-container-low/50">
@@ -420,7 +420,7 @@ export default function AffiliatePortal() {
               ) : (
                 <div className="py-32 text-center">
                   <DollarSign size={48} className="mx-auto text-on-surface-variant opacity-5 mb-6" />
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/30 italic">No yield recorded in ledger history.</p>
+                  <p className="text-[10px] font-semibold uppercase  text-on-surface-variant/30 italic">No yield recorded in ledger history.</p>
                 </div>
               )}
             </div>

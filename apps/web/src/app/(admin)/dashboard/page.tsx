@@ -67,8 +67,8 @@ export default function AdminDashboard() {
  ))}
  </div>
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 pt-10">
- <div className="h-[400px] bg-surface-container-low rounded-[48px] border border-surface-container-lowest" />
- <div className="h-[400px] bg-surface-container-low rounded-[48px] border border-surface-container-lowest" />
+ <div className="h-[400px] bg-surface-container-low rounded border border-surface-container-lowest" />
+ <div className="h-[400px] bg-surface-container-low rounded border border-surface-container-lowest" />
  </div>
  </div>
  );
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
  <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30 shadow-inner">
  <ShieldCheck size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Operations Command Hub & Platform Moderation</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Operations Command Hub & Platform Moderation</span>
  </div>
  <h1 className="text-5xl md:text-7xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Ops <br />
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
  <div className="p-2 bg-white/5 rounded-xl border border-white/10">
  <Activity size={20} />
  </div>
- <h3 className="text-[10px] font-semibold uppercase tracking-[0.3em]">Notifications</h3>
+ <h3 className="text-[10px] font-semibold uppercase ">Notifications</h3>
  </div>
  </div>
  <p className="text-5xl font-semibold tracking-tighter italic mb-3">{metrics?.activeSessions || 0}</p>
@@ -135,8 +135,8 @@ export default function AdminDashboard() {
  <kpi.icon size={22} />
  </div>
  <div>
- <h3 className="text-[10px] font-semibold uppercase tracking-[0.3em] text-on-surface-variant/40">{kpi.label}</h3>
- <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-on-surface/20 italic">{kpi.sub}</p>
+ <h3 className="text-[10px] font-semibold uppercase  text-on-surface-variant/40">{kpi.label}</h3>
+ <p className="text-[9px] font-semibold uppercase  text-on-surface/20 italic">{kpi.sub}</p>
  </div>
  </div>
  {kpi.href && <ArrowRight size={16} className="text-on-surface-variant/20 group-hover:text-jumia-orange group-hover:translate-x-2 transition-all duration-700" />}
@@ -167,7 +167,7 @@ export default function AdminDashboard() {
  </div>
  <div>
  <h3 className="text-xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-2">KYC Backlog</h3>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.2em] opacity-40 italic">Pending Merchant Authorization Queue</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  opacity-40 italic">Pending Merchant Authorization Queue</p>
  </div>
  </div>
  <div className="px-4 py-2 bg-jumia-orange text-white rounded-full text-[10px] font-semibold italic shadow-3xl">
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
  {(!pendingSellers || pendingSellers.length === 0) && (
  <div className="py-20 text-center space-y-4 opacity-20">
  <CheckCircle size={48} className="mx-auto" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] italic">Backlog reconciled</p>
+ <p className="text-[10px] font-semibold uppercase  italic">Backlog reconciled</p>
  </div>
  )}
  </div>
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
  </div>
  <div>
  <h3 className="text-xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-2">Dispute Matrix</h3>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.2em] opacity-40 italic">Active Conflict Arbitration Registry</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  opacity-40 italic">Active Conflict Arbitration Registry</p>
  </div>
  </div>
  <div className="px-4 py-2 bg-error text-white rounded-full text-[10px] font-semibold italic shadow-3xl">
@@ -232,7 +232,7 @@ export default function AdminDashboard() {
  <span className="bg-error/10 text-error border-2 border-error/20 px-3 py-1 rounded-full text-[8px] font-semibold uppercase tracking-widest italic">
  {dispute.status}
  </span>
- <span className="text-[9px] font-semibold text-on-surface-variant/20 uppercase tracking-[0.3em] italic">
+ <span className="text-[9px] font-semibold text-on-surface-variant/20 uppercase  italic">
  Ord #{dispute.orderId.slice(-8).toUpperCase()}
  </span>
  </div>
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
  {(!disputes || disputes.length === 0) && (
  <div className="py-20 text-center space-y-4 opacity-20">
  <Layers size={48} className="mx-auto" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] italic">Conflict Registry Optimized</p>
+ <p className="text-[10px] font-semibold uppercase  italic">Conflict Registry Optimized</p>
  </div>
  )}
  </div>

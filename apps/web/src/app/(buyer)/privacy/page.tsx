@@ -9,20 +9,20 @@ export default function PrivacyTermsPage() {
  <div className="bg-background min-h-screen pb-24 select-none">
  <div className="container py-12 max-w-5xl mx-auto px-6">
  {/* Breadcrumbs */}
- <div className="flex items-center gap-3 mb-10 font-semibold text-on-surface-variant text-[10px] uppercase tracking-[0.4em]">
+ <div className="flex items-center gap-3 mb-10 font-semibold text-on-surface-variant text-[10px] uppercase ">
  <Link href="/" className="hover:text-jumia-orange transition-colors">Hub</Link>
  <ChevronRight size={14} className="opacity-30" />
  <span className="text-on-surface">Legal Framework</span>
  </div>
 
  {/* Hero Banner */}
- <div className="bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-soft p-10 md:p-14 flex flex-col md:flex-row items-center gap-8 mb-12 animate-in fade-in slide-in-from-top-8 duration-700">
+ <div className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft p-10 md:p-14 flex flex-col md:flex-row items-center gap-8 mb-12 animate-in fade-in slide-in-from-top-8 duration-700">
  <div className="w-20 h-20 bg-jumia-orange/10 border-2 border-jumia-orange/20 rounded flex items-center justify-center text-jumia-orange shadow-xl shadow-primary-container/5 shrink-0">
  <Fingerprint size={40} />
  </div>
  <div className="text-center md:text-left">
  <h1 className="text-3xl md:text-4xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-3">Privacy & <span className="text-jumia-orange">Encryption</span></h1>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] italic">Protocol Version 2.0.6 • Effective May 2026</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic">Protocol Version 2.0.6 • Effective May 2026</p>
  </div>
  </div>
 
@@ -68,7 +68,7 @@ export default function PrivacyTermsPage() {
  
  {/* Footer Note */}
  <div className="mt-16 text-center">
- <p className="text-[9px] font-semibold text-on-surface-variant/20 uppercase tracking-[0.5em] italic">Authorized Legal Repository • Non-Repudiation Enabled</p>
+ <p className="text-[9px] font-semibold text-on-surface-variant/20 uppercase  italic">Authorized Legal Repository • Non-Repudiation Enabled</p>
  </div>
  </div>
  </div>

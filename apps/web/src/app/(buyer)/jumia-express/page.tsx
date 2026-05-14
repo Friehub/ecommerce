@@ -17,7 +17,7 @@ export default function JumiaExpressPage() {
  <div className="bg-background min-h-screen flex items-center justify-center">
  <div className="flex flex-col items-center gap-6">
  <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Syncing Local Warehouses</p>
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant opacity-40 animate-pulse">Syncing Local Warehouses</p>
  </div>
  </div>
  );
@@ -41,11 +41,11 @@ export default function JumiaExpressPage() {
  <div className="flex flex-wrap items-center gap-4 mb-10">
  <div className="flex items-center gap-3 bg-white/5 backdrop-blur-2xl px-6 py-3 rounded-2xl border-2 border-white/10 transition-all hover:bg-white/10 shadow-2xl">
  <Zap size={18} className="text-jumia-orange fill-primary-container" />
- <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white">Express Protocol</span>
+ <span className="text-[10px] font-semibold uppercase  text-white">Express Protocol</span>
  </div>
  <div className="flex items-center gap-3 bg-white/5 backdrop-blur-2xl px-6 py-3 rounded-2xl border-2 border-white/10 transition-all hover:bg-white/10 shadow-2xl">
  <Timer size={18} className="text-jumia-orange" />
- <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white">&lt; 24H Fulfillment</span>
+ <span className="text-[10px] font-semibold uppercase  text-white">&lt; 24H Fulfillment</span>
  </div>
  </div>
  
@@ -66,11 +66,11 @@ export default function JumiaExpressPage() {
  <div>
  <div className="flex items-center gap-3 mb-4">
  <PackageCheck size={24} className="text-jumia-orange" />
- <h2 className="text-[10px] font-semibold text-jumia-orange uppercase tracking-[0.4em]">Inventory Status</h2>
+ <h2 className="text-[10px] font-semibold text-jumia-orange uppercase ">Inventory Status</h2>
  </div>
  <h2 className="text-4xl font-semibold text-on-surface uppercase tracking-tighter leading-none">Ready for <span className="text-jumia-orange">Dispatch</span></h2>
  </div>
- <div className="flex items-center gap-6 text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">
+ <div className="flex items-center gap-6 text-[10px] font-semibold uppercase  text-on-surface-variant/40 italic">
  <span className="px-4 py-2 bg-surface-container-low rounded-xl border-2 border-surface-container-low text-on-surface">Verified Nodes: {products.length}</span>
  <span className="hidden md:inline">Tier-1 Fulfillment Hub Active</span>
  </div>
@@ -88,10 +88,10 @@ export default function JumiaExpressPage() {
  <div className="bg-surface-container-lowest rounded-[56px] border border-surface-container-low p-24 text-center shadow-soft">
  <Zap className="mx-auto text-surface-container-low mb-10" size={80} />
  <h2 className="text-3xl font-semibold text-on-surface uppercase tracking-tighter mb-4">Replenishing <span className="text-jumia-orange">Node</span></h2>
- <p className="text-on-surface-variant/40 text-[11px] max-w-sm mx-auto mb-12 font-semibold uppercase tracking-[0.3em] leading-relaxed italic">
+ <p className="text-on-surface-variant/40 text-[11px] max-w-sm mx-auto mb-12 font-semibold uppercase  leading-relaxed italic">
  LOGISTICS NETWORK IS CURRENTLY REPLENISHING HIGH-VELOCITY STOCK. CHECK BACK FOR IMMEDIATE FULFILLMENT NODES.
  </p>
- <Link href="/" className="h-20 px-16 bg-jumia-orange text-white rounded-3xl font-semibold text-[10px] uppercase tracking-[0.4em] hover:bg-jumia-orange-dark transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 mx-auto w-fit">
+ <Link href="/" className="h-20 px-16 bg-jumia-orange text-white rounded-3xl font-semibold text-[10px] uppercase  hover:bg-jumia-orange-dark transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 mx-auto w-fit">
  Browse Universal Store <ArrowRight size={20} />
  </Link>
  </div>

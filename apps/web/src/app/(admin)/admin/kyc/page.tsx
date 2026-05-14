@@ -77,7 +77,7 @@ export default function AdminKYCVerificationPage() {
  </div>
  <div className="h-12 w-48 bg-surface-container-low rounded-xl" />
  </div>
- <div className="bg-surface-container-low rounded-[48px] h-[600px] border border-surface-container-lowest" />
+ <div className="bg-surface-container-low rounded h-[600px] border border-surface-container-lowest" />
  </div>
  );
  }
@@ -91,7 +91,7 @@ export default function AdminKYCVerificationPage() {
  <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30 shadow-inner">
  <ShieldCheck size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Compliance Verification & Merchant Onboarding Protocol</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Compliance Verification & Merchant Onboarding Protocol</span>
  </div>
  <h1 className="text-5xl md:text-7xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Moderation <br />
@@ -104,7 +104,7 @@ export default function AdminKYCVerificationPage() {
  <Fingerprint size={16} className="text-on-surface-variant/40" />
  <span className="text-[10px] font-semibold uppercase tracking-widest text-on-surface/60">Registry Load: {kycQueue?.length || 0} Entities</span>
  </div>
- <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase tracking-[0.2em] italic text-right">Verification Latency: ~14.2m</p>
+ <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase  italic text-right">Verification Latency: ~14.2m</p>
  </div>
  </div>
 
@@ -124,7 +124,7 @@ export default function AdminKYCVerificationPage() {
  <div className="overflow-x-auto custom-scrollbar">
  <table className="w-full text-left border-collapse min-w-[1000px]">
  <thead>
- <tr className="bg-surface-container-low/10 text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/30 border-b-4 border-surface-container-low">
+ <tr className="bg-surface-container-low/10 text-[10px] font-semibold uppercase  text-on-surface-variant/30 border-b-4 border-surface-container-low">
  <th className="px-10 py-8 italic">Merchant Entity</th>
  <th className="px-10 py-8 italic">Document Registry</th>
  <th className="px-10 py-8 italic">Protocol Status</th>
@@ -143,7 +143,7 @@ export default function AdminKYCVerificationPage() {
  <div className="font-semibold text-sm md:text-base text-on-surface uppercase tracking-tight leading-none mb-1 group-hover/row:translate-x-2 transition-transform duration-700">
  {item.businessName}
  </div>
- <div className="flex items-center gap-2 text-[9px] font-semibold text-on-surface-variant/30 uppercase tracking-[0.2em] italic">
+ <div className="flex items-center gap-2 text-[9px] font-semibold text-on-surface-variant/30 uppercase  italic">
  <User size={10} /> {item.user.email}
  </div>
  </div>
@@ -162,7 +162,7 @@ export default function AdminKYCVerificationPage() {
  href={doc.url} 
  target="_blank" 
  rel="noopener noreferrer"
- className="text-[8px] font-semibold text-jumia-orange uppercase tracking-[0.3em] flex items-center gap-1.5 cursor-pointer hover:underline opacity-60 hover:opacity-100"
+ className="text-[8px] font-semibold text-jumia-orange uppercase  flex items-center gap-1.5 cursor-pointer hover:underline opacity-60 hover:opacity-100"
  >
  ACCESS BLOB <ExternalLink size={8} />
  </a>
@@ -178,7 +178,7 @@ export default function AdminKYCVerificationPage() {
  </div>
  </td>
  <td className="px-10 py-8">
- <span className={`text-[10px] px-4 py-1.5 rounded-full font-semibold border-2 uppercase tracking-[0.2em] italic transition-all duration-700 ${
+ <span className={`text-[10px] px-4 py-1.5 rounded-full font-semibold border-2 uppercase  italic transition-all duration-700 ${
  item.status === 'PENDING_VERIFICATION' ? 'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20 shadow-[0_0_15px_rgba(246,139,30,0.2)] animate-pulse' :
  item.status === 'ACTIVE' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
  'bg-error/10 text-error border-error/20'
@@ -221,7 +221,7 @@ export default function AdminKYCVerificationPage() {
  <div className="w-20 h-20 bg-surface-container-low rounded border border-surface-container-lowest flex items-center justify-center mx-auto text-on-surface-variant/20">
  <ShieldCheck size={40} />
  </div>
- <p className="text-[10px] font-semibold uppercase tracking-[0.5em] text-on-surface-variant/20 italic">
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant/20 italic">
  Registry clear. all entities reconciled.
  </p>
  </td>

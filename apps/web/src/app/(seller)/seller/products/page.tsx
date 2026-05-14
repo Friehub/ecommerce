@@ -73,7 +73,7 @@ export default function SellerProductsHubPage() {
  </div>
  <Skeleton className="h-20 w-80 rounded" />
  </div>
- <Skeleton className="h-72 w-full rounded-[48px]" />
+ <Skeleton className="h-72 w-full rounded" />
  <Skeleton className="h-[800px] w-full rounded-[64px]" />
  </div>
  );
@@ -88,15 +88,15 @@ export default function SellerProductsHubPage() {
  <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30">
  <Database size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Neural Catalog Nexus & Asset Distribution Center</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Neural Catalog Nexus & Asset Distribution Center</span>
  </div>
  <h1 className="text-5xl md:text-8xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Inventory <br />
  <span className="text-jumia-orange italic">Matrix.</span>
  </h1>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Unified Catalog Control • Autonomous Ingestion Logic</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Unified Catalog Control • Autonomous Ingestion Logic</p>
  </div>
- <button className="bg-jumia-orange text-white px-12 py-6 rounded text-[10px] font-semibold uppercase tracking-[0.3em] hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000">
+ <button className="bg-jumia-orange text-white px-12 py-6 rounded text-[10px] font-semibold uppercase  hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000">
  <Plus size={20} className="group-hover:rotate-180 transition-transform duration-500" />
  Register New Asset
  </button>
@@ -113,12 +113,12 @@ export default function SellerProductsHubPage() {
  </div>
  <div>
  <h2 className="text-xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-2">Bulk Asset Ingestion</h2>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.2em] opacity-40 italic">RFC-4180 COMPLIANT CSV DATA STREAM</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  opacity-40 italic">RFC-4180 COMPLIANT CSV DATA STREAM</p>
  </div>
  </div>
  <div className="flex items-center gap-5 bg-surface-container-low px-8 py-3 rounded-full border-2 border-surface-container-lowest shadow-sm">
  <FileSpreadsheet size={18} className="text-jumia-orange" />
- <span className="text-[9px] font-semibold text-on-surface-variant uppercase tracking-[0.3em] italic opacity-60">Schema Validation Active</span>
+ <span className="text-[9px] font-semibold text-on-surface-variant uppercase  italic opacity-60">Schema Validation Active</span>
  </div>
  </div>
 
@@ -138,14 +138,14 @@ export default function SellerProductsHubPage() {
  <button
  onClick={() => bulkImportMutation.mutate({ csvContent })}
  disabled={!csvContent || bulkImportMutation.isPending}
- className="bg-jumia-orange text-white px-14 py-6 rounded text-[11px] font-semibold uppercase tracking-[0.4em] hover:bg-jumia-orange-dark transition-all shadow-2xl disabled:opacity-20 flex items-center justify-center gap-5 group/btn"
+ className="bg-jumia-orange text-white px-14 py-6 rounded text-[11px] font-semibold uppercase  hover:bg-jumia-orange-dark transition-all shadow-2xl disabled:opacity-20 flex items-center justify-center gap-5 group/btn"
  >
  {bulkImportMutation.isPending ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} className="group-hover/btn:scale-125 transition-transform" />}
  Initialize Ingestion
  </button>
  <div className="flex items-center gap-4 p-5 bg-jumia-orange/5 rounded border-2 border-jumia-orange/10">
  <AlertCircle size={18} className="text-jumia-orange shrink-0" />
- <p className="text-[10px] font-semibold text-on-surface-variant/60 uppercase tracking-[0.1em] italic leading-tight">
+ <p className="text-[10px] font-semibold text-on-surface-variant/60 uppercase  italic leading-tight">
  REQUIRED HEADER SCHEMA: <span className="text-jumia-orange opacity-100 italic">title, sku, price, description, comparePrice, ean, stock</span>
  </p>
  </div>
@@ -167,7 +167,7 @@ export default function SellerProductsHubPage() {
  <div className="flex gap-6 w-full lg:w-auto">
  <div className="relative flex-1 lg:flex-none group">
  <Filter className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-20 group-hover:text-jumia-orange transition-colors" size={20} />
- <select className="bg-surface-container-lowest border border-surface-container-low rounded pl-16 pr-12 py-5 text-[11px] font-semibold text-on-surface uppercase tracking-[0.2em] focus:outline-none focus:border-jumia-orange/30 transition-all appearance-none cursor-pointer w-full shadow-inner hover:bg-surface-container-low/20 italic">
+ <select className="bg-surface-container-lowest border border-surface-container-low rounded pl-16 pr-12 py-5 text-[11px] font-semibold text-on-surface uppercase  focus:outline-none focus:border-jumia-orange/30 transition-all appearance-none cursor-pointer w-full shadow-inner hover:bg-surface-container-low/20 italic">
  <option>ALL SECTORS</option>
  <option>ACTIVE NODES</option>
  <option>DRAFT PROTOCOLS</option>
@@ -179,7 +179,7 @@ export default function SellerProductsHubPage() {
  <div className="overflow-x-auto">
  <table className="w-full text-left border-collapse min-w-[1200px]">
  <thead>
- <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] bg-surface-container-low/20 italic">
+ <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-semibold uppercase  bg-surface-container-low/20 italic">
  <th className="px-12 py-8">Asset Identity / Sequence</th>
  <th className="px-12 py-8">Classification Sector</th>
  <th className="px-12 py-8">Capital Magnitude (₦)</th>
@@ -200,22 +200,22 @@ export default function SellerProductsHubPage() {
           <div className="font-semibold text-2xl text-on-surface leading-none tracking-tighter uppercase group-hover:text-jumia-orange transition-colors duration-500 cursor-pointer mb-3">
             {item.title}
           </div>
-          <div className="text-[11px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] flex items-center gap-3 italic">
+          <div className="text-[11px] font-semibold text-on-surface-variant/40 uppercase  flex items-center gap-3 italic">
             <Binary size={14} className="opacity-40" /> ID: {mainVariant?.sku || 'N/A'}
           </div>
         </td>
         <td className="px-12 py-10">
-          <span className="text-[10px] font-semibold text-jumia-orange uppercase tracking-[0.4em] bg-jumia-orange/5 border-2 border-jumia-orange/20 px-6 py-2 rounded-full italic shadow-sm">
+          <span className="text-[10px] font-semibold text-jumia-orange uppercase  bg-jumia-orange/5 border-2 border-jumia-orange/20 px-6 py-2 rounded-full italic shadow-sm">
             {item.category?.name || 'UNCLASSIFIED'}
           </span>
         </td>
         <td className="px-12 py-10">
           <div className="text-3xl font-semibold text-on-surface tracking-tighter leading-none">₦{Number(mainVariant?.price || 0).toLocaleString()}</div>
-          <div className="text-[10px] font-semibold text-success uppercase tracking-[0.2em] mt-2 italic opacity-40">Settlement Ready</div>
+          <div className="text-[10px] font-semibold text-success uppercase  mt-2 italic opacity-40">Settlement Ready</div>
         </td>
         <td className="px-12 py-10">
           <div className="flex flex-col gap-3">
-            <span className={`inline-flex items-center justify-center px-6 py-2 rounded-full border-2 text-[10px] font-semibold uppercase tracking-[0.4em] shadow-sm italic transition-all duration-700 ${
+            <span className={`inline-flex items-center justify-center px-6 py-2 rounded-full border-2 text-[10px] font-semibold uppercase  shadow-sm italic transition-all duration-700 ${
               totalStock > 0 ? 'bg-success-container/10 text-success border-success/20' : 'bg-error-container/10 text-error border-error/20 animate-pulse'
             }`}>
               {totalStock} UNITS

@@ -41,8 +41,8 @@ export default function AdminAnalyticsPage() {
  ))}
  </div>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-10">
- <div className="h-[400px] bg-surface-container-low rounded-[48px] border border-surface-container-lowest" />
- <div className="h-[400px] bg-surface-container-low rounded-[48px] border border-surface-container-lowest" />
+ <div className="h-[400px] bg-surface-container-low rounded border border-surface-container-lowest" />
+ <div className="h-[400px] bg-surface-container-low rounded border border-surface-container-lowest" />
  </div>
  </div>
  );
@@ -57,7 +57,7 @@ export default function AdminAnalyticsPage() {
  <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30 shadow-inner">
  <ShieldCheck size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Global Distribution Protocol & Notifications</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Global Distribution Protocol & Notifications</span>
  </div>
  <h1 className="text-5xl md:text-7xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Command <br />
@@ -73,7 +73,7 @@ export default function AdminAnalyticsPage() {
  </div>
  <span className="text-[10px] font-semibold uppercase tracking-widest text-on-surface/60">Live Signal: Stable</span>
  </div>
- <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase tracking-[0.2em] italic">System Uptime: 99.998%</p>
+ <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase  italic">System Uptime: 99.998%</p>
  </div>
  </div>
 
@@ -87,7 +87,7 @@ export default function AdminAnalyticsPage() {
  <div className="p-2 bg-white/5 rounded-xl border border-white/10">
  <Activity size={20} />
  </div>
- <h3 className="text-[10px] font-semibold uppercase tracking-[0.3em]">Network Load</h3>
+ <h3 className="text-[10px] font-semibold uppercase ">Network Load</h3>
  </div>
  </div>
  <p className="text-5xl font-semibold tracking-tighter italic mb-3">{metrics?.activeSessions || 0}</p>
@@ -108,12 +108,12 @@ export default function AdminAnalyticsPage() {
  <kpi.icon size={22} />
  </div>
  <div>
- <h3 className="text-[10px] font-semibold uppercase tracking-[0.3em] text-on-surface-variant/40">{kpi.label}</h3>
- <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-on-surface/20 italic">{kpi.sub}</p>
+ <h3 className="text-[10px] font-semibold uppercase  text-on-surface-variant/40">{kpi.label}</h3>
+ <p className="text-[9px] font-semibold uppercase  text-on-surface/20 italic">{kpi.sub}</p>
  </div>
  </div>
  <p className="text-3xl md:text-4xl font-semibold text-on-surface tracking-tighter uppercase mb-4 leading-none">{kpi.value}</p>
- <div className={`text-[10px] font-semibold uppercase tracking-[0.2em] italic ${kpi.color || 'text-green-500 opacity-60'}`}>
+ <div className={`text-[10px] font-semibold uppercase  italic ${kpi.color || 'text-green-500 opacity-60'}`}>
  Notifications: {kpi.trend}
  </div>
  </div>
@@ -132,7 +132,7 @@ export default function AdminAnalyticsPage() {
  </div>
  <div>
  <h3 className="text-xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-2">Capital Matrix</h3>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.2em] opacity-40 italic">Daily Revenue Liquidity (30D)</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  opacity-40 italic">Daily Revenue Liquidity (30D)</p>
  </div>
  </div>
  <Calendar size={20} className="text-on-surface-variant/20" />
@@ -152,7 +152,7 @@ export default function AdminAnalyticsPage() {
  ) : (
  <div className="py-20 text-center space-y-4 opacity-20">
  <Binary size={48} className="mx-auto" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] italic">No revenue telemetry detected</p>
+ <p className="text-[10px] font-semibold uppercase  italic">No revenue telemetry detected</p>
  </div>
  )}
  </div>
@@ -168,7 +168,7 @@ export default function AdminAnalyticsPage() {
  </div>
  <div>
  <h3 className="text-xl font-semibold text-on-surface tracking-tighter uppercase leading-none mb-2">Entity Growth</h3>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.2em] opacity-40 italic">New Account Registrations Matrix</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  opacity-40 italic">New Account Registrations Matrix</p>
  </div>
  </div>
  <Zap size={20} className="text-on-surface-variant/20" />
@@ -190,7 +190,7 @@ export default function AdminAnalyticsPage() {
  ) : (
  <div className="py-20 text-center space-y-4 opacity-20">
  <Layers size={48} className="mx-auto" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] italic">Growth metrics synchronized</p>
+ <p className="text-[10px] font-semibold uppercase  italic">Growth metrics synchronized</p>
  </div>
  )}
  </div>

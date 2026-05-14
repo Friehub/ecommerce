@@ -120,8 +120,8 @@ export default function AdminFlashSalesPage() {
  <div className="h-12 w-48 bg-surface-container-low rounded-xl" />
  </div>
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
- <div className="h-[600px] bg-surface-container-low rounded-[48px] border border-surface-container-lowest" />
- <div className="h-[600px] lg:col-span-2 bg-surface-container-low rounded-[48px] border border-surface-container-lowest" />
+ <div className="h-[600px] bg-surface-container-low rounded border border-surface-container-lowest" />
+ <div className="h-[600px] lg:col-span-2 bg-surface-container-low rounded border border-surface-container-lowest" />
  </div>
  </div>
  );
@@ -136,7 +136,7 @@ export default function AdminFlashSalesPage() {
  <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30 shadow-inner">
  <ShieldCheck size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Promotional Strategy & Flash Liquidity Control</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Promotional Strategy & Flash Liquidity Control</span>
  </div>
  <h1 className="text-5xl md:text-7xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Flash <br />
@@ -154,17 +154,17 @@ export default function AdminFlashSalesPage() {
 
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
  {/* Create Flash Sale Form */}
- <div className="bg-surface-container-lowest p-10 rounded-[48px] border border-surface-container-low shadow-soft h-fit sticky top-8 group">
+ <div className="bg-surface-container-lowest p-10 rounded border border-surface-container-low shadow-soft h-fit sticky top-8 group">
  <div className="flex items-center gap-4 mb-10 pb-6 border-b-4 border-surface-container-low">
  <div className="p-3 bg-jumia-orange/10 text-jumia-orange rounded-2xl border-2 border-jumia-orange/20 shadow-inner">
  <Plus size={20} />
  </div>
- <h2 className="text-sm font-semibold text-on-surface uppercase tracking-[0.3em] italic">Deploy Strategy</h2>
+ <h2 className="text-sm font-semibold text-on-surface uppercase  italic">Deploy Strategy</h2>
  </div>
  
  <form onSubmit={handleCreate} className="space-y-8">
  <div className="space-y-4">
- <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+ <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic px-2">
  Inventory Target
  </label>
  <div className="relative group/search">
@@ -194,7 +194,7 @@ export default function AdminFlashSalesPage() {
 
  <div className="grid grid-cols-2 gap-6">
  <div className="space-y-4">
- <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+ <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic px-2">
  Sale Capital (₦)
  </label>
  <input
@@ -208,7 +208,7 @@ export default function AdminFlashSalesPage() {
  />
  </div>
  <div className="space-y-4">
- <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+ <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic px-2">
  Unit Ceiling
  </label>
  <input
@@ -224,7 +224,7 @@ export default function AdminFlashSalesPage() {
 
  <div className="space-y-6">
  <div className="space-y-4">
- <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+ <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic px-2">
  Activation Timestamp
  </label>
  <div className="relative">
@@ -240,7 +240,7 @@ export default function AdminFlashSalesPage() {
  </div>
 
  <div className="space-y-4">
- <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] italic px-2">
+ <label className="block text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic px-2">
  Termination Timestamp
  </label>
  <div className="relative">
@@ -259,7 +259,7 @@ export default function AdminFlashSalesPage() {
  <button
  type="submit"
  disabled={createFlashSaleMutation.isPending}
- className="w-full bg-jumia-orange text-white py-6 rounded text-[11px] font-semibold uppercase tracking-[0.4em] italic hover:bg-jumia-orange-dark transition-all duration-700 shadow-3xl disabled:opacity-50 flex items-center justify-center gap-3 group/submit"
+ className="w-full bg-jumia-orange text-white py-6 rounded text-[11px] font-semibold uppercase  italic hover:bg-jumia-orange-dark transition-all duration-700 shadow-3xl disabled:opacity-50 flex items-center justify-center gap-3 group/submit"
  >
  {createFlashSaleMutation.isPending ? (
  <>
@@ -279,7 +279,7 @@ export default function AdminFlashSalesPage() {
  {/* List of Flash Sales */}
  <div className="lg:col-span-2 space-y-8 animate-in slide-in-from-bottom-8 duration-1000">
  <div className="flex items-center justify-between px-4">
- <h3 className="text-xs font-semibold text-on-surface uppercase tracking-[0.4em] italic opacity-40">Campaign Matrix Registry</h3>
+ <h3 className="text-xs font-semibold text-on-surface uppercase  italic opacity-40">Campaign Matrix Registry</h3>
  <div className="flex items-center gap-2 text-jumia-orange bg-jumia-orange/10 px-3 py-1 rounded-full border border-jumia-orange/20">
  <BarChart3 size={12} />
  <span className="text-[10px] font-semibold uppercase tracking-widest">{flashSales?.length || 0} SECTORS</span>
@@ -288,7 +288,7 @@ export default function AdminFlashSalesPage() {
 
  <div className="grid gap-6">
  {flashSales?.map((sale) => (
- <div key={sale.id} className="bg-surface-container-lowest p-10 rounded-[48px] border border-surface-container-low shadow-soft group hover:border-jumia-orange/20 hover:translate-x-4 transition-all duration-700 relative overflow-hidden">
+ <div key={sale.id} className="bg-surface-container-lowest p-10 rounded border border-surface-container-low shadow-soft group hover:border-jumia-orange/20 hover:translate-x-4 transition-all duration-700 relative overflow-hidden">
  <div className="absolute top-0 right-0 w-32 h-32 bg-jumia-orange/5 rounded-full blur-[40px] pointer-events-none group-hover:scale-150 transition-transform duration-[2000ms]" />
  
  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
@@ -299,7 +299,7 @@ export default function AdminFlashSalesPage() {
  </div>
  <div>
  <h4 className="text-xl font-semibold text-on-surface uppercase tracking-tighter italic leading-none mb-2">{sale.variant.product.title}</h4>
- <div className="flex flex-wrap items-center gap-4 text-[9px] font-semibold text-on-surface-variant/30 uppercase tracking-[0.2em] italic">
+ <div className="flex flex-wrap items-center gap-4 text-[9px] font-semibold text-on-surface-variant/30 uppercase  italic">
  <span className="flex items-center gap-1.5"><Fingerprint size={10} /> {sale.variant.sku}</span>
  <span className="flex items-center gap-1.5"><Target size={10} /> {sale.variant.product.seller.businessName}</span>
  </div>
@@ -308,14 +308,14 @@ export default function AdminFlashSalesPage() {
 
  <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-4 border-t-2 border-surface-container-low">
  <div className="space-y-1">
- <p className="text-[8px] font-semibold text-on-surface-variant/20 uppercase tracking-[0.4em] italic">Unit Liquidity</p>
+ <p className="text-[8px] font-semibold text-on-surface-variant/20 uppercase  italic">Unit Liquidity</p>
  <div className="flex items-center gap-2 text-on-surface font-semibold text-sm tracking-tight italic">
  <DollarSign size={14} className="text-jumia-orange" />
  ₦{Number(sale.salePrice).toLocaleString()}
  </div>
  </div>
  <div className="space-y-1">
- <p className="text-[8px] font-semibold text-on-surface-variant/20 uppercase tracking-[0.4em] italic">Absorption Rate</p>
+ <p className="text-[8px] font-semibold text-on-surface-variant/20 uppercase  italic">Absorption Rate</p>
  <div className="flex items-center gap-3">
  <div className="flex-1 h-1.5 bg-surface-container-low rounded-full overflow-hidden border border-surface-container-lowest max-w-[100px]">
  <div className="h-full bg-jumia-orange transition-all duration-1000 ease-out" style={{ width: `${Math.min((sale.qtySold / sale.qtyLimit) * 100, 100)}%` }} />
@@ -324,7 +324,7 @@ export default function AdminFlashSalesPage() {
  </div>
  </div>
  <div className="space-y-1 md:col-span-1 col-span-2">
- <p className="text-[8px] font-semibold text-on-surface-variant/20 uppercase tracking-[0.4em] italic">Operational Window</p>
+ <p className="text-[8px] font-semibold text-on-surface-variant/20 uppercase  italic">Operational Window</p>
  <div className="flex items-center gap-2 text-on-surface-variant/60 font-semibold text-[9px] uppercase tracking-widest italic">
  <Clock size={10} />
  {new Date(sale.startTime).toLocaleDateString()} - {new Date(sale.endTime).toLocaleDateString()}
@@ -355,10 +355,10 @@ export default function AdminFlashSalesPage() {
  <TrendingUp size={48} />
  </div>
  <div className="space-y-2">
- <p className="text-[12px] font-semibold uppercase tracking-[0.6em] text-on-surface-variant/20 italic">
+ <p className="text-[12px] font-semibold uppercase  text-on-surface-variant/20 italic">
  Campaign matrix clear.
  </p>
- <p className="text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/10 italic">
+ <p className="text-[9px] font-semibold uppercase  text-on-surface-variant/10 italic">
  No flash strategies currently deployed.
  </p>
  </div>

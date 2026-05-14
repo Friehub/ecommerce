@@ -46,7 +46,7 @@ export default function ContactSupportPage() {
  <div className="bg-background min-h-screen pb-24 select-none">
  <div className="container py-12 max-w-6xl mx-auto px-6">
  {/* Breadcrumbs */}
- <div className="flex items-center gap-3 mb-12 font-semibold text-on-surface-variant text-[10px] uppercase tracking-[0.4em]">
+ <div className="flex items-center gap-3 mb-12 font-semibold text-on-surface-variant text-[10px] uppercase ">
  <Link href="/" className="hover:text-jumia-orange transition-colors">Hub</Link>
  <ChevronRight size={14} className="opacity-30" />
  <Link href="/help" className="hover:text-jumia-orange transition-colors">Intelligence</Link>
@@ -77,7 +77,7 @@ export default function ContactSupportPage() {
  <ShieldCheck size={18} className="text-jumia-orange" />
  <h4 className="text-[10px] font-semibold text-on-surface uppercase tracking-widest">Encryption Status</h4>
  </div>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] leading-relaxed italic">
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  leading-relaxed italic">
  YOUR SESSION IS PROTECTED BY END-TO-END CRYPTOGRAPHIC PROTOCOLS. DATA INTEGRITY VERIFIED.
  </p>
  </div>
@@ -87,7 +87,7 @@ export default function ContactSupportPage() {
  <Activity size={18} className="text-jumia-orange" />
  <h4 className="text-[10px] font-semibold text-on-surface uppercase tracking-widest">Queue Latency</h4>
  </div>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] leading-relaxed italic">
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  leading-relaxed italic">
  EXPECTED HANDSHAKE TIME: &lt; 2 MINUTES.
  </p>
  </div>
@@ -96,15 +96,15 @@ export default function ContactSupportPage() {
 
  <div className="bg-jumia-orange text-white rounded p-8 shadow-2xl relative overflow-hidden group">
  <div className="absolute top-0 right-0 w-32 h-32 bg-jumia-orange/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
- <p className="text-[9px] font-semibold uppercase tracking-[0.4em] mb-4 opacity-40">Security Advisory</p>
- <p className="text-[10px] font-semibold uppercase tracking-[0.2em] leading-relaxed italic relative z-10">
+ <p className="text-[9px] font-semibold uppercase  mb-4 opacity-40">Security Advisory</p>
+ <p className="text-[10px] font-semibold uppercase  leading-relaxed italic relative z-10">
  DO NOT DISCLOSE AUTHORIZATION TOKENS OR TEMPORAL PASSWORDS DURING THIS SESSION.
  </p>
  </div>
  </div>
 
  {/* Messages Flow */}
- <div className="lg:col-span-8 flex flex-col h-[700px] bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-right-8 duration-1000">
+ <div className="lg:col-span-8 flex flex-col h-[700px] bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-right-8 duration-1000">
  {/* Header */}
  <div className="p-8 bg-surface-container-low/30 border-b-2 border-surface-container-low flex items-center justify-between">
  <div className="flex items-center gap-5">
@@ -116,7 +116,7 @@ export default function ContactSupportPage() {
  </div>
  <div>
  <h3 className="font-semibold text-on-surface text-2xl tracking-tighter uppercase leading-none">Virtual <span className="text-jumia-orange">Core</span></h3>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-2 italic">Automated Resolutions Node v8.4</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-2 italic">Automated Resolutions Node v8.4</p>
  </div>
  </div>
  </div>

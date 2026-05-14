@@ -56,13 +56,13 @@ export default function CategoryPage() {
 
   if (isCatLoading) {
     return (
-      <div className="max-w-container-max mx-auto px-margin-desktop py-stack-lg">
+      <div className="max-w-[1184px] mx-auto px-4 py-8">
         <Skeleton className="h-4 w-48 mb-8" />
-        <div className="flex flex-col lg:flex-row gap-gutter">
-          <Skeleton className="w-64 h-[600px] hidden lg:block" />
+        <div className="flex flex-col lg:flex-row gap-4">
+          <Skeleton className="w-64 h-[600px] hidden lg:block rounded-sm" />
           <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
             {[...Array(8)].map((_, i) => (
-              <Skeleton key={i} className="aspect-square" />
+              <Skeleton key={i} className="aspect-[3/4] rounded-sm" />
             ))}
           </div>
         </div>
@@ -72,79 +72,79 @@ export default function CategoryPage() {
 
   if (!category) {
     return (
-      <div className="max-w-container-max mx-auto px-margin-desktop py-32 text-center">
-        <div className="bg-j-surface-container-low w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Search size={32} className="text-j-text-muted" />
+      <div className="max-w-[1184px] mx-auto px-4 py-32 text-center">
+        <div className="bg-orange-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 text-jumia-orange border-2 border-orange-100">
+          <Search size={40} />
         </div>
-        <h1 className="text-headline-md font-bold mb-4">Category not found</h1>
-        <Link href="/" className="text-jumia-orange font-bold hover:underline">Back to Homepage</Link>
+        <h1 className="text-2xl font-black mb-4 uppercase tracking-tight">Category not found</h1>
+        <Link href="/" className="bg-jumia-orange text-white px-8 py-3 rounded-sm font-black uppercase tracking-wider shadow-lg hover:bg-orange-600 transition-all">Back to Homepage</Link>
       </div>
     );
   }
 
   return (
-    <div className="max-w-container-max mx-auto px-margin-desktop py-stack-md">
+    <div className="max-w-[1184px] mx-auto px-4 py-6">
       {/* Breadcrumbs */}
-      <div className="flex items-center gap-2 mb-4 text-body-sm text-j-text-muted">
-        <Link href="/" className="hover:text-jumia-orange">Home</Link>
-        <ChevronRight size={14} />
+      <div className="flex items-center gap-2 mb-6 text-[10px] font-black text-j-text-muted uppercase tracking-wider">
+        <Link href="/" className="hover:text-jumia-orange transition-colors">Home</Link>
+        <ChevronRight size={12} />
         <span className="text-j-text truncate">{category.name}</span>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-gutter">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar Filters */}
         <aside className="w-full lg:w-64 flex-shrink-0">
-          <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant shadow-sm sticky top-24">
-            <div className="p-4 border-b border-j-outline-variant flex items-center gap-2 bg-j-surface-container-low">
+          <div className="bg-white rounded-sm border border-j-border shadow-sm sticky top-24 overflow-hidden">
+            <div className="p-4 border-b border-j-border flex items-center gap-3 bg-j-background">
               <SlidersHorizontal size={18} className="text-jumia-orange" />
-              <h3 className="text-label-bold font-bold uppercase">Filters</h3>
+              <h3 className="text-[11px] font-black uppercase tracking-wider">Filters</h3>
             </div>
             
-            <div className="p-4 flex flex-col gap-8">
+            <div className="p-5 flex flex-col gap-10">
               {/* Categories */}
               <div>
-                <h4 className="text-body-sm font-bold mb-3 uppercase text-j-text-muted">Category</h4>
-                <ul className="flex flex-col gap-2">
+                <h4 className="text-[10px] font-black mb-4 uppercase tracking-widest text-j-text-muted">Category</h4>
+                <ul className="flex flex-col gap-3">
                   {category.children?.map((child: any) => (
                     <li key={child.id}>
                       <Link 
                         href={`/category/${child.slug}`} 
-                        className="text-body-sm text-j-text hover:text-jumia-orange transition-colors"
+                        className="text-[11px] font-bold text-j-text hover:text-jumia-orange transition-colors uppercase tracking-tight"
                       >
                         {child.name}
                       </Link>
                     </li>
                   ))}
                   {(!category.children || category.children.length === 0) && (
-                    <li className="text-body-sm text-j-text-muted italic">No sub-categories</li>
+                    <li className="text-[10px] text-j-text-muted italic uppercase font-bold opacity-50">No sub-categories</li>
                   )}
                 </ul>
               </div>
 
               {/* Price Filter */}
-              <div className="pt-4 border-t border-j-outline-variant">
-                <h4 className="text-body-sm font-bold mb-3 uppercase text-j-text-muted">Price (₦)</h4>
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-2">
+              <div className="pt-6 border-t border-j-border">
+                <h4 className="text-[10px] font-black mb-4 uppercase tracking-widest text-j-text-muted">Price (₦)</h4>
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
                     <input 
                       type="number" 
                       placeholder="Min" 
                       value={minPrice}
                       onChange={(e) => setMinPrice(e.target.value)}
-                      className="w-full bg-j-surface-container-lowest border border-j-outline-variant rounded px-3 py-2 text-body-sm focus:border-jumia-orange outline-none" 
+                      className="w-full bg-j-background border-2 border-j-border rounded-sm px-3 py-2 text-[11px] font-black focus:border-jumia-orange outline-none transition-colors" 
                     />
-                    <span className="text-j-text-muted">-</span>
+                    <span className="text-j-text-muted font-black">-</span>
                     <input 
                       type="number" 
                       placeholder="Max" 
                       value={maxPrice}
                       onChange={(e) => setMaxPrice(e.target.value)}
-                      className="w-full bg-j-surface-container-lowest border border-j-outline-variant rounded px-3 py-2 text-body-sm focus:border-jumia-orange outline-none" 
+                      className="w-full bg-j-background border-2 border-j-border rounded-sm px-3 py-2 text-[11px] font-black focus:border-jumia-orange outline-none transition-colors" 
                     />
                   </div>
                   <button 
                     onClick={handleSyncFilters}
-                    className="w-full bg-jumia-orange text-white py-2 rounded text-label-bold font-bold hover:bg-jumia-orange-dark transition-all"
+                    className="w-full bg-jumia-orange text-white py-3 rounded-sm text-[11px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-md active:scale-95"
                   >
                     Apply
                   </button>
@@ -155,19 +155,19 @@ export default function CategoryPage() {
         </aside>
 
         {/* Product Grid Area */}
-        <main className="flex-1">
-          <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant p-4 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
-            <div>
-              <h1 className="text-headline-sm font-bold text-j-text">{category.name}</h1>
-              <p className="text-body-sm text-j-text-muted">{products?.results?.length || 0} products found</p>
+        <main className="flex-1 min-w-0">
+          <div className="bg-white rounded-sm border border-j-border p-5 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
+            <div className="space-y-1">
+              <h1 className="text-xl font-black text-j-text uppercase tracking-tight leading-none">{category.name}</h1>
+              <p className="text-[10px] text-j-text-muted font-black uppercase tracking-widest opacity-70">{products?.results?.length || 0} products found</p>
             </div>
             
-            <div className="flex items-center gap-2">
-              <span className="text-body-sm text-j-text-muted">Sort by:</span>
+            <div className="flex items-center gap-4">
+              <span className="text-[10px] font-black text-j-text-muted uppercase tracking-widest shrink-0">Sort by:</span>
               <select 
                 value={initialSort}
                 onChange={handleSortChange}
-                className="bg-j-surface-container-low border border-j-outline-variant rounded px-3 py-1.5 text-body-sm font-medium outline-none cursor-pointer focus:border-jumia-orange"
+                className="bg-j-background border-2 border-j-border rounded-sm px-4 py-2 text-[11px] font-black uppercase tracking-tight outline-none cursor-pointer focus:border-jumia-orange transition-colors min-w-[180px]"
               >
                 <option value="RELEVANCE">Popularity</option>
                 <option value="NEWEST">Newest</option>
@@ -179,23 +179,25 @@ export default function CategoryPage() {
           </div>
 
           {isProdLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
-                <Skeleton key={i} className="aspect-square" />
+                <Skeleton key={i} className="aspect-[3/4] rounded-sm" />
               ))}
             </div>
           ) : products?.results && products.results.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {products.results.map((product: any) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
-            <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant py-24 text-center px-4">
-              <PackageSearch size={48} className="text-j-surface-container-high mx-auto mb-4" />
-              <h3 className="text-headline-sm font-bold mb-2">No products found</h3>
-              <p className="text-body-md text-j-text-muted mb-6">Try adjusting your filters or search for something else.</p>
-              <Link href="/" className="bg-jumia-orange text-white px-8 py-3 rounded font-bold hover:bg-jumia-orange-dark transition-all">
+            <div className="bg-white rounded-sm border border-j-border py-32 text-center px-8 shadow-sm">
+              <div className="w-20 h-20 bg-j-background rounded-full flex items-center justify-center mx-auto mb-8 border-2 border-j-border text-j-border">
+                <PackageSearch size={40} />
+              </div>
+              <h3 className="text-2xl font-black mb-3 uppercase tracking-tight text-j-text">No products found</h3>
+              <p className="text-[11px] text-j-text-muted mb-10 uppercase font-black tracking-widest opacity-60">Try adjusting your filters or search for something else.</p>
+              <Link href="/" className="bg-jumia-orange text-white px-10 py-4 rounded-sm font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg">
                 Continue Shopping
               </Link>
             </div>

@@ -30,7 +30,7 @@ export default function BulkUploadPage() {
 
  return (
  <div className="space-y-10 select-none max-w-5xl animate-in fade-in slide-in-from-bottom-8 duration-700">
- <div className="flex items-center gap-3 font-semibold text-on-surface-variant text-[10px] uppercase tracking-[0.3em]">
+ <div className="flex items-center gap-3 font-semibold text-on-surface-variant text-[10px] uppercase ">
  <Link href="/seller/dashboard" className="hover:text-jumia-orange transition-colors">Hub</Link>
  <ChevronRight size={14} className="opacity-30" />
  <Link href="/seller/inventory" className="hover:text-jumia-orange transition-colors">Assets</Link>
@@ -44,7 +44,7 @@ export default function BulkUploadPage() {
  </div>
  <div>
  <h1 className="text-3xl font-semibold text-on-surface tracking-tighter uppercase leading-none">Catalog <span className="text-jumia-orange">Ingestion</span></h1>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-2 italic">Batch Upload Protocol v4.2</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-2 italic">Batch Upload Protocol v4.2</p>
  </div>
  </div>
 
@@ -71,7 +71,7 @@ export default function BulkUploadPage() {
  ) : (
  <div>
  <p className="text-sm font-semibold text-on-surface uppercase tracking-tight">Deploy Data Source</p>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] mt-3 italic">CSV or XLSX Matrix Supported</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-3 italic">CSV or XLSX Matrix Supported</p>
  </div>
  )}
  </div>
@@ -92,7 +92,7 @@ export default function BulkUploadPage() {
  <button 
  type="submit" 
  disabled={!file || uploading}
- className="w-full h-20 bg-jumia-orange text-white rounded-2xl font-semibold text-xs uppercase tracking-[0.4em] shadow-2xl hover:bg-jumia-orange-dark transition-all active:scale-95 disabled:opacity-20 flex items-center justify-center gap-4 group"
+ className="w-full h-20 bg-jumia-orange text-white rounded-2xl font-semibold text-xs uppercase  shadow-2xl hover:bg-jumia-orange-dark transition-all active:scale-95 disabled:opacity-20 flex items-center justify-center gap-4 group"
  >
  {uploading ? (
  <>
@@ -112,7 +112,7 @@ export default function BulkUploadPage() {
  {/* Template info */}
  <div className="lg:col-span-4 space-y-6">
  <div className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft p-8 h-fit animate-in fade-in slide-in-from-right-8 duration-1000 delay-200">
- <h3 className="text-[10px] font-semibold text-on-surface uppercase tracking-[0.4em] mb-8 flex items-center gap-3 italic">
+ <h3 className="text-[10px] font-semibold text-on-surface uppercase  mb-8 flex items-center gap-3 italic">
  <FileText size={18} className="text-jumia-orange" /> Guidelines
  </h3>
  <p className="text-[11px] font-semibold text-on-surface/40 uppercase tracking-widest leading-relaxed mb-10 italic">
@@ -123,14 +123,14 @@ export default function BulkUploadPage() {
  <AlertCircle size={18} className="text-jumia-orange shrink-0" />
  <span className="uppercase tracking-tight leading-relaxed">Required Nodes: Title, SKU, Variant, Valuation, and Media URI.</span>
  </div>
- <button className="w-full h-16 bg-surface-container-low/30 hover:bg-surface-container-low text-on-surface border-2 border-surface-container-low rounded-2xl font-semibold text-[10px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3">
+ <button className="w-full h-16 bg-surface-container-low/30 hover:bg-surface-container-low text-on-surface border-2 border-surface-container-low rounded-2xl font-semibold text-[10px] uppercase  transition-all flex items-center justify-center gap-3">
  <Download size={18} /> Get Sample Matrix
  </button>
  </div>
  </div>
 
  <div className="bg-jumia-orange/5 border border-jumia-orange/10 rounded p-8">
- <p className="text-[9px] font-semibold text-jumia-orange uppercase tracking-[0.4em] mb-3 flex items-center gap-2 italic">
+ <p className="text-[9px] font-semibold text-jumia-orange uppercase  mb-3 flex items-center gap-2 italic">
  <Layers size={14} /> Buffer System
  </p>
  <p className="text-[10px] font-semibold text-on-surface/40 uppercase tracking-widest leading-relaxed italic">

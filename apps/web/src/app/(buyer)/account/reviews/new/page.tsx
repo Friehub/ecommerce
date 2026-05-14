@@ -78,7 +78,7 @@ function ReviewFormContent() {
  <div className="bg-background min-h-screen flex items-center justify-center">
  <div className="flex flex-col items-center gap-6">
  <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Fetching Node Metadata</p>
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant opacity-40 animate-pulse">Fetching Node Metadata</p>
  </div>
  </div>
  );
@@ -87,11 +87,11 @@ function ReviewFormContent() {
  if (!product) {
  return (
  <div className="bg-background min-h-screen flex items-center justify-center p-6">
- <div className="bg-surface-container-lowest p-16 rounded-[48px] border border-surface-container-low shadow-soft text-center max-w-lg w-full">
+ <div className="bg-surface-container-lowest p-16 rounded border border-surface-container-low shadow-soft text-center max-w-lg w-full">
  <X className="mx-auto text-error mb-8" size={64} />
  <h2 className="text-3xl font-semibold text-on-surface uppercase tracking-tighter mb-4">Node <span className="text-error">Not Found</span></h2>
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic mb-10">THE TARGET PRODUCT IDENTITY DOES NOT EXIST IN THE CURRENT CATALOG.</p>
- <Link href="/account/reviews" className="h-16 px-12 bg-jumia-orange text-white rounded-2xl font-semibold text-[10px] uppercase tracking-[0.4em] hover:bg-jumia-orange-dark transition-all flex items-center justify-center gap-4 mx-auto w-fit">
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant/40 italic mb-10">THE TARGET PRODUCT IDENTITY DOES NOT EXIST IN THE CURRENT CATALOG.</p>
+ <Link href="/account/reviews" className="h-16 px-12 bg-jumia-orange text-white rounded-2xl font-semibold text-[10px] uppercase  hover:bg-jumia-orange-dark transition-all flex items-center justify-center gap-4 mx-auto w-fit">
  Return to Profile <ArrowRight size={18} />
  </Link>
  </div>
@@ -104,7 +104,7 @@ function ReviewFormContent() {
  <div className="container py-12 max-w-3xl mx-auto px-6">
  <Link 
  href="/account/reviews"
- className="flex items-center gap-3 mb-12 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] hover:text-on-surface transition-all group"
+ className="flex items-center gap-3 mb-12 text-[10px] font-semibold text-on-surface-variant/40 uppercase  hover:text-on-surface transition-all group"
  >
  <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
  Back to Perception Logs
@@ -122,7 +122,7 @@ function ReviewFormContent() {
  <h3 className="text-xl font-semibold text-on-surface uppercase tracking-tighter leading-tight truncate">{product.title}</h3>
  <div className="flex items-center gap-3 mt-2">
  <ShieldCheck size={14} className="text-jumia-orange" />
- <p className="text-[10px] font-semibold text-jumia-orange uppercase tracking-[0.3em] italic">Verified Acquisition</p>
+ <p className="text-[10px] font-semibold text-jumia-orange uppercase  italic">Verified Acquisition</p>
  </div>
  </div>
  </div>
@@ -131,7 +131,7 @@ function ReviewFormContent() {
  <form onSubmit={handleSubmit} className="p-10 md:p-16 space-y-12">
  {/* Rating Stars */}
  <div className="text-center">
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mb-8 italic">Specify Performance Magnitude</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mb-8 italic">Specify Performance Magnitude</p>
  <div className="flex justify-center gap-4">
  {[1, 2, 3, 4, 5].map((star) => (
  <button
@@ -152,7 +152,7 @@ function ReviewFormContent() {
  ))}
  </div>
  {rating > 0 && (
- <p className="text-[11px] font-semibold text-jumia-orange uppercase tracking-[0.5em] mt-8 animate-in fade-in zoom-in duration-300">
+ <p className="text-[11px] font-semibold text-jumia-orange uppercase  mt-8 animate-in fade-in zoom-in duration-300">
  {['Critical Failure', 'Below Spec', 'Operational', 'High Grade', 'Peak Performance'][rating - 1]}
  </p>
  )}
@@ -160,7 +160,7 @@ function ReviewFormContent() {
 
  {/* Comment Area */}
  <div className="space-y-4">
- <label className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] block ml-2 italic">Perception Narrative</label>
+ <label className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  block ml-2 italic">Perception Narrative</label>
  <textarea
  value={comment}
  onChange={(e) => setComment(e.target.value)}
@@ -171,7 +171,7 @@ function ReviewFormContent() {
 
  {/* Photo Upload */}
  <div className="space-y-4">
- <label className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.3em] block ml-2 italic">Visual Notifications</label>
+ <label className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  block ml-2 italic">Visual Notifications</label>
  <div className="flex flex-wrap gap-6">
  {images.map((img, idx) => (
  <div key={idx} className="w-28 h-28 bg-surface-container-low rounded border-2 border-surface-container-low overflow-hidden group/img relative shadow-inner">
@@ -193,7 +193,7 @@ function ReviewFormContent() {
  ) : (
  <>
  <Camera size={28} className="group-hover:scale-110 transition-transform" />
- <span className="text-[8px] font-semibold uppercase tracking-[0.2em]">Add Node</span>
+ <span className="text-[8px] font-semibold uppercase ">Add Node</span>
  </>
  )}
  <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
@@ -205,7 +205,7 @@ function ReviewFormContent() {
  <button
  type="submit"
  disabled={isSubmitting || rating === 0 || !comment}
- className={`w-full h-24 rounded font-semibold text-[11px] uppercase tracking-[0.5em] shadow-2xl transition-all flex items-center justify-center gap-4 active:scale-95 disabled:opacity-20 group ${
+ className={`w-full h-24 rounded font-semibold text-[11px] uppercase  shadow-2xl transition-all flex items-center justify-center gap-4 active:scale-95 disabled:opacity-20 group ${
  isSubmitting || rating === 0 || !comment
  ? 'bg-surface-container-low text-on-surface-variant' 
  : 'bg-jumia-orange text-white hover:bg-jumia-orange-dark'
@@ -227,7 +227,7 @@ function ReviewFormContent() {
  
  <div className="mt-12 flex items-center gap-4 bg-jumia-orange/5 p-8 rounded border-2 border-jumia-orange/10">
  <Activity size={24} className="text-jumia-orange animate-pulse shrink-0" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant/60 leading-relaxed italic">
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant/60 leading-relaxed italic">
  ALL SUBMITTED LOGS UNDERGO SYSTEMIC CONTENT VERIFICATION BEFORE BEING COMMITTED TO THE PUBLIC LEDGER.
  </p>
  </div>

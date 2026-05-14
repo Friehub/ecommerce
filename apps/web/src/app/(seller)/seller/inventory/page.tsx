@@ -77,17 +77,17 @@ export default function SellerInventory() {
  <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30">
  <Package size={24} className="text-jumia-orange" />
  </div>
- <span className="text-[10px] font-semibold uppercase tracking-[0.5em] text-jumia-orange italic">Enterprise Asset Management</span>
+ <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Enterprise Asset Management</span>
  </div>
  <h1 className="text-5xl md:text-8xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
  Resource <br />
  <span className="text-jumia-orange italic">Inventory.</span>
  </h1>
- <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Global Stock Matrix & Catalog Authorization Protocol</p>
+ <p className="text-on-surface-variant text-[10px] font-semibold uppercase  mt-8 opacity-40 italic border-l-4 border-jumia-orange pl-8">Global Stock Matrix & Catalog Authorization Protocol</p>
  </div>
  <Link 
  href="/seller/inventory/new"
- className="bg-jumia-orange text-white px-12 py-6 rounded text-xs font-semibold uppercase tracking-[0.3em] hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000"
+ className="bg-jumia-orange text-white px-12 py-6 rounded text-xs font-semibold uppercase  hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000"
  >
  <Plus size={20} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
  Register New Asset
@@ -101,13 +101,13 @@ export default function SellerInventory() {
  <input 
  type="text" 
  placeholder="SEARCH INVENTORY BY IDENTITY OR ATTRIBUTE..."
- className="w-full pl-20 pr-10 py-6 bg-surface-container-low border border-surface-container-lowest rounded focus:outline-none focus:border-jumia-orange/50 focus:ring-8 focus:ring-primary-container/5 text-xs font-semibold text-on-surface placeholder:font-normal placeholder:text-on-surface-variant/50 tracking-[0.2em] transition-all shadow-soft"
+ className="w-full pl-20 pr-10 py-6 bg-surface-container-low border border-surface-container-lowest rounded focus:outline-none focus:border-jumia-orange/50 focus:ring-8 focus:ring-primary-container/5 text-xs font-semibold text-on-surface placeholder:font-normal placeholder:text-on-surface-variant/50  transition-all shadow-soft"
  />
  </div>
  <div className="flex gap-4">
  <div className="relative">
  <Filter className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-20" size={18} />
- <select className="bg-surface-container-low border border-surface-container-lowest rounded pl-16 pr-12 py-6 text-[10px] font-semibold text-on-surface uppercase tracking-[0.2em] focus:outline-none focus:border-jumia-orange/50 transition-all appearance-none cursor-pointer min-w-[280px] shadow-soft">
+ <select className="bg-surface-container-low border border-surface-container-lowest rounded pl-16 pr-12 py-6 text-[10px] font-semibold text-on-surface uppercase  focus:outline-none focus:border-jumia-orange/50 transition-all appearance-none cursor-pointer min-w-[280px] shadow-soft">
  <option>ALL CLASSIFICATIONS</option>
  <option>ACTIVE RELEASES</option>
  <option>DRAFTED ASSETS</option>
@@ -121,7 +121,7 @@ export default function SellerInventory() {
  <div className="overflow-x-auto">
  <table className="w-full text-left border-collapse min-w-[1200px]">
  <thead>
- <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-semibold uppercase tracking-[0.4em] bg-surface-container-low/20 italic">
+ <tr className="border-b-4 border-surface-container-low text-on-surface-variant text-[10px] font-semibold uppercase  bg-surface-container-low/20 italic">
  <th className="px-12 py-8">Asset Identity</th>
  <th className="px-12 py-8 text-center">Market Intelligence</th>
  <th className="px-12 py-8">Valuation (₦)</th>
@@ -160,8 +160,8 @@ export default function SellerInventory() {
  <div className="max-w-[380px]">
  <div className="text-lg font-semibold text-on-surface leading-none tracking-tighter uppercase group-hover:text-jumia-orange transition-colors duration-500 cursor-pointer mb-4">{product.title}</div>
  <div className="flex items-center gap-3">
- {product.isExpress && <span className="text-[8px] font-semibold text-jumia-orange uppercase tracking-[0.2em] bg-jumia-orange/10 border border-jumia-orange/20 px-3 py-1 rounded-xl italic">EXPRESS NODE</span>}
- <div className="text-on-surface-variant/20 text-[8px] font-semibold uppercase tracking-[0.3em] italic">IDX: {product.id.slice(-12).toUpperCase()}</div>
+ {product.isExpress && <span className="text-[8px] font-semibold text-jumia-orange uppercase  bg-jumia-orange/10 border border-jumia-orange/20 px-3 py-1 rounded-xl italic">EXPRESS NODE</span>}
+ <div className="text-on-surface-variant/20 text-[8px] font-semibold uppercase  italic">IDX: {product.id.slice(-12).toUpperCase()}</div>
  </div>
  </div>
  </div>
@@ -172,7 +172,7 @@ export default function SellerInventory() {
  <Star size={16} className="fill-primary-container text-jumia-orange" />
  <span className="text-xl font-semibold text-on-surface tracking-tighter">{Number(product.averageRating || 0).toFixed(1)}</span>
  </div>
- <div className="text-on-surface-variant/30 text-[9px] font-semibold uppercase tracking-[0.3em] italic">
+ <div className="text-on-surface-variant/30 text-[9px] font-semibold uppercase  italic">
  {product.reviewCount || 0} CONSUMER AUDITS
  </div>
  </div>
@@ -181,20 +181,20 @@ export default function SellerInventory() {
  <div className="text-2xl font-semibold text-on-surface tracking-tighter leading-none mb-3">
  ₦{minPrice.toLocaleString()} {maxPrice > minPrice && ` - ₦${maxPrice.toLocaleString()}`}
  </div>
- <div className="text-[9px] font-semibold text-on-surface-variant/20 uppercase tracking-[0.3em] italic">CURRENT MARKET PRICE</div>
+ <div className="text-[9px] font-semibold text-on-surface-variant/20 uppercase  italic">CURRENT MARKET PRICE</div>
  </td>
  <td className="px-12 py-10 text-center">
  <div className="space-y-3">
  <div className={`text-xl font-semibold tracking-tighter leading-none ${totalStock > 0 ? 'text-on-surface' : 'text-error'}`}>
  {totalStock.toLocaleString()} <span className="text-[10px] uppercase opacity-20 ml-2">UNITS</span>
  </div>
- <div className="text-on-surface-variant/20 text-[8px] font-semibold uppercase tracking-[0.4em] bg-surface-container-low px-4 py-1.5 rounded-2xl border border-outline-variant/10 inline-block italic">
+ <div className="text-on-surface-variant/20 text-[8px] font-semibold uppercase  bg-surface-container-low px-4 py-1.5 rounded-2xl border border-outline-variant/10 inline-block italic">
  {product.variants.length} VARIANT NODES
  </div>
  </div>
  </td>
  <td className="px-12 py-10">
- <span className={`inline-flex items-center px-6 py-2.5 rounded-full text-[9px] font-semibold uppercase tracking-[0.4em] border-2 shadow-sm italic transition-all duration-700 ${
+ <span className={`inline-flex items-center px-6 py-2.5 rounded-full text-[9px] font-semibold uppercase  border-2 shadow-sm italic transition-all duration-700 ${
  product.status === 'ACTIVE' 
  ? 'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20' 
  : 'bg-surface-container-low text-on-surface-variant/30 border-outline-variant/10'
@@ -227,16 +227,16 @@ export default function SellerInventory() {
  <tr>
  <td colSpan={6} className="px-12 py-40 text-center">
  <div className="flex flex-col items-center gap-10 max-w-sm mx-auto animate-in fade-in zoom-in-95 duration-1000">
- <div className="w-32 h-32 bg-surface-container-low rounded-[48px] flex items-center justify-center border border-surface-container-lowest text-on-surface-variant shadow-inner group">
+ <div className="w-32 h-32 bg-surface-container-low rounded flex items-center justify-center border border-surface-container-lowest text-on-surface-variant shadow-inner group">
  <Package size={64} strokeWidth={1} className="opacity-10 group-hover:scale-110 transition-transform duration-1000" />
  </div>
  <div className="space-y-4">
  <h3 className="text-3xl font-semibold text-on-surface uppercase tracking-tighter leading-none">Catalog Depleted</h3>
- <p className="text-[10px] text-on-surface-variant font-semibold uppercase tracking-[0.4em] opacity-40 italic leading-relaxed">System awaiting merchant initialization. Deploy assets to the global nexus.</p>
+ <p className="text-[10px] text-on-surface-variant font-semibold uppercase  opacity-40 italic leading-relaxed">System awaiting merchant initialization. Deploy assets to the global nexus.</p>
  </div>
  <Link 
  href="/seller/inventory/new" 
- className="bg-jumia-orange text-white px-16 py-6 rounded text-xs font-semibold uppercase tracking-[0.3em] shadow-2xl hover:bg-jumia-orange-dark active:scale-95 transition-all group"
+ className="bg-jumia-orange text-white px-16 py-6 rounded text-xs font-semibold uppercase  shadow-2xl hover:bg-jumia-orange-dark active:scale-95 transition-all group"
  >
  Deploy First Node
  <ArrowRight size={20} className="inline ml-4 group-hover:translate-x-2 transition-transform" />

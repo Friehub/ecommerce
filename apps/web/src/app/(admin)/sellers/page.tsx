@@ -33,7 +33,7 @@ export default function AdminSellersPage() {
  <div className="bg-background min-h-screen flex items-center justify-center">
  <div className="flex flex-col items-center gap-6">
  <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Syncing Entity Registry</p>
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant opacity-40 animate-pulse">Syncing Entity Registry</p>
  </div>
  </div>
  );
@@ -50,7 +50,7 @@ export default function AdminSellersPage() {
  </div>
  <div>
  <h1 className="text-4xl md:text-5xl font-semibold text-on-surface tracking-tighter uppercase leading-none">Merchant <span className="text-jumia-orange">Registry</span></h1>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-4 italic">Management of vendor identities, tiering, and operational authorization.</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-4 italic">Management of vendor identities, tiering, and operational authorization.</p>
  </div>
  </div>
  </div>
@@ -89,11 +89,11 @@ export default function AdminSellersPage() {
  <table className="w-full text-left border-collapse">
  <thead>
  <tr className="bg-surface-container-low/30 border-b-4 border-surface-container-low">
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Entity / Node</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Protocol Status</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Tier Index</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic">Temporal Log</th>
- <th className="px-10 py-8 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/40 italic text-right">Overrides</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Entity / Node</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Protocol Status</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Tier Index</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic">Temporal Log</th>
+ <th className="px-10 py-8 text-[9px] font-semibold uppercase  text-on-surface-variant/40 italic text-right">Overrides</th>
  </tr>
  </thead>
  <tbody className="divide-y-4 divide-surface-container-low">
@@ -125,7 +125,7 @@ export default function AdminSellersPage() {
  <td className="px-10 py-10">
  <div className="flex flex-col gap-1">
  <span className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest">{format(new Date(seller.createdAt), 'dd MMM yyyy').toUpperCase()}</span>
- <span className="text-[9px] font-semibold text-on-surface-variant/20 uppercase tracking-[0.2em] italic">ESTABLISHED</span>
+ <span className="text-[9px] font-semibold text-on-surface-variant/20 uppercase  italic">ESTABLISHED</span>
  </div>
  </td>
  <td className="px-10 py-10 text-right">
@@ -178,7 +178,7 @@ export default function AdminSellersPage() {
  <div className="py-40 text-center animate-in fade-in duration-1000">
  <Users size={80} className="mx-auto text-surface-container-low mb-10 opacity-40" />
  <h3 className="text-3xl font-semibold text-on-surface uppercase tracking-tighter">Registry <span className="text-jumia-orange">Empty</span></h3>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-6 italic">NO ENTITIES DETECTED MATCHING THE CURRENT FILTER PARAMETERS.</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-6 italic">NO ENTITIES DETECTED MATCHING THE CURRENT FILTER PARAMETERS.</p>
  </div>
  )}
  </div>
@@ -193,14 +193,14 @@ export default function AdminSellersPage() {
  </div>
  <div>
  <h3 className="text-2xl font-semibold uppercase tracking-tighter mb-2">Administrative <span className="text-jumia-orange">Override</span></h3>
- <p className="text-[10px] font-semibold uppercase tracking-[0.2em] italic opacity-40 max-w-3xl leading-loose">
+ <p className="text-[10px] font-semibold uppercase  italic opacity-40 max-w-3xl leading-loose">
  AUTHORIZATION OVERRIDES ARE LOGGED WITHIN THE SYSTEMIC AUDIT TRAIL. ENSURE ENTITY COMPLIANCE WITH TERMS OF SERVICE BEFORE STATUS MANIPULATION.
  </p>
  </div>
  </div>
  <div className="flex items-center gap-4 bg-white/5 px-8 py-5 rounded border-2 border-white/10 shrink-0">
  <Activity size={20} className="text-jumia-orange animate-pulse" />
- <span className="text-[10px] font-semibold uppercase tracking-[0.4em]">Governance Protocol Active</span>
+ <span className="text-[10px] font-semibold uppercase ">Governance Protocol Active</span>
  </div>
  </div>
  </div>

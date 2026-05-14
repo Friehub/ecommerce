@@ -12,12 +12,12 @@ export const CategoryGrid = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant p-4">
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+      <div className="bg-white rounded-sm border border-j-border p-6 shadow-sm">
+        <div className="grid grid-cols-4 md:grid-cols-8 gap-6">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="flex flex-col items-center gap-2">
-              <Skeleton className="w-12 h-12 rounded-full" />
-              <Skeleton className="h-3 w-16" />
+            <div key={i} className="flex flex-col items-center gap-3">
+              <Skeleton className="w-16 h-16 rounded-full" />
+              <Skeleton className="h-3 w-20" />
             </div>
           ))}
         </div>
@@ -25,25 +25,25 @@ export const CategoryGrid = () => {
     );
   }
 
-  const displayCategories = categories?.slice(0, 8) || [];
+  const displayCategories = categories?.slice(0, 10) || [];
 
   return (
-    <div className="bg-j-surface-container-lowest rounded border border-j-outline-variant p-4">
-      <div className="grid grid-cols-4 md:grid-cols-8 gap-4 text-center">
+    <div className="bg-white rounded-sm border border-j-border p-6 shadow-sm">
+      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-6">
         {displayCategories.map((cat: any) => (
           <Link 
             key={cat.id} 
             href={`/category/${cat.slug}`}
-            className="flex flex-col items-center gap-2 group hover:opacity-80 transition-opacity"
+            className="flex flex-col items-center gap-3 group transition-transform duration-300 hover:-translate-y-1"
           >
-            <div className="w-12 h-12 rounded-full bg-j-surface-container-high flex items-center justify-center text-j-text group-hover:bg-jumia-orange group-hover:text-white transition-all">
+            <div className="w-16 h-16 rounded-full bg-j-surface-container-low flex items-center justify-center text-j-text border border-j-border group-hover:border-jumia-orange group-hover:bg-orange-50 transition-all shadow-sm">
               {cat.imageUrl ? (
-                <img src={cat.imageUrl} alt={cat.name} className="w-6 h-6 object-contain" />
+                <img src={cat.imageUrl} alt={cat.name} className="w-10 h-10 object-contain group-hover:scale-110 transition-transform" />
               ) : (
-                <Layers size={20} />
+                <Layers size={24} className="group-hover:text-jumia-orange transition-colors" />
               )}
             </div>
-            <span className="text-body-sm text-j-text font-medium truncate w-full px-1">
+            <span className="text-[10px] font-black text-j-text uppercase tracking-tight text-center line-clamp-1 group-hover:text-jumia-orange transition-colors">
               {cat.name}
             </span>
           </Link>

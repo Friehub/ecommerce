@@ -8,27 +8,39 @@ export const CategorySidebar = () => {
   const { data: categories } = api.catalog.getCategories.useQuery();
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 h-full gap-stack-sm p-4 bg-j-surface-container-lowest rounded border border-j-outline-variant shadow-sm overflow-y-auto min-h-[400px]">
-      <div className="mb-2">
-        <h2 className="text-headline-sm text-j-text font-bold">Categories</h2>
-        <p className="text-body-sm text-j-text-muted">Shop by Department</p>
-      </div>
-      <ul className="flex flex-col gap-1">
-        {(categories || []).map((cat: any) => (
+    <aside className="hidden lg:flex flex-col w-64 bg-white rounded-sm border border-j-border shadow-sm overflow-hidden h-[450px]">
+      <ul className="flex flex-col py-2 overflow-y-auto hide-scrollbar">
+        {(categories || []).slice(0, 12).map((cat: any) => (
           <li key={cat.id}>
             <Link
               href={`/category/${cat.slug}`}
-              className="flex items-center gap-3 py-2 px-2 rounded hover:bg-j-surface-container-high transition-all text-j-text hover:text-jumia-orange group"
+              className="flex items-center justify-between py-2.5 px-4 hover:bg-j-surface-container-low transition-colors group"
             >
-              {cat.imageUrl ? (
-                <img src={cat.imageUrl} alt={cat.name} className="w-5 h-5 object-contain" />
-              ) : (
-                <Icons.Layers size={18} className="text-j-text-muted group-hover:text-jumia-orange" />
-              )}
-              <span className="text-body-md">{cat.name}</span>
+              <div className="flex items-center gap-3">
+                {cat.imageUrl ? (
+                  <img src={cat.imageUrl} alt={cat.name} className="w-5 h-5 object-contain" />
+                ) : (
+                  <Icons.Layers size={16} className="text-j-text-muted group-hover:text-jumia-orange transition-colors" />
+                )}
+                <span className="text-[11px] font-bold text-j-text group-hover:text-jumia-orange transition-colors uppercase tracking-tight">
+                  {cat.name}
+                </span>
+              </div>
+              <Icons.ChevronRight size={14} className="text-j-text-muted opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
             </Link>
           </li>
         ))}
+        {categories && categories.length > 12 && (
+          <li className="border-t border-j-border mt-2 pt-2">
+            <Link
+              href="/categories"
+              className="flex items-center gap-3 py-3 px-4 text-[10px] font-black text-jumia-orange uppercase hover:bg-orange-50 transition-colors"
+            >
+              <Icons.MoreHorizontal size={16} />
+              Other Categories
+            </Link>
+          </li>
+        )}
       </ul>
     </aside>
   );

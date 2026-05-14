@@ -66,7 +66,7 @@ export default function NotificationsPage() {
  return (
  <div className="bg-background min-h-screen pb-12 select-none">
  <div className="container py-8">
- <div className="flex items-center gap-3 mb-8 font-semibold text-on-surface-variant text-[10px] uppercase tracking-[0.2em]">
+ <div className="flex items-center gap-3 mb-8 font-semibold text-on-surface-variant text-[10px] uppercase ">
  <Link href="/" className="hover:text-jumia-orange transition-colors">Home</Link>
  <ChevronRight size={14} className="opacity-30" />
  <Link href="/account" className="hover:text-jumia-orange transition-colors">My Account</Link>
@@ -75,7 +75,7 @@ export default function NotificationsPage() {
  </div>
 
  <div className="max-w-4xl mx-auto">
- <div className="bg-surface-container-lowest rounded-[48px] border border-surface-container-low shadow-soft overflow-hidden transition-all hover:border-jumia-orange/20">
+ <div className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden transition-all hover:border-jumia-orange/20">
  <div className="px-10 py-8 border-b-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/10">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 bg-jumia-orange/10 rounded-2xl flex items-center justify-center text-jumia-orange border-2 border-jumia-orange/20">
@@ -115,7 +115,7 @@ export default function NotificationsPage() {
  {notification.actionLabel && notification.actionUrl && (
  <Link 
  href={notification.actionUrl}
- className="inline-flex items-center gap-3 text-[10px] font-semibold text-jumia-orange uppercase tracking-[0.2em] hover:translate-x-2 transition-transform bg-jumia-orange/5 px-4 py-2 rounded-xl border border-jumia-orange/10"
+ className="inline-flex items-center gap-3 text-[10px] font-semibold text-jumia-orange uppercase  hover:translate-x-2 transition-transform bg-jumia-orange/5 px-4 py-2 rounded-xl border border-jumia-orange/10"
  >
  Execute Protocol <ArrowRight size={14} />
  </Link>
@@ -129,7 +129,7 @@ export default function NotificationsPage() {
  <div className="py-40 text-center px-4 animate-in fade-in zoom-in-95 duration-1000">
  <Bell size={64} className="mx-auto text-on-surface-variant/5 mb-8" />
  <h3 className="text-2xl font-semibold text-on-surface uppercase tracking-tighter">Signal Silence</h3>
- <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase tracking-[0.4em] mt-4 italic">No incoming transmissions detected in this sector.</p>
+ <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase  mt-4 italic">No incoming transmissions detected in this sector.</p>
  </div>
  )}
  </div>

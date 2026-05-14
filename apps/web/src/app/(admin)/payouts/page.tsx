@@ -33,7 +33,7 @@ export default function AdminPayoutsPage() {
  <div className="bg-background min-h-screen flex items-center justify-center">
  <div className="flex flex-col items-center gap-6">
  <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant opacity-40 animate-pulse">Syncing Financial Nodes</p>
+ <p className="text-[10px] font-semibold uppercase  text-on-surface-variant opacity-40 animate-pulse">Syncing Financial Nodes</p>
  </div>
  </div>
  );
@@ -46,10 +46,10 @@ export default function AdminPayoutsPage() {
  <div>
  <div className="flex items-center gap-3 mb-4">
  <Banknote size={24} className="text-jumia-orange" />
- <h2 className="text-[10px] font-semibold text-jumia-orange uppercase tracking-[0.4em]">Financial Settlement</h2>
+ <h2 className="text-[10px] font-semibold text-jumia-orange uppercase ">Financial Settlement</h2>
  </div>
  <h1 className="text-4xl font-semibold text-on-surface uppercase tracking-tighter leading-none">Payout <span className="text-jumia-orange">Matrix</span></h1>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.4em] mt-4 italic">Review and authorize premium vendor withdrawal requests and settlements.</p>
+ <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-4 italic">Review and authorize premium vendor withdrawal requests and settlements.</p>
  </div>
  <div className="flex items-center gap-6">
  <div className="relative group w-full sm:w-96">
@@ -59,7 +59,7 @@ export default function AdminPayoutsPage() {
  placeholder="QUERY VENDOR IDENTITY..." 
  value={search}
  onChange={(e) => setSearch(e.target.value)}
- className="w-full pl-16 pr-6 h-16 bg-surface-container-lowest border border-surface-container-low rounded focus:border-jumia-orange text-[10px] font-semibold uppercase tracking-[0.3em] outline-none placeholder:font-normal placeholder:text-on-surface-variant/50 transition-all shadow-soft"
+ className="w-full pl-16 pr-6 h-16 bg-surface-container-lowest border border-surface-container-low rounded focus:border-jumia-orange text-[10px] font-semibold uppercase  outline-none placeholder:font-normal placeholder:text-on-surface-variant/50 transition-all shadow-soft"
  />
  </div>
  </div>
@@ -69,7 +69,7 @@ export default function AdminPayoutsPage() {
  <div className="overflow-x-auto">
  <table className="w-full text-left border-collapse">
  <thead>
- <tr className="bg-surface-container-low/30 text-[9px] font-semibold uppercase tracking-[0.4em] text-on-surface-variant/60 border-b-4 border-surface-container-low">
+ <tr className="bg-surface-container-low/30 text-[9px] font-semibold uppercase  text-on-surface-variant/60 border-b-4 border-surface-container-low">
  <th className="px-10 py-8">Vendor / Node</th>
  <th className="px-10 py-8">Liquidity Magnitude</th>
  <th className="px-10 py-8">Temporal Sync</th>
@@ -82,7 +82,7 @@ export default function AdminPayoutsPage() {
  <tr key={payout.id} className="hover:bg-surface-container-low/20 transition-all duration-300 group">
  <td className="px-10 py-10">
  <div className="font-semibold text-on-surface text-lg uppercase tracking-tighter leading-none group-hover:text-jumia-orange transition-colors mb-2">{payout.seller.businessName}</div>
- <div className="text-[10px] text-on-surface-variant/40 font-semibold uppercase tracking-[0.3em] italic">Identity: {payout.id.slice(-8).toUpperCase()}</div>
+ <div className="text-[10px] text-on-surface-variant/40 font-semibold uppercase  italic">Identity: {payout.id.slice(-8).toUpperCase()}</div>
  </td>
  <td className="px-10 py-10">
  <div className="text-2xl font-semibold text-on-surface tracking-tighter leading-none">
@@ -92,11 +92,11 @@ export default function AdminPayoutsPage() {
  <td className="px-10 py-10">
  <div className="flex flex-col gap-1">
  <span className="text-[10px] font-semibold text-on-surface uppercase tracking-widest">{format(new Date(payout.createdAt), 'dd MMM yyyy').toUpperCase()}</span>
- <span className="text-[9px] text-on-surface-variant/40 font-semibold uppercase tracking-[0.2em] italic">{format(new Date(payout.createdAt), 'HH:mm')} LOG</span>
+ <span className="text-[9px] text-on-surface-variant/40 font-semibold uppercase  italic">{format(new Date(payout.createdAt), 'HH:mm')} LOG</span>
  </div>
  </td>
  <td className="px-10 py-10">
- <span className={`inline-flex items-center px-4 py-2 rounded-xl text-[9px] font-semibold uppercase tracking-[0.3em] border-2 shadow-xl ${
+ <span className={`inline-flex items-center px-4 py-2 rounded-xl text-[9px] font-semibold uppercase  border-2 shadow-xl ${
  payout.status === 'SUCCESS' || payout.status === 'COMPLETED'
  ? 'bg-success/5 text-success border-success/10' 
  : payout.status === 'FAILED'
@@ -118,7 +118,7 @@ export default function AdminPayoutsPage() {
  <button 
  onClick={() => approvePayout.mutate({ payoutId: payout.id })}
  disabled={approvePayout.isLoading}
- className="h-16 px-10 bg-jumia-orange text-white rounded-2xl text-[10px] font-semibold uppercase tracking-[0.4em] hover:bg-jumia-orange-dark active:scale-95 transition-all shadow-2xl disabled:opacity-30 group/btn"
+ className="h-16 px-10 bg-jumia-orange text-white rounded-2xl text-[10px] font-semibold uppercase  hover:bg-jumia-orange-dark active:scale-95 transition-all shadow-2xl disabled:opacity-30 group/btn"
  >
  {approvePayout.isLoading && (approvePayout as any).variables?.payoutId === payout.id ? (
  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -128,7 +128,7 @@ export default function AdminPayoutsPage() {
  </button>
  )}
  {payout.bankRef && (
- <div className="inline-flex items-center gap-3 text-[9px] text-on-surface-variant/40 font-semibold uppercase tracking-[0.3em] bg-surface-container-low px-4 py-2 rounded-xl border-2 border-surface-container-low italic" title="Settlement Reference">
+ <div className="inline-flex items-center gap-3 text-[9px] text-on-surface-variant/40 font-semibold uppercase  bg-surface-container-low px-4 py-2 rounded-xl border-2 border-surface-container-low italic" title="Settlement Reference">
  REF: {payout.bankRef.toUpperCase()}
  </div>
  )}
@@ -149,7 +149,7 @@ export default function AdminPayoutsPage() {
  </div>
  <div className="space-y-3">
  <h3 className="text-2xl font-semibold text-on-surface uppercase tracking-tighter">Queue <span className="text-success">Clear</span></h3>
- <p className="text-[10px] text-on-surface-variant/40 font-semibold uppercase tracking-[0.3em] italic leading-relaxed">ALL VENDOR WITHDRAWAL REQUESTS HAVE BEEN SYSTEMICALLY PROCESSED AND LOGGED.</p>
+ <p className="text-[10px] text-on-surface-variant/40 font-semibold uppercase  italic leading-relaxed">ALL VENDOR WITHDRAWAL REQUESTS HAVE BEEN SYSTEMICALLY PROCESSED AND LOGGED.</p>
  </div>
  </div>
  </td>
@@ -169,14 +169,14 @@ export default function AdminPayoutsPage() {
  </div>
  <div>
  <h3 className="text-2xl font-semibold uppercase tracking-tighter mb-2">Protocol <span className="text-jumia-orange">Integrity</span></h3>
- <p className="text-[10px] font-semibold uppercase tracking-[0.2em] italic opacity-40 max-w-2xl leading-loose">
+ <p className="text-[10px] font-semibold uppercase  italic opacity-40 max-w-2xl leading-loose">
  ALL SETTLEMENT AUTHORIZATIONS ARE IRREVOCABLE AND CRYPTOGRAPHICALLY LOGGED TO THE CORE ADMINISTRATIVE LEDGER.
  </p>
  </div>
  </div>
  <div className="flex items-center gap-4 bg-white/5 px-6 py-4 rounded border-2 border-white/10 shrink-0">
  <Activity size={20} className="text-jumia-orange animate-pulse" />
- <span className="text-[10px] font-semibold uppercase tracking-[0.4em]">Ledger Active</span>
+ <span className="text-[10px] font-semibold uppercase ">Ledger Active</span>
  </div>
  </div>
  </div>

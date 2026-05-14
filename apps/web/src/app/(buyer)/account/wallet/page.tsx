@@ -15,8 +15,10 @@ import {
  Activity,
  ShieldCheck,
  Zap,
- ArrowRight
+ ArrowRight,
+ X
 } from 'lucide-react';
+import { format } from 'date-fns';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/trpc/react';

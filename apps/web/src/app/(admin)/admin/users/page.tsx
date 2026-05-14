@@ -2,188 +2,189 @@
 
 import { api } from '@/trpc/react';
 import { 
- Users, 
- Shield, 
- UserPlus, 
- Search, 
- Edit2, 
- ShieldAlert, 
- CheckCircle, 
- Loader2,
- ChevronRight,
- ShieldCheck,
- User,
- Mail,
- Zap,
- MoreVertical,
- Filter,
- ArrowRight
+  Users, 
+  Shield, 
+  UserPlus, 
+  Search, 
+  Edit2, 
+  ShieldAlert, 
+  CheckCircle, 
+  Loader2,
+  ChevronRight,
+  ShieldCheck,
+  User,
+  Mail,
+  Zap,
+  MoreVertical,
+  Filter,
+  ArrowRight
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AdminUsersPage() {
- const utils = api.useUtils();
- const { toast } = useToast();
- const { data: users, isLoading } = api.admin.listAllUsers.useQuery();
+  const utils = api.useUtils();
+  const { toast } = useToast();
+  const { data: users, isLoading } = api.admin.listAllUsers.useQuery();
 
- const updateStatusMutation = api.admin.updateUserStatus.useMutation({
- onSuccess: () => {
- utils.admin.listAllUsers.invalidate();
- toast({
- title: 'PROTOCOL UPDATED',
- description: 'User access status has been synchronized across the registry.',
- });
- },
- onError: (err) => {
- toast({
- title: 'MODIFICATION FAILED',
- description: err.message || 'System failed to finalize status update.',
- variant: 'destructive',
- });
- }
- });
+  const updateStatusMutation = api.admin.updateUserStatus.useMutation({
+    onSuccess: () => {
+      utils.admin.listAllUsers.invalidate();
+      toast({
+        title: 'Status Updated',
+        description: 'User access status has been successfully updated.',
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: 'Update Failed',
+        description: err.message || 'Could not update user status.',
+        variant: 'destructive',
+      });
+    }
+  });
 
- const toggleUserStatus = (userId: string, currentStatus: string) => {
- const newStatus = currentStatus === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
- updateStatusMutation.mutate({ userId, status: newStatus as any });
- };
+  const toggleUserStatus = (userId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+    updateStatusMutation.mutate({ userId, status: newStatus as any });
+  };
 
- if (isLoading) {
- return (
- <div className="max-w-[1400px] mx-auto px-6 py-16 space-y-12 animate-pulse bg-background min-h-screen">
- <div className="flex justify-between items-end mb-16">
- <div className="space-y-4">
- <div className="h-4 w-48 bg-surface-container-low rounded-full" />
- <div className="h-16 w-96 bg-surface-container-low rounded-2xl" />
- </div>
- <div className="h-12 w-48 bg-surface-container-low rounded-xl" />
- </div>
- <div className="bg-surface-container-low rounded h-[600px] border border-surface-container-lowest" />
- </div>
- );
- }
+  if (isLoading) {
+    return (
+      <div className="max-w-[1184px] mx-auto space-y-12 py-8 px-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-j-border">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-48 rounded-sm" />
+            <Skeleton className="h-10 w-96 rounded-sm" />
+          </div>
+          <Skeleton className="h-12 w-48 rounded-sm" />
+        </div>
+        <Skeleton className="h-[600px] w-full rounded-sm" />
+      </div>
+    );
+  }
 
- return (
- <div className="max-w-[1400px] mx-auto px-6 py-16 space-y-16 select-none bg-background min-h-screen animate-in fade-in duration-1000">
- {/* Header Section */}
- <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
- <div className="animate-in slide-in-from-left-8 duration-1000">
- <div className="flex items-center gap-4 mb-6">
- <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30 shadow-inner">
- <ShieldCheck size={24} className="text-jumia-orange" />
- </div>
- <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">User Access Protocol & Directory Registry</span>
- </div>
- <h1 className="text-5xl md:text-7xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
- User <br />
- <span className="text-jumia-orange italic">Registry.</span>
- </h1>
- </div>
+  return (
+    <div className="bg-j-background min-h-screen pb-24">
+      <div className="max-w-[1184px] mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-700">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-j-border">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-2 bg-j-text text-white rounded-sm shadow-sm">
+                <Users size={20} />
+              </div>
+              <span className="text-[10px] font-black uppercase text-jumia-orange tracking-widest">Administrator</span>
+            </div>
+            <h1 className="text-3xl font-black text-j-text uppercase tracking-tight leading-none">
+              User <span className="text-jumia-orange">Management</span>
+            </h1>
+            <p className="text-j-text-muted text-[10px] font-black uppercase mt-2 tracking-widest opacity-60">Manage system users, roles and access permissions</p>
+          </div>
 
- <button className="bg-jumia-orange text-white px-10 py-5 rounded-2xl font-semibold text-[11px] hover:bg-jumia-orange-dark transition-all duration-700 shadow-3xl uppercase  italic flex items-center gap-4 group animate-in slide-in-from-right-8 duration-1000">
- <UserPlus size={18} className="group-hover:rotate-12 transition-transform" /> 
- Append Staff Entity
- </button>
- </div>
+          <button className="bg-jumia-orange text-white px-8 py-3 rounded-sm font-black text-[10px] hover:bg-jumia-orange/90 transition-all shadow-md uppercase tracking-widest flex items-center gap-3 group">
+            <UserPlus size={16} className="group-hover:scale-110 transition-transform" /> 
+            Add New User
+          </button>
+        </div>
 
- {/* Registry Matrix */}
- <div className="bg-surface-container-lowest border border-surface-container-low rounded-[56px] shadow-soft overflow-hidden group">
- <div className="p-10 border-b-4 border-surface-container-low flex flex-col lg:flex-row gap-8 items-center bg-surface-container-low/20">
- <div className="relative flex-1 w-full group/search">
- <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant/20 group-focus-within/search:text-jumia-orange transition-colors" size={20} />
- <input 
- type="text" 
- placeholder="SEARCH BY IDENTITY, PROTOCOL OR EMAIL..."
- className="w-full pl-16 pr-8 py-5 bg-surface-container-low border border-surface-container-lowest rounded focus:outline-none focus:border-jumia-orange/20 focus:ring-[20px] focus:ring-primary-container/5 text-xs font-semibold text-on-surface placeholder:font-normal placeholder:text-on-surface-variant/50 shadow-inner transition-all duration-700 uppercase tracking-widest"
- />
- </div>
- <div className="flex gap-4 w-full lg:w-auto">
- <div className="relative flex-1 lg:flex-none">
- <Filter className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant/20" size={16} />
- <select className="bg-surface-container-low border border-surface-container-lowest rounded-2xl pl-12 pr-10 py-4 text-[10px] font-semibold focus:outline-none focus:border-jumia-orange/20 text-on-surface-variant appearance-none cursor-pointer uppercase  shadow-inner w-full">
- <option>ALL ROLES</option>
- <option>ADMIN</option>
- <option>STAFF</option>
- <option>AGENT</option>
- </select>
- </div>
- </div>
- </div>
+        {/* User Table Card */}
+        <div className="bg-white border border-j-border rounded-sm shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-j-border flex flex-col lg:flex-row gap-6 items-center bg-j-background/30">
+            <div className="relative flex-1 w-full group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-j-text-muted/30 group-focus-within:text-jumia-orange transition-colors" size={18} />
+              <input 
+                type="text" 
+                placeholder="SEARCH BY NAME, EMAIL OR ROLE..."
+                className="w-full pl-12 pr-6 py-3 bg-white border border-j-border rounded-sm focus:outline-none focus:border-jumia-orange text-[11px] font-black text-j-text placeholder:font-black placeholder:text-j-text-muted/30 transition-all uppercase tracking-widest"
+              />
+            </div>
+            <div className="flex gap-4 w-full lg:w-auto">
+              <div className="relative flex-1 lg:flex-none">
+                <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-j-text-muted/30" size={14} />
+                <select className="bg-white border border-j-border rounded-sm pl-10 pr-8 py-3 text-[10px] font-black focus:outline-none focus:border-jumia-orange text-j-text appearance-none cursor-pointer uppercase tracking-widest shadow-sm w-full lg:w-48">
+                  <option>ALL ROLES</option>
+                  <option>ADMIN</option>
+                  <option>STAFF</option>
+                  <option>SELLER</option>
+                </select>
+              </div>
+            </div>
+          </div>
 
- <div className="overflow-x-auto custom-scrollbar">
- <table className="w-full text-left border-collapse min-w-[900px]">
- <thead>
- <tr className="bg-surface-container-low/10 text-[10px] font-semibold uppercase  text-on-surface-variant/30 border-b-4 border-surface-container-low">
- <th className="px-10 py-8 italic">Entity Identity</th>
- <th className="px-10 py-8 italic">Protocol Role</th>
- <th className="px-10 py-8 italic">Registry Status</th>
- <th className="px-10 py-8 text-right italic">Access Control</th>
- </tr>
- </thead>
- <tbody className="divide-y-4 divide-surface-container-low">
- {users?.map((user) => (
- <tr key={user.id} className="hover:bg-jumia-orange-dark/5 transition-all duration-700 group/row">
- <td className="px-10 py-8">
- <div className="flex items-center gap-5">
- <div className="w-14 h-14 bg-surface-container-low rounded-sm border-2 border-surface-container-lowest flex items-center justify-center text-on-surface-variant group-hover/row:bg-jumia-orange/10 group-hover/row:text-jumia-orange transition-all duration-700 shadow-inner">
- <User size={24} />
- </div>
- <div>
- <div className="font-semibold text-sm md:text-base text-on-surface uppercase tracking-tight leading-none mb-1 group-hover/row:translate-x-2 transition-transform duration-700">
- {user.firstName} {user.lastName}
- </div>
- <div className="flex items-center gap-2 text-[9px] font-semibold text-on-surface-variant/30 uppercase  italic">
- <Mail size={10} /> {user.email}
- </div>
- </div>
- </div>
- </td>
- <td className="px-10 py-8">
- <span className={`text-[10px] px-4 py-1.5 rounded-full font-semibold border-2 uppercase  italic transition-all duration-700 ${
- user.role === 'ADMIN' ? 'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20 shadow-[0_0_15px_rgba(246,139,30,0.2)]' :
- user.role === 'MODERATOR' ? 'bg-jumia-orange text-white border-on-surface' :
- user.role === 'SELLER' ? 'bg-surface-container-low text-on-surface-variant border-surface-container-lowest' :
- 'bg-surface-container-low text-on-surface-variant/40 border-surface-container-lowest'
- }`}>
- {user.role}
- </span>
- </td>
- <td className="px-10 py-8">
- <div className="flex items-center gap-4">
- <div className={`w-2.5 h-2.5 rounded-full ${user.isActive ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-error shadow-[0_0_10px_rgba(239,68,68,0.5)]'} animate-pulse`} />
- <span className={`text-[10px] font-semibold uppercase  italic ${
- user.isActive ? 'text-green-500 opacity-60' : 'text-error opacity-60'
- }`}>
- {user.isActive ? 'LIVE ACCESS' : 'SUSPENDED'}
- </span>
- </div>
- </td>
- <td className="px-10 py-8 text-right">
- <div className="flex justify-end gap-3">
- <button 
- onClick={() => toggleUserStatus(user.id, user.isActive ? 'ACTIVE' : 'SUSPENDED')}
- disabled={updateStatusMutation.isPending}
- className={`p-4 rounded-2xl border duration-500 transition-all cursor-pointer shadow-soft group/btn ${
- user.isActive 
- ? 'text-error bg-error/5 border-error/10 hover:bg-error hover:text-white' 
- : 'text-green-500 bg-green-500/5 border-green-500/10 hover:bg-green-500 hover:text-white'
- }`}
- title={user.isActive ? 'REVOKE ACCESS' : 'RESTORE ACCESS'}
- >
- {user.isActive ? <ShieldAlert size={20} className="group-hover/btn:rotate-12 transition-transform" /> : <CheckCircle size={20} className="group-hover/btn:scale-110 transition-transform" />}
- </button>
- <button className="p-4 bg-surface-container-low text-on-surface-variant/40 hover:text-on-surface hover:bg-surface-container-lowest rounded-2xl border border-surface-container-lowest transition-all duration-500 shadow-soft">
- <MoreVertical size={20} />
- </button>
- </div>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- </div>
- </div>
- );
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-j-background text-[10px] font-black uppercase text-j-text-muted/50 tracking-widest border-b border-j-border">
+                  <th className="px-6 py-4">User Details</th>
+                  <th className="px-6 py-4">Role</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-j-border">
+                {users?.map((user) => (
+                  <tr key={user.id} className="hover:bg-j-background transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-j-background rounded-sm border border-j-border flex items-center justify-center text-j-text-muted group-hover:text-jumia-orange group-hover:border-jumia-orange/30 transition-all shadow-inner">
+                          <User size={20} />
+                        </div>
+                        <div>
+                          <div className="font-black text-xs text-j-text uppercase tracking-tight">
+                            {user.firstName} {user.lastName}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-[9px] font-black text-j-text-muted uppercase tracking-widest mt-1 opacity-60">
+                            <Mail size={10} /> {user.email}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`text-[9px] px-3 py-1 rounded-sm font-black uppercase tracking-widest border transition-all ${
+                        user.role === 'ADMIN' ? 'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20' :
+                        user.role === 'MODERATOR' ? 'bg-j-text text-white border-j-text' :
+                        'bg-j-background text-j-text-muted border-j-border'
+                      }`}>
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${user.isActive ? 'bg-j-success shadow-[0_0_8px_rgba(40,167,69,0.3)]' : 'bg-j-error shadow-[0_0_8px_rgba(220,53,69,0.3)]'}`} />
+                        <span className={`text-[9px] font-black uppercase tracking-widest ${
+                          user.isActive ? 'text-j-success' : 'text-j-error'
+                        }`}>
+                          {user.isActive ? 'Active' : 'Suspended'}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-2">
+                        <button 
+                          onClick={() => toggleUserStatus(user.id, user.isActive ? 'ACTIVE' : 'SUSPENDED')}
+                          disabled={updateStatusMutation.isPending}
+                          className={`p-2 rounded-sm border transition-all shadow-sm ${
+                            user.isActive 
+                              ? 'text-j-error bg-red-50 border-red-100 hover:bg-j-error hover:text-white' 
+                              : 'text-j-success bg-green-50 border-green-100 hover:bg-j-success hover:text-white'
+                          }`}
+                          title={user.isActive ? 'Suspend Access' : 'Restore Access'}
+                        >
+                          {user.isActive ? <ShieldAlert size={16} /> : <CheckCircle size={16} />}
+                        </button>
+                        <button className="p-2 bg-white text-j-text-muted border border-j-border rounded-sm hover:border-j-text hover:text-j-text transition-all shadow-sm">
+                          <MoreVertical size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

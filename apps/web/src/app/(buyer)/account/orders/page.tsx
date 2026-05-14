@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { api } from '@/trpc/react';
 import { ShoppingBag, ChevronRight, Package, Calendar, ArrowRight, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function OrdersPage() {
   const { data: orders, isLoading } = api.order.listMyOrders.useQuery();

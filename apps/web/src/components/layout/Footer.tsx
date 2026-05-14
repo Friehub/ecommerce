@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Mail, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { Mail, Share2, Globe, ExternalLink, Link2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 
@@ -76,10 +76,10 @@ export const Footer = () => {
 
         <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-white/10 gap-8">
           <div className="flex items-center gap-6">
-            <Facebook className="text-white/60 hover:text-white transition-colors cursor-pointer" size={20} />
-            <Twitter className="text-white/60 hover:text-white transition-colors cursor-pointer" size={20} />
-            <Instagram className="text-white/60 hover:text-white transition-colors cursor-pointer" size={20} />
-            <Youtube className="text-white/60 hover:text-white transition-colors cursor-pointer" size={20} />
+            <Link2 className="text-white/60 hover:text-white transition-colors cursor-pointer" size={20} />
+            <Globe className="text-white/60 hover:text-white transition-colors cursor-pointer" size={20} />
+            <Share2 className="text-white/60 hover:text-white transition-colors cursor-pointer" size={20} />
+            <ExternalLink className="text-white/60 hover:text-white transition-colors cursor-pointer" size={20} />
           </div>
           <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
             © {new Date().getFullYear()} Jumia. All Rights Reserved.

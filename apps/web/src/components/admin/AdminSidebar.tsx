@@ -4,32 +4,32 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
- LayoutDashboard, 
- Package, 
- ShoppingCart, 
- Wallet, 
- Settings, 
- BarChart3,
- LogOut,
- Store,
- Menu,
- X,
- ShieldCheck,
- ChevronRight,
- TrendingUp,
- Box
+  LayoutDashboard, 
+  Users, 
+  ShieldCheck, 
+  BarChart3,
+  LogOut,
+  Menu,
+  X,
+  Truck,
+  AlertTriangle,
+  Settings,
+  Image as ImageIcon,
+  Tag
 } from 'lucide-react';
 
 const navItems = [
-  { name: 'Dashboard', href: '/seller/dashboard', icon: LayoutDashboard },
-  { name: 'Orders', href: '/seller/orders', icon: ShoppingCart },
-  { name: 'Products', href: '/seller/products', icon: Box },
-  { name: 'Finance', href: '/seller/finance', icon: Wallet },
-  { name: 'Seller Profile', href: '/seller/kyc', icon: ShieldCheck },
-  { name: 'Analytics', href: '/seller/insights', icon: BarChart3 },
+  { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Sellers', href: '/admin/sellers', icon: ShieldCheck },
+  { name: 'Users', href: '/admin/admin/users', icon: Users },
+  { name: 'Logistics', href: '/admin/logistics', icon: Truck },
+  { name: 'Disputes', href: '/admin/admin/disputes', icon: AlertTriangle },
+  { name: 'Flash Sales', href: '/admin/admin/flash-sales', icon: Tag },
+  { name: 'Banners', href: '/admin/admin/banners', icon: ImageIcon },
+  { name: 'Analytics', href: '/admin/admin/analytics', icon: BarChart3 },
 ];
 
-export function SellerSidebar() {
+export function AdminSidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -38,18 +38,18 @@ export function SellerSidebar() {
       {/* Brand Header */}
       <div className="p-6 border-b border-j-border bg-white">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-jumia-orange text-white rounded-sm flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
-            <Store size={22} />
+          <div className="w-10 h-10 bg-j-text text-white rounded-sm flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
+            <ShieldCheck size={22} />
           </div>
           <div>
-            <h1 className="text-j-text font-black text-lg tracking-tight uppercase leading-none">Seller</h1>
-            <p className="text-j-text-muted text-[10px] font-black mt-1 uppercase tracking-widest opacity-60">Center</p>
+            <h1 className="text-j-text font-black text-lg tracking-tight uppercase leading-none">Admin</h1>
+            <p className="text-j-text-muted text-[10px] font-black mt-1 uppercase tracking-widest opacity-60">Control Panel</p>
           </div>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-6 space-y-1">
+      <nav className="flex-1 py-6 space-y-1 overflow-y-auto custom-scrollbar">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -94,7 +94,7 @@ export function SellerSidebar() {
       {/* Mobile Toggle */}
       <button 
         onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed bottom-6 right-6 z-[110] w-14 h-14 bg-jumia-orange text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-all border-4 border-white"
+        className="lg:hidden fixed bottom-6 right-6 z-[110] w-14 h-14 bg-j-text text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-all border-4 border-white"
       >
         <Menu size={24} />
       </button>

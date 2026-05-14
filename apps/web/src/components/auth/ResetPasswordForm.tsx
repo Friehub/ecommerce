@@ -1,3 +1,10 @@
+'use client';
+
+import React from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { api } from '@/trpc/react';
+import { CheckCircle2, ArrowRight, ShieldAlert, Fingerprint } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
@@ -130,5 +137,4 @@ export const ResetPasswordForm = () => {
       </form>
     </div>
   );
-};
 };

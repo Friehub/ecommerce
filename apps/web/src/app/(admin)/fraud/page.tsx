@@ -4,145 +4,172 @@ import React from 'react';
 import { api } from '@/trpc/react';
 import { ShieldAlert, ShieldCheck, ShieldX, User, Search, ExternalLink, Activity, Fingerprint, Lock } from 'lucide-react';
 import { format } from 'date-fns';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function AdminFraudQueuePage() {
- const utils = api.useUtils();
- const { data: orders, isLoading } = api.admin.getFraudQueue.useQuery();
- 
- const resolveFraud = api.admin.resolveFraudReview.useMutation({
- onSuccess: () => {
- utils.admin.getFraudQueue.invalidate();
- }
- });
+  const utils = api.useUtils();
+  const { data: orders, isLoading } = api.admin.getFraudQueue.useQuery();
+  
+  const resolveFraud = api.admin.resolveFraudReview.useMutation({
+    onSuccess: () => {
+      utils.admin.getFraudQueue.invalidate();
+    }
+  });
 
- return (
- <div className="bg-background min-h-screen pb-24 select-none">
- <div className="container py-12 max-w-7xl mx-auto px-6">
- <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 border-b-4 border-surface-container-low pb-10">
- <div>
- <div className="flex items-center gap-3 mb-4">
- <ShieldAlert size={24} className="text-jumia-orange" />
- <h2 className="text-[10px] font-semibold text-jumia-orange uppercase ">Security Diagnostic</h2>
- </div>
- <h1 className="text-4xl font-semibold text-on-surface uppercase tracking-tighter leading-none">Fraud <span className="text-jumia-orange">Audit</span></h1>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-4 italic">Transactional anomaly detection and manual security review hub.</p>
- </div>
- <div className="flex items-center gap-6">
- <div className="flex items-center gap-3 px-6 py-3 bg-jumia-orange/10 text-jumia-orange rounded-sm border-2 border-jumia-orange/20 shadow-xl shadow-primary-container/5">
- <Fingerprint size={18} />
- <span className="text-[10px] font-semibold uppercase ">Sentinel Active</span>
- </div>
- </div>
- </div>
+  if (isLoading) {
+    return (
+      <div className="max-w-[1184px] mx-auto space-y-12 py-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-64 rounded-sm" />
+            <Skeleton className="h-4 w-48 rounded-sm" />
+          </div>
+          <Skeleton className="h-12 w-48 rounded-sm" />
+        </div>
+        <Skeleton className="h-[500px] w-full rounded-sm" />
+      </div>
+    );
+  }
 
- <div className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000">
- <div className="p-8 border-b-4 border-surface-container-low bg-surface-container-low/30 flex items-center justify-between">
- <div className="relative max-w-md w-full">
- <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant/20" size={18} />
- <input 
- type="text" 
- placeholder="QUERY ORDER IDENTITY..." 
- className="w-full pl-16 pr-6 h-14 bg-surface-container-lowest border-2 border-surface-container-low rounded-2xl focus:border-jumia-orange text-[10px] font-semibold uppercase  outline-none placeholder:font-normal placeholder:text-on-surface-variant/50 transition-all"
- />
- </div>
- </div>
+  return (
+    <div className="bg-j-background min-h-screen pb-24">
+      <div className="max-w-[1184px] mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-700">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-j-border">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-2 bg-orange-50 rounded-sm border border-orange-100">
+                <ShieldAlert size={20} className="text-jumia-orange" />
+              </div>
+              <span className="text-[10px] font-black uppercase text-jumia-orange tracking-widest">Order Security</span>
+            </div>
+            <h1 className="text-3xl font-black text-j-text uppercase tracking-tight leading-none">
+              Fraud <span className="text-jumia-orange">Management</span>
+            </h1>
+            <p className="text-j-text-muted text-[10px] font-black uppercase mt-2 tracking-widest opacity-60">Review flagged transactions and security anomalies</p>
+          </div>
+          <div className="flex items-center gap-3 px-4 py-2 bg-white border border-j-border rounded-sm shadow-sm">
+            <div className="flex h-2 w-2 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-widest text-j-text-muted">Monitoring Active</span>
+          </div>
+        </div>
 
- <div className="overflow-x-auto">
- <table className="w-full text-left border-collapse">
- <thead className="bg-surface-container-low/30 text-[9px] font-semibold uppercase  text-on-surface-variant/60 border-b-2 border-surface-container-low">
- <tr>
- <th className="px-10 py-6">Identity / Node</th>
- <th className="px-10 py-6">Market Value</th>
- <th className="px-10 py-6">Anomaly Log</th>
- <th className="px-10 py-6 text-right">Rulings</th>
- </tr>
- </thead>
- <tbody className="divide-y-2 divide-surface-container-low">
- {isLoading ? (
- [...Array(3)].map((_, i) => (
- <tr key={i} className="animate-pulse">
- <td colSpan={4} className="px-10 py-12"><div className="h-12 bg-surface-container-low rounded-sm w-full" /></td>
- </tr>
- ))
- ) : orders?.map((order) => (
- <tr key={order.id} className="hover:bg-surface-container-low/20 transition-all duration-300">
- <td className="px-10 py-8">
- <div className="flex items-center gap-4">
- <div className="w-12 h-12 bg-surface-container-low rounded-2xl flex items-center justify-center text-on-surface-variant/40 border-2 border-surface-container-low">
- <User size={20} />
- </div>
- <div>
- <div className="font-semibold text-sm text-on-surface flex items-center gap-3 uppercase tracking-tighter">
- #{order.id.slice(-8).toUpperCase()}
- <a href={`/admin/orders/${order.id}`} className="text-on-surface-variant/20 hover:text-jumia-orange transition-colors">
- <ExternalLink size={14} />
- </a>
- </div>
- <div className="text-[10px] font-semibold text-on-surface-variant/40 mt-1 uppercase tracking-widest italic">
- {order.user.email.toUpperCase()}
- </div>
- </div>
- </div>
- </td>
- <td className="px-10 py-8">
- <div className="text-sm font-semibold text-on-surface uppercase tracking-widest">
- ₦{Number(order.total).toLocaleString()}
- </div>
- </td>
- <td className="px-10 py-8">
- <div className="flex flex-col gap-1">
- <span className="text-[10px] font-semibold text-on-surface-variant/60 uppercase tracking-widest italic">FLAGGED AUTOMATICALLY</span>
- <span className="text-[9px] font-semibold text-on-surface-variant/20 uppercase ">{format(new Date(order.createdAt), 'dd MMM yyyy, HH:mm')}</span>
- </div>
- </td>
- <td className="px-10 py-8 text-right">
- <div className="flex items-center justify-end gap-4">
- <button 
- onClick={() => resolveFraud.mutate({ orderId: order.id, action: 'ALLOW' })}
- className="h-14 px-6 bg-success/5 text-success rounded-2xl text-[10px] font-semibold uppercase  border-2 border-success/10 hover:bg-success hover:text-white transition-all active:scale-90"
- >
- <ShieldCheck size={16} className="inline mr-2" />
- Authorized
- </button>
- <button 
- onClick={() => resolveFraud.mutate({ orderId: order.id, action: 'BLOCK' })}
- className="h-14 px-6 bg-error/5 text-error rounded-2xl text-[10px] font-semibold uppercase  border-2 border-error/10 hover:bg-error hover:text-white transition-all active:scale-90"
- >
- <ShieldX size={16} className="inline mr-2" />
- Terminate
- </button>
- </div>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- {!isLoading && orders?.length === 0 && (
- <div className="py-24 text-center">
- <ShieldCheck className="mx-auto text-surface-container-low mb-8 opacity-40" size={64} />
- <h3 className="text-2xl font-semibold text-on-surface uppercase tracking-tighter mb-4">Diagnostic <span className="text-success">Clean</span></h3>
- <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase  italic">NO UNRESOLVED SECURITY FLAGS DETECTED WITHIN THE FRAUD PIPELINE.</p>
- </div>
- )}
- </div>
- </div>
- 
- <div className="mt-12 bg-jumia-orange text-white rounded p-10 shadow-2xl relative overflow-hidden group">
- <div className="absolute top-0 right-0 w-64 h-64 bg-jumia-orange/20 rounded-full blur-[120px] -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-1000" />
- <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
- <div className="flex items-center gap-6">
- <div className="w-16 h-16 bg-white/10 rounded flex items-center justify-center border-2 border-white/10">
- <Lock size={32} />
- </div>
- <div>
- <h3 className="text-xl font-semibold uppercase tracking-tighter mb-2">Protocol <span className="text-jumia-orange">Hardening</span></h3>
- <p className="text-[10px] font-semibold uppercase  italic opacity-40 max-w-xl">ALL AUDIT ACTIONS ARE CRYPTOGRAPHICALLY SIGNED AND LOGGED TO THE PERMANENT ADMINISTRATIVE LEDGER.</p>
- </div>
- </div>
- <Activity size={40} className="text-jumia-orange animate-pulse" />
- </div>
- </div>
- </div>
- </div>
- );
+        {/* Table Content */}
+        <div className="bg-white rounded-sm border border-j-border shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-j-border bg-j-background/30 flex items-center justify-between">
+            <div className="relative w-full max-w-md group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-j-text-muted group-focus-within:text-jumia-orange transition-colors" size={16} />
+              <input 
+                type="text" 
+                placeholder="Search Order ID..." 
+                className="w-full h-11 pl-12 pr-4 bg-white border border-j-border rounded-sm outline-none focus:border-jumia-orange text-xs font-bold text-j-text placeholder:text-j-text-muted/40 transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[1000px]">
+              <thead>
+                <tr className="bg-j-background/50 text-[9px] font-black uppercase tracking-widest text-j-text-muted/60 border-b border-j-border">
+                  <th className="px-8 py-5">Order / Customer</th>
+                  <th className="px-8 py-5">Order Total</th>
+                  <th className="px-8 py-5">Security Reason</th>
+                  <th className="px-8 py-5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-j-border">
+                {orders?.map((order) => (
+                  <tr key={order.id} className="hover:bg-j-background/50 transition-all group">
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-j-background rounded-sm flex items-center justify-center text-j-text-muted border border-j-border group-hover:border-jumia-orange/30 transition-colors">
+                          <User size={18} />
+                        </div>
+                        <div>
+                          <div className="font-black text-sm text-j-text flex items-center gap-2 uppercase tracking-tight">
+                            #{order.id.slice(-8).toUpperCase()}
+                            <a href={`/admin/orders/${order.id}`} className="text-j-text-muted/20 hover:text-jumia-orange transition-colors">
+                              <ExternalLink size={12} />
+                            </a>
+                          </div>
+                          <div className="text-[10px] font-black text-j-text-muted/40 uppercase tracking-widest mt-0.5">
+                            {order.user.email}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="text-sm font-black text-j-text">
+                        ₦{Number(order.total).toLocaleString()}
+                      </div>
+                      <div className="text-[9px] font-black text-j-text-muted uppercase opacity-60 mt-0.5">
+                        {order.paymentMethod || 'Prepaid'}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[9px] font-black text-jumia-orange uppercase tracking-widest bg-orange-50 px-2 py-0.5 rounded-sm border border-orange-100 w-fit">Auto-Flagged</span>
+                        <span className="text-[8px] font-black text-j-text-muted/40 uppercase tracking-tight">{format(new Date(order.createdAt), 'MMM dd, yyyy HH:mm')}</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <div className="flex items-center justify-end gap-3">
+                        <button 
+                          onClick={() => resolveFraud.mutate({ orderId: order.id, action: 'ALLOW' })}
+                          className="h-10 px-6 bg-white text-j-success rounded-sm text-[10px] font-black uppercase tracking-widest border border-j-border hover:bg-j-success hover:text-white hover:border-j-success transition-all shadow-sm active:scale-95"
+                        >
+                          Approve
+                        </button>
+                        <button 
+                          onClick={() => resolveFraud.mutate({ orderId: order.id, action: 'BLOCK' })}
+                          className="h-10 px-6 bg-white text-j-error rounded-sm text-[10px] font-black uppercase tracking-widest border border-j-border hover:bg-j-error hover:text-white hover:border-j-error transition-all shadow-sm active:scale-95"
+                        >
+                          Cancel Order
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {(!orders || orders.length === 0) && (
+                  <tr>
+                    <td colSpan={4} className="py-24 text-center">
+                      <div className="flex flex-col items-center gap-4 max-w-sm mx-auto">
+                        <div className="w-16 h-16 bg-green-50 text-j-success rounded-full flex items-center justify-center border border-green-100 mb-2">
+                          <ShieldCheck size={32} />
+                        </div>
+                        <h3 className="text-xl font-black text-j-text uppercase tracking-tight">Queue All Clear</h3>
+                        <p className="text-j-text-muted text-[10px] font-black uppercase tracking-widest opacity-60">No orders require manual security review at this time.</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Audit Info Footer */}
+        <div className="bg-j-text text-white rounded-sm p-10 shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[100px] -mr-32 -mt-32" />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+            <div className="flex items-center gap-6">
+              <div className="w-12 h-12 bg-white/10 rounded-sm flex items-center justify-center border border-white/10 shadow-inner">
+                <Lock size={24} className="text-jumia-orange" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-tight mb-2">Security <span className="text-jumia-orange">Standards</span></h3>
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 max-w-xl leading-relaxed">
+                  All administrative actions are logged and audited to ensure platform integrity and compliance with e-commerce security protocols.
+                </p>
+              </div>
+            </div>
+            <Activity size={32} className="text-jumia-orange/20" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

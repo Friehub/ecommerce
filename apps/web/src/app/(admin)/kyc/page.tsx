@@ -5,291 +5,295 @@ import { api } from '@/trpc/react';
 import { Shield, CheckCircle, XCircle, FileText, ExternalLink, Clock, User, Building, AlertCircle, Search, MoreHorizontal, ArrowRight, Fingerprint, Loader2, Activity, Gavel } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 function AdminKYCContent() {
- const searchParams = useSearchParams();
- const sellerIdParam = searchParams.get('sellerId');
- const utils = api.useUtils();
+  const searchParams = useSearchParams();
+  const sellerIdParam = searchParams.get('sellerId');
+  const utils = api.useUtils();
 
- const { data: queue, isLoading } = api.admin.getPendingKYCQueue.useQuery();
- 
- const [selectedSellerId, setSelectedSellerId] = useState<string | null>(sellerIdParam);
- const [rejectionReason, setRejectionReason] = useState<string>('');
+  const { data: queue, isLoading } = api.admin.getPendingKYCQueue.useQuery();
+  
+  const [selectedSellerId, setSelectedSellerId] = useState<string | null>(sellerIdParam);
+  const [rejectionReason, setRejectionReason] = useState<string>('');
 
- const reviewDoc = api.admin.reviewDocument.useMutation({
- onSuccess: () => {
- utils.admin.getPendingKYCQueue.invalidate();
- setRejectionReason('');
- }
- });
+  const reviewDoc = api.admin.reviewDocument.useMutation({
+    onSuccess: () => {
+      utils.admin.getPendingKYCQueue.invalidate();
+      setRejectionReason('');
+    }
+  });
 
- const approveSeller = api.admin.approveSeller.useMutation({
- onSuccess: () => {
- utils.admin.getPendingKYCQueue.invalidate();
- setSelectedSellerId(null);
- }
- });
+  const approveSeller = api.admin.approveSeller.useMutation({
+    onSuccess: () => {
+      utils.admin.getPendingKYCQueue.invalidate();
+      setSelectedSellerId(null);
+    }
+  });
 
- const selectedSeller = queue?.find(s => s.id === (selectedSellerId || sellerIdParam));
+  const selectedSeller = queue?.find(s => s.id === (selectedSellerId || sellerIdParam));
 
- if (isLoading) {
- return (
- <div className="bg-background min-h-screen flex items-center justify-center">
- <div className="flex flex-col items-center gap-6">
- <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- <p className="text-[10px] font-semibold uppercase  text-on-surface-variant opacity-40 animate-pulse">Syncing Verification Pipeline</p>
- </div>
- </div>
- );
- }
+  if (isLoading) {
+    return (
+      <div className="max-w-[1184px] mx-auto space-y-12 py-8 px-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-64 rounded-sm" />
+            <Skeleton className="h-4 w-48 rounded-sm" />
+          </div>
+          <Skeleton className="h-12 w-48 rounded-sm" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-4"><Skeleton className="h-[600px] w-full rounded-sm" /></div>
+          <div className="lg:col-span-8"><Skeleton className="h-[600px] w-full rounded-sm" /></div>
+        </div>
+      </div>
+    );
+  }
 
- return (
- <div className="bg-background min-h-screen pb-24 select-none">
- <div className="container py-12 max-w-[1600px] mx-auto px-6 space-y-12">
- <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b-4 border-surface-container-low pb-12">
- <div className="animate-in fade-in slide-in-from-left-8 duration-700">
- <div className="flex items-center gap-6 mb-4">
- <div className="w-16 h-16 bg-jumia-orange/10 border border-jumia-orange/20 rounded flex items-center justify-center text-jumia-orange shadow-2xl shadow-primary-container/5">
- <Shield size={32} />
- </div>
- <div>
- <h1 className="text-4xl md:text-5xl font-semibold text-on-surface tracking-tighter uppercase leading-none">KYC <span className="text-jumia-orange">Protocol</span></h1>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-4 italic">Entity Identity Verification and Artifact Validation Matrix.</p>
- </div>
- </div>
- </div>
- <div className="flex items-center gap-4 bg-surface-container-low/30 px-8 py-4 rounded border-2 border-surface-container-low">
- <Activity size={20} className="text-jumia-orange animate-pulse" />
- <span className="text-[10px] font-semibold uppercase  text-on-surface-variant">Pipeline Active: {queue?.length || 0} Entities Awaiting</span>
- </div>
- </div>
+  return (
+    <div className="bg-j-background min-h-screen pb-24">
+      <div className="max-w-[1184px] mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-700">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-j-border">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-2 bg-orange-50 rounded-sm border border-orange-100">
+                <Shield size={20} className="text-jumia-orange" />
+              </div>
+              <span className="text-[10px] font-black uppercase text-jumia-orange tracking-widest">Compliance Hub</span>
+            </div>
+            <h1 className="text-3xl font-black text-j-text uppercase tracking-tight leading-none">
+              Seller <span className="text-jumia-orange">Verification</span>
+            </h1>
+            <p className="text-j-text-muted text-[10px] font-black uppercase mt-2 tracking-widest opacity-60">Review and verify new seller registrations</p>
+          </div>
+          <div className="flex items-center gap-3 px-4 py-2 bg-white border border-j-border rounded-sm shadow-sm">
+            <Activity size={16} className="text-jumia-orange animate-pulse" />
+            <span className="text-[9px] font-black uppercase tracking-widest text-j-text-muted">Queue Active: {queue?.length || 0} Pending</span>
+          </div>
+        </div>
 
- <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
- {/* Queue List */}
- <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-8">
- <div className="bg-surface-container-lowest rounded border border-surface-container-low shadow-soft overflow-hidden animate-in fade-in slide-in-from-left-8 duration-1000">
- <div className="p-8 border-b-4 border-surface-container-low flex items-center justify-between bg-surface-container-low/30">
- <div className="flex items-center gap-4">
- <Clock size={20} className="text-jumia-orange" />
- <h3 className="text-[10px] font-semibold text-on-surface uppercase ">Pending Registry Sync</h3>
- </div>
- </div>
- <div className="divide-y-4 divide-surface-container-low max-h-[700px] overflow-y-auto no-scrollbar">
- {queue?.map((seller) => (
- <button
- key={seller.id}
- onClick={() => setSelectedSellerId(seller.id)}
- className={`w-full text-left p-8 hover:bg-surface-container-low/20 transition-all flex items-center gap-8 group relative ${selectedSellerId === seller.id ? 'bg-jumia-orange/5' : ''}`}
- >
- {selectedSellerId === seller.id && <div className="absolute left-0 top-0 bottom-0 w-3 bg-jumia-orange" />}
- <div className={`w-14 h-14 rounded-[22px] border flex items-center justify-center shrink-0 transition-all duration-500 ${selectedSellerId === seller.id ? 'bg-jumia-orange text-white border-white/10 shadow-2xl' : 'bg-surface-container-low border-surface-container-low text-on-surface-variant/40'}`}>
- <Building size={24} />
- </div>
- <div className="min-w-0 flex-1">
- <p className={`font-semibold uppercase tracking-tighter truncate text-lg transition-colors ${selectedSellerId === seller.id ? 'text-jumia-orange' : 'text-on-surface'}`}>{seller.businessName}</p>
- <div className="flex items-center gap-4 mt-2">
- <p className="text-[9px] text-on-surface-variant/40 font-semibold uppercase tracking-widest italic leading-none">
- {seller.documents.length} ARTIFACTS
- </p>
- <div className="w-1 h-1 bg-surface-container-low rounded-full" />
- <p className="text-[9px] text-on-surface-variant/40 font-semibold uppercase tracking-widest italic leading-none">
- TIER {seller.tier}
- </p>
- </div>
- </div>
- <ArrowRight size={20} className={`text-jumia-orange transition-all duration-500 ${selectedSellerId === seller.id ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`} />
- </button>
- ))}
- {queue?.length === 0 && (
- <div className="py-40 text-center px-10">
- <div className="w-24 h-24 bg-surface-container-low rounded flex items-center justify-center mx-auto mb-10 opacity-20 border border-surface-container-low">
- <CheckCircle size={48} />
- </div>
- <h3 className="text-2xl font-semibold text-on-surface uppercase tracking-tighter">Queue Nominal</h3>
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  mt-6 italic leading-relaxed">ALL VENDOR ENTITIES HAVE BEEN SYSTEMICALLY AUDITED AND CLEARED.</p>
- </div>
- )}
- </div>
- </div>
- </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Seller Queue List */}
+          <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-8">
+            <div className="bg-white rounded-sm border border-j-border shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-j-border flex items-center gap-3 bg-j-background/30">
+                <Clock size={16} className="text-jumia-orange" />
+                <h3 className="text-[10px] font-black text-j-text uppercase tracking-widest">Pending Review</h3>
+              </div>
+              <div className="divide-y divide-j-border max-h-[600px] overflow-y-auto custom-scrollbar">
+                {queue?.map((seller) => (
+                  <button
+                    key={seller.id}
+                    onClick={() => setSelectedSellerId(seller.id)}
+                    className={`w-full text-left p-6 hover:bg-j-background/50 transition-all flex items-center gap-4 relative group ${selectedSellerId === seller.id ? 'bg-orange-50/30' : ''}`}
+                  >
+                    {selectedSellerId === seller.id && <div className="absolute left-0 top-0 bottom-0 w-1 bg-jumia-orange" />}
+                    <div className={`w-12 h-12 rounded-sm border flex items-center justify-center shrink-0 transition-all ${selectedSellerId === seller.id ? 'bg-jumia-orange text-white border-jumia-orange shadow-md' : 'bg-j-background border-j-border text-j-text-muted/40'}`}>
+                      <Building size={20} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className={`font-black uppercase tracking-tight truncate text-sm transition-colors ${selectedSellerId === seller.id ? 'text-jumia-orange' : 'text-j-text'}`}>{seller.businessName}</p>
+                      <div className="flex items-center gap-3 mt-1 opacity-60">
+                        <p className="text-[9px] text-j-text-muted font-black uppercase tracking-widest">
+                          {seller.documents.length} Docs
+                        </p>
+                        <div className="w-1 h-1 bg-j-border rounded-full" />
+                        <p className="text-[9px] text-j-text-muted font-black uppercase tracking-widest">
+                          Tier {seller.tier}
+                        </p>
+                      </div>
+                    </div>
+                    <ArrowRight size={16} className={`text-jumia-orange transition-all ${selectedSellerId === seller.id ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0'}`} />
+                  </button>
+                ))}
+                {queue?.length === 0 && (
+                  <div className="py-20 text-center px-6">
+                    <div className="w-16 h-16 bg-j-background rounded-full flex items-center justify-center mx-auto mb-4 opacity-20 border border-j-border">
+                      <CheckCircle size={32} />
+                    </div>
+                    <h3 className="text-sm font-black text-j-text uppercase">Queue Empty</h3>
+                    <p className="text-[9px] font-black text-j-text-muted uppercase mt-2 tracking-widest opacity-60">All sellers have been reviewed.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
 
- {/* Review Detail */}
- <div className="lg:col-span-8">
- {selectedSeller ? (
- <div className="space-y-10 animate-in fade-in slide-in-from-right-8 duration-1000">
- <div className="bg-surface-container-lowest rounded-[64px] border border-surface-container-low shadow-soft p-12 lg:p-20 relative overflow-hidden">
- <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-jumia-orange/5 rounded-full blur-[150px] -mr-64 -mt-64" />
- 
- <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-12 mb-16 pb-16 border-b-4 border-surface-container-low relative z-10">
- <div className="flex items-center gap-8">
- <div className="w-24 h-24 bg-jumia-orange text-white rounded flex items-center justify-center shadow-2xl border border-white/10 shrink-0">
- <Fingerprint size={48} />
- </div>
- <div>
- <h2 className="text-4xl md:text-5xl font-semibold text-on-surface uppercase tracking-tighter leading-none mb-4">{selectedSeller.businessName}</h2>
- <div className="flex flex-wrap items-center gap-6">
- <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic">Identity: {selectedSeller.id.toUpperCase()}</p>
- <div className="flex items-center gap-3 px-4 py-2 bg-jumia-orange/10 rounded-full border-2 border-jumia-orange/10">
- <div className="w-2 h-2 bg-jumia-orange rounded-full animate-pulse" />
- <span className="text-[9px] font-semibold text-jumia-orange uppercase ">PRIORITY ALPHA</span>
- </div>
- </div>
- </div>
- </div>
- <button 
- onClick={() => approveSeller.mutate({ sellerId: selectedSeller.id })}
- disabled={approveSeller.isLoading}
- className="h-24 px-12 bg-jumia-orange text-white rounded font-semibold text-[11px] uppercase  hover:bg-jumia-orange-dark transition-all shadow-2xl active:scale-95 disabled:opacity-30 flex items-center gap-6 group/btn shrink-0"
- >
- {approveSeller.isLoading ? <Loader2 size={24} className="animate-spin" /> : <CheckCircle size={24} />}
- Authorize Entry <ArrowRight size={24} className="group-hover/btn:translate-x-2 transition-transform" />
- </button>
- </div>
+          {/* Verification Detail */}
+          <div className="lg:col-span-8">
+            {selectedSeller ? (
+              <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="bg-white rounded-sm border border-j-border shadow-sm p-8 lg:p-12 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50/30 rounded-full blur-[80px] -mr-32 -mt-32" />
+                  
+                  <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 mb-12 pb-8 border-b border-j-border relative z-10">
+                    <div className="flex items-center gap-6">
+                      <div className="w-16 h-16 bg-jumia-orange text-white rounded-sm flex items-center justify-center shadow-lg border border-orange-400/20 shrink-0">
+                        <Fingerprint size={32} />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-black text-j-text uppercase tracking-tight mb-2">{selectedSeller.businessName}</h2>
+                        <div className="flex items-center gap-4">
+                          <p className="text-[9px] font-black text-j-text-muted uppercase tracking-widest opacity-60">ID: {selectedSeller.id.toUpperCase()}</p>
+                          <div className="flex items-center gap-2 px-3 py-1 bg-orange-50 rounded-full border border-orange-100">
+                            <div className="w-1.5 h-1.5 bg-jumia-orange rounded-full animate-pulse" />
+                            <span className="text-[8px] font-black text-jumia-orange uppercase tracking-widest">Urgent Review</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => approveSeller.mutate({ sellerId: selectedSeller.id })}
+                      disabled={approveSeller.isPending}
+                      className="h-16 px-10 bg-jumia-orange text-white rounded-sm font-black text-[10px] uppercase tracking-widest hover:bg-orange-600 transition-all shadow-md active:scale-95 disabled:opacity-30 flex items-center justify-center gap-4 group/btn"
+                    >
+                      {approveSeller.isPending ? <Loader2 size={20} className="animate-spin" /> : <CheckCircle size={20} />}
+                      Approve Seller <ArrowRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
 
- <div className="grid grid-cols-1 2xl:grid-cols-2 gap-16 relative z-10">
- <div className="space-y-12">
- <div className="flex items-center gap-4 mb-8">
- <FileText size={20} className="text-jumia-orange" />
- <h4 className="text-[10px] font-semibold text-on-surface-variant/60 uppercase  italic">Payload Validation Matrix</h4>
- </div>
- <div className="space-y-10">
- {selectedSeller.documents.map((doc, dIdx) => (
- <div key={doc.id} className="bg-surface-container-low/30 border border-surface-container-low rounded p-10 space-y-8 hover:border-jumia-orange/20 transition-all duration-500 group/card animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: `${dIdx * 100}ms` }}>
- <div className="flex items-center justify-between">
- <div className="flex items-center gap-6">
- <div className="w-16 h-16 bg-surface-container-lowest border border-surface-container-low rounded flex items-center justify-center text-on-surface-variant/20 group-hover/card:text-jumia-orange transition-colors duration-500 shadow-inner">
- <FileText size={32} />
- </div>
- <div>
- <p className="text-xl font-semibold text-on-surface uppercase tracking-tighter leading-none mb-2">{doc.type.replace('_', ' ')}</p>
- <p className="text-[9px] text-on-surface-variant/40 font-semibold uppercase  italic">Logged: {format(new Date(doc.createdAt), 'dd MMM yyyy').toUpperCase()}</p>
- </div>
- </div>
- <span className={`text-[9px] h-10 px-6 rounded-full flex items-center justify-center font-semibold uppercase  border-2 shadow-xl ${
- doc.status === 'APPROVED' ? 'bg-success/5 text-success border-success/10' :
- doc.status === 'REJECTED' ? 'bg-error/5 text-error border-error/10' :
- 'bg-jumia-orange/5 text-jumia-orange border-jumia-orange/10 animate-pulse'
- }`}>
- {doc.status}
- </span>
- </div>
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 relative z-10">
+                    <div className="space-y-8">
+                      <div className="flex items-center gap-3 mb-6">
+                        <FileText size={18} className="text-jumia-orange" />
+                        <h4 className="text-[10px] font-black text-j-text-muted uppercase tracking-widest">Document Review</h4>
+                      </div>
+                      <div className="space-y-8">
+                        {selectedSeller.documents.map((doc) => (
+                          <div key={doc.id} className="bg-j-background/30 border border-j-border rounded-sm p-6 space-y-6 hover:border-jumia-orange/30 transition-all group/card">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-white border border-j-border rounded-sm flex items-center justify-center text-j-text-muted/20 group-hover/card:text-jumia-orange transition-colors shadow-sm">
+                                  <FileText size={24} />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-black text-j-text uppercase tracking-tight mb-1">{doc.type.replace(/_/g, ' ')}</p>
+                                  <p className="text-[9px] text-j-text-muted font-black uppercase tracking-widest opacity-40">Uploaded: {format(new Date(doc.createdAt), 'MMM dd, yyyy')}</p>
+                                </div>
+                              </div>
+                              <span className={`text-[8px] px-3 py-1 rounded-full font-black uppercase tracking-widest border ${
+                                doc.status === 'APPROVED' ? 'bg-green-50 text-j-success border-green-100' :
+                                doc.status === 'REJECTED' ? 'bg-red-50 text-j-error border-red-100' :
+                                'bg-orange-50 text-jumia-orange border-orange-100 animate-pulse'
+                              }`}>
+                                {doc.status}
+                              </span>
+                            </div>
 
- <div className="aspect-video bg-surface-container-lowest rounded border border-surface-container-low overflow-hidden relative group/img shadow-inner">
- <img src={doc.url} alt={doc.type} className="w-full h-full object-cover transition-transform duration-1000 group-hover/img:scale-110 p-4 opacity-80" />
- <div className="absolute inset-0 bg-jumia-orange/90 opacity-0 group-hover/img:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-6 backdrop-blur-md">
- <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center border border-white/10 mb-2">
- <Search size={40} className="text-white" />
- </div>
- <a 
- href={doc.url} 
- target="_blank" 
- rel="noreferrer"
- className="h-16 px-10 bg-white text-on-surface rounded-2xl text-[10px] font-semibold uppercase  flex items-center gap-4 hover:scale-105 active:scale-95 transition-all shadow-2xl"
- >
- <ExternalLink size={20} />
- Original Artifact
- </a>
- </div>
- </div>
+                            <div className="aspect-video bg-white rounded-sm border border-j-border overflow-hidden relative group/img shadow-sm">
+                              <img src={doc.url} alt={doc.type} className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-105 p-2 opacity-90" />
+                              <div className="absolute inset-0 bg-j-text/80 opacity-0 group-hover/img:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-4 backdrop-blur-sm">
+                                <a 
+                                  href={doc.url} 
+                                  target="_blank" 
+                                  rel="noreferrer"
+                                  className="h-10 px-6 bg-white text-j-text rounded-sm text-[9px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-jumia-orange hover:text-white transition-all shadow-lg"
+                                >
+                                  <ExternalLink size={14} />
+                                  View Document
+                                </a>
+                              </div>
+                            </div>
 
- {doc.status === 'PENDING' && (
- <div className="flex flex-col gap-6 animate-in slide-in-from-top-6 duration-500">
- <div className="relative">
- <textarea 
- placeholder="SPECIFY REJECTION DISCREPANCIES..."
- value={rejectionReason}
- onChange={(e) => setRejectionReason(e.target.value)}
- className="w-full bg-surface-container-lowest border border-surface-container-low rounded p-8 text-[11px] font-semibold uppercase tracking-widest focus:border-error transition-all min-h-[160px] outline-none text-on-surface placeholder:font-normal placeholder:text-on-surface-variant/50 leading-loose italic"
- />
- </div>
- <div className="grid grid-cols-2 gap-6">
- <button 
- onClick={() => reviewDoc.mutate({ documentId: doc.id, decision: 'APPROVED' })}
- disabled={reviewDoc.isLoading}
- className="h-20 bg-jumia-orange text-white rounded font-semibold text-[10px] uppercase  hover:bg-success transition-all active:scale-95 disabled:opacity-30 shadow-2xl group/approve"
- >
- Authorize Valid <CheckCircle size={18} className="inline ml-2 group-hover/approve:scale-125 transition-transform" />
- </button>
- <button 
- onClick={() => reviewDoc.mutate({ documentId: doc.id, decision: 'REJECTED', rejectionReason })}
- disabled={reviewDoc.isLoading || !rejectionReason}
- className="h-20 bg-error/5 text-error border border-error/10 rounded font-semibold text-[10px] uppercase  hover:bg-error hover:text-white transition-all active:scale-95 disabled:opacity-30 group/reject"
- >
- Reject Data <XCircle size={18} className="inline ml-2 group-hover/reject:scale-125 transition-transform" />
- </button>
- </div>
- </div>
- )}
- </div>
- ))}
- </div>
- </div>
+                            {doc.status === 'PENDING' && (
+                              <div className="flex flex-col gap-4 pt-2">
+                                <textarea 
+                                  placeholder="Provide reason for rejection (optional for approval)..."
+                                  value={rejectionReason}
+                                  onChange={(e) => setRejectionReason(e.target.value)}
+                                  className="w-full bg-white border border-j-border rounded-sm p-4 text-[10px] font-bold text-j-text focus:border-jumia-orange outline-none min-h-[100px] transition-all"
+                                />
+                                <div className="grid grid-cols-2 gap-4">
+                                  <button 
+                                    onClick={() => reviewDoc.mutate({ documentId: doc.id, decision: 'APPROVED' })}
+                                    disabled={reviewDoc.isPending}
+                                    className="h-12 bg-white text-j-success border border-j-border rounded-sm font-black text-[9px] uppercase tracking-widest hover:bg-j-success hover:text-white hover:border-j-success transition-all shadow-sm active:scale-95"
+                                  >
+                                    Approve
+                                  </button>
+                                  <button 
+                                    onClick={() => reviewDoc.mutate({ documentId: doc.id, decision: 'REJECTED', rejectionReason })}
+                                    disabled={reviewDoc.isPending || !rejectionReason}
+                                    className="h-12 bg-white text-j-error border border-j-border rounded-sm font-black text-[9px] uppercase tracking-widest hover:bg-j-error hover:text-white hover:border-j-error transition-all shadow-sm active:scale-95 disabled:opacity-30"
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
- <div className="space-y-12">
- <div className="bg-surface-container-low/30 border border-surface-container-low rounded-[56px] p-12 lg:p-16 shadow-inner">
- <div className="flex items-center gap-4 mb-12">
- <Gavel size={24} className="text-jumia-orange" />
- <h4 className="text-[11px] font-semibold text-on-surface uppercase  italic leading-none">Verification Protocols</h4>
- </div>
- <ul className="space-y-10">
- {[
- 'CROSS-REFERENCE IDENTITY HASH WITH CORE DATABASE NODES.',
- 'VERIFY BANK SETTLEMENT NODES MATCH THE REGISTERED ENTITY.',
- 'DOCUMENT EXPIRATION AUDIT: ENSURE 90+ DAY VALIDITY REMAINING.',
- 'ARTIFACT INTEGRITY: REJECT PAYLOADS WITH VISUAL NOISE OR OCCLUSION.'
- ].map((rule, i) => (
- <li key={i} className="flex gap-8 group/item">
- <div className="w-12 h-12 bg-surface-container-lowest border border-surface-container-low rounded-[18px] flex items-center justify-center shrink-0 text-jumia-orange font-semibold text-lg shadow-xl group-hover/item:scale-110 transition-transform">
- {i + 1}
- </div>
- <p className="text-[11px] font-semibold text-on-surface uppercase tracking-widest leading-loose opacity-60 italic pt-1">
- {rule}
- </p>
- </li>
- ))}
- </ul>
- </div>
+                    <div className="space-y-8">
+                      <div className="bg-j-background border border-j-border rounded-sm p-8 shadow-inner">
+                        <div className="flex items-center gap-3 mb-8">
+                          <Gavel size={20} className="text-jumia-orange" />
+                          <h4 className="text-[10px] font-black text-j-text uppercase tracking-widest">Verification Guidelines</h4>
+                        </div>
+                        <ul className="space-y-8">
+                          {[
+                            'Verify identity details against system records.',
+                            'Ensure bank account details match the business entity.',
+                            'Audit document validity and check expiry dates.',
+                            'Verify document clarity and reject blurry uploads.'
+                          ].map((rule, i) => (
+                            <li key={i} className="flex gap-4 group/item">
+                              <div className="w-8 h-8 bg-white border border-j-border rounded-sm flex items-center justify-center shrink-0 text-jumia-orange font-black text-xs shadow-sm">
+                                {i + 1}
+                              </div>
+                              <p className="text-[10px] font-black text-j-text-muted uppercase tracking-widest leading-relaxed opacity-60 pt-1">
+                                {rule}
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
 
- <div className="bg-jumia-orange text-white rounded-[56px] p-12 lg:p-16 relative overflow-hidden group shadow-2xl">
- <div className="absolute top-0 right-0 w-64 h-64 bg-jumia-orange/20 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-1000" />
- <div className="flex items-center gap-6 mb-8 relative z-10">
- <Activity size={24} className="text-jumia-orange animate-pulse" />
- <p className="text-[11px] font-semibold text-jumia-orange uppercase  italic">Systemic Auto-Sync</p>
- </div>
- <p className="text-[13px] font-semibold text-white/40 leading-relaxed uppercase  italic relative z-10">
- THE PROTOCOL AUTOMATICALLY TRIGGERS ENTITY ACTIVATION UPON SUCCESSFUL VALIDATION OF ALL CORE IDENTITY ARTIFACTS AND FINANCIAL PAYLOADS.
- </p>
- </div>
- </div>
- </div>
- </div>
- </div>
- ) : (
- <div className="bg-surface-container-lowest rounded-[64px] border border-surface-container-low border-dashed py-72 flex flex-col items-center justify-center text-center px-20 shadow-soft animate-in zoom-in-95 duration-1000">
- <div className="w-32 h-32 bg-surface-container-low rounded flex items-center justify-center text-on-surface-variant/10 mb-12 border border-surface-container-lowest shadow-inner">
- <Shield size={64} className="opacity-20" />
- </div>
- <h3 className="text-4xl font-semibold text-on-surface uppercase tracking-tighter mb-4">Null <span className="text-jumia-orange">Entity</span></h3>
- <p className="text-[10px] text-on-surface-variant/40 font-semibold uppercase  mt-6 max-w-sm italic leading-relaxed">
- AWAITING ENTITY SELECTION FROM THE VERIFICATION PIPELINE FOR SYSTEMIC AUDIT.
- </p>
- </div>
- )}
- </div>
- </div>
- </div>
- </div>
- );
+                      <div className="bg-j-text text-white rounded-sm p-8 relative overflow-hidden group shadow-lg">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[40px] -mr-16 -mt-16" />
+                        <div className="flex items-center gap-3 mb-4 relative z-10">
+                          <Activity size={18} className="text-jumia-orange animate-pulse" />
+                          <p className="text-[9px] font-black text-jumia-orange uppercase tracking-widest">Automatic Activation</p>
+                        </div>
+                        <p className="text-[11px] font-black text-white/40 leading-relaxed uppercase tracking-widest relative z-10">
+                          Sellers are automatically activated upon successful validation of all identity documents and financial records.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white rounded-sm border border-j-border border-dashed py-48 flex flex-col items-center justify-center text-center px-12 shadow-sm">
+                <div className="w-24 h-24 bg-j-background rounded-full flex items-center justify-center text-j-text-muted/10 mb-8 border border-j-border shadow-inner">
+                  <Shield size={48} className="opacity-20" />
+                </div>
+                <h3 className="text-2xl font-black text-j-text uppercase tracking-tight mb-2">No Seller Selected</h3>
+                <p className="text-[10px] text-j-text-muted font-black uppercase tracking-widest opacity-60 max-w-xs leading-relaxed">
+                  Select a seller from the pending queue to begin the verification process.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function AdminKYCPage() {
- return (
- <Suspense fallback={
- <div className="bg-background min-h-screen flex items-center justify-center">
- <div className="w-16 h-16 border border-jumia-orange/20 border-t-primary-container rounded-full animate-spin" />
- </div>
- }>
- <AdminKYCContent />
- </Suspense>
- );
+  return (
+    <Suspense fallback={
+      <div className="max-w-[1184px] mx-auto py-32 flex flex-col items-center justify-center gap-4">
+        <div className="w-12 h-12 border-2 border-jumia-orange/20 border-t-jumia-orange rounded-full animate-spin" />
+        <p className="text-[10px] font-black text-jumia-orange uppercase tracking-widest animate-pulse">Loading Queue...</p>
+      </div>
+    }>
+      <AdminKYCContent />
+    </Suspense>
+  );
 }

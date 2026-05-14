@@ -2,235 +2,215 @@
 
 import { api } from '@/trpc/react';
 import { 
- ShieldCheck, 
- FileText, 
- CheckCircle, 
- XCircle, 
- File, 
- ExternalLink, 
- Loader2,
- AlertCircle,
- Briefcase,
- User,
- MoreVertical,
- History,
- Search,
- Fingerprint
+  ShieldCheck, 
+  FileText, 
+  CheckCircle, 
+  XCircle, 
+  File, 
+  ExternalLink, 
+  Loader2,
+  AlertCircle,
+  Briefcase,
+  User,
+  MoreVertical,
+  History,
+  Search,
+  Fingerprint,
+  ChevronRight,
+  ShieldAlert,
+  Gavel
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AdminKYCVerificationPage() {
- const utils = api.useUtils();
- const { toast } = useToast();
- const { data: kycQueue, isLoading } = api.admin.getPendingSellers.useQuery();
+  const utils = api.useUtils();
+  const { toast } = useToast();
+  const { data: kycQueue, isLoading } = api.admin.getPendingSellers.useQuery();
 
- const approveMutation = api.admin.approveSeller.useMutation({
- onSuccess: () => {
- utils.admin.getPendingSellers.invalidate();
- toast({
- title: 'ENTITY AUTHORIZED',
- description: 'Seller credentials verified and account activated successfully.',
- });
- },
- onError: (err) => {
- toast({
- title: 'AUTHORIZATION FAILED',
- description: err.message || 'System failed to finalize seller approval.',
- variant: 'destructive',
- });
- }
- });
+  const approveMutation = api.admin.approveSeller.useMutation({
+    onSuccess: () => {
+      utils.admin.getPendingSellers.invalidate();
+      toast({
+        title: 'Seller Approved',
+        description: 'Seller credentials verified and account activated successfully.',
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: 'Approval Failed',
+        description: err.message || 'Could not approve seller.',
+        variant: 'destructive',
+      });
+    }
+  });
 
- const updateStatusMutation = api.admin.updateSellerStatus.useMutation({
- onSuccess: () => {
- utils.admin.getPendingSellers.invalidate();
- toast({
- title: 'STATUS RECONCILED',
- description: 'Moderation record updated in the global registry.',
- });
- },
- onError: (err) => {
- toast({
- title: 'MODERATION FAILED',
- description: err.message || 'System failed to finalize status update.',
- variant: 'destructive',
- });
- }
- });
+  const updateStatusMutation = api.admin.updateSellerStatus.useMutation({
+    onSuccess: () => {
+      utils.admin.getPendingSellers.invalidate();
+      toast({
+        title: 'Status Updated',
+        description: 'Seller moderation status has been updated.',
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: 'Update Failed',
+        description: err.message || 'Could not update seller status.',
+        variant: 'destructive',
+      });
+    }
+  });
 
- const handleUpdate = (sellerId: string, action: 'APPROVED' | 'REJECTED') => {
- if (action === 'APPROVED') {
- approveMutation.mutate({ sellerId });
- } else {
- updateStatusMutation.mutate({ sellerId, status: 'REJECTED' });
- }
- };
+  const handleUpdate = (sellerId: string, action: 'APPROVED' | 'REJECTED') => {
+    if (action === 'APPROVED') {
+      approveMutation.mutate({ sellerId });
+    } else {
+      updateStatusMutation.mutate({ sellerId, status: 'REJECTED' });
+    }
+  };
 
- if (isLoading) {
- return (
- <div className="max-w-[1400px] mx-auto px-6 py-16 space-y-12 animate-pulse bg-background min-h-screen">
- <div className="flex justify-between items-end mb-16">
- <div className="space-y-4">
- <div className="h-4 w-48 bg-surface-container-low rounded-full" />
- <div className="h-16 w-96 bg-surface-container-low rounded-2xl" />
- </div>
- <div className="h-12 w-48 bg-surface-container-low rounded-xl" />
- </div>
- <div className="bg-surface-container-low rounded h-[600px] border border-surface-container-lowest" />
- </div>
- );
- }
+  if (isLoading) {
+    return (
+      <div className="max-w-[1184px] mx-auto space-y-12 py-8 px-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-j-border">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-48 rounded-sm" />
+            <Skeleton className="h-10 w-96 rounded-sm" />
+          </div>
+        </div>
+        <Skeleton className="h-[600px] w-full rounded-sm" />
+      </div>
+    );
+  }
 
- return (
- <div className="max-w-[1400px] mx-auto px-6 py-16 space-y-16 select-none bg-background min-h-screen animate-in fade-in duration-1000">
- {/* Header Section */}
- <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
- <div className="animate-in slide-in-from-left-8 duration-1000">
- <div className="flex items-center gap-4 mb-6">
- <div className="p-2.5 bg-jumia-orange/20 backdrop-blur-xl rounded-2xl border border-jumia-orange/30 shadow-inner">
- <ShieldCheck size={24} className="text-jumia-orange" />
- </div>
- <span className="text-[10px] font-semibold uppercase  text-jumia-orange italic">Compliance Verification & Merchant Onboarding Protocol</span>
- </div>
- <h1 className="text-5xl md:text-7xl font-semibold text-on-surface uppercase tracking-tighter leading-[0.85]">
- Moderation <br />
- <span className="text-jumia-orange italic">Queue.</span>
- </h1>
- </div>
+  return (
+    <div className="bg-j-background min-h-screen pb-24">
+      <div className="max-w-[1184px] mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-700">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-j-border">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-2 bg-j-text text-white rounded-sm shadow-sm">
+                <ShieldCheck size={20} />
+              </div>
+              <span className="text-[10px] font-black uppercase text-jumia-orange tracking-widest">Compliance Control</span>
+            </div>
+            <h1 className="text-3xl font-black text-j-text uppercase tracking-tight leading-none">
+              Seller <span className="text-jumia-orange">Verifications</span>
+            </h1>
+            <p className="text-j-text-muted text-[10px] font-black uppercase mt-2 tracking-widest opacity-60">Review and approve seller registration documents</p>
+          </div>
 
- <div className="flex flex-col items-end gap-3 animate-in slide-in-from-right-8 duration-1000">
- <div className="flex items-center gap-4 px-6 py-3 bg-surface-container-low border-2 border-surface-container-lowest rounded-2xl shadow-soft">
- <Fingerprint size={16} className="text-on-surface-variant/40" />
- <span className="text-[10px] font-semibold uppercase tracking-widest text-on-surface/60">Registry Load: {kycQueue?.length || 0} Entities</span>
- </div>
- <p className="text-on-surface-variant/40 text-[10px] font-semibold uppercase  italic text-right">Verification Latency: ~14.2m</p>
- </div>
- </div>
+          <div className="flex items-center gap-3 px-4 py-2 bg-white border border-j-border rounded-sm shadow-sm">
+            <span className="text-[9px] font-black uppercase tracking-widest text-j-text-muted">Pending Reviews: {kycQueue?.length || 0}</span>
+          </div>
+        </div>
 
- {/* Moderation Matrix */}
- <div className="bg-surface-container-lowest border border-surface-container-low rounded-[56px] shadow-soft overflow-hidden group">
- <div className="p-10 border-b-4 border-surface-container-low flex flex-col lg:flex-row gap-8 items-center bg-surface-container-low/20">
- <div className="relative flex-1 w-full group/search">
- <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant/20 group-focus-within/search:text-jumia-orange transition-colors" size={20} />
- <input 
- type="text" 
- placeholder="SEARCH BY BUSINESS NAME, ENTITY ID OR TAX PROTOCOL..."
- className="w-full pl-16 pr-8 py-5 bg-surface-container-low border border-surface-container-lowest rounded focus:outline-none focus:border-jumia-orange/20 focus:ring-[20px] focus:ring-primary-container/5 text-xs font-semibold text-on-surface placeholder:font-normal placeholder:text-on-surface-variant/50 shadow-inner transition-all duration-700 uppercase tracking-widest"
- />
- </div>
- </div>
+        {/* Verification Queue */}
+        <div className="bg-white border border-j-border rounded-sm shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-j-border bg-j-background/30">
+            <div className="relative group flex-1 w-full lg:max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-j-text-muted/30 group-focus-within:text-jumia-orange transition-colors" size={18} />
+              <input 
+                type="text" 
+                placeholder="SEARCH BY BUSINESS NAME OR EMAIL..."
+                className="w-full pl-12 pr-6 py-3 bg-white border border-j-border rounded-sm focus:outline-none focus:border-jumia-orange text-[11px] font-black text-j-text placeholder:font-black placeholder:text-j-text-muted/30 transition-all uppercase tracking-widest"
+              />
+            </div>
+          </div>
 
- <div className="overflow-x-auto custom-scrollbar">
- <table className="w-full text-left border-collapse min-w-[1000px]">
- <thead>
- <tr className="bg-surface-container-low/10 text-[10px] font-semibold uppercase  text-on-surface-variant/30 border-b-4 border-surface-container-low">
- <th className="px-10 py-8 italic">Merchant Entity</th>
- <th className="px-10 py-8 italic">Document Registry</th>
- <th className="px-10 py-8 italic">Protocol Status</th>
- <th className="px-10 py-8 text-right italic">Moderation Controls</th>
- </tr>
- </thead>
- <tbody className="divide-y-4 divide-surface-container-low">
- {kycQueue?.map((item) => (
- <tr key={item.id} className="hover:bg-jumia-orange-dark/5 transition-all duration-700 group/row">
- <td className="px-10 py-8">
- <div className="flex items-center gap-5">
- <div className="w-14 h-14 bg-surface-container-low rounded-sm border-2 border-surface-container-lowest flex items-center justify-center text-on-surface-variant group-hover/row:bg-jumia-orange/10 group-hover/row:text-jumia-orange transition-all duration-700 shadow-inner">
- <Briefcase size={24} />
- </div>
- <div>
- <div className="font-semibold text-sm md:text-base text-on-surface uppercase tracking-tight leading-none mb-1 group-hover/row:translate-x-2 transition-transform duration-700">
- {item.businessName}
- </div>
- <div className="flex items-center gap-2 text-[9px] font-semibold text-on-surface-variant/30 uppercase  italic">
- <User size={10} /> {item.user.email}
- </div>
- </div>
- </div>
- </td>
- <td className="px-10 py-8">
- <div className="flex flex-col gap-3">
- {item.documents?.map((doc: any) => (
- <div key={doc.id} className="flex items-center gap-4 bg-surface-container-low/40 p-3 rounded-2xl border-2 border-surface-container-lowest hover:border-jumia-orange/20 transition-all duration-500 group/doc">
- <div className="w-8 h-8 bg-surface-container-low rounded-xl flex items-center justify-center shrink-0 border border-surface-container-lowest group-hover/doc:bg-jumia-orange/10 group-hover/doc:text-jumia-orange transition-all duration-500">
- <File size={14} />
- </div>
- <div className="flex-1 min-w-0">
- <span className="font-semibold text-[9px] text-on-surface-variant uppercase tracking-widest block truncate leading-none mb-1">{doc.type}</span>
- <a 
- href={doc.url} 
- target="_blank" 
- rel="noopener noreferrer"
- className="text-[8px] font-semibold text-jumia-orange uppercase  flex items-center gap-1.5 cursor-pointer hover:underline opacity-60 hover:opacity-100"
- >
- ACCESS BLOB <ExternalLink size={8} />
- </a>
- </div>
- </div>
- ))}
- {(!item.documents || item.documents.length === 0) && (
- <div className="flex items-center gap-3 opacity-20">
- <AlertCircle size={14} />
- <span className="text-[9px] font-semibold uppercase tracking-widest italic">Registry Void: No Blobs Detected</span>
- </div>
- )}
- </div>
- </td>
- <td className="px-10 py-8">
- <span className={`text-[10px] px-4 py-1.5 rounded-full font-semibold border-2 uppercase  italic transition-all duration-700 ${
- item.status === 'PENDING_VERIFICATION' ? 'bg-jumia-orange/10 text-jumia-orange border-jumia-orange/20 shadow-[0_0_15px_rgba(246,139,30,0.2)] animate-pulse' :
- item.status === 'ACTIVE' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
- 'bg-error/10 text-error border-error/20'
- }`}>
- {item.status.replace('_', ' ')}
- </span>
- </td>
- <td className="px-10 py-8 text-right">
- <div className="flex justify-end gap-3">
- {item.status === 'PENDING_VERIFICATION' && (
- <>
- <button 
- onClick={() => handleUpdate(item.id, 'APPROVED')}
- disabled={approveMutation.isPending}
- className="bg-green-500/5 text-green-500 hover:bg-green-500 hover:text-white border border-green-500/10 p-4 rounded-2xl duration-500 transition-all cursor-pointer shadow-soft group/btn disabled:opacity-50"
- title="AUTHORIZE ENTITY"
- >
- <CheckCircle size={20} className="group-hover/btn:scale-110 transition-transform" />
- </button>
- <button 
- onClick={() => handleUpdate(item.id, 'REJECTED')}
- disabled={updateStatusMutation.isPending}
- className="bg-error/5 text-error hover:bg-error hover:text-white border border-error/10 p-4 rounded-2xl duration-500 transition-all cursor-pointer shadow-soft group/btn disabled:opacity-50"
- title="REJECT ENTITY"
- >
- <XCircle size={20} className="group-hover/btn:rotate-12 transition-transform" />
- </button>
- </>
- )}
- <button className="p-4 bg-surface-container-low text-on-surface-variant/40 hover:text-on-surface hover:bg-surface-container-lowest rounded-2xl border border-surface-container-lowest transition-all duration-500 shadow-soft">
- <History size={20} />
- </button>
- </div>
- </td>
- </tr>
- ))}
- {kycQueue?.length === 0 && (
- <tr>
- <td colSpan={4} className="px-10 py-32 text-center select-none space-y-6">
- <div className="w-20 h-20 bg-surface-container-low rounded border border-surface-container-lowest flex items-center justify-center mx-auto text-on-surface-variant/20">
- <ShieldCheck size={40} />
- </div>
- <p className="text-[10px] font-semibold uppercase  text-on-surface-variant/20 italic">
- Registry clear. all entities reconciled.
- </p>
- </td>
- </tr>
- )}
- </tbody>
- </table>
- </div>
- </div>
- </div>
- );
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[1000px]">
+              <thead>
+                <tr className="bg-j-background text-[10px] font-black uppercase text-j-text-muted/50 tracking-widest border-b border-j-border">
+                  <th className="px-6 py-4">Seller Details</th>
+                  <th className="px-6 py-4">Documents</th>
+                  <th className="px-6 py-4 text-center">Status</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-j-border">
+                {kycQueue?.map((item) => (
+                  <tr key={item.id} className="hover:bg-j-background transition-colors group">
+                    <td className="px-6 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-j-background rounded-sm border border-j-border flex items-center justify-center text-j-text-muted group-hover:text-jumia-orange group-hover:border-jumia-orange/30 transition-all shadow-inner">
+                          <Briefcase size={20} />
+                        </div>
+                        <div>
+                          <div className="font-black text-xs text-j-text uppercase tracking-tight group-hover:text-jumia-orange transition-colors">
+                            {item.businessName}
+                          </div>
+                          <div className="text-[9px] font-black text-j-text-muted uppercase tracking-widest mt-1 opacity-60">
+                            {item.user.email}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-6">
+                      <div className="flex flex-wrap gap-2">
+                        {item.documents?.map((doc: any) => (
+                          <a 
+                            key={doc.id}
+                            href={doc.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 bg-j-background px-3 py-1.5 rounded-sm border border-j-border hover:border-jumia-orange/30 transition-all group/doc"
+                          >
+                            <File size={12} className="text-j-text-muted group-hover/doc:text-jumia-orange" />
+                            <span className="text-[8px] font-black text-j-text-muted uppercase tracking-widest group-hover/doc:text-jumia-orange">{doc.type}</span>
+                            <ExternalLink size={10} className="text-j-text-muted/30" />
+                          </a>
+                        ))}
+                        {(!item.documents || item.documents.length === 0) && (
+                          <span className="text-[8px] font-black text-j-text-muted/40 uppercase tracking-widest italic">No documents uploaded</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-6 text-center">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-sm text-[8px] font-black uppercase tracking-widest border transition-all ${
+                        item.status === 'PENDING_VERIFICATION' ? 'bg-orange-50 text-jumia-orange border-orange-100 animate-pulse' :
+                        item.status === 'ACTIVE' ? 'bg-green-50 text-j-success border-green-100' :
+                        'bg-red-50 text-j-error border-red-100'
+                      }`}>
+                        {item.status.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td className="px-6 py-6 text-right">
+                      <div className="flex justify-end gap-2">
+                        {item.status === 'PENDING_VERIFICATION' && (
+                          <>
+                            <button 
+                              onClick={() => handleUpdate(item.id, 'APPROVED')}
+                              disabled={approveMutation.isPending}
+                              className="p-2 bg-green-50 text-j-success border border-green-100 rounded-sm hover:bg-j-success hover:text-white transition-all shadow-sm"
+                              title="Approve Seller"
+                            >
+                              <CheckCircle size={16} />
+                            </button>
+                            <button 
+                              onClick={() => handleUpdate(item.id, 'REJECTED')}
+                              disabled={updateStatusMutation.isPending}
+                              className="p-2 bg-red-50 text-j-error border border-red-100 rounded-sm hover:bg-j-error hover:text-white transition-all shadow-sm"
+                              title="Reject Seller"
+                            >
+                              <XCircle size={16} />
+                            </button>
+                          </>
+                        )}
+                        <button className="p-2 bg-white text-j-text-muted border border-j-border rounded-sm hover:border-j-text hover:text-j-text transition-all shadow-sm">
+                          <MoreVertical size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

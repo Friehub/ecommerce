@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { ProductCard } from '../ui/ProductCard';
 import { api } from '@/trpc/react';
-import { Zap, Clock } from 'lucide-react';
+import { Zap, Clock, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { Skeleton } from '../ui/Skeleton';
 

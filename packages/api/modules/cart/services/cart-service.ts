@@ -4,7 +4,13 @@ import { promoService } from '../../promo/services/promo-service.js'
 
 export const cartService = {
   async getCart(sessionId: string, userId?: string) {
-    // 1. If userId is provided, prioritize finding the user's primary cart
+    // 1. Safety check: Prisma upsert requires at least one unique identifier
+    if (!sessionId && !userId) {
+      console.warn('[CartService] getCart called without sessionId or userId');
+      throw new Error('MISSING_CART_IDENTIFIER');
+    }
+
+    // 2. If userId is provided, prioritize finding the user's primary cart
     if (userId) {
       const userCart = await prisma.cart.findUnique({
         where: { userId },

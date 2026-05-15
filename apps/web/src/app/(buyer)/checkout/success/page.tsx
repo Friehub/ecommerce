@@ -15,10 +15,28 @@ import {
  Box
 } from 'lucide-react';
 import Link from 'next/link';
+import { api } from '@/trpc/react';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { format } from 'date-fns';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
+
+  const { data: order, isLoading } = api.order.get.useQuery(
+    { orderId: orderId as string },
+    { enabled: !!orderId }
+  );
+
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-[800px] px-4 py-16 flex flex-col items-center gap-8">
+        <Skeleton className="w-28 h-28 rounded-full" />
+        <Skeleton className="h-12 w-64 rounded-sm" />
+        <div className="w-full h-64 bg-white border border-j-border rounded-sm" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-[800px] px-4 py-16 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -50,8 +68,24 @@ function SuccessContent() {
           </div>
 
           <p className="text-j-text-muted font-bold text-sm max-w-md mx-auto leading-relaxed opacity-80 uppercase tracking-tight">
-            We've sent a confirmation email to your registered address. Our team is now preparing your items for dispatch.
+            We've sent a confirmation email to {order?.user?.email || 'your registered address'}. Our team is now preparing your items for dispatch.
           </p>
+
+          {/* Order Summary Snapshot */}
+          {order && (
+            <div className="bg-white border-2 border-j-border p-6 rounded-sm text-left flex flex-col gap-4 shadow-sm">
+              <div className="flex justify-between items-center border-b border-j-border pb-3">
+                <span className="text-[10px] font-black text-j-text-muted uppercase tracking-widest">Items ({order.items.length})</span>
+                <span className="font-black text-j-text">₦ {Number(order.totalAmount).toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tight">
+                <span className="text-j-text-muted">Payment: {order.paymentMethod}</span>
+                <span className={order.status === 'PAID' || order.status === 'DELIVERED' ? 'text-j-success' : 'text-jumia-orange'}>
+                  {order.status}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Fulfillment steps */}
           <div className="space-y-8 bg-j-background p-10 rounded-sm border border-j-border">

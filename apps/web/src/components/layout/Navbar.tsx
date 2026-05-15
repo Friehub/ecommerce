@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { 
   Search, 
@@ -11,14 +12,54 @@ import {
   ChevronDown,
   ShoppingBag,
   Store,
-  PhoneCall
+  PhoneCall,
+  Clock,
+  TrendingUp
 } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { NotificationInbox } from './NotificationInbox';
+import { api } from '@/trpc/react';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export const Navbar = () => {
   const { data: session } = useSession();
   const { totalItems, setIsOpen: setCartOpen } = useCart();
+  const router = useRouter();
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  
+  const debouncedQuery = useDebounce(searchQuery.trim(), 300);
+  
+  const { data: suggestions = [] } = api.catalog.autocomplete.useQuery(
+    { query: debouncedQuery },
+    { enabled: debouncedQuery.length > 0 && showSuggestions }
+  );
+
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchQuery(suggestion);
+    router.push(`/search?q=${encodeURIComponent(suggestion)}`);
+    setShowSuggestions(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full flex flex-col shadow-sm">
@@ -49,18 +90,72 @@ export const Navbar = () => {
           </Link>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-[600px] relative flex">
-            <div className="relative flex-1 group">
+          <div ref={searchRef} className="flex-1 max-w-[720px] relative flex">
+            <form onSubmit={handleSearch} className="relative flex-1 group">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-j-text-muted group-focus-within:text-jumia-orange transition-colors">
                 <Search size={20} strokeWidth={2} />
               </div>
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
                 placeholder="Search products, brands and categories"
                 className="w-full pl-10 pr-4 h-11 border border-j-border rounded-l-sm bg-white focus:outline-none focus:border-jumia-orange focus:ring-1 focus:ring-jumia-orange text-sm text-j-text placeholder:text-j-text-muted transition-all"
               />
-            </div>
-            <button className="bg-jumia-orange text-white px-8 h-11 rounded-r-sm text-xs font-black hover:bg-jumia-orange-dark transition-colors uppercase shadow-md active:scale-95">
+
+              {/* Suggestions Dropdown */}
+              {showSuggestions && (debouncedQuery.length > 0 || suggestions.length > 0) && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-j-border shadow-2xl rounded-sm z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                  {suggestions.length > 0 ? (
+                    suggestions.map((item, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleSuggestionClick(item)}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-j-text hover:bg-j-surface-container-low text-left transition-colors"
+                      >
+                        <Search size={16} className="text-j-text-muted" />
+                        <span className="truncate">{item}</span>
+                      </button>
+                    ))
+                  ) : (
+                    debouncedQuery.length > 0 && (
+                      <button
+                        onClick={handleSearch}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-j-text hover:bg-j-surface-container-low text-left transition-colors"
+                      >
+                        <Search size={16} className="text-j-text-muted" />
+                        <span className="truncate">Search for "{debouncedQuery}"</span>
+                      </button>
+                    )
+                  )}
+                  
+                  {/* Common searches / Trending if empty but focused */}
+                  {debouncedQuery.length === 0 && (
+                    <div className="px-2">
+                      <div className="px-2 py-1 text-[10px] font-bold text-j-text-muted uppercase tracking-wider">Trending Categories</div>
+                      {['Phones & Tablets', 'Electronics', 'Home & Office', 'Fashion'].map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => handleSuggestionClick(cat)}
+                          className="w-full flex items-center gap-3 px-2 py-2 text-sm text-j-text hover:bg-j-surface-container-low text-left transition-colors rounded-sm"
+                        >
+                          <TrendingUp size={14} className="text-jumia-orange" />
+                          <span>{cat}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </form>
+            <button 
+              onClick={() => handleSearch()}
+              className="bg-jumia-orange text-white px-10 h-11 rounded-r-sm text-xs font-black hover:bg-jumia-orange-dark transition-colors uppercase shadow-md active:scale-95 flex-shrink-0"
+            >
               Search
             </button>
           </div>

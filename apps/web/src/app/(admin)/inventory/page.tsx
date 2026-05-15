@@ -1,23 +1,21 @@
-import { prisma } from "@ecom/db";
-import { Package, Warehouse, AlertTriangle, CheckCircle, Activity, Gavel, ArrowRight, ShieldCheck } from 'lucide-react';
-import { format } from 'date-fns';
+'use client';
 
-export const dynamic = "force-dynamic";
+import React from 'react';
+import { Package, Warehouse, AlertTriangle, CheckCircle, Activity, ShieldCheck } from 'lucide-react';
+import { api } from '@/trpc/react';
+import { Skeleton } from '@/components/ui/Skeleton';
 
-export default async function AdminInventoryPage() {
-  const stockLevels = await prisma.stockLevel.findMany({
-    include: {
-      variant: {
-        include: {
-          product: true,
-        },
-      },
-      warehouse: true,
-    },
-    orderBy: {
-      qtyOnHand: "asc",
-    },
-  });
+export default function AdminInventoryPage() {
+  const { data: stockLevels, isLoading } = api.inventory.listStockLevels.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="max-w-[1184px] mx-auto px-4 py-8 space-y-8">
+        <div className="h-20 w-64 bg-white/50 rounded-sm animate-pulse" />
+        <div className="bg-white rounded-sm border border-j-border h-[600px] animate-pulse" />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-j-background min-h-screen pb-24">
@@ -56,7 +54,7 @@ export default async function AdminInventoryPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-j-border">
-                {stockLevels.map((stock) => (
+                {stockLevels?.map((stock: any) => (
                   <tr key={stock.id} className="hover:bg-j-background/50 transition-all group">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
@@ -111,7 +109,7 @@ export default async function AdminInventoryPage() {
                     </td>
                   </tr>
                 ))}
-                {stockLevels.length === 0 && (
+                {(!stockLevels || stockLevels.length === 0) && (
                   <tr>
                     <td colSpan={5} className="py-24 text-center">
                       <div className="flex flex-col items-center gap-4 max-w-sm mx-auto">

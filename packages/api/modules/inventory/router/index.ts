@@ -55,6 +55,23 @@ const _inventoryRouter = createTRPCRouter({
 
       return await inventoryService.updateStockBatch(seller.id, input.warehouseId, input.updates);
     }),
+
+  listStockLevels: adminProcedure.query(async () => {
+    const { prisma } = await import('@ecom/db');
+    return await prisma.stockLevel.findMany({
+      include: {
+        variant: {
+          include: {
+            product: true,
+          },
+        },
+        warehouse: true,
+      },
+      orderBy: {
+        qtyOnHand: "asc",
+      },
+    });
+  }),
 });
 
 export const inventoryRouter = _inventoryRouter;

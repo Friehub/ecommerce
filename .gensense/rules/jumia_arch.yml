@@ -1,0 +1,26 @@
+rules:
+  - id: "JUMIA_NO_DIRECT_PRISMA"
+    name: "No Direct Prisma Usage"
+    domain: "architecture"
+    category: "Architecture"
+    severity: Warning
+    target_ext: "ts"
+    on_node: "member_expression"
+    if_matches: "^prisma\\."
+    observation: "Direct database access via 'prisma' detected."
+    impact: "Violates the architecture rule: 'No business logic in route handlers'. Database logic should be encapsulated in service modules."
+    improvement: "Move this database call to a dedicated service or module function and call that instead."
+    tags: ["jumia", "architecture"]
+
+  - id: "JUMIA_INTERNAL_IMPORT_LEAK"
+    name: "Internal Import Violation"
+    domain: "architecture"
+    category: "Architecture"
+    severity: Warning
+    target_ext: "ts"
+    on_node: "import_statement"
+    if_matches: "import .* from ['\"].*/src/.*['\"]"
+    observation: "Importing from internal 'src' directory detected."
+    impact: "Violates encapsulation. Internal implementation details should not be exposed to other modules."
+    improvement: "Export the required entity from the module's main 'index.ts' and import from the package root."
+    tags: ["jumia", "architecture"]

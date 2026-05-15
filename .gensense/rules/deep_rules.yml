@@ -1,0 +1,46 @@
+rules:
+  - id: "RUST_LOCK_AWAIT_TEMPORAL"
+    name: "Lock-Await Temporal Violation"
+    domain: "reliability"
+    category: "Performance"
+    severity: Critical
+    target_ext: "rs"
+    on_node: "function_item"
+    observation: "An '.await' was found following a 'lock' call in the same scope."
+    impact: "Holding a synchronous lock across an await point blocks the executor thread and can cause deadlocks."
+    improvement: "Drop the lock guard before calling .await, or use tokio::sync::Mutex."
+    tags: ["rust", "async", "temporal"]
+    temporal:
+      sequence: ["lock", "\\.await"]
+      behavior: "must_not_follow"
+
+  - id: "SOL_SENSITIVE_CALL_WITHOUT_REVERT"
+    name: "Low-Level Call Without Revert"
+    domain: "security"
+    category: "Security"
+    severity: Critical
+    target_ext: "sol"
+    on_node: "function_definition"
+    observation: "A low-level .call is used without a success check."
+    impact: "Low-level calls do not revert on failure. The contract will continue as if it succeeded."
+    improvement: "Always check the success boolean: (bool success, ) = target.call{...}(''); require(success, 'failed');"
+    tags: ["solidity", "security"]
+    if_matches: "\\.call\\{"
+    must_contain: "require\\(success"
+
+project_rules:
+  - id: "JUMIA_UNPROTECTED_INVENTORY_OP"
+    name: "Unprotected Inventory Operation"
+    domain: "security"
+    category: "Architecture"
+    severity: Critical
+    target_ext: "rs"
+    observation: "A sensitive inventory operation is missing a reachable security guard."
+    impact: "Unauthenticated requests could manipulate stock."
+    improvement: "Call 'validate_internal_token' before 'reserve_stock' or 'confirm_reservation'."
+    tags: ["jumia", "architecture", "project-rule"]
+    must_have_guard:
+      source_pattern: "reserve_handler|confirm_handler"
+      guard_pattern: "validate_internal_token"
+      source_file_glob: "**/inventory/src/handlers.rs"
+      guard_file_glob: "**/inventory/src/handlers.rs"

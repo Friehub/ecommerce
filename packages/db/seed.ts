@@ -226,7 +226,7 @@ async function main() {
             ]
           }
         },
-        include: { variants: true }
+        include: { variants: { include: { product: true } } }
       });
       createdProducts.push(product);
       createdVariants.push(...product.variants);

@@ -86,8 +86,13 @@ export default function CheckoutPage() {
     }
   }, [addresses, selectedAddressId]);
 
+  const { data: shippingData, isLoading: isShippingLoading } = api.order.calculateShipping.useQuery(
+    { cartId: cart?.id || sessionId, addressId: selectedAddressId as string },
+    { enabled: !!selectedAddressId && !!(cart?.id || sessionId) }
+  );
+
   const subtotal = cart?.items.reduce((acc, item) => acc + (Number(item.priceSnapshot ?? 0) * item.quantity), 0) || 0;
-  const shipping = 500;
+  const shipping = shippingData?.total ?? 500;
   const total = subtotal + shipping;
 
   const handlePlaceOrder = () => {
@@ -279,7 +284,13 @@ export default function CheckoutPage() {
                     <h4 className="text-sm font-black uppercase tracking-tight">Door Delivery</h4>
                     <p className="text-[11px] text-j-text-muted font-bold mt-1 uppercase tracking-widest opacity-70">Scheduled between 20 May & 22 May</p>
                   </div>
-                  <span className="font-black text-sm text-j-text uppercase tracking-tight">₦ {shipping.toLocaleString()}</span>
+                  <span className="font-black text-sm text-j-text uppercase tracking-tight">
+                    {isShippingLoading ? (
+                      <Skeleton className="h-5 w-16 inline-block" />
+                    ) : (
+                      `₦ ${shipping.toLocaleString()}`
+                    )}
+                  </span>
                   <div className="absolute -top-3 -right-3">
                      <CheckCircle2 className="text-jumia-orange fill-white" size={24} />
                   </div>

@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch --env-file ../../.env src/index.ts",
-    "build": "tsc -b",
+    "build": "tsup",
     "start": "node dist/index.js",
     "typecheck": "tsc -b"
   },
@@ -40,6 +40,7 @@
   "devDependencies": {
     "@types/node": "^20",
     "ts-node-dev": "^2.0.0",
+    "tsup": "^8.5.1",
     "typescript": "^5"
   }
 }

@@ -70,7 +70,9 @@ jobs:
           if ! command -v pm2 &> /dev/null; then
             npm install -g pm2
           fi
-          pm2 startOrReload ecosystem.config.cjs --update-env
+          # Clear stale process configurations to force PM2 to use the new runner cwd path
+          pm2 delete all || true
+          pm2 start ecosystem.config.cjs --update-env
 
       - name: Post-Deploy Smoke Test
         run: |

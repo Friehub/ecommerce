@@ -59,6 +59,9 @@ jobs:
             echo "ERROR: apps/api-server/dist was not created!"
             exit 1
           fi
+          # Copy Next.js static assets into the standalone directory for correct resource loading
+          cp -r apps/web/public apps/web/.next/standalone/apps/web/ || true
+          cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/ || true
 
       - name: Run Migrations
         env:

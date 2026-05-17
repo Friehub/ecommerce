@@ -47,6 +47,7 @@ const server = Fastify({
 
 // ── Security & middleware ─────────────────────────────────────────
 async function start() {
+  console.log("DEBUG: [1/8] Starting API boot sequence...");
   const criticalEnv = ['DATABASE_URL', 'REDIS_URL', 'INTERNAL_API_TOKEN', 'PAYSTACK_SECRET_KEY'];
   for (const env of criticalEnv) {
     if (!process.env[env] || process.env[env].includes('placeholder')) {
@@ -65,21 +66,26 @@ async function start() {
   }
   process.env.JWT_SECRET = jwtSecret;
 
+  console.log("DEBUG: [2/8] Instantiating main Redis client...");
   const redis = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379');
-
+  
+  console.log("DEBUG: [3/8] Registering helmet...");
   await server.register(helmet, { contentSecurityPolicy: false });
 
   const allowedOrigins = process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(',') 
     : [process.env.WEB_URL || 'http://localhost:3000'];
 
+  console.log("DEBUG: [4/8] Registering CORS...");
   await server.register(cors, {
     origin: allowedOrigins,
     credentials: true,
   });
 
+  console.log("DEBUG: [5/8] Registering cookie parser...");
   await server.register(cookie);
 
+  console.log("DEBUG: [6/8] Registering rate limiter...");
   await server.register(rateLimit, {
     max: 100,
     timeWindow: '1 minute',
@@ -87,7 +93,7 @@ async function start() {
     keyGenerator: (req) => (req.headers['x-forwarded-for'] as string) || req.ip,
   });
 
-  // ── Socket.io ───────────────────────────────────────────────────
+  console.log("DEBUG: [7/8] Registering socket.io...");
   await server.register(socketio as any, {
     cors: {
       origin: allowedOrigins,
@@ -95,7 +101,7 @@ async function start() {
     }
   });
 
-  // ── Metrics ─────────────────────────────────────────────────────
+  console.log("DEBUG: [8/8] Setting request hooks...");
   server.addHook('onRequest', async (request) => {
     (request as any).startTime = process.hrtime();
   });

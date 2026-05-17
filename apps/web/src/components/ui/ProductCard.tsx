@@ -55,7 +55,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         
         <div className="mt-auto space-y-1">
           <div className="flex items-center justify-between">
-            <p className="text-lg font-black text-j-text">
+            <p className="text-lg font-normal text-j-text">
               ₦ {product.price.toLocaleString()}
             </p>
           </div>

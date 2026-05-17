@@ -75,7 +75,7 @@ jobs:
           if [ -z "$DATABASE_URL" ]; then
             export DATABASE_URL="postgresql://ecom:${{ secrets.DB_PASSWORD || 'ecom' }}@127.0.0.1:5433/ecom?sslmode=disable"
           fi
-          pnpm --filter @ecom/db npx prisma migrate deploy --schema packages/db/prisma/schema
+          pnpm --filter @ecom/db npx prisma db push --schema packages/db/prisma/schema --accept-data-loss
 
       - name: Deploy with PM2
         run: |

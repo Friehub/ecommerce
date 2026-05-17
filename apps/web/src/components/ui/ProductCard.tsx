@@ -49,7 +49,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       </div>
       
       <div className="flex flex-col flex-1">
-        <h3 className="text-xs font-bold text-j-text line-clamp-2 mb-2 group-hover:text-jumia-orange transition-colors min-h-[32px] leading-snug uppercase tracking-tight">
+        <h3 className="text-xs font-normal text-j-text line-clamp-2 mb-2 group-hover:text-jumia-orange transition-colors min-h-[32px] leading-snug tracking-tight">
           {name}
         </h3>
         

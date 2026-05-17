@@ -8,9 +8,9 @@ import { Input } from '../ui/Input';
 
 export const Footer = () => {
   return (
-    <footer className="w-full bg-j-surface-container-highest mt-12">
+    <footer className="w-full bg-[#1a1a1a] mt-12">
       {/* Newsletter Section */}
-      <div className="bg-[#4a4a4a] text-white py-12">
+      <div className="bg-j-text text-white py-12">
         <div className="max-w-[1184px] mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-white/10 rounded flex items-center justify-center">

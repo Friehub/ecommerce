@@ -21,7 +21,10 @@ export default defineConfig({
     'pino',
     'pino-pretty',
     'sharp',
-    '@aws-sdk/client-s3'
+    '@aws-sdk/client-s3',
+    'opossum',
+    'bcryptjs',
+    'node-cron'
   ],
   noExternal: [
     '@ecom/api',

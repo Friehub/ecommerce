@@ -82,6 +82,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
+      bcryptjs:
+        specifier: ^3.0.3
+        version: 3.0.3
       dotenv:
         specifier: ^16.0.0
         version: 16.6.1
@@ -103,6 +106,12 @@ importers:
       next-auth:
         specifier: 5.0.0-beta.31
         version: 5.0.0-beta.31(next@16.2.4(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
+      node-cron:
+        specifier: ^4.2.1
+        version: 4.2.1
+      opossum:
+        specifier: ^9.0.0
+        version: 9.0.0
       pino:
         specifier: ^10.3.1
         version: 10.3.1
@@ -423,6 +432,9 @@ importers:
       '@prisma/client':
         specifier: ^6.0.0
         version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
+      bcryptjs:
+        specifier: ^3.0.3
+        version: 3.0.3
       bullmq:
         specifier: ^4.0.0
         version: 4.18.3
@@ -435,6 +447,12 @@ importers:
       nanoid:
         specifier: ^3.0.0
         version: 3.3.11
+      node-cron:
+        specifier: ^4.2.1
+        version: 4.2.1
+      opossum:
+        specifier: ^9.0.0
+        version: 9.0.0
       pino:
         specifier: ^10.3.1
         version: 10.3.1

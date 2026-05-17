@@ -31,6 +31,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return {
             id: user.id,
             email: user.email,
+            name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName || 'Shopper',
             role: user.role,
           };
         } catch (error) {

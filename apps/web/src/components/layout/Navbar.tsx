@@ -216,9 +216,8 @@ export const Navbar = () => {
           {/* Desktop Actions (Hidden on Mobile) */}
           <div className="hidden md:flex items-center gap-4">
             <div className="relative group">
-              <Link 
-                href="/account" 
-                className="flex items-center gap-2 text-j-text hover:text-jumia-orange transition-colors p-2 rounded-sm font-black text-xs uppercase"
+              <div 
+                className="flex items-center gap-2 text-j-text hover:text-jumia-orange transition-colors p-2 rounded-sm font-black text-xs uppercase cursor-pointer"
               >
                 <User size={24} strokeWidth={1.5} />
                 <div className="hidden lg:flex flex-col items-start leading-none">
@@ -228,7 +227,7 @@ export const Navbar = () => {
                   </span>
                 </div>
                 <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />
-              </Link>
+              </div>
               
               {/* Account Dropdown */}
               <div className="absolute top-full right-0 mt-1 w-48 bg-white border border-j-border shadow-xl rounded-sm py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[60]">

@@ -50,7 +50,7 @@ function SellerStorefrontContent({ sellerId }: { sellerId: string }) {
  <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-[10px] font-semibold text-on-surface-variant/40 uppercase  italic">
  <div className="flex items-center gap-2 px-4 py-2 bg-surface-container-low rounded-xl border-2 border-surface-container-low">
  <Star size={16} className="text-jumia-orange fill-primary-container" />
- <span className="text-on-surface">{seller.rating.toFixed(1)}</span>
+ <span className="text-on-surface">{Number(seller.rating ?? 0).toFixed(1)}</span>
  <span className="opacity-40">(VERIFIED)</span>
  </div>
  <div className="flex items-center gap-2">

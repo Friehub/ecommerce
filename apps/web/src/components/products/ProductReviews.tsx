@@ -15,7 +15,7 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
   const { data: reviews, isLoading } = api.review.getByProduct.useQuery({ productId });
   const { data: stats } = api.review.getRatingStats.useQuery({ productId });
 
-  const averageRating = stats?.averageRating || 0;
+  const averageRating = Number(stats?.averageRating || 0);
   const reviewCount = stats?.reviewCount || 0;
 
   if (isLoading) {

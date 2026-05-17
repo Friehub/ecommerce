@@ -24,19 +24,19 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-  { name: 'Sellers', href: '/admin/sellers', icon: ShieldCheck },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Sellers', href: '/sellers', icon: ShieldCheck },
   { name: 'KYC Verification', href: '/kyc', icon: ShieldCheck },
   { name: 'Fraud Monitoring', href: '/fraud', icon: ShieldAlert },
   { name: 'Inventory', href: '/inventory', icon: Box },
   { name: 'Payouts', href: '/payouts', icon: Wallet },
   { name: 'Returns', href: '/returns', icon: CornerUpLeft },
-  { name: 'Users', href: '/admin/admin/users', icon: Users },
-  { name: 'Logistics', href: '/admin/logistics', icon: Truck },
-  { name: 'Disputes', href: '/admin/admin/disputes', icon: AlertTriangle },
-  { name: 'Flash Sales', href: '/admin/admin/flash-sales', icon: Tag },
-  { name: 'Banners', href: '/admin/admin/banners', icon: ImageIcon },
-  { name: 'Analytics', href: '/admin/admin/analytics', icon: BarChart3 },
+  { name: 'Users', href: '/admin/users', icon: Users },
+  { name: 'Logistics', href: '/logistics', icon: Truck },
+  { name: 'Disputes', href: '/admin/disputes', icon: AlertTriangle },
+  { name: 'Flash Sales', href: '/admin/flash-sales', icon: Tag },
+  { name: 'Banners', href: '/admin/banners', icon: ImageIcon },
+  { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
 ];
 
 export function AdminSidebar() {

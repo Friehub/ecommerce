@@ -8,6 +8,18 @@ const prisma = new PrismaClient({
 async function main() {
   console.log('🌱 Seeding database...')
 
+  const userService = prisma.user;
+  const categoryService = prisma.category;
+  const brandService = prisma.brand;
+  const warehouseService = prisma.warehouse;
+  const sellerService = prisma.seller;
+  const productService = prisma.product;
+  const affiliateAgentService = prisma.affiliateAgent;
+  const referralLinkService = prisma.referralLink;
+  const orderService = prisma.order;
+  const flashSaleService = prisma.flashSale;
+  const bannerService = prisma.banner;
+
   const passwordHash = await bcrypt.hash('password123', 12);
   const Decimal = Prisma.Decimal;
 

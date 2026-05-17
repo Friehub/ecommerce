@@ -22,7 +22,12 @@ export default defineConfig({
     '@aws-sdk/client-s3',
     'opossum',
     'bcryptjs',
-    'node-cron'
+    'node-cron',
+    'trpc-openapi',
+    'zod-to-json-schema',
+    'superjson',
+    '@trpc/server',
+    '@aws-sdk/s3-request-presigner'
   ],
   noExternal: [
     '@ecom/api',

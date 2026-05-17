@@ -38,7 +38,7 @@ module.exports = {
   apps: [
     {
       name: 'jumia-api',
-      script: 'node dist/index.js',
+      script: 'dist/index.js',
       cwd: path.join(ROOT, 'apps/api-server'),
       env: {
         ...stagingEnv,
@@ -47,7 +47,7 @@ module.exports = {
     },
     {
       name: 'jumia-web',
-      script: 'node apps/web/server.js',
+      script: 'apps/web/server.js',
       cwd: path.join(ROOT, 'apps/web/.next/standalone'),
       env: {
         ...stagingEnv,

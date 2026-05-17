@@ -221,9 +221,8 @@ export const Navbar = () => {
               >
                 <User size={24} strokeWidth={1.5} />
                 <div className="hidden lg:flex flex-col items-start leading-none">
-                  <span className="text-[9px] text-j-text-muted font-bold">Welcome</span>
                   <span className="truncate max-w-[100px]">
-                    {session?.user?.name ? `Hi, ${session.user.name.split(' ')[0]}` : 'Sign In'}
+                    {session?.user?.name ? `Hi, ${session.user.name.split(' ')[0]}` : 'Account'}
                   </span>
                 </div>
                 <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />

@@ -71,6 +71,8 @@ async function start() {
   
   console.log("DEBUG: [3/8] Registering helmet...");
   await server.register(helmet, { contentSecurityPolicy: false });
+  await server.after();
+  console.log("DEBUG: -> Helmet loaded successfully");
 
   const allowedOrigins = process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(',') 
@@ -81,9 +83,13 @@ async function start() {
     origin: allowedOrigins,
     credentials: true,
   });
+  await server.after();
+  console.log("DEBUG: -> CORS loaded successfully");
 
   console.log("DEBUG: [5/8] Registering cookie parser...");
   await server.register(cookie);
+  await server.after();
+  console.log("DEBUG: -> Cookie parser loaded successfully");
 
   console.log("DEBUG: [6/8] Registering rate limiter...");
   await server.register(rateLimit, {
@@ -92,6 +98,8 @@ async function start() {
     redis: redis,
     keyGenerator: (req) => (req.headers['x-forwarded-for'] as string) || req.ip,
   });
+  await server.after();
+  console.log("DEBUG: -> Rate limiter loaded successfully");
 
   console.log("DEBUG: [7/8] Registering socket.io...");
   await server.register(socketio as any, {
@@ -100,6 +108,8 @@ async function start() {
       credentials: true,
     }
   });
+  await server.after();
+  console.log("DEBUG: -> Socket.io loaded successfully");
 
   console.log("DEBUG: [8/8] Setting request hooks...");
   server.addHook('onRequest', async (request) => {
@@ -188,6 +198,8 @@ async function start() {
         deepLinking: false,
       },
     });
+    await server.after();
+    console.log("DEBUG: -> Swagger loaded successfully");
   }
 
   console.log("DEBUG: [10/12] Registering tRPC OpenAPI plugin...");
@@ -197,6 +209,8 @@ async function start() {
     createContext: (opts: any) => createContext({ ...opts, redis }),
     basePath: '/api',
   } as any);
+  await server.after();
+  console.log("DEBUG: -> tRPC OpenAPI loaded successfully");
 
   // ── Service-to-Service Auth ──────────────────────────────────────
   server.addHook('preHandler', async (req, reply) => {
@@ -318,6 +332,8 @@ async function start() {
       },
     } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],
   });
+  await server.after();
+  console.log("DEBUG: -> tRPC loaded successfully");
 
   // ── Payment Webhooks ─────────────────────────────────────────────
   server.post('/api/webhooks/:provider', async (req, reply) => {

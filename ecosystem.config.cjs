@@ -31,6 +31,7 @@ const stagingEnv = {
   ...getEnv(),
   NODE_ENV: 'production',
   SKIP_ENV_VALIDATION: 'true',
+  AWS_SDK_JS_NODE_VERSION_SUPPORT_WARNING_DISABLED: 'true',
 };
 
 module.exports = {

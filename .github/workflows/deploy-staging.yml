@@ -64,9 +64,18 @@ jobs:
           cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/ || true
 
       - name: Run Migrations
-        env:
-          DATABASE_URL: "postgresql://ecom:${{ secrets.DB_PASSWORD }}@127.0.0.1:5433/ecom?sslmode=disable"
-        run: pnpm --filter @ecom/db npx prisma migrate deploy --schema packages/db/prisma/schema
+        run: |
+          if [ -f ".env.staging" ]; then
+            # Extract DATABASE_URL cleanly, removing any quotes or whitespace
+            ENV_DB_URL=$(grep "^DATABASE_URL=" .env.staging | cut -d'=' -f2- | tr -d '"'\')
+            if [ ! -z "$ENV_DB_URL" ]; then
+              export DATABASE_URL="$ENV_DB_URL"
+            fi
+          fi
+          if [ -z "$DATABASE_URL" ]; then
+            export DATABASE_URL="postgresql://ecom:${{ secrets.DB_PASSWORD || 'ecom' }}@127.0.0.1:5433/ecom?sslmode=disable"
+          fi
+          pnpm --filter @ecom/db npx prisma migrate deploy --schema packages/db/prisma/schema
 
       - name: Deploy with PM2
         run: |

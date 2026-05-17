@@ -1,9 +1,11 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
-import SwaggerUI from './SwaggerUI';
 
-export default async function ApiDocsPage() {
-  // Gate Swagger UI documentation strictly behind an ADMIN session
+export default async function ModeratorLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await auth();
 
   if (!session) {
@@ -11,9 +13,9 @@ export default async function ApiDocsPage() {
   }
 
   const role = (session.user as any)?.role;
-  if (role !== 'ADMIN') {
+  if (role !== 'MODERATOR' && role !== 'ADMIN') {
     redirect('/');
   }
 
-  return <SwaggerUI />;
+  return <>{children}</>;
 }

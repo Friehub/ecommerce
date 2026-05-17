@@ -30,6 +30,7 @@ export default function AdminBannersPage() {
   const [imageUrl, setImageUrl] = useState('');
   const [link, setLink] = useState('');
   const [position, setPosition] = useState('0');
+  const [placement, setPlacement] = useState('HERO');
   const [isUploading, setIsUploading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -91,6 +92,7 @@ export default function AdminBannersPage() {
     setImageUrl('');
     setLink('');
     setPosition('0');
+    setPlacement('HERO');
     setEditingId(null);
   };
 
@@ -100,6 +102,7 @@ export default function AdminBannersPage() {
     setImageUrl(banner.imageUrl);
     setLink(banner.link || '');
     setPosition(banner.position.toString());
+    setPlacement(banner.placement || 'HERO');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -119,14 +122,16 @@ export default function AdminBannersPage() {
         title,
         imageUrl,
         link,
-        position: parseInt(position, 10)
+        position: parseInt(position, 10),
+        placement
       });
     } else {
       createBannerMutation.mutate({
         title,
         imageUrl,
         link,
-        position: parseInt(position, 10)
+        position: parseInt(position, 10),
+        placement
       });
     }
   };
@@ -295,6 +300,20 @@ export default function AdminBannersPage() {
                 />
               </div>
 
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black text-j-text uppercase tracking-widest opacity-40">
+                  Placement Section
+                </label>
+                <select
+                  value={placement}
+                  onChange={(e) => setPlacement(e.target.value)}
+                  className="w-full bg-j-background border border-j-border rounded-sm px-4 py-3 text-xs font-black focus:outline-none focus:border-jumia-orange shadow-sm"
+                >
+                  <option value="HERO">HERO CAROUSEL</option>
+                  <option value="AD">MID-PAGE AD STRIP</option>
+                </select>
+              </div>
+
               <div className="flex gap-3 pt-4 border-t border-j-border">
                 {editingId && (
                   <button 
@@ -332,6 +351,9 @@ export default function AdminBannersPage() {
                         <div className="flex items-center gap-3">
                           <span className="bg-jumia-orange text-white px-2 py-0.5 rounded-sm text-[9px] font-black shadow-lg">
                             POS {banner.position}
+                          </span>
+                          <span className="bg-j-text text-white px-2 py-0.5 rounded-sm text-[9px] font-black shadow-lg">
+                            {banner.placement || 'HERO'}
                           </span>
                           <h4 className="text-lg font-black text-white uppercase tracking-tight leading-none">{banner.title}</h4>
                         </div>

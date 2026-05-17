@@ -21,6 +21,7 @@ import { Redis } from 'ioredis';
 import { register, httpRequestsTotal, httpRequestDurationSeconds } from '@ecom/api';
 
 const server = Fastify({
+  maxParamLength: 5000, // Support long batched tRPC query paths
   logger: {
     level: process.env.LOG_LEVEL ?? 'info',
     transport: process.env.NODE_ENV === 'development'

@@ -7,7 +7,11 @@ const categoryService = prisma.category;
 
 const _contentRouter = createTRPCRouter({
   getHeroBanners: publicProcedure.query(async () => {
-    return await contentService.getBanners();
+    return await contentService.getBanners("HERO");
+  }),
+
+  getAdBanners: publicProcedure.query(async () => {
+    return await contentService.getBanners("AD");
   }),
 
   getRecommendations: publicProcedure.query(async ({ ctx }) => {

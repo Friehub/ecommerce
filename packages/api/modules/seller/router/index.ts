@@ -213,6 +213,16 @@ const _sellerRouter = createTRPCRouter({
         orderBy: { startDate: 'desc' }
       });
     }),
+
+  getTimeSeries: sellerProcedure
+    .query(async ({ ctx }) => {
+      const seller = await sellerService.findUnique({
+        where: { userId: ctx.session.user.id }
+      });
+      if (!seller) throw new Error('NOT_A_SELLER');
+
+      return await sellerDashboardService.getTimeSeries(seller.id);
+    }),
 });
 
 export const sellerRouter = _sellerRouter;

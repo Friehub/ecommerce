@@ -42,32 +42,74 @@ export const notificationService = {
       const RESEND_API_KEY = config.RESEND_API_KEY;
       const RESEND_FROM_EMAIL = config.RESEND_FROM_EMAIL;
 
-      if (RESEND_API_KEY !== 're_placeholder') {
+      const isPlaceholder = !RESEND_API_KEY || RESEND_API_KEY === 're_placeholder';
+
+      if (isPlaceholder) {
+        const errorMsg = 'Resend API Key is not configured or is set to placeholder.';
+        console.error(errorMsg);
+        
+        // Log to database EventLog to make the failure visible to system operators/admins
+        await prisma.eventLog.create({
+          data: {
+            topic: 'NOTIFICATION_FAILURE',
+            payload: {
+              userId,
+              type,
+              subject: title,
+              error: errorMsg
+            },
+            status: 'FAILED'
+          }
+        }).catch(err => console.error('Failed to log event log:', err.message));
+
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error(`CRITICAL: Email dispatch aborted. ${errorMsg}`);
+        }
+      } else {
         try {
           const user = await userService.findUnique({ where: { id: userId }, select: { email: true } });
           if (user?.email) {
-          // Non-blocking fetch (C04: Optimization)
-          fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${RESEND_API_KEY}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              from: `Friehub Jumia <${RESEND_FROM_EMAIL}>`,
-              to: [user.email],
-              subject: title,
-              html: message
+            // Non-blocking fetch with robust response checking and async error logging
+            fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                from: `Friehub Jumia <${RESEND_FROM_EMAIL}>`,
+                to: [user.email],
+                subject: title,
+                html: message
+              })
             })
-          }).catch(err => {
-            console.error('Background Email Dispatch Failed:', err.message);
-          });
+            .then(async (res) => {
+              if (!res.ok) {
+                const text = await res.text();
+                throw new Error(`Resend API Error (${res.status}): ${text}`);
+              }
+            })
+            .catch(async (err) => {
+              console.error('Background Email Dispatch Failed:', err.message);
+              // Log failure to database EventLog to make it visible
+              await prisma.eventLog.create({
+                data: {
+                  topic: 'NOTIFICATION_FAILURE',
+                  payload: {
+                    userId,
+                    type,
+                    subject: title,
+                    recipient: user.email,
+                    error: err.message
+                  },
+                  status: 'FAILED'
+                }
+              }).catch(dbErr => console.error('Failed to log event log:', dbErr.message));
+            });
           }
         } catch (err: any) {
-          console.warn('Could not send email via Resend:', err.message);
+          console.warn('Could not initiate email send via Resend:', err.message);
         }
-      } else {
-        console.log(`[STUB/TEST] Sending Email via Resend to user ${userId} | Subject: ${title}`);
       }
     }
 
@@ -185,6 +227,12 @@ export const notificationService = {
       where: { userId_type: { userId, type } },
       update: { email, sms, push },
       create: { userId, type, email, sms, push }
+    });
+  },
+
+  async getPreferences(userId: string) {
+    return notificationPreferenceService.findMany({
+      where: { userId }
     });
   }
 };

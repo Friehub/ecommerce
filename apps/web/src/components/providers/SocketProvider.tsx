@@ -22,7 +22,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (session?.user) {
-      const socketInstance = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000', {
+      const isProd = process.env.NODE_ENV === 'production';
+      const socketUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' && isProd ? window.location.origin : 'http://localhost:4000');
+      const socketInstance = io(socketUrl, {
         withCredentials: true,
         transports: ['websocket', 'polling'],
       });

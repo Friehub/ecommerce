@@ -15,7 +15,6 @@ import { Skeleton } from '@/components/ui/Skeleton';
 const sidebarLinks = [
   { label: 'Account', icon: User, href: '/account', active: true },
   { label: 'Orders', icon: Package, href: '/account/orders' },
-  { label: 'Inbox', icon: Mail, href: '/account/inbox' },
   { label: 'Pending Reviews', icon: MessageSquare, href: '/account/reviews' },
   { label: 'Vouchers', icon: Ticket, href: '/account/vouchers' },
   { label: 'Saved Items', icon: Heart, href: '/wishlist' },

@@ -5,6 +5,7 @@ model Banner {
   imageUrl  String
   link      String?
   position  Int      @default(0)
+  placement String   @default("HERO") // "HERO" or "AD"
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 }

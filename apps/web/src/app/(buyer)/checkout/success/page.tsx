@@ -1,7 +1,7 @@
 'use client';
 
-import React, { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { Suspense, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { 
  CheckCircle2, 
  ArrowRight, 
@@ -22,6 +22,21 @@ import { format } from 'date-fns';
 function SuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
+  const router = useRouter();
+  const utils = api.useUtils();
+
+  useEffect(() => {
+    if (!orderId) {
+      router.push('/account/orders');
+    } else {
+      // Invalidate the cart so it clears visually
+      utils.cart.get.invalidate();
+    }
+  }, [orderId, router, utils]);
+
+  if (!orderId) {
+    return null; // Prevent rendering anything if redirecting
+  }
 
   const { data: order, isLoading } = api.order.get.useQuery(
     { orderId: orderId as string },

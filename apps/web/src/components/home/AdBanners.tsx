@@ -23,7 +23,7 @@ const banners = [
 ];
 
 export const AdBanners = () => {
-  const { data: bannersData, isLoading } = api.content.getHeroBanners.useQuery();
+  const { data: bannersData, isLoading } = api.content.getAdBanners.useQuery();
 
   const defaultBanners = [
     {
@@ -41,7 +41,7 @@ export const AdBanners = () => {
   ];
 
   const banners = (bannersData && bannersData.length >= 2) 
-    ? bannersData.slice(-2) // Take the last two for variety vs hero
+    ? bannersData 
     : defaultBanners;
 
   if (isLoading) {

@@ -15,11 +15,13 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/trpc/react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile');
+  const { toast } = useToast();
   
   const { data: user, isLoading: userLoading } = api.iam.me.useQuery();
   const utils = api.useUtils();
@@ -39,15 +41,41 @@ export default function SettingsPage() {
   const updateProfile = api.iam.updateProfile.useMutation({
     onSuccess: () => {
       utils.iam.me.invalidate();
+      toast({
+        title: 'Profile Saved',
+        description: 'Your personal details have been updated successfully.',
+        type: 'success',
+      });
     },
     onError: (err) => {
       console.error(err);
+      toast({
+        title: 'Update Failed',
+        description: err.message || 'Failed to save settings changes.',
+        type: 'error',
+      });
     }
   });
 
   const toggleTwoFactor = api.iam.toggleTwoFactor.useMutation({
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       utils.iam.me.invalidate();
+      const isEnabled = !!(variables && typeof variables === 'object' && 'enabled' in variables && variables.enabled);
+      toast({
+        title: isEnabled ? 'Two-Factor Enabled' : 'Two-Factor Disabled',
+        description: isEnabled 
+          ? 'Two-step verification is now active.' 
+          : 'Two-step verification has been disabled.',
+        type: 'success',
+      });
+    },
+    onError: (err) => {
+      console.error(err);
+      toast({
+        title: 'Security Update Failed',
+        description: err.message || 'Failed to toggle two-factor status.',
+        type: 'error',
+      });
     }
   });
 

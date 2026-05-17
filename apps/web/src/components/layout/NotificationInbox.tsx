@@ -5,6 +5,7 @@ import { api } from '../../trpc/react';
 import { Bell, CheckCircle2, Info, AlertTriangle, X, MailOpen } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { Skeleton } from '../ui/Skeleton';
+import Link from 'next/link';
 
 export function NotificationInbox() {
   const { data: session } = useSession();
@@ -119,9 +120,13 @@ export function NotificationInbox() {
           </div>
           
           <div className="p-3 bg-j-surface-container-low border-t border-j-border text-center">
-            <button className="text-[10px] font-black uppercase text-j-text hover:text-jumia-orange transition-colors">
+            <Link 
+              href="/notifications" 
+              onClick={() => setIsOpen(false)}
+              className="text-[10px] font-black uppercase text-j-text hover:text-jumia-orange transition-colors block w-full"
+            >
               View All
-            </button>
+            </Link>
           </div>
         </div>
       )}

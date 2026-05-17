@@ -41,6 +41,11 @@ const _notificationRouter = createTRPCRouter({
         input.push
       );
     }),
+
+  getPreferences: protectedProcedure
+    .query(async ({ ctx }) => {
+      return notificationService.getPreferences(ctx.session.user.id);
+    }),
 });
 
 export const notificationRouter = _notificationRouter;

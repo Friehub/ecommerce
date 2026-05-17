@@ -29,7 +29,10 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { format } from 'date-fns';
 
 export default function SellerInsightsPage() {
-  const { data: metrics, isLoading } = api.seller.getDashboardMetrics.useQuery();
+  const { data: metrics, isLoading: isMetricsLoading } = api.seller.getDashboardMetrics.useQuery();
+  const { data: timeSeries, isLoading: isTsLoading } = api.seller.getTimeSeries.useQuery();
+
+  const isLoading = isMetricsLoading || isTsLoading;
 
   if (isLoading) {
     return (
@@ -243,6 +246,98 @@ export default function SellerInsightsPage() {
           </div>
           <div className="absolute top-1/2 right-0 -translate-y-1/2 opacity-5 pointer-events-none translate-x-1/4 scale-150">
             <LineChart size={400} strokeWidth={1} className="text-white" />
+          </div>
+        </div>
+      </div>
+
+      {/* Trend Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Revenue Performance (Daily Gross Sales) */}
+        <div className="bg-white border border-j-border rounded-sm shadow-sm overflow-hidden flex flex-col">
+          <div className="p-8 border-b border-j-border flex items-center justify-between bg-j-background/30">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center border border-j-border shadow-sm">
+                <DollarSign size={20} className="text-jumia-orange" />
+              </div>
+              <div>
+                <h3 className="text-xs font-black text-j-text uppercase leading-none mb-1">Daily Gross Sales</h3>
+                <p className="text-[9px] font-black text-j-text-muted uppercase opacity-60 tracking-wider">30-Day Revenue Trajectory</p>
+              </div>
+            </div>
+            <Calendar size={16} className="text-j-text-muted/20" />
+          </div>
+
+          <div className="p-6 flex-1 flex flex-col justify-center min-h-[250px]">
+            {timeSeries?.gmv.length ? (
+              <div className="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar">
+                {[...timeSeries.gmv].reverse().map((point: any, i: number) => (
+                  <div key={i} className="flex justify-between items-center p-4 bg-j-background/40 border border-j-border rounded-sm group hover:border-jumia-orange/20 transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-6 bg-jumia-orange/20 rounded-full group-hover:bg-jumia-orange transition-colors" />
+                      <span className="text-[10px] font-black text-j-text-muted uppercase tracking-widest">{point.day}</span>
+                    </div>
+                    <span className="text-xs font-black text-j-text tracking-tight uppercase">₦ {point.value.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-10 text-center space-y-4 px-6">
+                <div className="w-12 h-12 bg-j-background border border-j-border rounded-sm flex items-center justify-center mx-auto shadow-sm">
+                  <BarChart3 size={20} className="text-j-text-muted opacity-40 animate-pulse" />
+                </div>
+                <h4 className="text-xs font-black text-j-text uppercase tracking-tight">No revenue data yet</h4>
+                <p className="text-[10px] text-j-text-muted font-bold uppercase tracking-tight leading-relaxed max-w-[240px] mx-auto">
+                  Sales insights are compiled at the end of the settlement cycle. Check back once your first order is delivered!
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Orders Volume (Orders per Day) */}
+        <div className="bg-white border border-j-border rounded-sm shadow-sm overflow-hidden flex flex-col">
+          <div className="p-8 border-b border-j-border flex items-center justify-between bg-j-background/30">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center border border-j-border shadow-sm">
+                <Package size={20} className="text-jumia-orange" />
+              </div>
+              <div>
+                <h3 className="text-xs font-black text-j-text uppercase leading-none mb-1">Orders Per Day</h3>
+                <p className="text-[9px] font-black text-j-text-muted uppercase opacity-60 tracking-wider">30-Day Volume Metrics</p>
+              </div>
+            </div>
+            <TrendingUp size={16} className="text-j-text-muted/20" />
+          </div>
+
+          <div className="p-6 flex-1 flex flex-col justify-center min-h-[250px]">
+            {timeSeries?.orders.length ? (
+              <div className="space-y-4 max-h-[350px] overflow-y-auto custom-scrollbar">
+                {[...timeSeries.orders].reverse().map((point: any, i: number) => (
+                  <div key={i} className="space-y-2 p-4 bg-j-background/40 border border-j-border rounded-sm group hover:border-jumia-orange/20 transition-all">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-[10px] font-black text-j-text-muted uppercase tracking-widest">{point.day}</span>
+                      <span className="text-xs font-black text-j-text tracking-widest">{point.value} ORDERS</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-white border border-j-border rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-jumia-orange transition-all duration-1000 ease-out" 
+                        style={{ width: `${Math.min(point.value * 10, 100)}%` }} 
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-10 text-center space-y-4 px-6">
+                <div className="w-12 h-12 bg-j-background border border-j-border rounded-sm flex items-center justify-center mx-auto shadow-sm">
+                  <Package size={20} className="text-j-text-muted opacity-40 animate-pulse" />
+                </div>
+                <h4 className="text-xs font-black text-j-text uppercase tracking-tight">No orders recorded</h4>
+                <p className="text-[10px] text-j-text-muted font-bold uppercase tracking-tight leading-relaxed max-w-[240px] mx-auto">
+                  Daily volume metrics will appear here once your store begins receiving consumer traffic and orders.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -5,18 +5,28 @@ const bannerService = prisma.banner;
 const productService = prisma.product;
 
 export const contentService = {
-  async getBanners() {
-    return cacheService.wrap('content:banners', async () => {
+  async getBanners(placement?: string) {
+    const cacheKey = placement ? `content:banners:${placement}` : 'content:banners:all';
+    return cacheService.wrap(cacheKey, async () => {
       const banners = await bannerService.findMany({
-        where: { isActive: true },
+        where: { 
+          isActive: true,
+          ...(placement ? { placement } : {})
+        },
         orderBy: { position: 'asc' }
       });
 
       if (banners.length === 0) {
+        if (placement === 'AD') {
+          return [
+            { id: 'ad-1', title: 'Free Delivery', imageUrl: 'https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=800', link: '/search?q=free+delivery', placement: 'AD', position: 1, isActive: true },
+            { id: 'ad-2', title: 'Official Stores', imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800', link: '/official-stores', placement: 'AD', position: 2, isActive: true }
+          ];
+        }
         return [
-          { id: '1', title: 'Tech Week', imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c', link: '/category/electronics' },
-          { id: '2', title: 'Fashion Sale', imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8', link: '/category/fashion' },
-          { id: '3', title: 'Flash Sales', imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e', link: '/flash-sales' },
+          { id: '1', title: 'Tech Week', imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c', link: '/category/electronics', placement: 'HERO', position: 1, isActive: true },
+          { id: '2', title: 'Fashion Sale', imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8', link: '/category/fashion', placement: 'HERO', position: 2, isActive: true },
+          { id: '3', title: 'Flash Sales', imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e', link: '/flash-sales', placement: 'HERO', position: 3, isActive: true },
         ];
       }
       return banners;

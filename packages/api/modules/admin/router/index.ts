@@ -312,12 +312,16 @@ const _adminRouter = createTRPCRouter({
       title: z.string(),
       imageUrl: z.string(),
       link: z.string().optional(),
-      position: z.number().default(0)
+      position: z.number().default(0),
+      placement: z.string().default("HERO")
     }))
     .mutation(async ({ input }) => {
       const { cacheService } = await import('@ecom/shared');
       const banner = await bannerService.create({ data: input });
       await cacheService.delete('content:banners');
+      await cacheService.delete('content:banners:HERO');
+      await cacheService.delete('content:banners:AD');
+      await cacheService.delete('content:banners:all');
       return banner;
     }),
 
@@ -328,6 +332,7 @@ const _adminRouter = createTRPCRouter({
       imageUrl: z.string().optional(),
       link: z.string().optional(),
       position: z.number().optional(),
+      placement: z.string().optional(),
       isActive: z.boolean().optional()
     }))
     .mutation(async ({ input }) => {
@@ -338,6 +343,9 @@ const _adminRouter = createTRPCRouter({
         data
       });
       await cacheService.delete('content:banners');
+      await cacheService.delete('content:banners:HERO');
+      await cacheService.delete('content:banners:AD');
+      await cacheService.delete('content:banners:all');
       return banner;
     }),
 
@@ -347,6 +355,9 @@ const _adminRouter = createTRPCRouter({
       const { cacheService } = await import('@ecom/shared');
       await bannerService.delete({ where: { id: input.id } });
       await cacheService.delete('content:banners');
+      await cacheService.delete('content:banners:HERO');
+      await cacheService.delete('content:banners:AD');
+      await cacheService.delete('content:banners:all');
       return { success: true };
     }),
 

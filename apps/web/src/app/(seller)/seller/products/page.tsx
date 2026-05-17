@@ -90,16 +90,16 @@ export default function SellerProductsHubPage() {
             <div className="p-2 bg-orange-50 rounded-sm border border-orange-100">
               <Database size={20} className="text-jumia-orange" />
             </div>
-            <span className="text-[10px] font-black uppercase text-jumia-orange tracking-widest">Product Management</span>
+            <span className="text-[10px] font-black uppercase text-jumia-orange tracking-widest">Catalog Management</span>
           </div>
           <h1 className="text-3xl font-black text-j-text uppercase tracking-tight leading-none">
-            Inventory <span className="text-jumia-orange">Control</span>
+            Product <span className="text-jumia-orange">Catalogue</span>
           </h1>
-          <p className="text-j-text-muted text-[10px] font-black uppercase mt-2 tracking-widest opacity-60">Manage your product catalog and stock levels</p>
+          <p className="text-j-text-muted text-[10px] font-black uppercase mt-2 tracking-widest opacity-60">Add, edit, and bulk import items in your seller catalog</p>
         </div>
         <button className="bg-jumia-orange text-white h-12 px-8 rounded-sm text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-sm active:scale-95 flex items-center gap-3 group">
           <Plus size={18} />
-          Add New Product
+          Create New Product
         </button>
       </div>
 

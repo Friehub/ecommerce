@@ -7,7 +7,7 @@ export const cacheService = {
     return JSON.parse(data) as T;
   },
 
-  async set(key: string, value: any, ttlSeconds: number = 3600) {
+  async set(key: string, value: any, ttlSeconds: number = 300) {
     await redis.set(key, JSON.stringify(value), 'EX', ttlSeconds);
   },
 
@@ -15,7 +15,7 @@ export const cacheService = {
     await redis.del(key);
   },
 
-  async wrap<T>(key: string, fn: () => Promise<T>, ttlSeconds: number = 3600): Promise<T> {
+  async wrap<T>(key: string, fn: () => Promise<T>, ttlSeconds: number = 300): Promise<T> {
     const cached = await cacheService.get<T>(key);
     if (cached) return cached;
 

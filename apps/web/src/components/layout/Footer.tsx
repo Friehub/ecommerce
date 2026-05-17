@@ -38,38 +38,38 @@ export const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16">
           <div className="flex flex-col gap-4">
             <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">LET US HELP YOU</h4>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Help Center</Link>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">How to buy on Jumia</Link>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Delivery timelines</Link>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Return Policy</Link>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Corporate & Bulk Purchase</Link>
+            <Link href="/help" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Help Center</Link>
+            <Link href="/help" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">How to buy on Jumia</Link>
+            <Link href="/help" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Delivery timelines</Link>
+            <Link href="/support" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Return Policy</Link>
+            <Link href="/support" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Corporate & Bulk Purchase</Link>
           </div>
           
           <div className="flex flex-col gap-4">
             <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">ABOUT JUMIA</h4>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">About Us</Link>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Jumia Careers</Link>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Express Delivery</Link>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Terms and Conditions</Link>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Privacy Notice</Link>
+            <Link href="/help" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">About Us</Link>
+            <Link href="/support" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Jumia Careers</Link>
+            <Link href="/jumia-express" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Express Delivery</Link>
+            <Link href="/privacy" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Terms and Conditions</Link>
+            <Link href="/privacy" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Privacy Notice</Link>
           </div>
           
           <div className="flex flex-col gap-4">
             <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">MAKE MONEY WITH JUMIA</h4>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Sell on Jumia</Link>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Become a Sales Consultant</Link>
-            <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Become a Logistics Partner</Link>
+            <Link href="/seller" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Sell on Jumia</Link>
+            <Link href="/seller" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Become a Sales Consultant</Link>
+            <Link href="/support" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Become a Logistics Partner</Link>
           </div>
           
           <div className="flex flex-col gap-4">
             <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">JUMIA INTERNATIONAL</h4>
             <div className="grid grid-cols-2 gap-2">
-              <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Algeria</Link>
-              <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Egypt</Link>
-              <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Ghana</Link>
-              <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Kenya</Link>
-              <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Morocco</Link>
-              <Link href="#" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Nigeria</Link>
+              <Link href="/" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Algeria</Link>
+              <Link href="/" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Egypt</Link>
+              <Link href="/" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Ghana</Link>
+              <Link href="/" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Kenya</Link>
+              <Link href="/" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Morocco</Link>
+              <Link href="/" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Nigeria</Link>
             </div>
           </div>
         </div>

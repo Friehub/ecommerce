@@ -253,9 +253,36 @@ const _catalogRouter = createTRPCRouter({
 
       // 2. Fallback to Redis Trie (ZSET)
       // The trie is built nightly in run-workers.ts
-      if (redis) {
-        const results = await redis.zrangebylex('autocomplete_trie', `[${query}`, `[${query}\xff`, 'LIMIT', 0, 8);
-        return results.map((r: string) => r.replace('*', ''));
+      try {
+        if (redis) {
+          const results = await redis.zrangebylex('autocomplete_trie', `[${query}`, `[${query}\xff`, 'LIMIT', 0, 8);
+          if (results && results.length > 0) {
+            return results.map((r: string) => r.replace('*', ''));
+          }
+        }
+      } catch (e) {
+        console.warn('[Autocomplete] Redis trie query failed:', e);
+      }
+
+      // 3. Fallback to SQL database query matching the active product listings
+      try {
+        const matchingProducts = await productService.findMany({
+          where: {
+            status: 'ACTIVE',
+            OR: [
+              { title: { contains: query, mode: 'insensitive' } },
+              { brand: { name: { contains: query, mode: 'insensitive' } } },
+              { category: { name: { contains: query, mode: 'insensitive' } } }
+            ]
+          },
+          select: { title: true },
+          take: 8
+        });
+        if (matchingProducts.length > 0) {
+          return Array.from(new Set(matchingProducts.map(p => p.title)));
+        }
+      } catch (e) {
+        console.error('[Autocomplete] Database fallback failed:', e);
       }
 
       return [];

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { 
  LayoutDashboard, 
  Package, 
@@ -17,13 +18,21 @@ import {
  ShieldCheck,
  ChevronRight,
  TrendingUp,
- Box
+ Box,
+ Layers,
+ AlertTriangle,
+ CornerUpLeft,
+ Megaphone
 } from 'lucide-react';
 
 const navItems = [
   { name: 'Dashboard', href: '/seller/dashboard', icon: LayoutDashboard },
   { name: 'Orders', href: '/seller/orders', icon: ShoppingCart },
-  { name: 'Products', href: '/seller/products', icon: Box },
+  { name: 'Catalogue', href: '/seller/products', icon: Box },
+  { name: 'Stock Levels', href: '/seller/inventory', icon: Layers },
+  { name: 'Advertising', href: '/seller/advertising', icon: Megaphone },
+  { name: 'Returns', href: '/seller/returns', icon: CornerUpLeft },
+  { name: 'Disputes', href: '/seller/disputes', icon: AlertTriangle },
   { name: 'Finance', href: '/seller/finance', icon: Wallet },
   { name: 'Seller Profile', href: '/seller/kyc', icon: ShieldCheck },
   { name: 'Analytics', href: '/seller/insights', icon: BarChart3 },
@@ -78,6 +87,7 @@ export function SellerSidebar() {
       {/* Footer Actions */}
       <div className="p-4 border-t border-j-border bg-j-background/30">
         <button
+          onClick={() => signOut({ callbackUrl: '/login' })}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-sm text-j-error hover:bg-red-50 transition-all font-black text-[10px] uppercase tracking-widest group"
         >
           <div className="p-2 bg-red-50 rounded-sm group-hover:bg-red-100 transition-colors">

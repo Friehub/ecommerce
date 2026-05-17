@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure, adminProcedure } from '../../../trpc.js';
+import { createTRPCRouter, protectedProcedure, adminProcedure, moderatorProcedure } from '../../../trpc.js';
 import { OpenDisputeSchema, RespondDisputeSchema, UploadEvidenceSchema, GetDisputeSchema } from '../schemas/index.js';
 import { disputeService } from '../services/dispute-service.js';
 import { paymentService } from '../../payment/services/payment-service.js';
@@ -59,7 +59,7 @@ const _disputeRouter = createTRPCRouter({
       return disputeService.escalateDispute(input.disputeId, ctx.session.user.id);
     }),
 
-  listAllDisputes: adminProcedure
+  listAllDisputes: moderatorProcedure
     .query(async () => {
       return disputeService.findMany({
         include: {
@@ -71,7 +71,7 @@ const _disputeRouter = createTRPCRouter({
       });
     }),
 
-  resolveDispute: adminProcedure
+  resolveDispute: moderatorProcedure
     .input(z.object({
       disputeId: z.string(),
       resolution: z.string(),

@@ -145,7 +145,7 @@ export default function AdminSellersPage() {
                       <div className="flex items-center justify-end gap-2">
                         {seller.status === 'PENDING_VERIFICATION' && (
                           <Link 
-                            href={`/admin/admin/kyc?sellerId=${seller.id}`}
+                            href={`/kyc?sellerId=${seller.id}`}
                             className="p-2 bg-orange-50 text-jumia-orange hover:bg-jumia-orange hover:text-white rounded-sm border border-orange-100 transition-all shadow-sm"
                             title="Review Verification"
                           >

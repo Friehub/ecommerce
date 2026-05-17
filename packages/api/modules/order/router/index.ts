@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure, sellerProcedure } from "../../../trpc.js";
+import { createTRPCRouter, protectedProcedure, sellerProcedure, publicProcedure } from "../../../trpc.js";
 import { TRPCError } from "@trpc/server";
 import { prisma, PackageStatus } from "@ecom/db";
 import { z } from "zod";
@@ -90,6 +90,44 @@ const _orderRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { logisticsService } = await import('../../logistics/services/logistics-service.js');
       return await logisticsService.calculateShipping(ctx.session.user.id, input.cartId, input.addressId);
+    }),
+
+  track: publicProcedure
+    .input(z.object({ orderId: z.string() }))
+    .query(async ({ input }) => {
+      const cleanId = input.orderId.trim().replace(/^#/, '');
+      const order = await prisma.order.findUnique({
+        where: { id: cleanId },
+        include: {
+          packages: {
+            include: {
+              lines: {
+                include: {
+                  variant: {
+                    include: {
+                      product: {
+                        select: {
+                          title: true,
+                          media: true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (!order) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Order not found. Please verify your order number.",
+        });
+      }
+
+      return order;
     }),
 });
 

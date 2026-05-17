@@ -6,10 +6,6 @@ import { opsService } from "../services/ops-service.js";
 const eventLogService = prisma.eventLog;
 
 const _opsRouter = createTRPCRouter({
-  getMetrics: adminProcedure.query(async () => {
-    return await opsService.getGlobalMetrics();
-  }),
-
   getGlobalMetrics: adminProcedure.query(async () => {
     return await opsService.getGlobalMetrics();
   }),

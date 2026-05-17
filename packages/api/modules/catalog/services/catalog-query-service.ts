@@ -120,6 +120,7 @@ export const catalogQueryService = {
              category: v.product.category,
              price: v.price.toNumber(),
              comparePrice: v.comparePrice?.toNumber(),
+             isExpress: v.product.isExpress,
              isSponsored: (v as any).isSponsored,
              adGroupId: (v as any).adGroupId
            }));
@@ -159,7 +160,8 @@ export const catalogQueryService = {
             brand: v.product.brand,
             category: v.product.category,
             price: v.price.toNumber(),
-            comparePrice: v.comparePrice?.toNumber()
+            comparePrice: v.comparePrice?.toNumber(),
+            isExpress: v.product.isExpress
           })),
           total,
           facets: {}
@@ -211,7 +213,8 @@ export const catalogQueryService = {
       brand: v.product.brand,
       category: v.product.category,
       price: v.price.toNumber(),
-      comparePrice: v.comparePrice?.toNumber()
+      comparePrice: v.comparePrice?.toNumber(),
+      isExpress: v.product.isExpress
     }));
 
     if (searchKey) {
@@ -231,7 +234,7 @@ export const catalogQueryService = {
         take: 50,
         include: { children: { include: { children: true } } }
       });
-    }, 3600);
+    }, 300);
   },
 
   async getCategoryBySlug(slug: string) {

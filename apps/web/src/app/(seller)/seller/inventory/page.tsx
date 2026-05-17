@@ -82,12 +82,12 @@ export default function SellerInventory() {
               <div className="p-2 bg-j-text text-white rounded-sm shadow-sm">
                 <Package size={20} />
               </div>
-              <span className="text-[10px] font-black uppercase text-jumia-orange tracking-widest">Inventory Control</span>
+              <span className="text-[10px] font-black uppercase text-jumia-orange tracking-widest">Stock Management</span>
             </div>
             <h1 className="text-3xl font-black text-j-text uppercase tracking-tight leading-none">
-              Product <span className="text-jumia-orange">Inventory</span>
+              Stock <span className="text-jumia-orange">Levels</span>
             </h1>
-            <p className="text-j-text-muted text-[10px] font-black uppercase mt-2 tracking-widest opacity-60">Manage your product catalog, stock levels and pricing</p>
+            <p className="text-j-text-muted text-[10px] font-black uppercase mt-2 tracking-widest opacity-60">Monitor variant availability, stock counts, and status indicators</p>
           </div>
 
           <Link 

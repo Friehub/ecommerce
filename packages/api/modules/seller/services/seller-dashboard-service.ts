@@ -151,5 +151,71 @@ export const sellerDashboardService = {
 
     if (!seller) throw new Error('SELLER_NOT_FOUND');
     return seller.documents;
+  },
+
+  async getTimeSeries(sellerId: string) {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const packages = await orderPackageService.findMany({
+      where: {
+        sellerId,
+        order: {
+          createdAt: { gte: thirtyDaysAgo }
+        }
+      },
+      include: {
+        order: {
+          select: {
+            createdAt: true,
+            status: true
+          }
+        },
+        lines: {
+          select: {
+            unitPrice: true,
+            quantity: true,
+            discountApplied: true
+          }
+        }
+      }
+    });
+
+    const gmvByDay: Record<string, number> = {};
+    const ordersByDay: Record<string, number> = {};
+
+    packages.forEach(pkg => {
+      const day = pkg.order.createdAt.toISOString().split('T')[0];
+      ordersByDay[day] = (ordersByDay[day] || 0) + 1;
+
+      if (['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED'].includes(pkg.order.status)) {
+        let pkgTotal = 0;
+        pkg.lines.forEach(line => {
+          const price = Number(line.unitPrice) || 0;
+          const qty = line.quantity || 0;
+          const disc = Number(line.discountApplied) || 0;
+          pkgTotal += (price * qty) - disc;
+        });
+        gmvByDay[day] = (gmvByDay[day] || 0) + pkgTotal;
+      }
+    });
+
+    // Fill in days with zero values to keep charts continuous
+    for (let i = 0; i < 30; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dayStr = date.toISOString().split('T')[0];
+      if (!gmvByDay[dayStr]) gmvByDay[dayStr] = 0;
+      if (!ordersByDay[dayStr]) ordersByDay[dayStr] = 0;
+    }
+
+    return {
+      gmv: Object.entries(gmvByDay)
+        .map(([day, value]) => ({ day, value }))
+        .sort((a, b) => a.day.localeCompare(b.day)),
+      orders: Object.entries(ordersByDay)
+        .map(([day, value]) => ({ day, value }))
+        .sort((a, b) => a.day.localeCompare(b.day))
+    };
   }
 };

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { 
   LayoutDashboard, 
   Users, 
@@ -15,12 +16,21 @@ import {
   AlertTriangle,
   Settings,
   Image as ImageIcon,
-  Tag
+  Tag,
+  ShieldAlert,
+  Box,
+  Wallet,
+  CornerUpLeft
 } from 'lucide-react';
 
 const navItems = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Sellers', href: '/admin/sellers', icon: ShieldCheck },
+  { name: 'KYC Verification', href: '/kyc', icon: ShieldCheck },
+  { name: 'Fraud Monitoring', href: '/fraud', icon: ShieldAlert },
+  { name: 'Inventory', href: '/inventory', icon: Box },
+  { name: 'Payouts', href: '/payouts', icon: Wallet },
+  { name: 'Returns', href: '/returns', icon: CornerUpLeft },
   { name: 'Users', href: '/admin/admin/users', icon: Users },
   { name: 'Logistics', href: '/admin/logistics', icon: Truck },
   { name: 'Disputes', href: '/admin/admin/disputes', icon: AlertTriangle },
@@ -78,6 +88,7 @@ export function AdminSidebar() {
       {/* Footer Actions */}
       <div className="p-4 border-t border-j-border bg-j-background/30">
         <button
+          onClick={() => signOut({ callbackUrl: '/login' })}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-sm text-j-error hover:bg-red-50 transition-all font-black text-[10px] uppercase tracking-widest group"
         >
           <div className="p-2 bg-red-50 rounded-sm group-hover:bg-red-100 transition-colors">

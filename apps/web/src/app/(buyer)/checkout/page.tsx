@@ -28,6 +28,12 @@ export default function CheckoutPage() {
   const [selectedState, setSelectedState] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
 
+  const [couponCode, setCouponCode] = useState('');
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<any>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
+
   const utils = api.useUtils();
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
@@ -52,6 +58,7 @@ export default function CheckoutPage() {
 
   const createOrder = api.order.create.useMutation({
     onSuccess: (order) => {
+      utils.cart.get.invalidate();
       if (paymentMethod === 'CARD') {
         initializePayment.mutate({ orderId: order.id, provider: paymentProvider });
       } else {
@@ -93,7 +100,49 @@ export default function CheckoutPage() {
 
   const subtotal = cart?.items.reduce((acc, item) => acc + (Number(item.priceSnapshot ?? 0) * item.quantity), 0) || 0;
   const shipping = shippingData?.total ?? 500;
-  const total = subtotal + shipping;
+
+  let discountAmount = 0;
+  if (appliedPromo) {
+    if (appliedPromo.discountType === 'PERCENTAGE') {
+      discountAmount = subtotal * (Number(appliedPromo.discountValue) / 100);
+    } else {
+      discountAmount = Number(appliedPromo.discountValue);
+    }
+  }
+  const discount = Math.min(discountAmount, subtotal);
+  const total = subtotal + shipping - discount;
+
+  const handleApplyCoupon = async () => {
+    if (!couponInput.trim()) return;
+    setIsValidatingPromo(true);
+    setPromoError(null);
+    try {
+      const promo = await utils.client.promo.validateCoupon.query({
+        code: couponInput.trim(),
+        orderTotal: subtotal
+      });
+      setAppliedPromo(promo);
+      setCouponCode(couponInput.trim());
+      showToast('Coupon applied successfully!');
+    } catch (err: any) {
+      console.error(err);
+      let message = 'Invalid coupon code';
+      if (err.message === 'COUPON_NOT_FOUND') message = 'Coupon not found';
+      else if (err.message === 'COUPON_INACTIVE') message = 'Coupon is inactive';
+      else if (err.message === 'COUPON_EXHAUSTED') message = 'Coupon usage limit reached';
+      else if (err.message === 'COUPON_EXPIRED') message = 'Coupon has expired';
+      else if (err.message === 'MIN_ORDER_VALUE_NOT_MET') message = 'Minimum order value not met';
+      else if (err.message === 'COUPON_SELLER_MISMATCH') message = 'Coupon is not applicable to items in your cart';
+      else if (err.message === 'COUPON_USER_LIMIT_EXCEEDED') message = 'You have exceeded usage limit for this coupon';
+      
+      setPromoError(message);
+      setAppliedPromo(null);
+      setCouponCode('');
+      showToast(message, 'error');
+    } finally {
+      setIsValidatingPromo(false);
+    }
+  };
 
   const handlePlaceOrder = () => {
     if (!selectedAddressId) {
@@ -105,6 +154,7 @@ export default function CheckoutPage() {
       cartId: cart?.id || sessionId,
       paymentMethod,
       addressId: selectedAddressId,
+      couponCode: couponCode || undefined,
     });
   };
 
@@ -347,6 +397,59 @@ export default function CheckoutPage() {
                   <span className="font-black uppercase tracking-tight">Delivery Fee</span>
                   <span className="font-black">₦ {shipping.toLocaleString()}</span>
                 </div>
+                {appliedPromo && (
+                  <div className="flex justify-between text-[11px] text-j-success">
+                    <span className="font-black uppercase tracking-tight">Discount</span>
+                    <span className="font-black">- ₦ {discount.toLocaleString()}</span>
+                  </div>
+                )}
+                
+                {/* Promo Code Input */}
+                <div className="border-t border-j-border pt-4 mt-2">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-j-text-muted mb-2">Have a promo code?</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                      placeholder="ENTER CODE"
+                      className="flex-1 bg-j-background border border-j-border rounded-sm px-3 py-2 text-[12px] font-black tracking-widest focus:border-jumia-orange outline-none"
+                      disabled={isValidatingPromo || !!appliedPromo}
+                    />
+                    {appliedPromo ? (
+                      <button
+                        onClick={() => {
+                          setAppliedPromo(null);
+                          setCouponInput('');
+                          setCouponCode('');
+                          showToast('Coupon removed');
+                        }}
+                        className="bg-j-error text-white px-4 py-2 rounded-sm font-black text-[10px] uppercase tracking-wider hover:bg-red-700 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleApplyCoupon}
+                        disabled={isValidatingPromo || !couponInput.trim()}
+                        className="bg-jumia-orange text-white px-5 py-2 rounded-sm font-black text-[10px] uppercase tracking-wider hover:bg-orange-600 transition-colors disabled:opacity-50"
+                      >
+                        {isValidatingPromo ? 'Applying...' : 'Apply'}
+                      </button>
+                    )}
+                  </div>
+                  {promoError && (
+                    <p className="text-j-error text-[10px] font-black uppercase mt-1.5 flex items-center gap-1">
+                      <AlertCircle size={12} /> {promoError}
+                    </p>
+                  )}
+                  {appliedPromo && (
+                    <p className="text-j-success text-[10px] font-black uppercase mt-1.5 flex items-center gap-1">
+                      <CheckCircle2 size={12} /> {appliedPromo.title || 'PROMO CODE APPLIED'} ({appliedPromo.discountType === 'PERCENTAGE' ? `${appliedPromo.discountValue}% Off` : `₦ ${Number(appliedPromo.discountValue).toLocaleString()} Off`})
+                    </p>
+                  )}
+                </div>
+
                 <div className="pt-6 border-t-2 border-j-border border-dashed flex justify-between items-center">
                   <span className="text-sm font-black text-j-text uppercase tracking-widest">Total Amount</span>
                   <span className="text-2xl font-black text-jumia-orange">₦ {total.toLocaleString()}</span>

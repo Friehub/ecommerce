@@ -15,6 +15,7 @@ interface ProductCardProps {
     media?: { url: string }[];
     discount?: number;
     inventory: number;
+    isExpress?: boolean;
   };
 }
 
@@ -65,11 +66,13 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           )}
         </div>
 
-        {/* Jumia Express Badge (Randomly for effect if not in data) */}
+        {/* Jumia Express Badge (rendered only if the product qualifies in the DB) */}
         <div className="mt-3 flex items-center gap-2 h-4">
-          <div className="bg-blue-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-sm uppercase italic tracking-tighter">
-            Jumia <span className="font-normal">Express</span>
-          </div>
+          {product.isExpress && (
+            <div className="bg-blue-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-sm uppercase italic tracking-tighter">
+              Jumia <span className="font-normal">Express</span>
+            </div>
+          )}
         </div>
 
         {/* Stock / Flash Progress */}

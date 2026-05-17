@@ -15,8 +15,10 @@
     "@ecom/api": "workspace:*",
     "@ecom/db": "workspace:*",
     "@ecom/shared": "workspace:*",
+    "@prisma/client": "^6.0.0",
     "bullmq": "^4.0.0",
     "dotenv": "^16.0.0",
+    "ioredis": "^5.10.1",
     "nanoid": "^3.0.0",
     "prom-client": "^15.1.3",
     "zod": "^3.0.0"

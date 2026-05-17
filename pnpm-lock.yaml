@@ -73,6 +73,9 @@ importers:
       '@fastify/swagger-ui':
         specifier: ^5.0.0
         version: 5.2.6
+      '@prisma/client':
+        specifier: ^6.0.0
+        version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
       '@trpc/server':
         specifier: 10.45.4
         version: 10.45.4
@@ -405,12 +408,18 @@ importers:
       '@ecom/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@prisma/client':
+        specifier: ^6.0.0
+        version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
       bullmq:
         specifier: ^4.0.0
         version: 4.18.3
       dotenv:
         specifier: ^16.0.0
         version: 16.6.1
+      ioredis:
+        specifier: ^5.10.1
+        version: 5.10.1
       nanoid:
         specifier: ^3.0.0
         version: 3.3.11

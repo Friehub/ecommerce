@@ -55,14 +55,14 @@ describe('cartService', () => {
       };
       const mockFlashSale = { salePrice: new Decimal(800) };
 
-      (prisma.cart.upsert as any).mockResolvedValue(mockCart);
-      (prisma.productVariant.findUnique as any).mockResolvedValue(mockVariant);
+      (cartService.upsert as any).mockResolvedValue(mockCart);
+      (productVariantService.findUnique as any).mockResolvedValue(mockVariant);
       (inventoryService.syncStockFromDB as any).mockResolvedValue(10);
       (promoService.getFlashSaleForVariant as any).mockResolvedValue(mockFlashSale);
 
       await cartService.addItem(sessionId, variantId, 1);
 
-      expect(prisma.cartItem.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      expect(cartItemService.upsert).toHaveBeenCalledWith(expect.objectContaining({
         create: expect.objectContaining({
           priceSnapshot: mockFlashSale.salePrice
         })
@@ -79,14 +79,14 @@ describe('cartService', () => {
         product: { sellerId: 's_1' } 
       };
 
-      (prisma.cart.upsert as any).mockResolvedValue(mockCart);
-      (prisma.productVariant.findUnique as any).mockResolvedValue(mockVariant);
+      (cartService.upsert as any).mockResolvedValue(mockCart);
+      (productVariantService.findUnique as any).mockResolvedValue(mockVariant);
       (inventoryService.syncStockFromDB as any).mockResolvedValue(10);
       (promoService.getFlashSaleForVariant as any).mockResolvedValue(null);
 
       await cartService.addItem(sessionId, variantId, 1);
 
-      expect(prisma.cartItem.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      expect(cartItemService.upsert).toHaveBeenCalledWith(expect.objectContaining({
         create: expect.objectContaining({
           priceSnapshot: mockVariant.price
         })
@@ -94,8 +94,8 @@ describe('cartService', () => {
     });
 
     it('should throw if insufficient stock', async () => {
-      (prisma.cart.upsert as any).mockResolvedValue({ id: 'c1' });
-      (prisma.productVariant.findUnique as any).mockResolvedValue({ price: new Decimal(100) });
+      (cartService.upsert as any).mockResolvedValue({ id: 'c1' });
+      (productVariantService.findUnique as any).mockResolvedValue({ price: new Decimal(100) });
       (inventoryService.syncStockFromDB as any).mockResolvedValue(0);
 
       await expect(cartService.addItem('s1', 'v1', 1)).rejects.toThrow('INSUFFICIENT_STOCK');

@@ -18,9 +18,30 @@ const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 
 import { promoService } from '../../promo/services/promo-service.js';
 
+const orderPackageService = prisma.orderPackage;
+const cartService = prisma.cart;
+const userAddressService = prisma.userAddress;
+const stockLevelService = prisma.stockLevel;
+const productVariantService = prisma.productVariant;
+const orderLineService = prisma.orderLine;
+const orderServiceAlias = prisma.order;
+
 export const orderService = {
+  // Prisma delegates
+  findUnique: prisma.order.findUnique,
+  findFirst: prisma.order.findFirst,
+  findMany: prisma.order.findMany,
+  create: prisma.order.create,
+  update: prisma.order.update,
+  delete: prisma.order.delete,
+  count: prisma.order.count,
+  aggregate: prisma.order.aggregate,
+  groupBy: prisma.order.groupBy,
+  updateMany: prisma.order.updateMany,
+  deleteMany: prisma.order.deleteMany,
+
   async createFromCart(userId: string, cartId: string, paymentMethod: string, addressId: string, referralLinkId?: string, couponCode?: string) {
-    const cart = await prisma.cart.findUnique({
+    const cart = await cartService.findUnique({
       where: { id: cartId },
       include: { items: { include: { variant: true } } }
     });
@@ -28,7 +49,7 @@ export const orderService = {
     if (!cart || cart.items.length === 0) throw new Error('CART_EMPTY');
 
     // Fix BUG-005: Verify address ownership
-    const address = await prisma.userAddress.findFirst({
+    const address = await userAddressService.findFirst({
       where: { id: addressId, userId }
     });
     if (!address) throw new Error('ADDRESS_NOT_FOUND_OR_UNAUTHORIZED');
@@ -40,7 +61,7 @@ export const orderService = {
 
     for (const item of cart.items) {
       // Find the best warehouse (one with enough stock)
-      const stockLevel = await prisma.stockLevel.findFirst({
+      const stockLevel = await stockLevelService.findFirst({
         where: { 
           variantId: item.variantId, 
           sellerId: item.sellerId, 
@@ -236,9 +257,10 @@ export const orderService = {
   },
 
   async getOrder(orderId: string, userId: string) {
-    return prisma.order.findUnique({
+    return orderService.findUnique({
       where: { id: orderId, userId },
       include: { 
+        user: true,
         packages: { 
           include: { 
             lines: { include: { variant: { include: { product: true } } } },
@@ -250,7 +272,7 @@ export const orderService = {
   },
 
   async listUserOrders(userId: string, limit: number = 20, offset: number = 0) {
-    return prisma.order.findMany({
+    return orderService.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
       take: limit,
@@ -259,7 +281,7 @@ export const orderService = {
   },
 
   async listSellerPackages(sellerId: string, limit: number = 20, offset: number = 0) {
-    return prisma.orderPackage.findMany({
+    return orderPackageService.findMany({
       where: { sellerId },
       include: { 
         order: true,
@@ -272,7 +294,7 @@ export const orderService = {
   },
 
   async cancelOrder(orderId: string, userId: string) {
-    const order = await prisma.order.findUnique({
+    const order = await orderService.findUnique({
       where: { id: orderId, userId }
     });
     if (!order) throw new Error('ORDER_NOT_FOUND');

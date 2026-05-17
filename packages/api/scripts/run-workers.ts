@@ -70,7 +70,7 @@ cron.schedule('30 0 * * *', async () => {
 cron.schedule('0 1 * * 1', async () => {
   console.log('⏳ Running weekly statement generation...');
   try {
-    const activeSellers = await prisma.seller.findMany({ where: { status: 'ACTIVE' } });
+    const activeSellers = await sellerService.findMany({ where: { status: 'ACTIVE' } });
     const now = new Date();
     // E08: Use immutable date creation to avoid mutating 'now' in-place
     const periodEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
@@ -100,7 +100,7 @@ cron.schedule('0 * * * *', async () => {
 cron.schedule('30 1 * * 0', async () => {
   console.log('⏳ Running weekly seller tier upgrade evaluation...');
   try {
-    const activeSellers = await prisma.seller.findMany({ 
+    const activeSellers = await sellerService.findMany({ 
       where: { status: 'ACTIVE' },
       select: { id: true, tier: true }
     });
@@ -116,7 +116,7 @@ cron.schedule('30 1 * * 0', async () => {
       }
 
       if (seller.tier !== targetTier) {
-        await prisma.seller.update({
+        await sellerService.update({
           where: { id: seller.id },
           data: { tier: targetTier as any }
         });
@@ -144,7 +144,7 @@ cron.schedule('0 2 * * *', async () => {
   console.log('⏳ Running nightly search sync and autocomplete builder...');
   try {
     // We get all active products
-    const variants = await prisma.productVariant.findMany({
+    const variants = await productVariantService.findMany({
       where: { product: { status: 'ACTIVE' } },
       include: { product: true }
     });
@@ -186,7 +186,7 @@ cron.schedule('0 3 * * *', async () => {
     fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
 
     // E10: Use orderService.updateStatus to ensure stock is released correctly
-    const fraudOrders = await prisma.order.findMany({
+    const fraudOrders = await orderService.findMany({
       where: {
         status: 'FRAUD_REVIEW',
         createdAt: { lte: fortyEightHoursAgo }
@@ -220,7 +220,7 @@ cron.schedule('*/5 * * * *', async () => {
   console.log('⏳ Running outbox sweep for PENDING events...');
   try {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const pendingEvents = await prisma.eventLog.findMany({
+    const pendingEvents = await eventLogService.findMany({
       where: {
         status: 'PENDING',
         createdAt: { lt: fiveMinutesAgo }
@@ -236,7 +236,7 @@ cron.schedule('*/5 * * * *', async () => {
       try {
         await publishEvent(event.topic as any, event.payload as any);
         
-        await prisma.eventLog.update({
+        await eventLogService.update({
           where: { id: event.id },
           data: { status: 'PUBLISHED' }
         });
@@ -245,7 +245,7 @@ cron.schedule('*/5 * * * *', async () => {
         console.error(`❌ Failed to re-publish event ${event.id}:`, publishError);
         
         const nextRetryCount = event.retryCount + 1;
-        await prisma.eventLog.update({
+        await eventLogService.update({
           where: { id: event.id },
           data: { 
             retryCount: nextRetryCount,

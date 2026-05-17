@@ -3,11 +3,16 @@ import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { adminService } from "../../admin/services/admin-service.js";
 import { sellerDashboardService } from "../services/seller-dashboard-service.js";
+import { sellerService } from "../../iam/services/seller-service.js";
+
+const sellerDocumentService = prisma.sellerDocument;
+const productService = prisma.product;
+const promotionService = prisma.promotion;
 
 const _sellerRouter = createTRPCRouter({
   getDashboardMetrics: sellerProcedure.query(async ({ ctx }) => {
     // We need to get the seller ID for the user
-    const seller = await prisma.seller.findUnique({
+    const seller = await sellerService.findUnique({
       where: { userId: ctx.session.user.id }
     });
     
@@ -17,7 +22,7 @@ const _sellerRouter = createTRPCRouter({
   }),
 
   getProfile: sellerProcedure.query(async ({ ctx }) => {
-    const seller = await prisma.seller.findUnique({
+    const seller = await sellerService.findUnique({
       where: { userId: ctx.session.user.id },
       include: { documents: true }
     });
@@ -31,12 +36,12 @@ const _sellerRouter = createTRPCRouter({
       url: z.string().url(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id }
       });
       if (!seller) throw new Error('NOT_A_SELLER');
 
-      return await prisma.sellerDocument.create({
+      return await sellerDocumentService.create({
         data: {
           sellerId: seller.id,
           type: input.type as any,
@@ -58,7 +63,7 @@ const _sellerRouter = createTRPCRouter({
       offset: z.number().min(0).default(0),
     }))
     .query(async ({ input }) => {
-      return await prisma.seller.findMany({
+      return await sellerService.findMany({
         where: { status: 'PENDING_VERIFICATION' },
         include: { user: true, documents: true },
         take: input.limit,
@@ -75,13 +80,13 @@ const _sellerRouter = createTRPCRouter({
       const limit = input?.limit ?? 50;
       const offset = input?.offset ?? 0;
 
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id }
       });
       
       if (!seller) throw new Error('NOT_A_SELLER');
       
-      return await prisma.product.findMany({
+      return await productService.findMany({
         where: { sellerId: seller.id },
         include: {
           variants: {
@@ -104,13 +109,13 @@ const _sellerRouter = createTRPCRouter({
       productIds: z.array(z.string())
     }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id }
       });
       
       if (!seller) throw new Error('NOT_A_SELLER');
       
-      return await prisma.product.updateMany({
+      return await productService.updateMany({
         where: {
           id: { in: input.productIds },
           sellerId: seller.id
@@ -126,13 +131,13 @@ const _sellerRouter = createTRPCRouter({
       productIds: z.array(z.string())
     }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id }
       });
       if (!seller) throw new Error('NOT_A_SELLER');
       
       // Update status to ACTIVE
-      const result = await prisma.product.updateMany({
+      const result = await productService.updateMany({
         where: {
           id: { in: input.productIds },
           sellerId: seller.id
@@ -143,7 +148,7 @@ const _sellerRouter = createTRPCRouter({
       });
 
       // Sync to search index for each product
-      const products = await prisma.product.findMany({
+      const products = await productService.findMany({
         where: { id: { in: input.productIds } },
         include: { variants: true }
       });
@@ -170,12 +175,12 @@ const _sellerRouter = createTRPCRouter({
       endDate: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id }
       });
       if (!seller) throw new Error('NOT_A_SELLER');
 
-      return await prisma.promotion.create({
+      return await promotionService.create({
         data: {
           name: input.name,
           description: input.description,
@@ -197,12 +202,12 @@ const _sellerRouter = createTRPCRouter({
 
   listMyCoupons: sellerProcedure
     .query(async ({ ctx }) => {
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id }
       });
       if (!seller) throw new Error('NOT_A_SELLER');
 
-      return await prisma.promotion.findMany({
+      return await promotionService.findMany({
         where: { sellerId: seller.id },
         include: { coupons: true },
         orderBy: { startDate: 'desc' }

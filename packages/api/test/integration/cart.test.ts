@@ -15,28 +15,28 @@ describe('Cart Integration', () => {
     await clearDatabase();
 
     // 1. Setup User
-    const user = await prisma.user.create({
+    const user = await userService.create({
       data: { email: 'cart-user@example.com' }
     });
     userId = user.id;
 
     // 2. Setup Seller & Product
-    const seller = await prisma.user.create({
+    const seller = await userService.create({
       data: { email: 'cart-seller@example.com', role: 'SELLER' }
     });
-    const profile = await prisma.seller.create({
+    const profile = await sellerService.create({
       data: { userId: seller.id, businessName: 'Cart Shop', status: 'ACTIVE' }
     });
     sellerProfileId = profile.id;
 
-    const category = await prisma.category.create({
+    const category = await categoryService.create({
       data: { name: 'Carts', slug: 'carts', commissionRate: new Decimal(10) }
     });
-    const brand = await prisma.brand.create({
+    const brand = await brandService.create({
       data: { name: 'CartBrand', slug: 'cartbrand' }
     });
 
-    const product = await prisma.product.create({
+    const product = await productService.create({
       data: {
         title: 'Cart Item',
         slug: 'cart-item',
@@ -48,7 +48,7 @@ describe('Cart Integration', () => {
       }
     });
 
-    const variant = await prisma.productVariant.create({
+    const variant = await productVariantService.create({
       data: {
         productId: product.id,
         sku: 'CART-SKU',
@@ -58,11 +58,11 @@ describe('Cart Integration', () => {
     });
     variantId = variant.id;
 
-    const warehouse = await prisma.warehouse.create({
+    const warehouse = await warehouseService.create({
       data: { name: 'Cart Warehouse', address: 'Test' }
     });
 
-    await prisma.stockLevel.create({
+    await stockLevelService.create({
       data: {
         variantId,
         warehouseId: warehouse.id,
@@ -76,7 +76,7 @@ describe('Cart Integration', () => {
     // addItem(sessionId, variantId, quantity, userId?)
     await cartService.addItem('session-1', variantId, 2);
 
-    const dbCart = await prisma.cart.findUnique({
+    const dbCart = await cartService.findUnique({
       where: { sessionId: 'session-1' },
       include: { items: true }
     });
@@ -93,7 +93,7 @@ describe('Cart Integration', () => {
     // 2. Merge into User
     await cartService.mergeCart('guest-session', userId);
 
-    const userCart = await prisma.cart.findUnique({
+    const userCart = await cartService.findUnique({
       where: { userId },
       include: { items: true }
     });

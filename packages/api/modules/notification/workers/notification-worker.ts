@@ -4,6 +4,10 @@ import { prisma } from '@ecom/db';
 import { notificationService } from '../services/notification-service.js';
 import { emailTemplates } from '../services/email-templates.js';
 
+const orderService = prisma.order;
+const sellerService = prisma.seller;
+const disputeService = prisma.dispute;
+
 export const notificationWorker = new Worker('notification-events', async (job: Job) => {
   console.log(`[NotificationWorker] Received system event job ${job.id} of type ${job.name}`);
 
@@ -22,7 +26,7 @@ export const notificationWorker = new Worker('notification-events', async (job: 
       }
       case 'payment.confirmed': {
         // Resolve user id from the order
-        const order = await prisma.order.findUnique({
+        const order = await orderService.findUnique({
           where: { id: payload.orderId }
         });
         if (order) {
@@ -32,7 +36,7 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         break;
       }
       case 'order.status_updated': {
-        const order = await prisma.order.findUnique({
+        const order = await orderService.findUnique({
           where: { id: payload.orderId }
         });
         if (!order) break;
@@ -55,7 +59,7 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         break;
       }
       case 'seller.approved': {
-        const seller = await prisma.seller.findUnique({
+        const seller = await sellerService.findUnique({
           where: { id: payload.sellerId }
         });
         if (seller) {
@@ -65,7 +69,7 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         break;
       }
       case 'seller.suspended': {
-        const seller = await prisma.seller.findUnique({
+        const seller = await sellerService.findUnique({
           where: { id: payload.sellerId }
         });
         if (seller) {
@@ -75,7 +79,7 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         break;
       }
       case 'seller.document_rejected': {
-        const seller = await prisma.seller.findUnique({
+        const seller = await sellerService.findUnique({
           where: { id: payload.sellerId }
         });
         if (seller) {
@@ -85,7 +89,7 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         break;
       }
       case 'dispute.resolved': {
-        const dispute = await prisma.dispute.findUnique({
+        const dispute = await disputeService.findUnique({
           where: { id: payload.disputeId }
         });
         if (dispute) {
@@ -95,7 +99,7 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         break;
       }
       case 'dispute.opened': {
-        const dispute = await prisma.dispute.findUnique({
+        const dispute = await disputeService.findUnique({
           where: { id: payload.disputeId },
           include: { seller: true }
         });
@@ -106,7 +110,7 @@ export const notificationWorker = new Worker('notification-events', async (job: 
         break;
       }
       case 'seller.tier_changed': {
-        const seller = await prisma.seller.findUnique({
+        const seller = await sellerService.findUnique({
           where: { id: payload.sellerId }
         });
         if (seller) {

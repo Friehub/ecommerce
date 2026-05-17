@@ -16,7 +16,7 @@ export const fraudWorker = new Worker('system-events', async (job: Job) => {
   console.log(`[FraudWorker] Screening order ${orderId} for fraud...`);
 
   try {
-    const order = await prisma.order.findUnique({
+    const order = await orderService.findUnique({
       where: { id: orderId },
       include: { 
         user: true, 

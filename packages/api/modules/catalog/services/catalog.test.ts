@@ -54,8 +54,8 @@ describe('catalogService', () => {
         }
       ];
 
-      (prisma.productVariant.findMany as any).mockResolvedValue(mockVariants);
-      (prisma.productVariant.count as any).mockResolvedValue(1);
+      (productVariantService.findMany as any).mockResolvedValue(mockVariants);
+      (productVariantService.count as any).mockResolvedValue(1);
 
       const response = await catalogService.listProducts({});
 
@@ -69,7 +69,7 @@ describe('catalogService', () => {
   describe('getCategoryTree', () => {
     it('should return a list of root categories', async () => {
       const mockCategories = [{ id: 'c1', name: 'Electronics' }];
-      (prisma.category.findMany as any).mockResolvedValue(mockCategories);
+      (categoryService.findMany as any).mockResolvedValue(mockCategories);
 
       const results = await catalogService.getCategoryTree();
       expect(results).toHaveLength(1);

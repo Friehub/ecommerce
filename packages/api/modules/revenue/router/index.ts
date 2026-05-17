@@ -2,27 +2,30 @@ import { createTRPCRouter, sellerProcedure, adminProcedure } from "../../../trpc
 import { z } from "zod";
 import { revenueService } from "../services/revenue-service.js";
 import { prisma } from "@ecom/db";
+import { sellerService } from "../../iam/services/seller-service.js";
+
+const payoutService = prisma.payout;
 
 const _revenueRouter = createTRPCRouter({
   requestPayout: sellerProcedure
     .input(z.object({ amount: z.number().positive() }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new Error('NOT_A_SELLER');
       return await revenueService.requestPayout(seller.id, input.amount);
     }),
 
   listMyPayouts: sellerProcedure.query(async ({ ctx }) => {
-    const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+    const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
     if (!seller) throw new Error('NOT_A_SELLER');
-    return await prisma.payout.findMany({
+    return await payoutService.findMany({
       where: { sellerId: seller.id },
       orderBy: { createdAt: 'desc' }
     });
   }),
 
   getMyStats: sellerProcedure.query(async ({ ctx }) => {
-    const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+    const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
     if (!seller) throw new Error('NOT_A_SELLER');
     return await revenueService.getSellerStats(seller.id);
   }),
@@ -34,20 +37,20 @@ const _revenueRouter = createTRPCRouter({
     }))
     .query(async ({ ctx, input }) => {
       const { ledgerService } = await import('../services/ledger-service.js');
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new Error('NOT_A_SELLER');
       return await ledgerService.getLedger(seller.id, input.limit, input.cursor);
     }),
   
   exportLedger: sellerProcedure.query(async ({ ctx }) => {
     const { ledgerService } = await import('../services/ledger-service.js');
-    const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+    const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
     if (!seller) throw new Error('NOT_A_SELLER');
     return await ledgerService.exportLedger(seller.id);
   }),
 
   getPayoutAccount: sellerProcedure.query(async ({ ctx }) => {
-    const seller = await prisma.seller.findUnique({ 
+    const seller = await sellerService.findUnique({ 
       where: { userId: ctx.session.user.id },
       select: { bankCode: true, bankAccountNumber: true, bankAccountName: true }
     });
@@ -62,7 +65,7 @@ const _revenueRouter = createTRPCRouter({
       accountName: z.string()
     }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new Error('NOT_A_SELLER');
       
       return await revenueService.updatePayoutAccount(seller.id, input);
@@ -75,14 +78,14 @@ const _revenueRouter = createTRPCRouter({
     }),
 
   listPendingPayouts: adminProcedure.query(async () => {
-    return await prisma.payout.findMany({
+    return await payoutService.findMany({
       where: { status: 'PENDING' },
       include: { seller: true }
     });
   }),
 
   listAllPayouts: adminProcedure.query(async () => {
-    return await prisma.payout.findMany({
+    return await payoutService.findMany({
       include: { seller: true },
       orderBy: { createdAt: 'desc' },
       take: 50

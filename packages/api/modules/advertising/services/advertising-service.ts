@@ -1,9 +1,13 @@
 import { prisma, Decimal } from '@ecom/db';
 import { publishEvent } from '@ecom/shared';
 
+const adCampaignService = prisma.adCampaign;
+const adGroupService = prisma.adGroup;
+const adImpressionService = prisma.adImpression;
+
 export const advertisingService = {
   async createCampaign(sellerId: string, name: string, budget: number, startDate: Date, endDate?: Date) {
-    return prisma.adCampaign.create({
+    return adCampaignService.create({
       data: {
         sellerId,
         name,
@@ -16,7 +20,7 @@ export const advertisingService = {
   },
 
   async addAdGroup(campaignId: string, productId: string, bid: number, keywords: string[]) {
-    return prisma.adGroup.create({
+    return adGroupService.create({
       data: {
         campaignId,
         productId,
@@ -29,7 +33,7 @@ export const advertisingService = {
   },
 
   async recordImpression(adGroupId: string, userId?: string) {
-    const impression = await prisma.adImpression.create({
+    const impression = await adImpressionService.create({
       data: {
         adGroupId,
         userId
@@ -41,7 +45,7 @@ export const advertisingService = {
   },
 
   async recordClick(adGroupId: string, userId?: string) {
-    const adGroup = await prisma.adGroup.findUnique({
+    const adGroup = await adGroupService.findUnique({
       where: { id: adGroupId },
       include: {
         campaign: { include: { seller: true } }
@@ -102,7 +106,7 @@ export const advertisingService = {
   },
 
   async getSellerCampaigns(sellerId: string) {
-    return prisma.adCampaign.findMany({
+    return adCampaignService.findMany({
       where: { sellerId },
       include: {
         adGroups: {
@@ -117,7 +121,7 @@ export const advertisingService = {
   },
 
   async updateCampaignStatus(sellerId: string, campaignId: string, status: 'ACTIVE' | 'PAUSED' | 'ENDED') {
-    return prisma.adCampaign.update({
+    return adCampaignService.update({
       where: { id: campaignId, sellerId },
       data: { status }
     });
@@ -127,7 +131,7 @@ export const advertisingService = {
     if (!query) return null;
     
     // 1. Fetch candidates from DB
-    const candidates = await prisma.adGroup.findMany({
+    const candidates = await adGroupService.findMany({
       where: {
         campaign: { status: 'ACTIVE' },
         keywords: {

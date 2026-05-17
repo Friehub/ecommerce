@@ -1,8 +1,21 @@
 import { prisma, Decimal } from '@ecom/db'
 
+const couponService = prisma.coupon;
+const cartService = prisma.cart;
+const couponRedemptionService = prisma.couponRedemption;
+const flashSaleService = prisma.flashSale;
+
 export const promoService = {
+  // Prisma delegates
+  findUnique: prisma.promotion.findUnique,
+  findFirst: prisma.promotion.findFirst,
+  findMany: prisma.promotion.findMany,
+  create: prisma.promotion.create,
+  update: prisma.promotion.update,
+  delete: prisma.promotion.delete,
+  count: prisma.promotion.count,
   async validateCoupon(code: string, userId?: string, orderTotal?: number) {
-    const coupon = await prisma.coupon.findUnique({
+    const coupon = await couponService.findUnique({
       where: { code },
       include: { promotion: true }
     });
@@ -34,7 +47,7 @@ export const promoService = {
 
     // Check seller scoping (C05)
     if (promo.sellerId && userId) {
-      const cart = await prisma.cart.findFirst({
+      const cart = await cartService.findFirst({
         where: { userId },
         include: { items: true }
       });
@@ -49,7 +62,7 @@ export const promoService = {
 
     // Check per-user limit
     if (promo.usageLimitPerUser && userId) {
-      const userRedemptions = await prisma.couponRedemption.count({
+      const userRedemptions = await couponRedemptionService.count({
         where: { couponId: coupon.id, userId }
       });
       if (userRedemptions >= promo.usageLimitPerUser) {
@@ -83,7 +96,7 @@ export const promoService = {
 
   async getActiveFlashSales() {
     const now = new Date();
-    return prisma.flashSale.findMany({
+    return flashSaleService.findMany({
       where: {
         startTime: { lte: now },
         endTime: { gte: now },
@@ -94,7 +107,7 @@ export const promoService = {
 
   async getFlashSaleForVariant(variantId: string) {
     const now = new Date();
-    return prisma.flashSale.findFirst({
+    return flashSaleService.findFirst({
       where: {
         variantId,
         startTime: { lte: now },

@@ -3,6 +3,10 @@ import { redis } from '@ecom/shared'
 import { RustClient } from '../../../rust-client.js'
 import { createBreaker } from '../../../utils/resilience.js'
 
+const stockLevelService = prisma.stockLevel;
+const stockReservationService = prisma.stockReservation;
+const warehouseService = prisma.warehouse;
+
 const inventoryReserveBreaker = createBreaker(
   (variantId: string, quantity: number, userId: string) => RustClient.inventory.reserve(variantId, quantity, userId),
   'inventory-reserve'
@@ -181,7 +185,7 @@ export const inventoryService = {
   },
 
   async syncStockFromDB(variantId: string) {
-    const dbStock = await prisma.stockLevel.aggregate({
+    const dbStock = await stockLevelService.aggregate({
       where: { variantId },
       _sum: { qtyOnHand: true, qtyReserved: true }
     });
@@ -199,7 +203,7 @@ export const inventoryService = {
   },
   async syncAllStock() {
     console.log('[InventoryService] Starting full stock synchronization...');
-    const stockLevels = await prisma.stockLevel.findMany({
+    const stockLevels = await stockLevelService.findMany({
       select: {
         variantId: true,
         qtyOnHand: true,

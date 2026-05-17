@@ -38,7 +38,7 @@ describe('revenueService', () => {
         ]
       };
 
-      (prisma.orderPackage.findUnique as any).mockResolvedValue(mockPackage);
+      (orderPackageService.findUnique as any).mockResolvedValue(mockPackage);
 
       const result = await revenueService.calculateCommission('pkg_1');
 
@@ -63,7 +63,7 @@ describe('revenueService', () => {
         ]
       };
 
-      (prisma.orderPackage.findUnique as any).mockResolvedValue(mockPackage);
+      (orderPackageService.findUnique as any).mockResolvedValue(mockPackage);
 
       const result = await revenueService.calculateCommission('pkg_2');
 

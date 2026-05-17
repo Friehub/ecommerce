@@ -2,9 +2,11 @@ import { prisma, PackageStatus, OrderStatus } from '@ecom/db'
 import { publishEvent } from '@ecom/shared'
 import { orderService } from './order-service.js'
 
+const orderPackageService = prisma.orderPackage;
+
 export const packageService = {
   async updateStatus(packageId: string, status: PackageStatus, trackingNumber?: string) {
-    const pkg = await prisma.orderPackage.update({
+    const pkg = await orderPackageService.update({
       where: { id: packageId },
       data: { 
         status,
@@ -22,7 +24,7 @@ export const packageService = {
   },
 
   async syncOrderWithPackages(orderId: string) {
-    const order = await prisma.order.findUnique({
+    const order = await orderService.findUnique({
       where: { id: orderId },
       include: { packages: true }
     });

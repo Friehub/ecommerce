@@ -58,31 +58,31 @@ describe('paymentService', () => {
       const mockOrder = { id: orderId, status: 'PENDING_PAYMENT' };
       const mockWallet = { id: 'w1', userId, balance: new Decimal(1000) };
 
-      (prisma.order.findUnique as any).mockResolvedValue(mockOrder);
-      (prisma.wallet.updateMany as any).mockResolvedValue({ count: 1 });
-      (prisma.wallet.findUnique as any).mockResolvedValue(mockWallet);
+      (orderService.findUnique as any).mockResolvedValue(mockOrder);
+      (walletService.updateMany as any).mockResolvedValue({ count: 1 });
+      (walletService.findUnique as any).mockResolvedValue(mockWallet);
 
       await paymentService.payWithWallet(userId, orderId, amount);
 
-      expect(prisma.order.findUnique).toHaveBeenCalledWith({ where: { id: orderId } });
-      expect(prisma.wallet.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      expect(orderService.findUnique).toHaveBeenCalledWith({ where: { id: orderId } });
+      expect(walletService.updateMany).toHaveBeenCalledWith(expect.objectContaining({
         where: expect.objectContaining({ userId, balance: { gte: amount } })
       }));
       expect(orderService.updateStatus).toHaveBeenCalledWith(orderId, 'PAID', expect.anything());
-      expect(prisma.payment.create).toHaveBeenCalledWith(expect.objectContaining({
+      expect(paymentService.create).toHaveBeenCalledWith(expect.objectContaining({
         data: expect.objectContaining({ status: 'SUCCESS' })
       }));
-      expect(prisma.eventLog.create).toHaveBeenCalled();
+      expect(eventLogService.create).toHaveBeenCalled();
     });
 
     it('should throw if order is already processed', async () => {
-      (prisma.order.findUnique as any).mockResolvedValue({ id: 'o1', status: 'PAID' });
+      (orderService.findUnique as any).mockResolvedValue({ id: 'o1', status: 'PAID' });
       await expect(paymentService.payWithWallet('u1', 'o1', 500)).rejects.toThrow('ORDER_ALREADY_PROCESSED:PAID');
     });
 
     it('should throw if balance is insufficient (updateMany returns count 0)', async () => {
-      (prisma.order.findUnique as any).mockResolvedValue({ id: 'o1', status: 'PENDING_PAYMENT' });
-      (prisma.wallet.updateMany as any).mockResolvedValue({ count: 0 });
+      (orderService.findUnique as any).mockResolvedValue({ id: 'o1', status: 'PENDING_PAYMENT' });
+      (walletService.updateMany as any).mockResolvedValue({ count: 0 });
       await expect(paymentService.payWithWallet('u1', 'o1', 500)).rejects.toThrow('INSUFFICIENT_FUNDS');
     });
   });

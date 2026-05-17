@@ -3,12 +3,17 @@ import { publishEvent } from '@ecom/shared';
 import { paymentService } from '../../payment/services/payment-service.js';
 import crypto from 'crypto';
 
+const affiliateAgentService = prisma.affiliateAgent;
+const referralLinkService = prisma.referralLink;
+const referralClickService = prisma.referralClick;
+const commissionService = prisma.commission;
+
 export const affiliateService = {
   async registerAgent(userId: string) {
-    const existing = await prisma.affiliateAgent.findUnique({ where: { userId } });
+    const existing = await affiliateAgentService.findUnique({ where: { userId } });
     if (existing) return existing;
 
-    const agent = await prisma.affiliateAgent.create({
+    const agent = await affiliateAgentService.create({
       data: {
         userId,
         commissionRate: new Decimal(5.0) // default 5%
@@ -21,7 +26,7 @@ export const affiliateService = {
   async generateLink(agentId: string, targetType: string, targetId?: string) {
     const slug = crypto.randomBytes(4).toString('hex');
     
-    return prisma.referralLink.create({
+    return referralLinkService.create({
       data: {
         agentId,
         targetType,
@@ -32,10 +37,10 @@ export const affiliateService = {
   },
 
   async recordClick(slug: string, sessionId: string, ip?: string) {
-    const link = await prisma.referralLink.findUnique({ where: { slug } });
+    const link = await referralLinkService.findUnique({ where: { slug } });
     if (!link) throw new Error('LINK_NOT_FOUND');
 
-    const click = await prisma.referralClick.create({
+    const click = await referralClickService.create({
       data: {
         linkId: link.id,
         sessionId,
@@ -48,19 +53,19 @@ export const affiliateService = {
   },
 
   async recordCommission(agentId: string, orderId: string, orderTotal: number) {
-    const agent = await prisma.affiliateAgent.findUnique({ where: { id: agentId } });
+    const agent = await affiliateAgentService.findUnique({ where: { id: agentId } });
     if (!agent) throw new Error('AGENT_NOT_FOUND');
 
     const amount = new Decimal(orderTotal).mul(agent.commissionRate).div(100);
 
     // E11: Use findFirst to prevent duplicates if recordCommission is called twice
-    const existing = await prisma.commission.findFirst({
+    const existing = await commissionService.findFirst({
       where: { agentId, orderId }
     });
 
     if (existing) return existing;
 
-    const commission = await prisma.commission.create({
+    const commission = await commissionService.create({
       data: {
         agentId,
         orderId,
@@ -103,7 +108,7 @@ export const affiliateService = {
     yesterday.setHours(yesterday.getHours() - 24);
 
     // E02: Claim commissions atomically before processing to prevent double-funding in concurrent runs
-    const result = await prisma.commission.updateMany({
+    const result = await commissionService.updateMany({
       where: {
         status: 'PENDING',
         order: {
@@ -119,7 +124,7 @@ export const affiliateService = {
     // Now find the ones we just confirmed to fund wallets
     // Note: We use CONFIRMED status as a signal to process wallet funding.
     // In a high-scale environment, we might want a 'CLAIMED' status to be even more precise.
-    const confirmed = await prisma.commission.findMany({
+    const confirmed = await commissionService.findMany({
       where: {
         status: 'CONFIRMED',
         // In a real scenario, we might need a flag like `walletFunded: false`
@@ -135,7 +140,7 @@ export const affiliateService = {
       try {
         await paymentService.fundWallet(comm.agent.userId, comm.amount.toNumber());
         // Mark as PAID to signal completion
-        await prisma.commission.update({
+        await commissionService.update({
           where: { id: comm.id },
           data: { status: 'PAID' }
         });
@@ -149,7 +154,7 @@ export const affiliateService = {
   },
 
   async getMyProfile(userId: string) {
-    return prisma.affiliateAgent.findUnique({
+    return affiliateAgentService.findUnique({
       where: { userId },
       include: {
         links: {
@@ -162,20 +167,20 @@ export const affiliateService = {
 
   async getCommissions(agentId: string, limit: number = 20, offset: number = 0) {
     const [items, total] = await Promise.all([
-      prisma.commission.findMany({
+      commissionService.findMany({
         where: { agentId },
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: offset,
       }),
-      prisma.commission.count({ where: { agentId } })
+      commissionService.count({ where: { agentId } })
     ]);
 
     return { items, total };
   },
 
   async getAgentStats(agentId: string) {
-    const stats = await prisma.commission.groupBy({
+    const stats = await commissionService.groupBy({
       by: ['status'],
       where: { agentId },
       _sum: { amount: true }
@@ -185,7 +190,7 @@ export const affiliateService = {
     const pending = stats.find(s => s.status === 'PENDING')?._sum.amount || new Decimal(0);
 
     // Direct count for total clicks across all links
-    const totalClicks = await prisma.referralClick.count({
+    const totalClicks = await referralClickService.count({
       where: { link: { agentId } }
     });
 

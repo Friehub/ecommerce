@@ -46,7 +46,7 @@ export async function handleCronJob(job: { name: string }) {
         const fortyEightHoursAgo = new Date();
         fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
 
-        const fraudOrders = await prisma.order.findMany({
+        const fraudOrders = await orderService.findMany({
           where: {
             status: OrderStatus.FRAUD_REVIEW,
             createdAt: { lte: fortyEightHoursAgo }

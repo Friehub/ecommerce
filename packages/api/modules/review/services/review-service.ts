@@ -1,9 +1,22 @@
 import { prisma } from '@ecom/db'
 
+const orderPackageService = prisma.orderPackage;
+const productService = prisma.product;
+const sellerService = prisma.seller;
+
 export const reviewService = {
+  // Prisma delegates
+  findUnique: prisma.review.findUnique,
+  findFirst: prisma.review.findFirst,
+  findMany: prisma.review.findMany,
+  create: prisma.review.create,
+  update: prisma.review.update,
+  delete: prisma.review.delete,
+  count: prisma.review.count,
+  aggregate: prisma.review.aggregate,
   async createReview(userId: string, productId: string, rating: number, comment: string, images: string[] = []) {
     // 1. Verify user bought and received the product
-    const delivered = await prisma.orderPackage.findFirst({
+    const delivered = await orderPackageService.findFirst({
       where: {
         order: { userId },
         status: 'DELIVERED',
@@ -28,7 +41,7 @@ export const reviewService = {
     }
 
     // 3. Create review
-    const review = await prisma.review.create({
+    const review = await reviewService.create({
       data: {
         userId,
         productId,
@@ -46,13 +59,13 @@ export const reviewService = {
 
     // 3. Recalculate ratings (B12: Optimized & Separate handlers)
     try {
-      const productStats = await prisma.review.aggregate({
+      const productStats = await reviewService.aggregate({
         where: { productId },
         _avg: { rating: true },
         _count: { _all: true }
       });
 
-      const updatedProduct = await prisma.product.update({
+      const updatedProduct = await productService.update({
         where: { id: productId },
         data: {
           averageRating: productStats._avg.rating || 0,
@@ -63,12 +76,12 @@ export const reviewService = {
 
       // Aggregate for Seller in a separate block to avoid masking failures
       try {
-        const sellerStats = await prisma.review.aggregate({
+        const sellerStats = await reviewService.aggregate({
           where: { product: { sellerId: updatedProduct.sellerId } },
           _avg: { rating: true }
         });
 
-        await prisma.seller.update({
+        await sellerService.update({
           where: { id: updatedProduct.sellerId },
           data: { rating: sellerStats._avg.rating || 0 }
         });
@@ -84,7 +97,7 @@ export const reviewService = {
   },
 
   async getProductReviews(productId: string) {
-    return prisma.review.findMany({
+    return reviewService.findMany({
       where: { productId, status: 'APPROVED' }, // Only show approved reviews to public
       include: { 
         user: { select: { firstName: true, lastName: true } },
@@ -95,7 +108,7 @@ export const reviewService = {
   },
 
   async moderateReview(reviewId: string, status: 'APPROVED' | 'REJECTED') {
-    return prisma.review.update({
+    return reviewService.update({
       where: { id: reviewId },
       data: { 
         status,
@@ -105,7 +118,7 @@ export const reviewService = {
   },
 
   async getProductRatingStats(productId: string) {
-    const product = await prisma.product.findUnique({
+    const product = await productService.findUnique({
       where: { id: productId },
       select: { averageRating: true, reviewCount: true }
     });
@@ -113,7 +126,7 @@ export const reviewService = {
   },
 
   async getUserReviews(userId: string) {
-    return prisma.review.findMany({
+    return reviewService.findMany({
       where: { userId },
       include: { 
         product: { include: { media: true } },

@@ -1,12 +1,14 @@
 import { queues } from '@ecom/shared';
 import { prisma } from '@ecom/db';
 
+const warehouseService = prisma.warehouse;
+
 export const catalogImportService = {
   async enqueueImport(sellerId: string, csvContent: string, warehouseId?: string) {
     let resolvedWarehouseId = warehouseId;
     
     if (!resolvedWarehouseId) {
-      const warehouse = await prisma.warehouse.findFirst({ orderBy: { name: 'asc' } });
+      const warehouse = await warehouseService.findFirst({ orderBy: { name: 'asc' } });
       if (!warehouse) throw new Error('NO_DEFAULT_WAREHOUSE_CONFIGURED');
       resolvedWarehouseId = warehouse.id;
     }

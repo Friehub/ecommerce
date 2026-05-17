@@ -75,8 +75,10 @@ function SuccessContent() {
           {order && (
             <div className="bg-white border-2 border-j-border p-6 rounded-sm text-left flex flex-col gap-4 shadow-sm">
               <div className="flex justify-between items-center border-b border-j-border pb-3">
-                <span className="text-[10px] font-black text-j-text-muted uppercase tracking-widest">Items ({order.items.length})</span>
-                <span className="font-black text-j-text">₦ {Number(order.totalAmount).toLocaleString()}</span>
+                <span className="text-[10px] font-black text-j-text-muted uppercase tracking-widest">
+                  Items ({order.packages.reduce((acc, pkg) => acc + pkg.lines.length, 0)})
+                </span>
+                <span className="font-black text-j-text">₦ {Number(order.total).toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tight">
                 <span className="text-j-text-muted">Payment: {order.paymentMethod}</span>

@@ -3,6 +3,9 @@ import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { returnService } from "../services/return-service.js";
 
+const returnShipmentService = prisma.returnShipment;
+const sellerService = prisma.seller;
+
 const _returnRouter = createTRPCRouter({
   initiate: protectedProcedure
     .input(z.object({
@@ -31,14 +34,14 @@ const _returnRouter = createTRPCRouter({
     }),
 
   listPending: adminProcedure.query(async () => {
-    return await prisma.returnShipment.findMany({
+    return await returnShipmentService.findMany({
       where: { status: 'PENDING' },
       include: { orderLine: { include: { variant: { include: { product: true } } } } }
     });
   }),
 
   listForSeller: protectedProcedure.query(async ({ ctx }) => {
-    const seller = await prisma.seller.findUnique({
+    const seller = await sellerService.findUnique({
       where: { userId: ctx.session.user.id },
       select: { id: true }
     });

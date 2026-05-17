@@ -1,9 +1,13 @@
 import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
 import { ledgerService } from './ledger-service.js'
 
+const orderPackageService = prisma.orderPackage;
+const sellerLedgerEntryService = prisma.sellerLedgerEntry;
+const payoutService = prisma.payout;
+
 export const revenueService = {
   async calculateCommission(packageId: string) {
-    const pkg = await prisma.orderPackage.findUnique({
+    const pkg = await orderPackageService.findUnique({
       where: { id: packageId },
       include: { lines: { include: { variant: { include: { product: { include: { category: true } } } } } } }
     });
@@ -27,7 +31,7 @@ export const revenueService = {
     const pendingBalance = await ledgerService.getSellerBalance(sellerId, LedgerStatus.PENDING);
     const availableBalance = await ledgerService.getSellerBalance(sellerId, LedgerStatus.AVAILABLE);
 
-    const entries = await prisma.sellerLedgerEntry.findMany({
+    const entries = await sellerLedgerEntryService.findMany({
       where: { sellerId }
     });
 
@@ -59,7 +63,7 @@ export const revenueService = {
   },
 
   async approvePayout(payoutId: string, adminId: string) {
-    const payout = await prisma.payout.findUnique({
+    const payout = await payoutService.findUnique({
       where: { id: payoutId },
       include: { seller: true }
     });

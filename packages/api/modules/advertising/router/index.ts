@@ -6,12 +6,15 @@ import { prisma } from '@ecom/db';
 import { redis } from '@ecom/shared';
 import { TRPCError } from '@trpc/server';
 
+const sellerService = prisma.seller;
+const adCampaignService = prisma.adCampaign;
+
 const _advertisingRouter = createTRPCRouter({
   createCampaign: sellerProcedure
     .input(CreateCampaignSchema)
     .mutation(async ({ ctx, input }) => {
       // F03: Look up seller from DB since sellerProfile is not in session type
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new TRPCError({ code: 'NOT_FOUND', message: 'Seller profile not found' });
 
       return advertisingService.createCampaign(
@@ -26,11 +29,11 @@ const _advertisingRouter = createTRPCRouter({
   addAdGroup: sellerProcedure
     .input(AddAdGroupSchema)
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new TRPCError({ code: 'FORBIDDEN' });
 
       // F07: Add campaign ownership check
-      const campaign = await prisma.adCampaign.findUnique({
+      const campaign = await adCampaignService.findUnique({
         where: { id: input.campaignId }
       });
       if (!campaign || campaign.sellerId !== seller.id) {
@@ -75,7 +78,7 @@ const _advertisingRouter = createTRPCRouter({
 
   getCampaigns: sellerProcedure
     .query(async ({ ctx }) => {
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new TRPCError({ code: 'NOT_FOUND' });
       return advertisingService.getSellerCampaigns(seller.id);
     }),
@@ -86,7 +89,7 @@ const _advertisingRouter = createTRPCRouter({
       status: z.enum(['ACTIVE', 'PAUSED', 'ENDED'])
     }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new TRPCError({ code: 'NOT_FOUND' });
 
       return advertisingService.updateCampaignStatus(
@@ -99,7 +102,7 @@ const _advertisingRouter = createTRPCRouter({
   pauseCampaign: sellerProcedure
     .input(z.object({ campaignId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new TRPCError({ code: 'NOT_FOUND' });
       return advertisingService.updateCampaignStatus(seller.id, input.campaignId, 'PAUSED');
     }),
@@ -107,7 +110,7 @@ const _advertisingRouter = createTRPCRouter({
   resumeCampaign: sellerProcedure
     .input(z.object({ campaignId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new TRPCError({ code: 'NOT_FOUND' });
       return advertisingService.updateCampaignStatus(seller.id, input.campaignId, 'ACTIVE');
     }),
@@ -115,7 +118,7 @@ const _advertisingRouter = createTRPCRouter({
   stopCampaign: sellerProcedure
     .input(z.object({ campaignId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new TRPCError({ code: 'NOT_FOUND' });
       return advertisingService.updateCampaignStatus(seller.id, input.campaignId, 'ENDED');
     }),

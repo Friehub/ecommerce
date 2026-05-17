@@ -3,9 +3,16 @@ import { paymentService } from '../../payment/services/payment-service.js';
 import { publishEvent } from '@ecom/shared';
 
 
+import { orderService } from '../../order/services/order-service.js';
+
+const sellerService = prisma.seller;
+const eventLogService = prisma.eventLog;
+const sellerDocumentService = prisma.sellerDocument;
+const disputeService = prisma.dispute;
+
 export const adminService = {
   async approveSellerKYC(adminId: string, sellerId: string) {
-    const seller = await prisma.seller.update({
+    const seller = await sellerService.update({
       where: { id: sellerId },
       data: { status: 'ACTIVE' }
     });
@@ -13,7 +20,7 @@ export const adminService = {
     await publishEvent('seller.approved', { sellerId: seller.id });
     
     // Log the action
-    await prisma.eventLog.create({
+    await eventLogService.create({
       data: {
         topic: 'ADMIN_ACTION',
         payload: { adminId, action: 'APPROVE_SELLER', targetId: sellerId }
@@ -24,14 +31,14 @@ export const adminService = {
   },
 
   async reviewDocument(adminId: string, documentId: string, decision: 'APPROVED' | 'REJECTED', rejectionReason?: string) {
-    const doc = await prisma.sellerDocument.findUnique({
+    const doc = await sellerDocumentService.findUnique({
       where: { id: documentId },
       include: { seller: { include: { documents: true } } }
     });
 
     if (!doc) throw new Error('DOCUMENT_NOT_FOUND');
 
-    const updatedDoc = await prisma.sellerDocument.update({
+    const updatedDoc = await sellerDocumentService.update({
       where: { id: documentId },
       data: {
         status: decision,
@@ -52,7 +59,7 @@ export const adminService = {
     const hasApprovedBank = mappedDocs.some(d => (d.type === 'BANK' || d.type === 'BANK_STATEMENT') && d.status === 'APPROVED');
 
     if (hasApprovedNIN && hasApprovedBank) {
-      await prisma.seller.update({
+      await sellerService.update({
         where: { id: doc.sellerId },
         data: { status: 'ACTIVE' }
       });
@@ -63,14 +70,14 @@ export const adminService = {
   },
 
   async getPendingKYCQueue() {
-    return prisma.seller.findMany({
+    return sellerService.findMany({
       where: { status: 'PENDING_VERIFICATION' },
       include: { documents: true }
     });
   },
 
   async getDisputeQueue() {
-    return prisma.dispute.findMany({
+    return disputeService.findMany({
       where: {
         status: { in: ['OPEN', 'UNDER_REVIEW'] }
       },
@@ -83,7 +90,7 @@ export const adminService = {
   },
 
   async resolveDispute(adminId: string, disputeId: string, resolution: 'RESOLVED' | 'REJECTED', refundAmount?: number) {
-    const dispute = await prisma.dispute.findUnique({
+    const dispute = await disputeService.findUnique({
       where: { id: disputeId },
       include: { order: true }
     });
@@ -126,7 +133,7 @@ export const adminService = {
   },
 
   async manualRefund(adminId: string, orderId: string, amount: number, reason: string) {
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    const order = await orderService.findUnique({ where: { id: orderId } });
     if (!order) throw new Error('ORDER_NOT_FOUND');
 
     return prisma.$transaction(async (tx) => {

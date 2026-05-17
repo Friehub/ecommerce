@@ -34,7 +34,19 @@ const PAYSTACK_WEBHOOK_SECRET = config.PAYSTACK_WEBHOOK_SECRET;
 
 import { getPaymentAdapter } from '../adapters/index.js'
 
+const payoutService = prisma.payout;
+const eventLogService = prisma.eventLog;
+const sellerService = prisma.seller;
+
 export const paymentService = {
+  // Prisma delegates
+  findUnique: prisma.payment.findUnique,
+  findFirst: prisma.payment.findFirst,
+  findMany: prisma.payment.findMany,
+  create: prisma.payment.create,
+  update: prisma.payment.update,
+  delete: prisma.payment.delete,
+  count: prisma.payment.count,
   async initializeTransaction(provider: string, orderId: string, userId: string, email: string, amount: number, ipAddress: string = 'unknown') {
     // 1. Perform Fraud Check via Rust Fraud Service
     try {
@@ -60,7 +72,7 @@ export const paymentService = {
     const reference = `ORD-${orderId}-${Date.now()}`;
 
     // Create payment record BEFORE calling processor (Fix BUG-001)
-    await prisma.payment.create({
+    await paymentService.create({
       data: {
         orderId,
         userId, 
@@ -111,7 +123,7 @@ export const paymentService = {
     const reference = `ORD-${orderId}-${Date.now()}`;
     
     // Create payment record BEFORE calling processor (Fix BUG-001)
-    await prisma.payment.create({
+    await paymentService.create({
       data: {
         orderId,
         userId, 
@@ -176,7 +188,7 @@ export const paymentService = {
   async handleWebhook(reference: string, status: string, eventType?: string) {
     // Handle Payout Transfers
     if (eventType === 'transfer.success' || eventType === 'transfer.failed') {
-      const payout = await prisma.payout.findFirst({
+      const payout = await payoutService.findFirst({
         where: { id: reference } // We use payout ID as reference for transfers
       });
 
@@ -188,7 +200,7 @@ export const paymentService = {
         return;
       }
 
-      await prisma.payout.update({
+      await payoutService.update({
         where: { id: payout.id },
         data: { 
           status: eventType === 'transfer.success' ? 'COMPLETED' : 'FAILED',
@@ -205,7 +217,7 @@ export const paymentService = {
     }
 
     // Handle Charge Events (Payments)
-    const payment = await prisma.payment.findFirst({
+    const payment = await paymentService.findFirst({
       where: { providerRef: reference }
     });
 
@@ -241,7 +253,7 @@ export const paymentService = {
         await publishEvent('payment.confirmed', { orderId: payment.orderId, amount: payment.amount });
       }
     } else {
-      await prisma.payment.update({
+      await paymentService.update({
         where: { id: payment.id },
         data: { status: 'FAILED' }
       });
@@ -281,7 +293,7 @@ export const paymentService = {
      const reference = `WALLET-FUND-${userId}-${Date.now()}`;
      
      // Create a payment record to track the funding attempt
-     await prisma.payment.create({
+     await paymentService.create({
        data: {
          orderId: 'WALLET_FUND', // Sentinel for wallet funding
          userId,
@@ -344,7 +356,7 @@ export const paymentService = {
   async payWithWallet(userId: string, orderId: string, amount: number) {
     // 1. Early Validation: Check if order is payable before initiating transaction
     // This prevents unnecessary DB locks and provides a cleaner error if the order is already processed
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    const order = await orderService.findUnique({ where: { id: orderId } });
     if (!order) throw new Error('ORDER_NOT_FOUND');
     if (order.status !== 'PENDING_PAYMENT') {
       throw new Error(`ORDER_ALREADY_PROCESSED:${order.status}`);
@@ -411,7 +423,7 @@ export const paymentService = {
     // to handle cases where this specific process crashes right after the commit.
     try {
       await publishEvent('payment.confirmed', { orderId, amount });
-      await prisma.eventLog.updateMany({
+      await eventLogService.updateMany({
         where: { topic: 'payment.confirmed', payload: { equals: { orderId, amount } } },
         data: { status: 'PUBLISHED' }
       });
@@ -427,7 +439,7 @@ export const paymentService = {
       currency: 'NGN'
     });
 
-    return await prisma.seller.update({
+    return await sellerService.update({
       where: { id: sellerId },
       data: {
         bankCode: params.bankCode,
@@ -439,7 +451,7 @@ export const paymentService = {
   },
 
   async initiatePayout(payoutId: string) {
-    const payout = await prisma.payout.findUnique({
+    const payout = await payoutService.findUnique({
       where: { id: payoutId },
       include: { seller: true }
     });
@@ -456,7 +468,7 @@ export const paymentService = {
       reference: payout.id // Use payout ID as our reference
     });
 
-    return await prisma.payout.update({
+    return await payoutService.update({
       where: { id: payoutId },
       data: {
         status: 'PROCESSING', // Move to PROCESSING until webhook confirms

@@ -3,6 +3,8 @@ import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { contentService } from "../services/content-service.js";
 
+const categoryService = prisma.category;
+
 const _contentRouter = createTRPCRouter({
   getHeroBanners: publicProcedure.query(async () => {
     return await contentService.getBanners();
@@ -13,7 +15,7 @@ const _contentRouter = createTRPCRouter({
   }),
 
   getCategoryShowcase: publicProcedure.query(async () => {
-    return await prisma.category.findMany({
+    return await categoryService.findMany({
       where: { parentId: null },
       take: 8
     });

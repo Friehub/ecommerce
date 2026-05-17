@@ -14,6 +14,13 @@ const slugify = (text: string) =>
   text.toString().toLowerCase().trim()
     .replace(/\s+/g, '-')
     .replace(/[^\w-]+/g, '')
+
+const productService = prisma.product;
+const productVariantService = prisma.productVariant;
+const stockLevelService = prisma.stockLevel;
+const warehouseService = prisma.warehouse;
+const categoryService = prisma.category;
+
 export const catalogService = {
   // Delegate all read operations to catalogQueryService
   ...catalogQueryService,
@@ -21,7 +28,7 @@ export const catalogService = {
   async createProduct(sellerId: string, data: ProductInput) {
     const slug = `${slugify(data.title)}-${Date.now()}`;
     
-    const product = await prisma.product.create({
+    const product = await productService.create({
       data: {
         title: data.title,
         slug,
@@ -51,13 +58,13 @@ export const catalogService = {
 
     await publishEvent('product.created', { productId: product.id, sellerId });
 
-    const defaultWarehouse = await prisma.warehouse.findFirst({
+    const defaultWarehouse = await warehouseService.findFirst({
       orderBy: { name: 'asc' }
     });
     if (!defaultWarehouse) throw new Error('NO_WAREHOUSE_CONFIGURED');
 
     for (const variant of product.variants) {
-      await prisma.stockLevel.create({
+      await stockLevelService.create({
         data: {
           variantId: variant.id,
           sellerId,
@@ -73,7 +80,7 @@ export const catalogService = {
   },
 
   async updateProduct(sellerId: string, productId: string, data: Partial<ProductInput> & { status?: string }) {
-    const product = await prisma.product.update({
+    const product = await productService.update({
       where: { id: productId, sellerId },
       data: {
         title: data.title,
@@ -93,7 +100,7 @@ export const catalogService = {
   },
 
   async updateVariantPrice(variantId: string, newPrice: number) {
-    const variant = await prisma.productVariant.findUnique({
+    const variant = await productVariantService.findUnique({
       where: { id: variantId }
     });
 
@@ -101,7 +108,7 @@ export const catalogService = {
 
     const oldPrice = variant.price.toNumber();
 
-    const updated = await prisma.productVariant.update({
+    const updated = await productVariantService.update({
       where: { id: variantId },
       data: { price: newPrice }
     });
@@ -117,7 +124,7 @@ export const catalogService = {
   },
 
   async syncToSearch(variantId: string) {
-    const variant = await prisma.productVariant.findUnique({
+    const variant = await productVariantService.findUnique({
       where: { id: variantId },
       include: {
         product: {
@@ -133,7 +140,7 @@ export const catalogService = {
 
     if (!variant) return;
 
-    const stock = await prisma.stockLevel.aggregate({
+    const stock = await stockLevelService.aggregate({
       where: { variantId },
       _sum: { qtyOnHand: true, qtyReserved: true }
     });
@@ -175,7 +182,7 @@ export const catalogService = {
       attributeSchema: data.attributeSchema,
       parent: data.parentId ? { connect: { id: data.parentId } } : undefined
     };
-    return prisma.category.create({
+    return categoryService.create({
       data: createData
     });
   }

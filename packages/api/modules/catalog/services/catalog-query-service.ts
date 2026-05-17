@@ -2,10 +2,15 @@ import { prisma } from '@ecom/db'
 import { cacheService, redis } from '@ecom/shared'
 import { RustClient } from '../../../rust-client.js'
 
+const productService = prisma.product;
+const productVariantService = prisma.productVariant;
+const productRelationService = prisma.productRelation;
+const categoryService = prisma.category;
+
 export const catalogQueryService = {
   async getProductBySlug(slug: string) {
     return cacheService.wrap(`catalog:product:${slug}`, async () => {
-      const product = await prisma.product.findUnique({
+      const product = await productService.findUnique({
         where: { slug },
         include: { 
           variants: { include: { stockLevels: true } }, 
@@ -22,7 +27,7 @@ export const catalogQueryService = {
           recommendations = await RustClient.recommendations.forProduct(product.id);
         } catch (e: any) {
           console.warn('Rust recommendations failed, using local collaborative filtering:', e.message);
-          const relations = await prisma.productRelation.findMany({
+          const relations = await productRelationService.findMany({
             where: { productId: product.id, relationType: 'CO_PURCHASE' },
             orderBy: { score: 'desc' },
             take: 6,
@@ -36,7 +41,7 @@ export const catalogQueryService = {
         }
 
         if (recommendations.length === 0) {
-          recommendations = await prisma.product.findMany({
+          recommendations = await productService.findMany({
             where: { categoryId: product.categoryId, status: 'ACTIVE', id: { not: product.id } },
             include: { variants: true, media: true, brand: true, category: true },
             take: 6,
@@ -84,7 +89,7 @@ export const catalogQueryService = {
 
         if (searchResponse && searchResponse.results.length > 0) {
            const variantIds = searchResponse.results.map((r: any) => r.variant_id);
-           let results = await prisma.productVariant.findMany({
+           let results = await productVariantService.findMany({
              where: { id: { in: variantIds } },
              include: { 
                product: { include: { media: true, brand: true, category: true } }
@@ -94,7 +99,7 @@ export const catalogQueryService = {
            let sortedResults = variantIds.map((id: string) => results.find(r => r.id === id)).filter(Boolean);
 
            if (sponsoredProduct) {
-             const sponsoredVariant = await prisma.productVariant.findFirst({
+             const sponsoredVariant = await productVariantService.findFirst({
                where: { productId: sponsoredProduct.id },
                include: { product: { include: { media: true, brand: true, category: true } } }
              });
@@ -139,7 +144,7 @@ export const catalogQueryService = {
         const { variantIds, total } = JSON.parse(cached);
         if (variantIds.length === 0) return { results: [], total, facets: {} };
 
-        const results = await prisma.productVariant.findMany({
+        const results = await productVariantService.findMany({
           where: { id: { in: variantIds } },
           include: { product: { include: { media: true, brand: true, category: true } } }
         });
@@ -182,7 +187,7 @@ export const catalogQueryService = {
     };
 
     const [results, total] = await Promise.all([
-      prisma.productVariant.findMany({
+      productVariantService.findMany({
         where,
         include: { product: { include: { media: true, brand: true, category: true } } },
         orderBy: filters.sortBy === 'price_asc' 
@@ -195,7 +200,7 @@ export const catalogQueryService = {
         take: filters.limit || 20,
         skip: filters.offset || 0,
       }),
-      prisma.productVariant.count({ where })
+      productVariantService.count({ where })
     ]);
 
     const flattenedResults = results.map(v => ({
@@ -221,7 +226,7 @@ export const catalogQueryService = {
 
   async getCategoryTree() {
     return cacheService.wrap('catalog:category_tree', async () => {
-      return prisma.category.findMany({
+      return categoryService.findMany({
         where: { parentId: null },
         take: 50,
         include: { children: { include: { children: true } } }
@@ -230,7 +235,7 @@ export const catalogQueryService = {
   },
 
   async getCategoryBySlug(slug: string) {
-    return prisma.category.findUnique({
+    return categoryService.findUnique({
       where: { slug },
       include: { children: true }
     });

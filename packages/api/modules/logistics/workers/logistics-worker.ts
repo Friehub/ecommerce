@@ -2,6 +2,8 @@
 import { Worker, Job } from 'bullmq';
 import { redis } from '@ecom/shared';
 import { prisma } from '@ecom/db';
+
+const orderService = prisma.order;
 import { logisticsService } from '../services/logistics-service.js';
 
 export const logisticsWorker = new Worker('system-events', async (job: Job) => {
@@ -19,7 +21,7 @@ export const logisticsWorker = new Worker('system-events', async (job: Job) => {
         // [B7] Shipment Auto-Creation
         // Triggered when an order moves to PROCESSING
         if (payload.status === 'PROCESSING') {
-          const order = await prisma.order.findUnique({
+          const order = await orderService.findUnique({
             where: { id: payload.orderId },
             include: { packages: true }
           });

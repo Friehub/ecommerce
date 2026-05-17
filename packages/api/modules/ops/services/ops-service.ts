@@ -1,22 +1,30 @@
 import { prisma } from '@ecom/db'
 
+import { orderService } from '../../order/services/order-service.js';
+
+const sellerService = prisma.seller;
+const userService = prisma.user;
+const sessionService = prisma.session;
+const disputeService = prisma.dispute;
+const eventLogService = prisma.eventLog;
+
 export const opsService = {
   async getGlobalMetrics() {
-    const totalOrders = await prisma.order.count();
-    const totalSellers = await prisma.seller.count({ where: { status: 'ACTIVE' } });
-    const totalUsers = await prisma.user.count();
+    const totalOrders = await orderService.count();
+    const totalSellers = await sellerService.count({ where: { status: 'ACTIVE' } });
+    const totalUsers = await userService.count();
 
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const gmvResult = await prisma.order.aggregate({
+    const gmvResult = await orderService.aggregate({
       where: {
         status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED', 'RETURN_REQUESTED'] }
       },
       _sum: { total: true }
     });
 
-    const gmv30dResult = await prisma.order.aggregate({
+    const gmv30dResult = await orderService.aggregate({
       where: {
         status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED', 'RETURN_REQUESTED'] },
         createdAt: { gte: thirtyDaysAgo }
@@ -24,13 +32,13 @@ export const opsService = {
       _sum: { total: true }
     });
 
-    const activeSessions = await prisma.session.count({
+    const activeSessions = await sessionService.count({
       where: {
         expiresAt: { gt: new Date() }
       }
     });
 
-    const openDisputes = await prisma.dispute.count({
+    const openDisputes = await disputeService.count({
       where: { status: 'OPEN' }
     });
 
@@ -50,7 +58,7 @@ export const opsService = {
   },
 
   async logAdminAction(adminId: string, action: string, targetId: string, metadata: any) {
-    return prisma.eventLog.create({
+    return eventLogService.create({
       data: {
         topic: 'ADMIN_ACTION',
         payload: { adminId, action, targetId, metadata }
@@ -62,12 +70,12 @@ export const opsService = {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const orders = await prisma.order.findMany({
+    const orders = await orderService.findMany({
       where: { createdAt: { gte: thirtyDaysAgo } },
       select: { createdAt: true, total: true, status: true }
     });
 
-    const users = await prisma.user.findMany({
+    const users = await userService.findMany({
       where: { createdAt: { gte: thirtyDaysAgo } },
       select: { createdAt: true }
     });

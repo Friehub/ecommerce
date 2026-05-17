@@ -1,8 +1,10 @@
 import { prisma, Decimal, LedgerEntryType } from '@ecom/db'
 
+const sellerLedgerEntryService = prisma.sellerLedgerEntry;
+
 export const reportingService = {
   async exportStatement(sellerId: string, startDate: Date, endDate: Date) {
-    const entries = await prisma.sellerLedgerEntry.findMany({
+    const entries = await sellerLedgerEntryService.findMany({
       where: {
         sellerId,
         createdAt: { gte: startDate, lte: endDate }
@@ -34,7 +36,7 @@ export const reportingService = {
   },
 
   async getSettlementReport(startDate: Date, endDate: Date) {
-    const entries = await prisma.sellerLedgerEntry.findMany({
+    const entries = await sellerLedgerEntryService.findMany({
       where: {
         createdAt: { gte: startDate, lte: endDate }
       }

@@ -4,6 +4,10 @@ import { logisticsService } from "../services/logistics-service.js";
 import { mediaService } from "../../media/services/media-service.js";
 import { prisma } from "@ecom/db";
 
+const pickupStationService = prisma.pickupStation;
+const deliveryAgentService = prisma.deliveryAgent;
+const shipmentService = prisma.shipment;
+
 const _logisticsRouter = createTRPCRouter({
   registerAsAgent: protectedProcedure
     .input(z.object({
@@ -35,14 +39,14 @@ const _logisticsRouter = createTRPCRouter({
     }),
 
   listPickupStations: publicProcedure.query(async () => {
-    return await prisma.pickupStation.findMany({
+    return await pickupStationService.findMany({
       where: { isActive: true }
     });
   }),
 
   getMyShipments: agentProcedure.query(async ({ ctx }) => {
     // We need to get the agent ID for the user
-    const agent = await prisma.deliveryAgent.findUnique({
+    const agent = await deliveryAgentService.findUnique({
       where: { userId: ctx.session.user.id }
     });
     
@@ -72,7 +76,7 @@ const _logisticsRouter = createTRPCRouter({
     }),
 
   listAllShipments: adminProcedure.query(async () => {
-    return await prisma.shipment.findMany({
+    return await shipmentService.findMany({
       include: { package: true, agent: true }
     });
   }),
@@ -87,7 +91,7 @@ const _logisticsRouter = createTRPCRouter({
     }),
 
   listAgents: adminProcedure.query(async () => {
-    return await prisma.deliveryAgent.findMany({});
+    return await deliveryAgentService.findMany({});
   }),
 });
 

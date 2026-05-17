@@ -2,7 +2,19 @@ import { prisma } from '@ecom/db'
 import { inventoryService } from '../../inventory/services/inventory-service.js'
 import { promoService } from '../../promo/services/promo-service.js'
 
+const productVariantService = prisma.productVariant;
+const cartItemService = prisma.cartItem;
+
 export const cartService = {
+  // Prisma delegates
+  findUnique: prisma.cart.findUnique,
+  findFirst: prisma.cart.findFirst,
+  findMany: prisma.cart.findMany,
+  create: prisma.cart.create,
+  update: prisma.cart.update,
+  delete: prisma.cart.delete,
+  count: prisma.cart.count,
+  upsert: prisma.cart.upsert,
   async getCart(sessionId: string, userId?: string) {
     // 1. Safety check: Prisma upsert requires at least one unique identifier
     if (!sessionId && !userId) {
@@ -12,7 +24,7 @@ export const cartService = {
 
     // 2. If userId is provided, prioritize finding the user's primary cart
     if (userId) {
-      const userCart = await prisma.cart.findUnique({
+      const userCart = await cartService.findUnique({
         where: { userId },
         include: { items: { include: { variant: { include: { product: { include: { media: true } } } } } } }
       });
@@ -21,7 +33,7 @@ export const cartService = {
 
     // 2. Use upsert to either find the session cart or create it atomically
     // If userId is provided but no userCart was found, this will "claim" the session cart for the user
-    return await prisma.cart.upsert({
+    return await cartService.upsert({
       where: { sessionId },
       update: userId ? { userId } : {},
       create: { sessionId, userId },
@@ -33,7 +45,7 @@ export const cartService = {
     const cart = await this.getCart(sessionId, userId);
     
     // 1. Get current price (Price Snapshot requirement)
-    const variant = await prisma.productVariant.findUnique({
+    const variant = await productVariantService.findUnique({
       where: { id: variantId },
       include: { product: true }
     });
@@ -49,7 +61,7 @@ export const cartService = {
     const finalPrice = flashSale ? flashSale.salePrice : variant.price;
 
     // 4. Upsert item with price snapshot
-    return prisma.cartItem.upsert({
+    return cartItemService.upsert({
       where: {
         cartId_variantId: {
           cartId: cart.id,
@@ -72,7 +84,7 @@ export const cartService = {
 
   async removeItem(cartItemId: string, sessionId: string, userId?: string) {
     // Verify ownership
-    const item = await prisma.cartItem.findUnique({
+    const item = await cartItemService.findUnique({
       where: { id: cartItemId },
       include: { cart: true }
     });
@@ -81,13 +93,13 @@ export const cartService = {
       throw new Error('UNAUTHORIZED_ACCESS');
     }
 
-    return prisma.cartItem.delete({
+    return cartItemService.delete({
       where: { id: cartItemId }
     });
   },
 
   async updateQuantity(cartItemId: string, quantity: number, sessionId: string, userId?: string) {
-    const item = await prisma.cartItem.findUnique({
+    const item = await cartItemService.findUnique({
       where: { id: cartItemId },
       include: { cart: true }
     });
@@ -103,14 +115,14 @@ export const cartService = {
     const available = await inventoryService.syncStockFromDB(item.variantId);
     if (available < quantity) throw new Error('INSUFFICIENT_STOCK');
 
-    return prisma.cartItem.update({
+    return cartItemService.update({
       where: { id: cartItemId },
       data: { quantity }
     });
   },
 
   async mergeCart(guestSessionId: string, userId: string) {
-    const guestCart = await prisma.cart.findUnique({
+    const guestCart = await cartService.findUnique({
       where: { sessionId: guestSessionId },
       include: { items: true }
     });
@@ -125,7 +137,7 @@ export const cartService = {
     }
 
     for (const item of guestCart.items) {
-      await prisma.cartItem.upsert({
+      await cartItemService.upsert({
         where: {
           cartId_variantId: {
             cartId: userCart.id,
@@ -147,6 +159,6 @@ export const cartService = {
     }
 
     // Clean up guest cart only if it's different from user cart
-    await prisma.cart.delete({ where: { id: guestCart.id } });
+    await cartService.delete({ where: { id: guestCart.id } });
   }
 };

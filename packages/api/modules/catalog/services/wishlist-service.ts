@@ -2,19 +2,29 @@ import { prisma } from '@ecom/db';
 import { notificationService } from '../../notification/services/notification-service.js';
 import { emailTemplates } from '../../notification/services/email-templates.js';
 
+const wishlistItemService = prisma.wishlistItem;
+
 export const wishlistService = {
+  // Prisma delegates
+  findUnique: prisma.wishlist.findUnique,
+  findFirst: prisma.wishlist.findFirst,
+  findMany: prisma.wishlist.findMany,
+  create: prisma.wishlist.create,
+  update: prisma.wishlist.update,
+  delete: prisma.wishlist.delete,
+  count: prisma.wishlist.count,
   async addItem(userId: string, variantId: string) {
-    let wishlist = await prisma.wishlist.findUnique({
+    let wishlist = await wishlistService.findUnique({
       where: { userId }
     });
 
     if (!wishlist) {
-      wishlist = await prisma.wishlist.create({
+      wishlist = await wishlistService.create({
         data: { userId }
       });
     }
 
-    return prisma.wishlistItem.upsert({
+    return wishlistItemService.upsert({
       where: {
         wishlistId_variantId: {
           wishlistId: wishlist.id,
@@ -30,12 +40,12 @@ export const wishlistService = {
   },
 
   async removeItem(userId: string, variantId: string) {
-    const wishlist = await prisma.wishlist.findUnique({
+    const wishlist = await wishlistService.findUnique({
       where: { userId }
     });
 
     if (wishlist) {
-      await prisma.wishlistItem.deleteMany({
+      await wishlistItemService.deleteMany({
         where: {
           wishlistId: wishlist.id,
           variantId
@@ -45,7 +55,7 @@ export const wishlistService = {
   },
 
   async getWishlist(userId: string) {
-    return prisma.wishlist.findUnique({
+    return wishlistService.findUnique({
       where: { userId },
       include: {
         items: {
@@ -66,7 +76,7 @@ export const wishlistService = {
   },
 
   async notifyPriceDrops(variantId: string, oldPrice: number, newPrice: number) {
-    const items = await prisma.wishlistItem.findMany({
+    const items = await wishlistItemService.findMany({
       where: { variantId },
       include: {
         wishlist: {

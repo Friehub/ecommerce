@@ -61,7 +61,7 @@ const _disputeRouter = createTRPCRouter({
 
   listAllDisputes: adminProcedure
     .query(async () => {
-      return prisma.dispute.findMany({
+      return disputeService.findMany({
         include: {
           order: { select: { id: true, total: true } },
           buyer: { select: { id: true, firstName: true, lastName: true, email: true } },
@@ -80,7 +80,7 @@ const _disputeRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
 
-      const dispute = await prisma.dispute.findUnique({
+      const dispute = await disputeService.findUnique({
         where: { id: input.disputeId },
         select: { id: true, status: true, buyerId: true }
       });

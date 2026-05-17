@@ -2,11 +2,17 @@ import { prisma, Decimal, LedgerEntryType, LedgerStatus } from '@ecom/db'
 import { currencyService } from './currency-service.js';
 import { reportingService } from './reporting-service.js';
 
+const orderLineService = prisma.orderLine;
+const sellerLedgerEntryService = prisma.sellerLedgerEntry;
+const sellerStatementService = prisma.sellerStatement;
+const sellerService = prisma.seller;
+const payoutService = prisma.payout;
+
 export const ledgerService = {
   ...reportingService,
 
   async recordSale(orderLineId: string): Promise<any> {
-    const line = await prisma.orderLine.findUnique({
+    const line = await orderLineService.findUnique({
       where: { id: orderLineId },
       include: { 
         variant: { include: { product: { include: { category: true } } } },
@@ -53,14 +59,14 @@ export const ledgerService = {
   },
 
   async scheduleEscrowRelease(orderId: string) {
-    const lines = await prisma.orderLine.findMany({
+    const lines = await orderLineService.findMany({
       where: { package: { orderId } }
     });
 
     const releaseDate = new Date();
     releaseDate.setDate(releaseDate.getDate() + 7);
 
-    await prisma.sellerLedgerEntry.updateMany({
+    await sellerLedgerEntryService.updateMany({
       where: { 
         orderLineId: { in: lines.map(l => l.id) },
         status: LedgerStatus.PENDING
@@ -87,7 +93,7 @@ export const ledgerService = {
 
   async releaseMatureEscrow() {
     const now = new Date();
-    const result = await prisma.sellerLedgerEntry.updateMany({
+    const result = await sellerLedgerEntryService.updateMany({
       where: {
         status: LedgerStatus.PENDING,
         availableAt: { lte: now },
@@ -107,7 +113,7 @@ export const ledgerService = {
   },
 
   async releaseEscrowByOrder(orderId: string) {
-    const result = await prisma.sellerLedgerEntry.updateMany({
+    const result = await sellerLedgerEntryService.updateMany({
       where: {
         orderLine: { 
           package: { orderId },
@@ -157,7 +163,7 @@ export const ledgerService = {
   },
 
   async recordPenalty(sellerId: string, amount: number, reason: string) {
-    return await prisma.sellerLedgerEntry.create({
+    return await sellerLedgerEntryService.create({
       data: {
         sellerId,
         type: LedgerEntryType.PENALTY,
@@ -168,7 +174,7 @@ export const ledgerService = {
   },
 
   async generateStatement(sellerId: string, periodStart: Date, periodEnd: Date) {
-    const existing = await prisma.sellerStatement.findFirst({
+    const existing = await sellerStatementService.findFirst({
       where: {
         sellerId,
         periodStart,
@@ -178,7 +184,7 @@ export const ledgerService = {
 
     if (existing) return existing;
 
-    const entries = await prisma.sellerLedgerEntry.findMany({
+    const entries = await sellerLedgerEntryService.findMany({
       where: {
         sellerId,
         createdAt: { gte: periodStart, lte: periodEnd }
@@ -203,7 +209,7 @@ export const ledgerService = {
 
     const net = entries.reduce((acc, e) => acc.add(e.amount), new Decimal(0));
 
-    return await prisma.sellerStatement.create({
+    return await sellerStatementService.create({
       data: {
         sellerId,
         periodStart,
@@ -219,7 +225,7 @@ export const ledgerService = {
   },
 
   async getLedger(sellerId: string, limit = 50, cursor?: string, targetCurrency?: string) {
-    const entries = await prisma.sellerLedgerEntry.findMany({
+    const entries = await sellerLedgerEntryService.findMany({
       where: { sellerId },
       take: limit + 1,
       cursor: cursor ? { id: cursor } : undefined,
@@ -233,7 +239,7 @@ export const ledgerService = {
       nextCursor = nextItem!.id;
     }
 
-    const seller = entries[0]?.seller || await prisma.seller.findUnique({ where: { id: sellerId } });
+    const seller = entries[0]?.seller || await sellerService.findUnique({ where: { id: sellerId } });
     const currency = targetCurrency || seller?.currency || 'NGN';
 
     const localizedEntries = await Promise.all(entries.map(async entry => ({
@@ -258,13 +264,13 @@ export const ledgerService = {
   },
 
   async exportLedger(sellerId: string, targetCurrency?: string) {
-    const entries = await prisma.sellerLedgerEntry.findMany({
+    const entries = await sellerLedgerEntryService.findMany({
       where: { sellerId },
       orderBy: { createdAt: 'desc' },
       include: { seller: true }
     });
 
-    const seller = entries[0]?.seller || await prisma.seller.findUnique({ where: { id: sellerId } });
+    const seller = entries[0]?.seller || await sellerService.findUnique({ where: { id: sellerId } });
     const currency = targetCurrency || seller?.currency || 'NGN';
 
     return await Promise.all(entries.map(async entry => ({
@@ -279,7 +285,7 @@ export const ledgerService = {
   },
 
   async listPendingPayouts() {
-    return prisma.payout.findMany({
+    return payoutService.findMany({
       where: { status: 'PENDING' },
       include: { seller: { select: { businessName: true, user: { select: { email: true } } } } },
       orderBy: { createdAt: 'asc' }
@@ -287,7 +293,7 @@ export const ledgerService = {
   },
 
   async approvePayout(payoutId: string, adminId: string) {
-    const payout = await prisma.payout.findUnique({
+    const payout = await payoutService.findUnique({
       where: { id: payoutId },
       include: { seller: true }
     });
@@ -298,7 +304,7 @@ export const ledgerService = {
     const { paymentService } = await import('../../payment/services/payment-service.js');
     
     // 1. Move to PROCESSING in DB
-    await prisma.payout.update({
+    await payoutService.update({
       where: { id: payoutId },
       data: { status: 'PROCESSING' }
     });
@@ -309,7 +315,7 @@ export const ledgerService = {
     } catch (err) {
       console.error(`[Ledger] Payout approval failed for ${payoutId}:`, err);
       // Revert status to PENDING so it can be retried
-      await prisma.payout.update({
+      await payoutService.update({
         where: { id: payoutId },
         data: { status: 'PENDING' }
       });
@@ -320,7 +326,7 @@ export const ledgerService = {
   },
 
   async rejectPayout(payoutId: string, adminId: string) {
-    const payout = await prisma.payout.findUnique({
+    const payout = await payoutService.findUnique({
       where: { id: payoutId }
     });
 

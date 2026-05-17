@@ -5,6 +5,14 @@ import { adminService } from '../services/admin-service.js';
 import { orderService } from '../../order/services/order-service.js';
 import { z } from 'zod';
 
+const sellerService = prisma.seller;
+const userService = prisma.user;
+const eventLogService = prisma.eventLog;
+const productVariantService = prisma.productVariant;
+const flashSaleService = prisma.flashSale;
+const productService = prisma.product;
+const bannerService = prisma.banner;
+
 const _adminRouter = createTRPCRouter({
   approveSeller: adminProcedure
     .input(ApproveSellerSchema)
@@ -29,7 +37,7 @@ const _adminRouter = createTRPCRouter({
 
   listAllSellers: adminProcedure
     .query(async () => {
-      return prisma.seller.findMany({
+      return sellerService.findMany({
         include: { user: { select: { email: true, firstName: true, lastName: true } } },
         orderBy: { createdAt: 'desc' }
       });
@@ -37,7 +45,7 @@ const _adminRouter = createTRPCRouter({
 
   listAllUsers: adminProcedure
     .query(async () => {
-      return prisma.user.findMany({
+      return userService.findMany({
         select: { id: true, email: true, firstName: true, lastName: true, role: true, isActive: true },
         orderBy: { createdAt: 'desc' }
       });
@@ -51,7 +59,7 @@ const _adminRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { publishEvent } = await import('@ecom/shared');
       
-      const seller = await prisma.seller.update({
+      const seller = await sellerService.update({
         where: { id: input.sellerId },
         data: { status: input.status }
       });
@@ -61,7 +69,7 @@ const _adminRouter = createTRPCRouter({
       await publishEvent(eventType as any, { sellerId: input.sellerId, status: input.status });
 
       // Audit Log
-      await prisma.eventLog.create({
+      await eventLogService.create({
         data: {
           topic: 'ADMIN_ACTION',
           payload: { 
@@ -83,7 +91,7 @@ const _adminRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       const { publishEvent } = await import('@ecom/shared');
-      const user = await prisma.user.update({
+      const user = await userService.update({
         where: { id: input.userId },
         data: { isActive: input.status === 'ACTIVE' }
       });
@@ -92,7 +100,7 @@ const _adminRouter = createTRPCRouter({
         await publishEvent('seller.suspended', { userId: input.userId }); // Generic user suspension event
       }
 
-      await prisma.eventLog.create({
+      await eventLogService.create({
         data: {
           topic: 'ADMIN_ACTION',
           payload: { adminId: ctx.session.user.id, action: 'UPDATE_USER_STATUS', targetId: input.userId, status: input.status }
@@ -104,7 +112,7 @@ const _adminRouter = createTRPCRouter({
 
   getFraudQueue: adminProcedure
     .query(async () => {
-      return prisma.order.findMany({
+      return orderService.findMany({
         where: { status: 'FRAUD_REVIEW' },
         include: { user: { select: { email: true, firstName: true, lastName: true } } },
         orderBy: { createdAt: 'desc' }
@@ -128,7 +136,7 @@ const _adminRouter = createTRPCRouter({
 
   getPendingSellers: adminProcedure
     .query(async () => {
-      return prisma.seller.findMany({
+      return sellerService.findMany({
         where: { status: 'PENDING_VERIFICATION' },
         include: { 
           user: { select: { email: true, firstName: true, lastName: true } },
@@ -169,7 +177,7 @@ const _adminRouter = createTRPCRouter({
     .input(z.object({ search: z.string().optional() }).optional())
     .query(async ({ input }) => {
       const search = input?.search;
-      return prisma.productVariant.findMany({
+      return productVariantService.findMany({
         where: search ? {
           OR: [
             { sku: { contains: search, mode: 'insensitive' } },
@@ -190,7 +198,7 @@ const _adminRouter = createTRPCRouter({
 
   listFlashSales: adminProcedure
     .query(async () => {
-      return prisma.flashSale.findMany({
+      return flashSaleService.findMany({
         include: {
           variant: {
             include: {
@@ -217,7 +225,7 @@ const _adminRouter = createTRPCRouter({
       endTime: z.string()
     }))
     .mutation(async ({ input }) => {
-      return prisma.flashSale.create({
+      return flashSaleService.create({
         data: {
           variantId: input.variantId,
           sellerId: input.sellerId,
@@ -232,7 +240,7 @@ const _adminRouter = createTRPCRouter({
   deleteFlashSale: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
-      return prisma.flashSale.delete({
+      return flashSaleService.delete({
         where: { id: input.id }
       });
     }),
@@ -245,7 +253,7 @@ const _adminRouter = createTRPCRouter({
 
   getPendingProducts: adminProcedure
     .query(async () => {
-      return prisma.product.findMany({
+      return productService.findMany({
         where: { status: 'PENDING_APPROVAL' },
         include: { 
           seller: { select: { businessName: true } },
@@ -269,7 +277,7 @@ const _adminRouter = createTRPCRouter({
 
       const status = input.decision === 'APPROVED' ? 'ACTIVE' : 'REJECTED';
       
-      const product = await prisma.product.update({
+      const product = await productService.update({
         where: { id: input.productId },
         data: { status },
         include: { variants: true }
@@ -294,7 +302,7 @@ const _adminRouter = createTRPCRouter({
 
   listBanners: adminProcedure
     .query(async () => {
-      return prisma.banner.findMany({
+      return bannerService.findMany({
         orderBy: { position: 'asc' }
       });
     }),
@@ -308,7 +316,7 @@ const _adminRouter = createTRPCRouter({
     }))
     .mutation(async ({ input }) => {
       const { cacheService } = await import('@ecom/shared');
-      const banner = await prisma.banner.create({ data: input });
+      const banner = await bannerService.create({ data: input });
       await cacheService.delete('content:banners');
       return banner;
     }),
@@ -325,7 +333,7 @@ const _adminRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const { cacheService } = await import('@ecom/shared');
       const { id, ...data } = input;
-      const banner = await prisma.banner.update({
+      const banner = await bannerService.update({
         where: { id },
         data
       });
@@ -337,7 +345,7 @@ const _adminRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
       const { cacheService } = await import('@ecom/shared');
-      await prisma.banner.delete({ where: { id: input.id } });
+      await bannerService.delete({ where: { id: input.id } });
       await cacheService.delete('content:banners');
       return { success: true };
     }),

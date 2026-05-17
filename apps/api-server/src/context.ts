@@ -1,4 +1,6 @@
 import { prisma } from '@ecom/db';
+
+const userService = prisma.user;
 import { type TRPCContext } from '@ecom/api';
 import { type FastifyRequest } from 'fastify';
 import jwt from 'jsonwebtoken';
@@ -26,7 +28,7 @@ export async function createContext(opts: {
     try {
       const token = authHeader.slice(7);
       const payload = jwt.verify(token, process.env.JWT_SECRET!, { algorithms: ['HS256'] }) as any;
-      const user = await prisma.user.findUnique({
+      const user = await userService.findUnique({
         where: { id: payload.sub },
         select: { id: true, email: true, role: true, firstName: true, lastName: true, isActive: true },
       });
@@ -65,7 +67,7 @@ export async function createContext(opts: {
         });
 
         if (decoded?.sub) {
-          const user = await prisma.user.findUnique({
+          const user = await userService.findUnique({
             where: { id: decoded.sub as string },
             select: { id: true, email: true, role: true, firstName: true, lastName: true, isActive: true },
           });

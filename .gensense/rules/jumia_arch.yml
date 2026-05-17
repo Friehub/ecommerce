@@ -7,9 +7,11 @@ rules:
     target_ext: "ts"
     on_node: "member_expression"
     if_matches: "^prisma\\."
+    fix_pattern: 'prisma\.(?P<entity>\w+)'
+    fix_with: '${entity}Service'
     observation: "Direct database access via 'prisma' detected."
     impact: "Violates the architecture rule: 'No business logic in route handlers'. Database logic should be encapsulated in service modules."
-    improvement: "Move this database call to a dedicated service or module function and call that instead."
+    improvement: "Move this database call to a dedicated service or module function and call that instead. Add the correct import for '${entity}Service' manually."
     tags: ["jumia", "architecture"]
 
   - id: "JUMIA_INTERNAL_IMPORT_LEAK"

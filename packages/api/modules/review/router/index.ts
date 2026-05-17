@@ -3,6 +3,8 @@ import { z } from "zod";
 import { prisma } from "@ecom/db";
 import { reviewService } from "../services/review-service.js";
 
+const orderLineService = prisma.orderLine;
+
 const _reviewRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({
@@ -50,7 +52,7 @@ const _reviewRouter = createTRPCRouter({
   getPendingReviews: protectedProcedure
     .query(async ({ ctx }) => {
       // Find all delivered items for this user that don't have a review from this user
-      const deliveredItems = await prisma.orderLine.findMany({
+      const deliveredItems = await orderLineService.findMany({
         where: {
           package: {
             order: { userId: ctx.session.user.id, status: 'DELIVERED' },

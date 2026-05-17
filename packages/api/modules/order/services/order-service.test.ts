@@ -96,7 +96,7 @@ describe('orderService', () => {
         ]
       };
 
-      (prisma.order.findUnique as any).mockResolvedValue(mockOrder);
+      (orderService.findUnique as any).mockResolvedValue(mockOrder);
 
       const result = await orderService.getOrder('o1', 'u1');
 
@@ -109,15 +109,15 @@ describe('orderService', () => {
   describe('cancelOrder', () => {
     it('should allow a user to cancel their own order', async () => {
       const mockOrder = { id: 'o1', userId: 'u1', status: 'PENDING_PAYMENT' };
-      (prisma.order.findUnique as any).mockResolvedValue(mockOrder);
-      (prisma.order.update as any).mockResolvedValue({ ...mockOrder, status: 'CANCELLED' });
+      (orderService.findUnique as any).mockResolvedValue(mockOrder);
+      (orderService.update as any).mockResolvedValue({ ...mockOrder, status: 'CANCELLED' });
 
       const result = await orderService.cancelOrder('o1', 'u1');
       expect(result.status).toBe('CANCELLED');
     });
 
     it('should throw if order does not belong to user', async () => {
-      (prisma.order.findUnique as any).mockResolvedValue(null);
+      (orderService.findUnique as any).mockResolvedValue(null);
       await expect(orderService.cancelOrder('o1', 'wrong_user')).rejects.toThrow('ORDER_NOT_FOUND');
     });
   });
@@ -128,13 +128,13 @@ describe('orderService', () => {
       const cartId = 'c1';
       const addressId = 'a1';
 
-      (prisma.cart.findUnique as any).mockResolvedValue({
+      (cartService.findUnique as any).mockResolvedValue({
         id: cartId,
         items: [{ id: 'item1', sellerId: 's1', variantId: 'v1', quantity: 1, priceSnapshot: new Decimal(100), variant: { price: new Decimal(100) } }]
       });
 
       // Mock address ownership failure
-      (prisma.userAddress.findFirst as any).mockResolvedValue(null);
+      (userAddressService.findFirst as any).mockResolvedValue(null);
 
       await expect(orderService.createFromCart(userId, cartId, 'CARD', addressId))
         .rejects.toThrow('ADDRESS_NOT_FOUND_OR_UNAUTHORIZED');
@@ -145,28 +145,28 @@ describe('orderService', () => {
       const cartId = 'c1';
       const addressId = 'a1';
 
-      (prisma.cart.findUnique as any).mockResolvedValue({
+      (cartService.findUnique as any).mockResolvedValue({
         id: cartId,
         items: [{ id: 'item1', sellerId: 's1', variantId: 'v1', quantity: 1, priceSnapshot: new Decimal(100), variant: { price: new Decimal(100) } }]
       });
 
-      (prisma.userAddress.findFirst as any).mockResolvedValue({ id: addressId, userId });
-      (prisma.userAddress.findUnique as any).mockResolvedValue({ id: addressId, userId, state: 'Lagos' });
+      (userAddressService.findFirst as any).mockResolvedValue({ id: addressId, userId });
+      (userAddressService.findUnique as any).mockResolvedValue({ id: addressId, userId, state: 'Lagos' });
       
-      (prisma.order.create as any).mockResolvedValue({ 
+      (orderService.create as any).mockResolvedValue({ 
         id: 'o1', 
         total: new Decimal(600), 
         packages: [{ id: 'pkg1', lines: [{ id: 'l1' }] }] 
       });
 
-      (prisma.stockLevel.findFirst as any).mockResolvedValue({ id: 'sl1', warehouseId: 'w1' });
-      (prisma.flashSale.findFirst as any).mockResolvedValue(null);
+      (stockLevelService.findFirst as any).mockResolvedValue({ id: 'sl1', warehouseId: 'w1' });
+      (flashSaleService.findFirst as any).mockResolvedValue(null);
       (inventoryService.reserveStock as any).mockResolvedValue(true);
 
       const result = await orderService.createFromCart(userId, cartId, 'CARD', addressId);
 
       expect(result.id).toBe('o1');
-      expect(prisma.order.create).toHaveBeenCalled();
+      expect(orderService.create).toHaveBeenCalled();
     });
   });
 });

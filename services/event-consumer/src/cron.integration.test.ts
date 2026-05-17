@@ -2,6 +2,33 @@ import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from 'vites
 import { prisma, OrderStatus, LedgerStatus, LedgerEntryType } from '@ecom/db';
 import { handleCronJob } from './cron.js';
 
+const brandService = prisma.brand;
+const categoryService = prisma.category;
+const commissionService = prisma.commission;
+const payoutService = prisma.payout;
+const sellerStatementService = prisma.sellerStatement;
+const sellerLedgerEntryService = prisma.sellerLedgerEntry;
+const orderLineService = prisma.orderLine;
+const orderPackageService = prisma.orderPackage;
+const stockReservationService = prisma.stockReservation;
+const orderService = prisma.order;
+const affiliateAgentService = prisma.affiliateAgent;
+const stockLevelService = prisma.stockLevel;
+const reviewService = prisma.review;
+const cartItemService = prisma.cartItem;
+const flashSaleService = prisma.flashSale;
+const adConversionService = prisma.adConversion;
+const adCampaignService = prisma.adCampaign;
+const productVariantService = prisma.productVariant;
+const productService = prisma.product;
+const sellerDocumentService = prisma.sellerDocument;
+const sellerService = prisma.seller;
+const cartService = prisma.cart;
+const walletTransactionService = prisma.walletTransaction;
+const walletService = prisma.wallet;
+const userService = prisma.user;
+const warehouseService = prisma.warehouse;
+
 // Mock shared redis to avoid connection issues during tests
 vi.mock('@ecom/shared', async (importOriginal) => {
   const original = await importOriginal();
@@ -24,7 +51,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
   beforeAll(async () => {
     await clearDatabase();
     
-    const brand = await prisma.brand.create({
+    const brand = await brandService.create({
       data: { 
         name: 'Test Brand',
         slug: `brand-${Math.random().toString(36)}`
@@ -32,7 +59,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
     });
     sharedBrandId = brand.id;
 
-    const category = await prisma.category.create({
+    const category = await categoryService.create({
       data: { 
         name: 'Test Category',
         slug: `cat-${Math.random().toString(36)}`,
@@ -44,29 +71,29 @@ describe('Cron Job Integration Tests (Real DB)', () => {
 
   beforeEach(async () => {
     // Keep shared brand/category, clear everything else
-    await prisma.commission.deleteMany();
-    await prisma.payout.deleteMany();
-    await prisma.sellerStatement.deleteMany();
-    await prisma.sellerLedgerEntry.deleteMany();
-    await prisma.orderLine.deleteMany();
-    await prisma.orderPackage.deleteMany();
-    await prisma.stockReservation.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.affiliateAgent.deleteMany();
-    await prisma.stockLevel.deleteMany();
-    await prisma.review.deleteMany();
-    await prisma.cartItem.deleteMany();
-    await prisma.flashSale.deleteMany();
-    await prisma.adConversion.deleteMany();
-    await prisma.adCampaign.deleteMany();
-    await prisma.productVariant.deleteMany();
-    await prisma.product.deleteMany();
-    await prisma.sellerDocument.deleteMany();
-    await prisma.seller.deleteMany();
-    await prisma.cart.deleteMany();
-    await prisma.walletTransaction.deleteMany();
-    await prisma.wallet.deleteMany();
-    await prisma.user.deleteMany();
+    await commissionService.deleteMany();
+    await payoutService.deleteMany();
+    await sellerStatementService.deleteMany();
+    await sellerLedgerEntryService.deleteMany();
+    await orderLineService.deleteMany();
+    await orderPackageService.deleteMany();
+    await stockReservationService.deleteMany();
+    await orderService.deleteMany();
+    await affiliateAgentService.deleteMany();
+    await stockLevelService.deleteMany();
+    await reviewService.deleteMany();
+    await cartItemService.deleteMany();
+    await flashSaleService.deleteMany();
+    await adConversionService.deleteMany();
+    await adCampaignService.deleteMany();
+    await productVariantService.deleteMany();
+    await productService.deleteMany();
+    await sellerDocumentService.deleteMany();
+    await sellerService.deleteMany();
+    await cartService.deleteMany();
+    await walletTransactionService.deleteMany();
+    await walletService.deleteMany();
+    await userService.deleteMany();
   });
 
   async function clearDatabase() {
@@ -93,7 +120,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
       const staleDate = new Date();
       staleDate.setHours(staleDate.getHours() - 49);
 
-      const user = await prisma.user.create({
+      const user = await userService.create({
         data: {
           email: `stale-${Date.now()}@example.com`,
           firstName: 'Stale',
@@ -101,7 +128,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
         }
       });
 
-      const orderStale = await prisma.order.create({
+      const orderStale = await orderService.create({
         data: {
           userId: user.id,
           status: OrderStatus.FRAUD_REVIEW,
@@ -118,7 +145,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
       const freshDate = new Date();
       freshDate.setHours(freshDate.getHours() - 1);
 
-      const orderFresh = await prisma.order.create({
+      const orderFresh = await orderService.create({
         data: {
           userId: user.id,
           status: OrderStatus.FRAUD_REVIEW,
@@ -135,11 +162,11 @@ describe('Cron Job Integration Tests (Real DB)', () => {
       await handleCronJob({ name: 'fraud-review-cleanup' });
 
       // 4. Verify stale order is CANCELLED
-      const updatedStale = await prisma.order.findUnique({ where: { id: orderStale.id } });
+      const updatedStale = await orderService.findUnique({ where: { id: orderStale.id } });
       expect(updatedStale?.status).toBe(OrderStatus.CANCELLED);
 
       // 5. Verify fresh order is still FRAUD_REVIEW
-      const updatedFresh = await prisma.order.findUnique({ where: { id: orderFresh.id } });
+      const updatedFresh = await orderService.findUnique({ where: { id: orderFresh.id } });
       expect(updatedFresh?.status).toBe(OrderStatus.FRAUD_REVIEW);
     });
   });
@@ -147,7 +174,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
   describe('release-escrow', () => {
     it('should release mature escrow entries', async () => {
       // Setup seller, order, and ledger entries
-      const user = await prisma.user.create({
+      const user = await userService.create({
         data: {
           email: `seller-${Date.now()}@example.com`,
           firstName: 'Seller',
@@ -155,18 +182,18 @@ describe('Cron Job Integration Tests (Real DB)', () => {
         }
       });
 
-      const seller = await prisma.seller.create({
+      const seller = await sellerService.create({
         data: {
           userId: user.id,
           businessName: 'Cron Test Seller'
         }
       });
 
-      const warehouse = await prisma.warehouse.create({
+      const warehouse = await warehouseService.create({
         data: { name: 'Test Hub', address: '123 Hub St' }
       });
 
-      const product = await prisma.product.create({
+      const product = await productService.create({
         data: {
           title: `P-${Math.random().toString(36)}`,
           slug: `p-${Math.random().toString(36)}`,
@@ -177,7 +204,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
         }
       });
 
-      const variant = await prisma.productVariant.create({
+      const variant = await productVariantService.create({
         data: {
           productId: product.id,
           sku: `SKU-${Date.now()}`,
@@ -186,7 +213,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
         }
       });
 
-      const order = await prisma.order.create({
+      const order = await orderService.create({
         data: {
           userId: user.id,
           status: OrderStatus.DELIVERED,
@@ -198,7 +225,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
         }
       });
 
-      const pkg = await prisma.orderPackage.create({
+      const pkg = await orderPackageService.create({
         data: {
           orderId: order.id,
           sellerId: seller.id,
@@ -207,7 +234,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
         }
       });
 
-      const line = await prisma.orderLine.create({
+      const line = await orderLineService.create({
         data: {
           packageId: pkg.id,
           variantId: variant.id,
@@ -220,7 +247,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
       const matureDate = new Date();
       matureDate.setHours(matureDate.getHours() - 1);
 
-      const matureEntry = await prisma.sellerLedgerEntry.create({
+      const matureEntry = await sellerLedgerEntryService.create({
         data: {
           sellerId: seller.id,
           orderLineId: line.id,
@@ -235,7 +262,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
       const futureDate = new Date();
       futureDate.setHours(futureDate.getHours() + 24);
 
-      const immatureEntry = await prisma.sellerLedgerEntry.create({
+      const immatureEntry = await sellerLedgerEntryService.create({
         data: {
           sellerId: seller.id,
           orderLineId: line.id,
@@ -250,11 +277,11 @@ describe('Cron Job Integration Tests (Real DB)', () => {
       await handleCronJob({ name: 'release-escrow' });
 
       // 4. Verify mature entry is AVAILABLE
-      const updatedMature = await prisma.sellerLedgerEntry.findUnique({ where: { id: matureEntry.id } });
+      const updatedMature = await sellerLedgerEntryService.findUnique({ where: { id: matureEntry.id } });
       expect(updatedMature?.status).toBe(LedgerStatus.AVAILABLE);
 
       // 5. Verify immature entry is still PENDING
-      const updatedImmature = await prisma.sellerLedgerEntry.findUnique({ where: { id: immatureEntry.id } });
+      const updatedImmature = await sellerLedgerEntryService.findUnique({ where: { id: immatureEntry.id } });
       expect(updatedImmature?.status).toBe(LedgerStatus.PENDING);
     });
   });
@@ -262,7 +289,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
   describe('confirm-commissions', () => {
     it('should confirm mature affiliate commissions', async () => {
       // Setup affiliate agent
-      const user = await prisma.user.create({
+      const user = await userService.create({
         data: {
           email: `agent-${Date.now()}@example.com`,
           firstName: 'Agent',
@@ -270,7 +297,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
         }
       });
 
-      const agent = await prisma.affiliateAgent.create({
+      const agent = await affiliateAgentService.create({
         data: {
           userId: user.id,
           commissionRate: 5
@@ -281,7 +308,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
       const matureDate = new Date();
       matureDate.setHours(matureDate.getHours() - 25);
 
-      const orderMature = await prisma.order.create({
+      const orderMature = await orderService.create({
         data: {
           userId: user.id,
           status: OrderStatus.COMPLETED,
@@ -294,7 +321,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
         }
       });
 
-      const matureComm = await prisma.commission.create({
+      const matureComm = await commissionService.create({
         data: {
           agentId: agent.id,
           orderId: orderMature.id,
@@ -307,7 +334,7 @@ describe('Cron Job Integration Tests (Real DB)', () => {
       await handleCronJob({ name: 'confirm-commissions' });
 
       // 4. Verify mature commission is PAID
-      const updatedComm = await prisma.commission.findUnique({ where: { id: matureComm.id } });
+      const updatedComm = await commissionService.findUnique({ where: { id: matureComm.id } });
       expect(updatedComm?.status).toBe('PAID');
     });
   });

@@ -22,15 +22,15 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
 
     // 1. Setup User & Seller
     const timestamp = Date.now() + Math.random();
-    const user = await prisma.user.create({
+    const user = await userService.create({
       data: { email: `buyer-${timestamp}@test.com`, firstName: 'Buyer' }
     });
     userId = user.id;
 
-    const sellerUser = await prisma.user.create({
+    const sellerUser = await userService.create({
       data: { email: `seller-${Math.random()}@test.com`, firstName: 'Seller' }
     });
-    const seller = await prisma.seller.create({
+    const seller = await sellerService.create({
       data: { 
         userId: sellerUser.id, 
         businessName: 'Test Store',
@@ -40,16 +40,16 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
     sellerId = seller.id;
 
     // 2. Setup Catalog
-    const brand = await prisma.brand.create({
+    const brand = await brandService.create({
       data: { name: 'Apple', slug: 'apple' }
     });
 
-    const category = await prisma.category.create({
+    const category = await categoryService.create({
       data: { name: 'Electronics', slug: 'elec', commissionRate: 10 }
     });
     categoryId = category.id;
 
-    const product = await prisma.product.create({
+    const product = await productService.create({
       data: {
         title: 'Smartphone',
         slug: 'phone',
@@ -62,11 +62,11 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
     });
     productId = product.id;
 
-    const warehouse = await prisma.warehouse.create({
+    const warehouse = await warehouseService.create({
       data: { name: 'Main', address: '123 Warehouse St' }
     });
 
-    const variant = await prisma.productVariant.create({
+    const variant = await productVariantService.create({
       data: {
         productId,
         sku: 'PHONE-RED',
@@ -84,7 +84,7 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
     variantId = variant.id;
 
     // 3. Create Order
-    const order = await prisma.order.create({
+    const order = await orderService.create({
       data: {
         userId,
         status: 'PENDING_PAYMENT',
@@ -121,15 +121,15 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
       await paymentService.payWithWallet(userId, orderId, 1000);
 
       // 3. Verify balance
-      const wallet = await prisma.wallet.findUnique({ where: { userId } });
+      const wallet = await walletService.findUnique({ where: { userId } });
       expect(wallet?.balance.toNumber()).toBe(1000);
 
       // 4. Verify order status
-      const updatedOrder = await prisma.order.findUnique({ where: { id: orderId } });
+      const updatedOrder = await orderService.findUnique({ where: { id: orderId } });
       expect(updatedOrder?.status).toBe('PAID');
 
       // 5. Verify payment record
-      const payment = await prisma.payment.findFirst({ where: { orderId } });
+      const payment = await paymentService.findFirst({ where: { orderId } });
       expect(payment?.status).toBe('SUCCESS');
       expect(payment?.method).toBe('WALLET');
     });
@@ -145,7 +145,7 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
       const reference = 'PAY-REF-123';
       
       // 1. Create pending payment record
-      await prisma.payment.create({
+      await paymentService.create({
         data: {
           orderId,
           userId,
@@ -160,7 +160,7 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
       await paymentService.handleWebhook(reference, 'success');
 
       // 3. Verify order status
-      const updatedOrder = await prisma.order.findUnique({ 
+      const updatedOrder = await orderService.findUnique({ 
         where: { id: orderId },
         include: { packages: { include: { lines: true } } }
       });
@@ -170,7 +170,7 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
       const lineId = updatedOrder?.packages[0].lines[0].id!;
       
       // Verify Sale Entry (Gross)
-      const saleEntries = await prisma.sellerLedgerEntry.findMany({
+      const saleEntries = await sellerLedgerEntryService.findMany({
         where: { sellerId, type: 'SALE', orderLineId: lineId }
       });
       expect(saleEntries.length).toBe(1);
@@ -178,7 +178,7 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
       expect(saleEntries[0].status).toBe('PENDING');
 
       // Verify Commission Entry (10%)
-      const commissionEntries = await prisma.sellerLedgerEntry.findMany({
+      const commissionEntries = await sellerLedgerEntryService.findMany({
         where: { sellerId, type: 'COMMISSION', orderLineId: lineId }
       });
       expect(commissionEntries.length).toBe(1);
@@ -188,7 +188,7 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
       // This should NOT create new entries (Fix for BUG-2.3: Double Ledger)
       await ledgerService.recordSale(lineId);
       
-      const saleEntriesAfter = await prisma.sellerLedgerEntry.findMany({
+      const saleEntriesAfter = await sellerLedgerEntryService.findMany({
         where: { sellerId, type: 'SALE', orderLineId: lineId }
       });
       expect(saleEntriesAfter.length).toBe(1); // Still 1
@@ -200,7 +200,7 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
 
     it('should handle transfer webhooks with idempotency', async () => {
       // 1. Create a pending payout
-      const payout = await prisma.payout.create({
+      const payout = await payoutService.create({
         data: {
           sellerId,
           amount: 500,
@@ -213,7 +213,7 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
       await paymentService.handleWebhook(payout.id, 'success', 'transfer.success');
 
       // 3. Verify payout status is COMPLETED
-      const updatedPayout = await prisma.payout.findUnique({ where: { id: payout.id } });
+      const updatedPayout = await payoutService.findUnique({ where: { id: payout.id } });
       expect(updatedPayout?.status).toBe('COMPLETED');
       expect(updatedPayout?.processedAt).toBeDefined();
 
@@ -222,7 +222,7 @@ describe('Payment & Revenue Integration Test (Real DB)', () => {
       const firstProcessedAt = updatedPayout?.processedAt;
       await paymentService.handleWebhook(payout.id, 'success', 'transfer.success');
 
-      const finalPayout = await prisma.payout.findUnique({ where: { id: payout.id } });
+      const finalPayout = await payoutService.findUnique({ where: { id: payout.id } });
       expect(finalPayout?.status).toBe('COMPLETED');
       // Verify processedAt didn't change (proving no-op)
       expect(finalPayout?.processedAt?.getTime()).toBe(firstProcessedAt?.getTime());

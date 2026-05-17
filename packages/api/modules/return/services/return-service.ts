@@ -2,9 +2,13 @@ import { prisma } from '@ecom/db'
 import { paymentService } from '../../payment/services/payment-service.js'
 import { publishEvent } from '@ecom/shared'
 
+const orderLineService = prisma.orderLine;
+const returnShipmentService = prisma.returnShipment;
+const sellerService = prisma.seller;
+
 export const returnService = {
   async initiateReturn(userId: string, orderLineId: string, reason: string) {
-    const line = await prisma.orderLine.findUnique({
+    const line = await orderLineService.findUnique({
       where: { id: orderLineId },
       include: { package: { include: { order: true } } }
     });
@@ -24,7 +28,7 @@ export const returnService = {
     }
 
     // E04: Prevent duplicate return requests for the same order line
-    const existing = await prisma.returnShipment.findFirst({
+    const existing = await returnShipmentService.findFirst({
       where: { 
         orderLineId, 
         status: { in: ['PENDING', 'APPROVED'] } 
@@ -32,7 +36,7 @@ export const returnService = {
     });
     if (existing) throw new Error('RETURN_ALREADY_REQUESTED');
 
-    return prisma.returnShipment.create({
+    return returnShipmentService.create({
       data: {
         orderLineId,
         reason,
@@ -42,7 +46,7 @@ export const returnService = {
   },
 
   async approveReturn(returnId: string, adminId: string) {
-    const request = await prisma.returnShipment.findUnique({
+    const request = await returnShipmentService.findUnique({
       where: { id: returnId },
       include: { orderLine: { include: { package: { include: { order: true } } } } }
     });
@@ -100,7 +104,7 @@ export const returnService = {
   },
 
   async rejectReturn(returnId: string, reason: string) {
-    return prisma.returnShipment.update({
+    return returnShipmentService.update({
       where: { id: returnId },
       data: { 
         status: 'REJECTED',
@@ -111,7 +115,7 @@ export const returnService = {
   },
 
   async listForSeller(sellerId: string) {
-    return prisma.returnShipment.findMany({
+    return returnShipmentService.findMany({
       where: {
         orderLine: {
           variant: {

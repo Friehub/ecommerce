@@ -2,6 +2,12 @@ import { Worker } from 'bullmq';
 import { redis } from '@ecom/shared';
 import { catalogService, ledgerService, orderService, affiliateService, notificationService } from '@ecom/api';
 import { prisma } from '@ecom/db';
+
+const referralLinkService = prisma.referralLink;
+const productVariantService = prisma.productVariant;
+const eventLogService = prisma.eventLog;
+const userService = prisma.user;
+const disputeService = prisma.dispute;
 import * as dotenv from 'dotenv';
 import { startMetricsServer, orderProcessingLatency } from './metrics.js';
 import { setupCronJobs } from './cron.js';
@@ -25,7 +31,7 @@ const eventWorker = new Worker('system-events', async job => {
       case 'order.created': {
         const { orderId, total, referralLinkId } = event.payload;
         if (referralLinkId) {
-          const link = await prisma.referralLink.findUnique({
+          const link = await referralLinkService.findUnique({
             where: { id: referralLinkId }
           });
           if (link) {
@@ -39,7 +45,7 @@ const eventWorker = new Worker('system-events', async job => {
       case 'product.created':
       case 'product.updated': {
         const productId = event.payload.productId;
-        const variants = await prisma.productVariant.findMany({
+        const variants = await productVariantService.findMany({
           where: { productId }
         });
         console.log(`[SearchSync] Syncing ${variants.length} variants for product ${productId}`);
@@ -62,7 +68,7 @@ const eventWorker = new Worker('system-events', async job => {
           console.log(`[Logistics] Shipment ${shipmentId} FAILED. Notifying admin.`);
           
           // 1. Log to DB
-          await prisma.eventLog.create({
+          await eventLogService.create({
             data: {
               topic: 'LOGISTICS_FAILURE',
               payload: { shipmentId, status, severity: 'HIGH' }
@@ -70,7 +76,7 @@ const eventWorker = new Worker('system-events', async job => {
           });
 
           // 2. Notify Admins (Fix BUG-020: Missing escalation)
-          const admins = await prisma.user.findMany({
+          const admins = await userService.findMany({
             where: { role: 'ADMIN' },
             select: { id: true }
           });
@@ -107,7 +113,7 @@ const orderWorker = new Worker('orders', async job => {
     switch (job.name) {
       case 'sla-payment-timeout': {
         const orderId = job.data.orderId;
-        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        const order = await orderService.findUnique({ where: { id: orderId } });
         if (order && order.status === 'PENDING_PAYMENT') {
           console.log(`[Timeout] Order ${orderId} timed out for payment. Cancelling.`);
           await orderService.updateStatus(orderId, 'CANCELLED');
@@ -117,7 +123,7 @@ const orderWorker = new Worker('orders', async job => {
 
       case 'escrow-release': {
         const orderId = job.data.orderId;
-        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        const order = await orderService.findUnique({ where: { id: orderId } });
         if (order && (order.status === 'DELIVERED' || order.status === 'COMPLETED')) {
           console.log(`[Settlement] Releasing escrow for order ${orderId}`);
           await ledgerService.releaseEscrowByOrder(orderId);
@@ -130,7 +136,7 @@ const orderWorker = new Worker('orders', async job => {
 
       case 'sla-shipment-timeout': {
         const orderId = job.data.orderId;
-        const order = await prisma.order.findUnique({ 
+        const order = await orderService.findUnique({ 
           where: { id: orderId },
           include: { packages: true }
         });
@@ -158,10 +164,10 @@ const orderWorker = new Worker('orders', async job => {
 
       case 'dispute-auto-escalate': {
         const { disputeId } = job.data;
-        const dispute = await prisma.dispute.findUnique({ where: { id: disputeId } });
+        const dispute = await disputeService.findUnique({ where: { id: disputeId } });
         if (dispute && dispute.status === 'OPEN') {
           console.log(`[Dispute] Dispute ${disputeId} timed out. Escalating.`);
-          await prisma.dispute.update({
+          await disputeService.update({
             where: { id: disputeId },
             data: { status: 'ESCALATED' }
           });

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Mail, ArrowLeft, Inbox, Clock, ShieldInfo } from 'lucide-react';
+import { Mail, ArrowLeft, Inbox, Clock, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AccountInboxPage() {
@@ -38,7 +38,7 @@ export default function AccountInboxPage() {
             
             <div className="flex flex-col md:flex-row items-center justify-center gap-6">
               <div className="flex items-center gap-3 text-j-success bg-j-success/5 px-6 py-3 rounded-sm border border-j-success/10">
-                <ShieldInfo size={16} />
+                <Shield size={16} />
                 <span className="text-[10px] font-black uppercase tracking-tight">Encrypted Channel</span>
               </div>
               <Link href="/help" className="text-[10px] font-black text-jumia-orange uppercase tracking-widest hover:underline decoration-2 underline-offset-8">

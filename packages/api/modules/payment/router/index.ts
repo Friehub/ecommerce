@@ -4,13 +4,16 @@ import { prisma } from "@ecom/db";
 import { z } from "zod";
 import { paymentService } from "../services/payment-service.js";
 
+const orderService = prisma.order;
+const walletService = prisma.wallet;
+
 const _paymentRouter = createTRPCRouter({
   initializePaystack: protectedProcedure
     .input(z.object({
       orderId: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const order = await prisma.order.findUnique({
+      const order = await orderService.findUnique({
         where: { id: input.orderId, userId: ctx.session.user.id }
       });
       if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "Order not found" });
@@ -29,7 +32,7 @@ const _paymentRouter = createTRPCRouter({
       provider: z.enum(['paystack', 'flutterwave', 'monnify'])
     }))
     .mutation(async ({ ctx, input }) => {
-      const order = await prisma.order.findUnique({
+      const order = await orderService.findUnique({
         where: { id: input.orderId, userId: ctx.session.user.id }
       });
       if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "Order not found" });
@@ -48,7 +51,7 @@ const _paymentRouter = createTRPCRouter({
       orderId: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const order = await prisma.order.findUnique({
+      const order = await orderService.findUnique({
         where: { id: input.orderId, userId: ctx.session.user.id }
       });
       if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "Order not found" });
@@ -86,7 +89,7 @@ const _paymentRouter = createTRPCRouter({
     }),
 
   getWallet: protectedProcedure.query(async ({ ctx }) => {
-    return await prisma.wallet.findUnique({
+    return await walletService.findUnique({
       where: { userId: ctx.session.user.id },
       include: { transactions: { orderBy: { createdAt: 'desc' }, take: 10 } }
     });
@@ -97,7 +100,7 @@ const _paymentRouter = createTRPCRouter({
       reference: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const payment = await prisma.payment.findFirst({
+      const payment = await paymentService.findFirst({
         where: { providerRef: input.reference, userId: ctx.session.user.id }
       });
       if (!payment) throw new TRPCError({ code: "NOT_FOUND", message: "Payment record not found" });

@@ -10,12 +10,16 @@ const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   'DELIVERED': [] // Terminal state
 };
 
+const shipmentService = prisma.shipment;
+const cartService = prisma.cart;
+const userAddressService = prisma.userAddress;
+
 export const logisticsService = {
   async createShipment(packageId: string) {
-    const existing = await prisma.shipment.findFirst({ where: { packageId } });
+    const existing = await shipmentService.findFirst({ where: { packageId } });
     if (existing) return existing;
 
-    return prisma.shipment.create({
+    return shipmentService.create({
       data: {
         packageId,
         agentId: 'system-unassigned',
@@ -25,7 +29,7 @@ export const logisticsService = {
   },
 
   async assignAgent(shipmentId: string, agentId: string) {
-    const shipment = await prisma.shipment.update({
+    const shipment = await shipmentService.update({
       where: { id: shipmentId },
       data: { agentId }
     });
@@ -35,7 +39,7 @@ export const logisticsService = {
   },
 
   async updateStatus(shipmentId: string, status: string, note?: string, proofUrl?: string) {
-    const currentShipment = await prisma.shipment.findUnique({
+    const currentShipment = await shipmentService.findUnique({
       where: { id: shipmentId },
       select: { status: true, packageId: true }
     });
@@ -48,7 +52,7 @@ export const logisticsService = {
       throw new Error(`INVALID_TRANSITION: Cannot go from ${currentShipment.status} to ${status}`);
     }
 
-    const shipment = await prisma.shipment.update({
+    const shipment = await shipmentService.update({
       where: { id: shipmentId },
       data: { 
         status: status as any,
@@ -83,7 +87,7 @@ export const logisticsService = {
   },
 
   async listShipments(agentId?: string) {
-    return prisma.shipment.findMany({
+    return shipmentService.findMany({
       where: agentId ? { agentId } : {},
       orderBy: { createdAt: 'desc' }
     });
@@ -93,7 +97,7 @@ export const logisticsService = {
     let totalWeightGrams = 0;
 
     if (cartId) {
-      const cart = await prisma.cart.findUnique({
+      const cart = await cartService.findUnique({
         where: { id: cartId },
         include: { items: { include: { variant: true } } }
       });
@@ -111,7 +115,7 @@ export const logisticsService = {
       totalWeightGrams = 1000;
     }
 
-    const address = await prisma.userAddress.findUnique({
+    const address = await userAddressService.findUnique({
       where: { id: addressId }
     });
     if (!address) throw new Error('ADDRESS_NOT_FOUND');

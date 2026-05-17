@@ -6,11 +6,17 @@ import { catalogService } from "../services/catalog-service.js";
 import { wishlistService } from "../services/wishlist-service.js";
 import { catalogImportService } from "../services/catalog-import-service.js";
 
+const sellerService = prisma.seller;
+const productService = prisma.product;
+const brandService = prisma.brand;
+const productQuestionService = prisma.productQuestion;
+const productAnswerService = prisma.productAnswer;
+
 const _catalogRouter = createTRPCRouter({
   bulkImport: sellerProcedure
     .input(z.object({ csvContent: z.string().max(1 * 1024 * 1024, "CSV file is too large. Maximum size allowed is 1MB."), warehouseId: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id },
         select: { id: true }
       });
@@ -65,7 +71,7 @@ const _catalogRouter = createTRPCRouter({
   getProduct: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
-      return await prisma.product.findUnique({
+      return await productService.findUnique({
         where: { id: input.id },
         include: {
           media: true,
@@ -85,7 +91,7 @@ const _catalogRouter = createTRPCRouter({
   createProduct: sellerProcedure
     .input(productSchema)
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id },
         select: { id: true }
       });
@@ -112,7 +118,7 @@ const _catalogRouter = createTRPCRouter({
     .input(z.void())
     .output(z.any())
     .query(async () => {
-      return await prisma.brand.findMany({
+      return await brandService.findMany({
         take: 100, // Safeguard against 10k brands OOM
         orderBy: { name: 'asc' }
       });
@@ -133,19 +139,19 @@ const _catalogRouter = createTRPCRouter({
   deleteProduct: sellerProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id },
         select: { id: true }
       });
       if (!seller) throw new Error('NOT_A_SELLER');
       
       // Ensure seller owns the product
-      const product = await prisma.product.findUnique({
+      const product = await productService.findUnique({
         where: { id: input.id, sellerId: seller.id }
       });
       if (!product) throw new Error('PRODUCT_NOT_FOUND_OR_NOT_OWNED');
 
-      return await prisma.product.delete({
+      return await productService.delete({
         where: { id: input.id }
       });
     }),
@@ -162,7 +168,7 @@ const _catalogRouter = createTRPCRouter({
       text: z.string().min(5).max(500)
     }))
     .mutation(async ({ ctx, input }) => {
-      return await prisma.productQuestion.create({
+      return await productQuestionService.create({
         data: {
           productId: input.productId,
           userId: ctx.session.user.id,
@@ -177,20 +183,20 @@ const _catalogRouter = createTRPCRouter({
       text: z.string().min(2).max(1000)
     }))
     .mutation(async ({ ctx, input }) => {
-      const question = await prisma.productQuestion.findUnique({
+      const question = await productQuestionService.findUnique({
         where: { id: input.questionId },
         include: { product: true }
       });
       if (!question) throw new Error('QUESTION_NOT_FOUND');
 
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id },
         select: { id: true }
       });
 
       const isSeller = seller?.id === question.product.sellerId;
 
-      return await prisma.productAnswer.create({
+      return await productAnswerService.create({
         data: {
           questionId: input.questionId,
           userId: ctx.session.user.id,
@@ -207,7 +213,7 @@ const _catalogRouter = createTRPCRouter({
       cursor: z.string().optional()
     }))
     .query(async ({ input }) => {
-      const items = await prisma.productQuestion.findMany({
+      const items = await productQuestionService.findMany({
         where: { productId: input.productId },
         take: input.limit + 1,
         cursor: input.cursor ? { id: input.cursor } : undefined,

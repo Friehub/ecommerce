@@ -24,7 +24,7 @@ async function main() {
   }
 
   // 1. Create Admin
-  await prisma.user.upsert({
+  await userService.upsert({
     where: { email: 'admin@ecom.dev' },
     update: {},
     create: {
@@ -48,7 +48,7 @@ async function main() {
 
   const createdCategories = [];
   for (const cat of categories) {
-    const c = await prisma.category.upsert({
+    const c = await categoryService.upsert({
       where: { slug: cat.slug },
       update: {},
       create: { name: cat.name, slug: cat.slug, commissionRate: cat.commission }
@@ -67,7 +67,7 @@ async function main() {
   ];
   const createdBrands = [];
   for (const brand of brandData) {
-    const b = await prisma.brand.upsert({
+    const b = await brandService.upsert({
       where: { slug: brand.name.toLowerCase().replace(/ /g, '-') },
       update: {
         logoUrl: brand.logo,
@@ -88,7 +88,7 @@ async function main() {
   }
 
   // 4. Create Warehouse
-  const warehouse = await prisma.warehouse.upsert({
+  const warehouse = await warehouseService.upsert({
     where: { id: 'main-wh' },
     update: {},
     create: {
@@ -104,7 +104,7 @@ async function main() {
   const createdSellers = [];
   for (let i = 1; i <= 20; i++) {
     const email = `seller${i}@ecom.dev`;
-    const user = await prisma.user.upsert({
+    const user = await userService.upsert({
       where: { email },
       update: {},
       create: {
@@ -117,7 +117,7 @@ async function main() {
       },
     });
 
-    const seller = await prisma.seller.upsert({
+    const seller = await sellerService.upsert({
       where: { userId: user.id },
       update: {},
       create: {
@@ -192,7 +192,7 @@ async function main() {
       const images = categoryImages[category.name] || ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800'];
       const imageUrl = images[j % images.length];
 
-      const product = await prisma.product.create({
+      const product = await productService.create({
         data: {
           title,
           slug,
@@ -238,7 +238,7 @@ async function main() {
   const createdBuyers = [];
   for (let k = 1; k <= 50; k++) {
     const email = `buyer${k}@ecom.dev`;
-    const user = await prisma.user.upsert({
+    const user = await userService.upsert({
       where: { email },
       update: {},
       create: {
@@ -269,7 +269,7 @@ async function main() {
   console.log('🤝 Creating 5 affiliate agents...');
   for (let l = 1; l <= 5; l++) {
     const email = `agent${l}@ecom.dev`;
-    const user = await prisma.user.upsert({
+    const user = await userService.upsert({
       where: { email },
       update: {},
       create: {
@@ -279,7 +279,7 @@ async function main() {
         isActive: true,
       },
     });
-    const agent = await prisma.affiliateAgent.upsert({
+    const agent = await affiliateAgentService.upsert({
       where: { userId: user.id },
       update: {},
       create: {
@@ -288,7 +288,7 @@ async function main() {
         commissionRate: new Decimal(8.0)
       }
     });
-    await prisma.referralLink.upsert({
+    await referralLinkService.upsert({
       where: { slug: `PARTNER${l}` },
       update: {},
       create: {
@@ -308,7 +308,7 @@ async function main() {
     const status = orderStatuses[Math.floor(Math.random() * orderStatuses.length)] as any;
     const addressId = buyer.addresses[0]?.id;
 
-    await prisma.order.create({
+    await orderService.create({
       data: {
         userId: buyer.id,
         status: status,
@@ -341,7 +341,7 @@ async function main() {
   for (let i = 0; i < 6; i++) {
     const variant = createdVariants[Math.floor(Math.random() * createdVariants.length)];
     const salePrice = variant.price.mul(0.7); // 30% off
-    await prisma.flashSale.create({
+    await flashSaleService.create({
       data: {
         variantId: variant.id,
         sellerId: variant.product.sellerId,
@@ -378,7 +378,7 @@ async function main() {
   ];
 
   for (const banner of banners) {
-    await prisma.banner.create({
+    await bannerService.create({
       data: {
         title: banner.title,
         imageUrl: banner.imageUrl,

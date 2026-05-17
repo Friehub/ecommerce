@@ -1,7 +1,15 @@
 import { prisma, Decimal } from '@ecom/db'
+
+const orderPackageService = prisma.orderPackage;
+const sellerLedgerEntryService = prisma.sellerLedgerEntry;
+const stockLevelService = prisma.stockLevel;
+const sellerService = prisma.seller;
+const disputeService = prisma.dispute;
+const sellerDocumentService = prisma.sellerDocument;
+
 export const sellerDashboardService = {
   async getMetrics(sellerId: string) {
-    const packages = await prisma.orderPackage.findMany({
+    const packages = await orderPackageService.findMany({
       where: { sellerId },
       include: { lines: true }
     });
@@ -18,18 +26,18 @@ export const sellerDashboardService = {
       }, new Decimal(0));
 
     // Get actual revenue from ledger
-    const ledgerEntries = await prisma.sellerLedgerEntry.findMany({
+    const ledgerEntries = await sellerLedgerEntryService.findMany({
       where: { sellerId, type: { in: ['SALE', 'COMMISSION'] } }
     });
     const netRevenue = ledgerEntries.reduce((acc, entry) => acc.add(entry.amount), new Decimal(0));
 
     // Low stock alerts
-    const lowStockCount = await prisma.stockLevel.count({
+    const lowStockCount = await stockLevelService.count({
       where: { sellerId, qtyOnHand: { lte: 10 } }
     });
 
     // 1. Buyer Review Score (50%)
-    const seller = await prisma.seller.findUnique({
+    const seller = await sellerService.findUnique({
       where: { id: sellerId },
       select: { rating: true }
     });
@@ -38,7 +46,7 @@ export const sellerDashboardService = {
 
     // 2. On-time Shipment Rate (25%)
     // Consider packages that have been handed over to logistics
-    const shippedPackages = await prisma.orderPackage.findMany({
+    const shippedPackages = await orderPackageService.findMany({
       where: { 
         sellerId, 
         status: { in: ['READY_FOR_PICKUP', 'PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'] } 
@@ -52,15 +60,15 @@ export const sellerDashboardService = {
     const onTimeRate = shippedPackages.length > 0 ? onTimeShipments / shippedPackages.length : 1.0;
 
     // 3. Cancellation Rate (15%) - Lower is better
-    const totalPackages = await prisma.orderPackage.count({ where: { sellerId } });
-    const cancelledPackages = await prisma.orderPackage.count({ 
+    const totalPackages = await orderPackageService.count({ where: { sellerId } });
+    const cancelledPackages = await orderPackageService.count({ 
       where: { sellerId, status: 'CANCELLED' } 
     });
     const cancellationRate = totalPackages > 0 ? cancelledPackages / totalPackages : 0.0;
 
     // 4. Dispute Loss Rate (10%) - Lower is better
-    const totalDisputes = await prisma.dispute.count({ where: { sellerId } });
-    const lostDisputes = await prisma.dispute.count({ 
+    const totalDisputes = await disputeService.count({ where: { sellerId } });
+    const lostDisputes = await disputeService.count({ 
       where: { sellerId, status: 'RESOLVED' } 
     });
     const disputeLossRate = totalDisputes > 0 ? lostDisputes / totalDisputes : 0.0;
@@ -113,7 +121,7 @@ export const sellerDashboardService = {
       }
     }
 
-    return prisma.seller.update({
+    return sellerService.update({
       where: { id: sellerId },
       data: {
         bankCode,
@@ -125,7 +133,7 @@ export const sellerDashboardService = {
   },
 
   async uploadDocument(sellerId: string, type: string, url: string) {
-    return prisma.sellerDocument.create({
+    return sellerDocumentService.create({
       data: {
         sellerId,
         type,
@@ -136,7 +144,7 @@ export const sellerDashboardService = {
   },
 
   async getKYCStatus(sellerId: string) {
-    const seller = await prisma.seller.findUnique({
+    const seller = await sellerService.findUnique({
       where: { id: sellerId },
       include: { documents: true }
     });

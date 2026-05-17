@@ -20,7 +20,7 @@ describe('Order Integration Test (Real DB)', () => {
     await clearDatabase();
 
     // Setup Test Data
-    const user = await prisma.user.create({
+    const user = await userService.create({
       data: {
         email: 'test@example.com',
         firstName: 'Test',
@@ -29,7 +29,7 @@ describe('Order Integration Test (Real DB)', () => {
     });
     userId = user.id;
 
-    const address = await prisma.userAddress.create({
+    const address = await userAddressService.create({
       data: {
         userId,
         firstName: 'Test',
@@ -43,7 +43,7 @@ describe('Order Integration Test (Real DB)', () => {
     });
     addressId = address.id;
 
-    const seller = await prisma.user.create({
+    const seller = await userService.create({
       data: {
         email: 'seller@example.com',
         role: 'SELLER',
@@ -52,7 +52,7 @@ describe('Order Integration Test (Real DB)', () => {
     sellerId = seller.id;
 
     // Create Seller Profile
-    const sellerProfile = await prisma.seller.create({
+    const sellerProfile = await sellerService.create({
       data: {
         userId: sellerId,
         businessName: 'Test Shop',
@@ -61,7 +61,7 @@ describe('Order Integration Test (Real DB)', () => {
     });
     sellerProfileId = sellerProfile.id;
 
-    const category = await prisma.category.create({
+    const category = await categoryService.create({
       data: {
         name: 'Electronics',
         slug: 'electronics',
@@ -69,14 +69,14 @@ describe('Order Integration Test (Real DB)', () => {
       },
     });
 
-    const brand = await prisma.brand.create({
+    const brand = await brandService.create({
       data: {
         name: 'Test Brand',
         slug: 'test-brand',
       },
     });
 
-    const warehouse = await prisma.warehouse.create({
+    const warehouse = await warehouseService.create({
       data: {
         name: 'Main Warehouse',
         address: 'Lagos',
@@ -84,7 +84,7 @@ describe('Order Integration Test (Real DB)', () => {
     });
     warehouseId = warehouse.id;
 
-    const product = await prisma.product.create({
+    const product = await productService.create({
       data: {
         title: 'Test Product',
         slug: 'test-product',
@@ -96,7 +96,7 @@ describe('Order Integration Test (Real DB)', () => {
       },
     });
 
-    const variant = await prisma.productVariant.create({
+    const variant = await productVariantService.create({
       data: {
         productId: product.id,
         sku: 'TEST-SKU',
@@ -107,7 +107,7 @@ describe('Order Integration Test (Real DB)', () => {
     });
     variantId = variant.id;
 
-    await prisma.stockLevel.create({
+    await stockLevelService.create({
       data: {
         variantId,
         sellerId: sellerProfileId,
@@ -119,7 +119,7 @@ describe('Order Integration Test (Real DB)', () => {
 
   it('should create a real order from a cart', async () => {
     // 1. Create a cart with an item
-    const cart = await prisma.cart.create({
+    const cart = await cartService.create({
       data: {
         userId,
         sessionId: 'test-session',
@@ -142,7 +142,7 @@ describe('Order Integration Test (Real DB)', () => {
     expect(order.userId).toBe(userId);
     expect(order.total.toNumber()).toBeGreaterThan(1000); // Price + Shipping
 
-    const dbOrder = await prisma.order.findUnique({
+    const dbOrder = await orderService.findUnique({
       where: { id: order.id },
       include: { 
         packages: { 

@@ -3,6 +3,10 @@ import { Worker, Job } from 'bullmq';
 import { redis } from '@ecom/shared';
 import { prisma } from '@ecom/db';
 
+const orderService = prisma.order;
+const productVariantService = prisma.productVariant;
+const productRelationService = prisma.productRelation;
+
 /**
  * Recommendation Engine Worker
  * Implements Collaborative Filtering (Users who bought X also bought Y).
@@ -12,7 +16,7 @@ export const recommendationWorker = new Worker('recommendations', async (job: Jo
 
   try {
     // 1. Fetch all orders with their lines
-    const orders = await prisma.order.findMany({
+    const orders = await orderService.findMany({
       where: { status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED'] } },
       include: { packages: { include: { lines: true } } }
     });
@@ -25,7 +29,7 @@ export const recommendationWorker = new Worker('recommendations', async (job: Jo
       for (const pkg of order.packages) {
         for (const line of pkg.lines) {
           // We relate base Products, not specific variants, for broader recommendations
-          const variant = await prisma.productVariant.findUnique({
+          const variant = await productVariantService.findUnique({
              where: { id: line.variantId },
              select: { productId: true }
           });
@@ -52,7 +56,7 @@ export const recommendationWorker = new Worker('recommendations', async (job: Jo
     
     for (const [productId, related] of Object.entries(coOccurrence)) {
       for (const [relatedProductId, score] of Object.entries(related)) {
-        await prisma.productRelation.upsert({
+        await productRelationService.upsert({
           where: {
             productId_relatedProductId_relationType: {
               productId,

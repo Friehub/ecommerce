@@ -5,25 +5,38 @@ import type { RegisterInput, AddressInput, SellerOnboardingInput } from '../sche
 import { notificationService } from '../../notification/services/notification-service.js'
 import { emailTemplates } from '../../notification/services/email-templates.js'
 
+const userAddressService = prisma.userAddress;
+const oAuthAccountService = prisma.oAuthAccount;
+const sellerProfileService = prisma.seller;
+
 export const userService = {
+  // Prisma delegates
+  findUnique: prisma.user.findUnique,
+  findFirst: prisma.user.findFirst,
+  findMany: prisma.user.findMany,
+  create: prisma.user.create,
+  update: prisma.user.update,
+  delete: prisma.user.delete,
+  count: prisma.user.count,
+
   async findByEmail(email: string) {
-    return prisma.user.findUnique({ where: { email } })
+    return userService.findUnique({ where: { email } })
   },
 
   async findById(id: string) {
-    return prisma.user.findUnique({
+    return userService.findUnique({
       where: { id },
       include: { addresses: true, sellerProfile: true },
     })
   },
 
   async register({ email, password, firstName, lastName, phone, role }: RegisterInput) {
-    const existing = await prisma.user.findUnique({ where: { email } })
+    const existing = await userService.findUnique({ where: { email } })
     if (existing) throw new Error('EMAIL_IN_USE')
 
     const passwordHash = await bcrypt.hash(password, 12)
 
-    const user = await prisma.user.create({
+    const user = await userService.create({
       data: { email, passwordHash, firstName, lastName, phone, role },
     })
 
@@ -32,7 +45,7 @@ export const userService = {
   },
 
   async validateCredentials(email: string, password: string) {
-    const user = await prisma.user.findUnique({ where: { email } })
+    const user = await userService.findUnique({ where: { email } })
     if (!user || !user.passwordHash) return null
 
     // E07: Check isActive BEFORE expensive bcrypt to prevent timing oracle
@@ -58,29 +71,29 @@ export const userService = {
   },
 
   async getAddresses(userId: string) {
-    return prisma.userAddress.findMany({ where: { userId } })
+    return userAddressService.findMany({ where: { userId } })
   },
 
   async deleteAddress(id: string, userId: string) {
-    return prisma.userAddress.deleteMany({ where: { id, userId } })
+    return userAddressService.deleteMany({ where: { id, userId } })
   },
 
   async updateProfile(id: string, data: { firstName: string; lastName: string; phone?: string }) {
-    return prisma.user.update({
+    return userService.update({
       where: { id },
       data,
     });
   },
 
   async toggleTwoFactor(userId: string, enabled: boolean) {
-    return prisma.user.update({
+    return userService.update({
       where: { id: userId },
       data: { twoFactorEnabled: enabled }
     });
   },
 
   async requestPhoneOTP(userId: string) {
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { phone: true } });
+    const user = await userService.findUnique({ where: { id: userId }, select: { phone: true } });
     if (!user?.phone) throw new Error('NO_PHONE_NUMBER');
 
     // Generate 6-digit OTP
@@ -106,7 +119,7 @@ export const userService = {
       throw new Error('INVALID_OR_EXPIRED_OTP');
     }
 
-    await prisma.user.update({
+    await userService.update({
       where: { id: userId },
       data: { phoneVerified: true }
     });
@@ -116,13 +129,13 @@ export const userService = {
   },
 
   async requestPasswordReset(email: string) {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await userService.findUnique({ where: { email } });
     if (!user) return { success: true };
 
     const token = generateId();
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
-    await prisma.user.update({
+    await userService.update({
       where: { id: user.id },
       data: { resetToken: token, resetTokenExpiresAt: expires }
     });
@@ -144,7 +157,7 @@ export const userService = {
   },
 
   async resetPassword(token: string, newPassword: string) {
-    const user = await prisma.user.findFirst({
+    const user = await userService.findFirst({
       where: {
         resetToken: token,
         resetTokenExpiresAt: { gte: new Date() }
@@ -155,7 +168,7 @@ export const userService = {
 
     const passwordHash = await bcrypt.hash(newPassword, 12);
 
-    await prisma.user.update({
+    await userService.update({
       where: { id: user.id },
       data: {
         passwordHash,
@@ -168,10 +181,10 @@ export const userService = {
   },
 
   async upsertOAuthAccount(provider: string, providerAccountId: string, profile: { email: string; firstName?: string; lastName?: string }) {
-    let user = await prisma.user.findUnique({ where: { email: profile.email } });
+    let user = await userService.findUnique({ where: { email: profile.email } });
 
     if (!user) {
-      user = await prisma.user.create({
+      user = await userService.create({
         data: {
           email: profile.email,
           firstName: profile.firstName,
@@ -182,7 +195,7 @@ export const userService = {
       await publishEvent('user.created', { userId: user.id, email: user.email, role: 'BUYER' });
     }
 
-    await prisma.oAuthAccount.upsert({
+    await oAuthAccountService.upsert({
       where: { provider_providerAccountId: { provider, providerAccountId } },
       update: { userId: user.id },
       create: { provider, providerAccountId, userId: user.id }

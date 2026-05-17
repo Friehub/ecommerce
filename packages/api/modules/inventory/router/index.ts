@@ -1,6 +1,10 @@
 import { createTRPCRouter, publicProcedure, adminProcedure, sellerProcedure } from "../../../trpc.js";
 import { z } from "zod";
 import { inventoryService } from "../services/inventory-service.js";
+import { prisma } from "@ecom/db";
+
+const stockLevelService = prisma.stockLevel;
+const sellerService = prisma.seller;
 
 const _inventoryRouter = createTRPCRouter({
   getAvailableStock: publicProcedure
@@ -21,7 +25,7 @@ const _inventoryRouter = createTRPCRouter({
       
       if (!sellerId || !warehouseId) {
         const { prisma } = await import('@ecom/db');
-        const stockLevel = await prisma.stockLevel.findFirst({
+        const stockLevel = await stockLevelService.findFirst({
           where: { variantId: input.variantId, qtyOnHand: { gte: input.quantity } }
         });
         if (!stockLevel) throw new Error('STOCK_EXHAUSTED');
@@ -47,7 +51,7 @@ const _inventoryRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       const { prisma } = await import('@ecom/db');
-      const seller = await prisma.seller.findUnique({
+      const seller = await sellerService.findUnique({
         where: { userId: ctx.session.user.id },
         select: { id: true }
       });
@@ -58,7 +62,7 @@ const _inventoryRouter = createTRPCRouter({
 
   listStockLevels: adminProcedure.query(async () => {
     const { prisma } = await import('@ecom/db');
-    return await prisma.stockLevel.findMany({
+    return await stockLevelService.findMany({
       include: {
         variant: {
           include: {

@@ -4,6 +4,9 @@ import { prisma, PackageStatus } from "@ecom/db";
 import { z } from "zod";
 import { orderService } from "../services/order-service.js";
 import { packageService } from "../services/package-service.js";
+import { sellerService } from "../../iam/services/seller-service.js";
+
+const orderPackageService = prisma.orderPackage;
 
 const _orderRouter = createTRPCRouter({
   create: protectedProcedure
@@ -48,7 +51,7 @@ const _orderRouter = createTRPCRouter({
       offset: z.number().min(0).default(0),
     }))
     .query(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new TRPCError({ code: "UNAUTHORIZED", message: "Seller account not found" });
       
       return await orderService.listSellerPackages(seller.id, input.limit, input.offset);
@@ -61,11 +64,11 @@ const _orderRouter = createTRPCRouter({
       trackingNumber: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const seller = await prisma.seller.findUnique({ where: { userId: ctx.session.user.id } });
+      const seller = await sellerService.findUnique({ where: { userId: ctx.session.user.id } });
       if (!seller) throw new TRPCError({ code: "UNAUTHORIZED", message: "Seller account not found" });
 
       // Ownership check (C05)
-      const pkg = await prisma.orderPackage.findFirst({
+      const pkg = await orderPackageService.findFirst({
         where: { id: input.packageId, sellerId: seller.id }
       });
       if (!pkg) throw new TRPCError({ code: "FORBIDDEN", message: "You do not own this package" });

@@ -1,9 +1,15 @@
 import { prisma } from '@ecom/db';
 import { redis } from '@ecom/shared';
+
+const notificationPreferenceService = prisma.notificationPreference;
+const notificationLogService = prisma.notificationLog;
+const userService = prisma.user;
+const userDeviceService = prisma.userDevice;
+
 export const notificationService = {
   async sendNotification(userId: string, type: string, title: string, message: string) {
     // 1. Get preferences
-    const pref = await prisma.notificationPreference.findUnique({
+    const pref = await notificationPreferenceService.findUnique({
       where: { userId_type: { userId, type } }
     });
 
@@ -14,7 +20,7 @@ export const notificationService = {
 
     // 2. Log in app (always do this if push is enabled, or as a general log)
     if (sendPush) {
-      const notification = await prisma.notificationLog.create({
+      const notification = await notificationLogService.create({
         data: {
           userId,
           title,
@@ -38,7 +44,7 @@ export const notificationService = {
 
       if (RESEND_API_KEY !== 're_placeholder') {
         try {
-          const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+          const user = await userService.findUnique({ where: { id: userId }, select: { email: true } });
           if (user?.email) {
           // Non-blocking fetch (C04: Optimization)
           fetch('https://api.resend.com/emails', {
@@ -67,7 +73,7 @@ export const notificationService = {
 
     if (sendSms) {
       const { config } = await import('../../../config.js');
-      const user = await prisma.user.findUnique({ where: { id: userId }, select: { phone: true } });
+      const user = await userService.findUnique({ where: { id: userId }, select: { phone: true } });
       
       if (user?.phone) {
         // C10: Termii Implementation (Standard for Nigeria)
@@ -110,7 +116,7 @@ export const notificationService = {
 
     // 4. Dispatch Push via Firebase Cloud Messaging (FCM)
     if (sendPush) {
-      const devices = await prisma.userDevice.findMany({ where: { userId } });
+      const devices = await userDeviceService.findMany({ where: { userId } });
       const tokens = devices.map(d => d.fcmToken);
 
       if (tokens.length > 0) {
@@ -131,7 +137,7 @@ export const notificationService = {
   },
 
   async registerDevice(userId: string, fcmToken: string, platform: string) {
-    return prisma.userDevice.upsert({
+    return userDeviceService.upsert({
       where: { fcmToken },
       update: { userId, platform, lastUsed: new Date() },
       create: { userId, fcmToken, platform }
@@ -139,20 +145,20 @@ export const notificationService = {
   },
 
   async unregisterDevice(fcmToken: string) {
-    return prisma.userDevice.deleteMany({
+    return userDeviceService.deleteMany({
       where: { fcmToken }
     });
   },
 
   async getUnreadNotifications(userId: string) {
-    return prisma.notificationLog.findMany({
+    return notificationLogService.findMany({
       where: { userId, isRead: false },
       orderBy: { createdAt: 'desc' }
     });
   },
 
   async listNotifications(userId: string, limit = 20, offset = 0) {
-    return prisma.notificationLog.findMany({
+    return notificationLogService.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
       take: limit,
@@ -161,21 +167,21 @@ export const notificationService = {
   },
 
   async markAsRead(userId: string, notificationId: string) {
-    return prisma.notificationLog.updateMany({
+    return notificationLogService.updateMany({
       where: { id: notificationId, userId },
       data: { isRead: true }
     });
   },
 
   async markAllAsRead(userId: string) {
-    return prisma.notificationLog.updateMany({
+    return notificationLogService.updateMany({
       where: { userId, isRead: false },
       data: { isRead: true }
     });
   },
 
   async updatePreferences(userId: string, type: string, email: boolean, sms: boolean, push: boolean) {
-    return prisma.notificationPreference.upsert({
+    return notificationPreferenceService.upsert({
       where: { userId_type: { userId, type } },
       update: { email, sms, push },
       create: { userId, type, email, sms, push }

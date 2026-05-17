@@ -2,15 +2,21 @@ import { orderService } from './services/order-service.js';
 import { packageService } from './services/package-service.js';
 import { prisma } from '@ecom/db';
 
+const userService = prisma.user;
+const userAddressService = prisma.userAddress;
+const productVariantService = prisma.productVariant;
+const cartService = prisma.cart;
+const cartItemService = prisma.cartItem;
+
 async function verifyOMS() {
   console.log('🚀 Starting OMS Verification...');
 
   try {
     // 1. Setup mock data
-    const user = await prisma.user.findFirst();
+    const user = await userService.findFirst({ select: { id: true /* TODO: Select fields to reduce bloat */ } });
     if (!user) throw new Error('No user found');
     
-    const address = await prisma.userAddress.create({
+    const address = await userAddressService.create({
       data: {
         userId: user.id,
         firstName: 'Test',
@@ -23,7 +29,7 @@ async function verifyOMS() {
       }
     });
 
-    const variant = await prisma.productVariant.findFirst({ include: { product: true } });
+    const variant = await productVariantService.findFirst({ include: { product: true } });
     if (!variant) throw new Error('No variant found');
 
     await prisma.$transaction(async (tx) => {
@@ -33,8 +39,8 @@ async function verifyOMS() {
         await tx.cart.delete({ where: { id: existingCart.id } });
       }
     });
-    const cart = await prisma.cart.create({ data: { sessionId: 'test-session-' + Date.now(), userId: user.id } });
-    await prisma.cartItem.create({
+    const cart = await cartService.create({ data: { sessionId: 'test-session-' + Date.now(), userId: user.id } });
+    await cartItemService.create({
       data: {
         cartId: cart.id,
         variantId: variant.id,
@@ -66,13 +72,13 @@ async function verifyOMS() {
     console.log(`✅ Package shipped: ${pkg.id}`);
 
     // 6. Verify parent order is now SHIPPED
-    const shippedOrder = await prisma.order.findUnique({ where: { id: order.id } });
+    const shippedOrder = await orderService.findUnique({ where: { id: order.id } });
     console.log(`✅ Parent order status: ${shippedOrder?.status}`);
 
     // 7. Delivery
     console.log('Step 5: Marking package as DELIVERED...');
     await packageService.updateStatus(pkg.id, 'DELIVERED');
-    const deliveredOrder = await prisma.order.findUnique({ where: { id: order.id } });
+    const deliveredOrder = await orderService.findUnique({ where: { id: order.id } });
     console.log(`✅ Parent order status: ${deliveredOrder?.status}`);
 
     console.log('✨ OMS Verification Successful!');

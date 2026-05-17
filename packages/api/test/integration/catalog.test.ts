@@ -15,25 +15,25 @@ describe('Catalog Integration', () => {
     await clearDatabase();
 
     // 1. Setup Prerequisites
-    const seller = await prisma.user.create({
+    const seller = await userService.create({
       data: { email: 'cat-seller@example.com', role: 'SELLER' }
     });
     
-    const profile = await prisma.seller.create({
+    const profile = await sellerService.create({
       data: { userId: seller.id, businessName: 'Catalog Shop', status: 'ACTIVE' }
     });
     sellerProfileId = profile.id;
 
-    const category = await prisma.category.create({
+    const category = await categoryService.create({
       data: { name: 'Smartphones', slug: 'smartphones', commissionRate: new Decimal(5) }
     });
     categoryId = category.id;
 
-    const warehouse = await prisma.warehouse.create({
+    const warehouse = await warehouseService.create({
       data: { name: 'Test Warehouse', address: '123 Test St' }
     });
 
-    const brand = await prisma.brand.create({
+    const brand = await brandService.create({
       data: { name: 'TechCo', slug: 'techco' }
     });
     brandId = brand.id;
@@ -57,7 +57,7 @@ describe('Catalog Integration', () => {
     expect(product.variants).toHaveLength(1);
     expect(product.variants[0].sku).toBe('PH-X-BLK');
 
-    const dbProduct = await prisma.product.findUnique({
+    const dbProduct = await productService.findUnique({
       where: { id: product.id },
       include: { variants: true, media: true }
     });

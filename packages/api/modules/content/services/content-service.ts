@@ -1,10 +1,13 @@
 import { prisma } from '@ecom/db'
 import { cacheService } from '@ecom/shared'
 
+const bannerService = prisma.banner;
+const productService = prisma.product;
+
 export const contentService = {
   async getBanners() {
     return cacheService.wrap('content:banners', async () => {
-      const banners = await prisma.banner.findMany({
+      const banners = await bannerService.findMany({
         where: { isActive: true },
         orderBy: { position: 'asc' }
       });
@@ -30,7 +33,7 @@ export const contentService = {
           const { RustClient } = await import('../../../rust-client.js');
           const recs = await RustClient.recommendations.forUser(userId);
           if (recs && recs.length > 0) {
-            return prisma.product.findMany({
+            return productService.findMany({
               where: { id: { in: recs.map((r: any) => r.id || r) }, status: 'ACTIVE' },
               include: { variants: true, brand: true, category: true, media: true },
             });
@@ -41,7 +44,7 @@ export const contentService = {
       }
 
       // 2. Fallback to recent active products
-      return prisma.product.findMany({
+      return productService.findMany({
         where: { status: 'ACTIVE' },
         include: { variants: true, brand: true, category: true, media: true },
         take: 12,

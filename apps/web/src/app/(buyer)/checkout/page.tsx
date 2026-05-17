@@ -150,13 +150,25 @@ export default function CheckoutPage() {
       return;
     }
     setIsPlacingOrder(true);
+
+    // Read the referralLinkId cookie if present
+    const getCookie = (name: string): string | undefined => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(';').shift();
+      return undefined;
+    };
+    const referralLinkId = getCookie('referralLinkId');
+
     createOrder.mutate({
       cartId: cart?.id || sessionId,
       paymentMethod,
       addressId: selectedAddressId,
       couponCode: couponCode || undefined,
+      referralLinkId: referralLinkId || undefined,
     });
   };
+
 
   if (status === 'loading' || isAddressesLoading) {
     return (

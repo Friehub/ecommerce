@@ -153,6 +153,7 @@ async function start() {
     });
   });
 
+  console.log("DEBUG: [9/12] Instantiating Redis Subscriber client...");
   // Redis Pub/Sub for cross-instance notifications
   const sub = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379');
   sub.subscribe('notifications', (err) => {
@@ -172,6 +173,7 @@ async function start() {
   
   // ── Swagger & OpenAPI ───────────────────────────────────────────
   if (process.env.NODE_ENV !== 'production') {
+    console.log("DEBUG: [9.5] Registering Swagger...");
     await server.register(swagger, {
       mode: 'static',
       specification: {
@@ -188,6 +190,7 @@ async function start() {
     });
   }
 
+  console.log("DEBUG: [10/12] Registering tRPC OpenAPI plugin...");
   // REST endpoints for tRPC (via trpc-openapi)
   await server.register(fastifyTRPCOpenApiPlugin, {
     router: appRouter,
@@ -263,6 +266,7 @@ async function start() {
   // ── Health check ──────────────────────────────────────────────────
   server.get('/health', async () => ({ status: 'ok', uptime: process.uptime() }));
 
+  console.log("DEBUG: [10.5] Registering Prometheus Metrics...");
   // ── Metrics ──────────────────────────────────────────────────────
   const { register, collectDefaultMetrics, Counter, Histogram } = await import('prom-client');
   collectDefaultMetrics({ register });
@@ -299,6 +303,7 @@ async function start() {
     return register.metrics();
   });
 
+  console.log("DEBUG: [11/12] Registering main tRPC plugin...");
   // ── tRPC ──────────────────────────────────────────────────────────
   await server.register(fastifyTRPCPlugin, {
     prefix: '/trpc',
@@ -342,6 +347,7 @@ async function start() {
   const PORT = Number(process.env.PORT ?? 4000);
   const HOST = process.env.HOST ?? '0.0.0.0';
 
+  console.log(`DEBUG: [12/12] Invoking server.listen on ${HOST}:${PORT}...`);
   try {
     await server.listen({ port: PORT, host: HOST });
     console.log(`API server running on ${HOST}:${PORT}`);
@@ -352,9 +358,22 @@ async function start() {
 }
 
 // ── Graceful shutdown ─────────────────────────────────────────────
+let shuttingDown = false;
 const shutdown = async () => {
+  if (shuttingDown) {
+    console.log("Forcing immediate shutdown...");
+    process.exit(1);
+  }
+  shuttingDown = true;
   server.log.info('Shutting down API server...');
-  await server.close();
+  try {
+    await Promise.race([
+      server.close(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout closing server')), 3000))
+    ]);
+  } catch (err) {
+    console.error("Error during graceful close:", err);
+  }
   process.exit(0);
 };
 

@@ -64,6 +64,15 @@ export default auth((req) => {
     }
   }
 
+  // ---- Agent routes ----
+  const isAgentRoute = nextUrl.pathname.startsWith('/apps/agent');
+  if (isAgentRoute) {
+    if (!isLoggedIn) return NextResponse.redirect(new URL('/login', nextUrl.origin));
+    if (role !== 'ADMIN' && role !== 'AGENT') {
+      return NextResponse.redirect(new URL('/', nextUrl.origin));
+    }
+  }
+
   // ---- Auth pages: redirect away if already logged in ----
   const isAnyAuthRoute = isBuyerAuthRoute || isSellerAuthRoute || isAdminAuthRoute;
   if (isAnyAuthRoute && isLoggedIn) {

@@ -30,6 +30,7 @@ function getEnv() {
 const stagingEnv = {
   ...getEnv(),
   NODE_ENV: 'production',
+  SKIP_ENV_VALIDATION: 'true',
 };
 
 module.exports = {

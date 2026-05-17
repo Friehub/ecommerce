@@ -17,7 +17,11 @@ export default defineConfig({
     'bullmq',
     'ioredis',
     'socket.io',
-    'fastify'
+    'fastify',
+    'pino',
+    'pino-pretty',
+    'sharp',
+    '@aws-sdk/client-s3'
   ],
   noExternal: [
     '@ecom/api',

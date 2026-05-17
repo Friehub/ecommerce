@@ -15,7 +15,11 @@ export default defineConfig({
     'aws-sdk',
     'nock',
     'bullmq',
-    'ioredis'
+    'ioredis',
+    'pino',
+    'pino-pretty',
+    'sharp',
+    '@aws-sdk/client-s3'
   ],
   noExternal: [
     '@ecom/api',

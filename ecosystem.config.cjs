@@ -4,8 +4,16 @@ const ROOT = __dirname;
 
 // Manual env loader to be 100% sure variables are injected
 function getEnv() {
-  const envPath = path.join(ROOT, '.env');
-  if (!fs.existsSync(envPath)) {
+  const candidates = ['.env', '.env.staging', '.env.prod', '.env.production', '.env.local'];
+  let envPath = '';
+  for (const candidate of candidates) {
+    const p = path.join(ROOT, candidate);
+    if (fs.existsSync(p)) {
+      envPath = p;
+      break;
+    }
+  }
+  if (!envPath) {
     return {};
   }
   const content = fs.readFileSync(envPath, 'utf8');

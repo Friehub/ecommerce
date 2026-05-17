@@ -29,7 +29,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <Link 
-      href={`/product/${product.slug}`}
+      href={`/products/${product.slug}`}
       className="bg-white rounded-sm p-3 flex flex-col group cursor-pointer hover:shadow-2xl transition-all duration-500 border border-transparent hover:border-jumia-orange/10 h-full relative"
     >
       <div className="relative aspect-square w-full mb-3 bg-white overflow-hidden rounded-sm">

@@ -92,7 +92,7 @@ function SellerStorefrontContent({ sellerId }: { sellerId: string }) {
  {productsData?.results?.map((product: any, idx: number) => (
  <Link 
  key={product.id} 
- href={`/product/${product.slug}`}
+ href={`/products/${product.slug}`}
  className="bg-surface-container-lowest rounded border border-surface-container-low overflow-hidden hover:border-jumia-orange/20 transition-all duration-500 shadow-soft group animate-in fade-in slide-in-from-bottom-8 duration-700"
  style={{ animationDelay: `${idx * 50}ms` }}
  >

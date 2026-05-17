@@ -31,6 +31,7 @@ model User {
   questions     ProductQuestion[]
   answers       ProductAnswer[]
   devices       UserDevice[]
+  supportTickets SupportTicket[] @relation("UserSupportTickets")
 }
 
 enum UserRole {

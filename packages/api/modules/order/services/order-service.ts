@@ -1,5 +1,5 @@
 import { prisma, Decimal, OrderStatus } from '@ecom/db'
-import { publishEvent, queues } from '@ecom/shared'
+import { publishEvent, queues, redis } from '@ecom/shared'
 import { inventoryService } from '../../inventory/services/inventory-service.js'
 import { ledgerService } from '../../revenue/services/ledger-service.js'
 
@@ -84,98 +84,113 @@ export const orderService = {
     }
 
     // 2. Create Order
-    const order = await prisma.$transaction(async (tx) => {
-      let discount = new Decimal(0);
-      if (couponCode) {
-        const promo = await promoService.validateCoupon(couponCode, userId, subtotal.toNumber());
-        if (promo.type === 'PERCENTAGE') {
-          discount = subtotal.mul(promo.value.div(100));
-        } else if (promo.type === 'FIXED_AMOUNT') {
-          discount = promo.value;
-        }
-      }
-
-      const { logisticsService } = await import('../../logistics/services/logistics-service.js');
-      const shippingItems = cart.items.map(i => ({ 
-        weightGrams: i.variant.weightGrams || 500, 
-        quantity: i.quantity 
-      }));
-      const shipping = await logisticsService.calculateShipping(userId, '', addressId, shippingItems);
-      const shippingFee = new Decimal(shipping.total);
-
-      const newOrder = await tx.order.create({
-        data: {
-          userId,
-          addressId,
-          paymentMethod,
-          subtotal,
-          shippingFee,
-          discount,
-          total: subtotal.add(shippingFee).sub(discount),
-          status: 'PENDING_PAYMENT',
-          packages: {
-            create: Object.values(fulfillmentGroups).map(group => ({
-              sellerId: group.sellerId,
-              warehouseId: group.warehouseId,
-              status: 'PENDING',
-              lines: {
-                create: group.items.map(item => ({
-                  variantId: item.variantId,
-                  quantity: item.quantity,
-                  unitPrice: item.variant.price,
-                }))
-              }
-            }))
+    const order = await prisma.$transaction(async (tx: any) => {
+      try {
+        let discount = new Decimal(0);
+        if (couponCode) {
+          const promo = await promoService.validateCoupon(couponCode, userId, subtotal.toNumber());
+          if (promo.type === 'PERCENTAGE') {
+            discount = subtotal.mul(promo.value.div(100));
+          } else if (promo.type === 'FIXED_AMOUNT') {
+            discount = promo.value;
           }
-        },
-        include: { packages: { include: { lines: true } } }
-      });
+        }
 
-      if (couponCode) {
-        await promoService.markCouponUsed(couponCode, userId, newOrder.id, tx);
-      }
+        const { logisticsService } = await import('../../logistics/services/logistics-service.js');
+        const shippingItems = cart.items.map(i => ({ 
+          weightGrams: i.variant.weightGrams || 500, 
+          quantity: i.quantity 
+        }));
+        const shipping = await logisticsService.calculateShipping(userId, '', addressId, shippingItems);
+        const shippingFee = new Decimal(shipping.total);
 
-      // 3. Reserve stock for all items
-      const now = new Date();
-      for (const group of Object.values(fulfillmentGroups)) {
-        for (const item of group.items) {
-          // Flash Sale logic
-          const flashSale = await tx.flashSale.findFirst({
-            where: {
-              variantId: item.variantId,
-              startTime: { lte: now },
-              endTime: { gte: now }
+        const newOrder = await tx.order.create({
+          data: {
+            userId,
+            addressId,
+            paymentMethod,
+            subtotal,
+            shippingFee,
+            discount,
+            total: subtotal.add(shippingFee).sub(discount),
+            status: 'PENDING_PAYMENT',
+            packages: {
+              create: Object.values(fulfillmentGroups).map(group => ({
+                sellerId: group.sellerId,
+                warehouseId: group.warehouseId,
+                status: 'PENDING',
+                lines: {
+                  create: group.items.map(item => ({
+                    variantId: item.variantId,
+                    quantity: item.quantity,
+                    unitPrice: item.variant.price,
+                  }))
+                }
+              }))
             }
-          });
+          },
+          include: { packages: { include: { lines: true } } }
+        });
 
-          if (flashSale) {
-            const result = await tx.flashSale.updateMany({
-              where: {
-                id: flashSale.id,
-                qtySold: { lte: flashSale.qtyLimit - item.quantity }
-              },
-              data: { qtySold: { increment: item.quantity } }
-            });
-            if (result.count === 0) throw new Error(`FLASH_SALE_EXHAUSTED:${item.variantId}`);
-          }
-
-          const reserved = await inventoryService.reserveStock(
-            item.variantId, 
-            item.quantity, 
-            item.sellerId, 
-            item.warehouseId, 
-            newOrder.id, 
-            userId, 
-            tx
-          );
-          if (!reserved) throw new Error(`STOCK_EXHAUSTED:${item.variantId}`);
+        if (couponCode) {
+          await promoService.markCouponUsed(couponCode, userId, newOrder.id, tx);
         }
+
+        // 3. Reserve stock for all items
+        const now = new Date();
+        for (const group of Object.values(fulfillmentGroups)) {
+          for (const item of group.items) {
+            // Flash Sale logic
+            const flashSale = await tx.flashSale.findFirst({
+              where: {
+                variantId: item.variantId,
+                startTime: { lte: now },
+                endTime: { gte: now }
+              }
+            });
+
+            if (flashSale) {
+              const result = await tx.flashSale.updateMany({
+                where: {
+                  id: flashSale.id,
+                  qtySold: { lte: flashSale.qtyLimit - item.quantity }
+                },
+                data: { qtySold: { increment: item.quantity } }
+              });
+              if (result.count === 0) throw new Error(`FLASH_SALE_EXHAUSTED:${item.variantId}`);
+            }
+
+            const reserved = await inventoryService.reserveStock(
+              item.variantId, 
+              item.quantity, 
+              item.sellerId, 
+              item.warehouseId, 
+              newOrder.id, 
+              userId, 
+              tx
+            );
+            if (!reserved) throw new Error(`STOCK_EXHAUSTED:${item.variantId}`);
+          }
+        }
+
+        // 4. Clear cart
+        await tx.cartItem.deleteMany({ where: { cartId } });
+
+        return newOrder;
+      } catch (transactionError) {
+        // Rollback all successfully reserved Redis stocks during this aborted transaction
+        if (tx._redisRollbacks && tx._redisRollbacks.length > 0) {
+          for (const rollback of tx._redisRollbacks) {
+            try {
+              const key = `stock:${rollback.variantId}`;
+              await redis.incrby(key, rollback.quantity);
+            } catch (redisErr) {
+              console.error(`[OrderService] Failed to roll back Redis stock for ${rollback.variantId} during transaction abort:`, redisErr);
+            }
+          }
+        }
+        throw transactionError; // Rethrow to ensure database transaction rolls back
       }
-
-      // 4. Clear cart
-      await tx.cartItem.deleteMany({ where: { cartId } });
-
-      return newOrder;
     });
 
     // 6. Fire event

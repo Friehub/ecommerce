@@ -77,7 +77,7 @@ export const inventoryService = {
         _sum: { qtyOnHand: true, qtyReserved: true }
       });
       const available = (dbStock._sum.qtyOnHand || 0) - (dbStock._sum.qtyReserved || 0);
-      await redis.set(key, available, 'EX', 3600);
+      await redis.set(key, available, 'EX', 300); // 5 minutes TTL for quick self-healing from PG ground truth
       stock = available.toString();
     }
 
@@ -85,26 +85,52 @@ export const inventoryService = {
     const result = await redis.eval(RESERVE_STOCK_LUA, 1, key, quantity);
     
     if (result === 1) {
-      // 3. Record reservation in DB for persistence
-      await db.stockReservation.create({
-        data: {
-          variantId,
-          sellerId,
-          warehouseId,
-          orderId,
-          quantity,
-          expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 mins
-          status: 'ACTIVE'
+      // Register with active transaction context for rollback on transaction abort
+      if (tx) {
+        if (!tx._redisRollbacks) {
+          tx._redisRollbacks = [];
         }
-      });
+        tx._redisRollbacks.push({ variantId, quantity });
+      }
 
-      // Increment qtyReserved in DB
-      await db.stockLevel.update({
-        where: { variantId_sellerId_warehouseId: { variantId, sellerId, warehouseId } },
-        data: { qtyReserved: { increment: quantity } }
-      });
+      try {
+        // 3. Record reservation in DB for persistence
+        await db.stockReservation.create({
+          data: {
+            variantId,
+            sellerId,
+            warehouseId,
+            orderId,
+            quantity,
+            expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 mins
+            status: 'ACTIVE'
+          }
+        });
 
-      return true;
+        // Increment qtyReserved in DB
+        await db.stockLevel.update({
+          where: { variantId_sellerId_warehouseId: { variantId, sellerId, warehouseId } },
+          data: { qtyReserved: { increment: quantity } }
+        });
+
+        return true;
+      } catch (dbError) {
+        // Immediate rollback if local DB write fails within this operation's scope
+        try {
+          await redis.incrby(key, quantity);
+        } catch (redisErr) {
+          console.error(`[InventoryService] Failed to roll back Redis stock for ${variantId} on DB error:`, redisErr);
+        }
+
+        // Clean up transaction context registration if present to prevent double-rollback
+        if (tx && tx._redisRollbacks) {
+          tx._redisRollbacks = tx._redisRollbacks.filter(
+            (r: any) => !(r.variantId === variantId && r.quantity === quantity)
+          );
+        }
+
+        throw dbError;
+      }
     }
 
     return false;

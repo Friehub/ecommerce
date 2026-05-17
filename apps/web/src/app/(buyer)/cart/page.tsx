@@ -10,8 +10,6 @@ export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, totalItems } = useCart();
 
   const subtotal = cart?.items?.reduce((acc: number, item: any) => acc + (Number(item.priceSnapshot ?? 0) * item.quantity), 0) || 0;
-  const shipping = cart?.items?.length > 0 ? 500 : 0; // Simplified shipping
-  const total = subtotal + shipping;
 
   return (
     <div className="bg-j-background min-h-screen pb-16">
@@ -133,13 +131,13 @@ export default function CartPage() {
                     <span className="text-j-text-muted font-black uppercase tracking-tight">Subtotal</span>
                     <span className="text-j-text font-black text-lg">₦ {subtotal.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-[11px] text-j-text-muted">
+                  <div className="flex justify-between items-center text-[10px] text-j-text-muted">
                     <span className="font-black uppercase tracking-tight">Shipping Fee</span>
-                    <span className="font-black">₦ {shipping.toLocaleString()}</span>
+                    <span className="font-black uppercase text-jumia-orange bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-sm">Calculated at checkout</span>
                   </div>
                   <div className="pt-6 border-t-2 border-j-border border-dashed flex justify-between items-center">
-                    <span className="text-sm font-black text-j-text uppercase tracking-widest">Total Amount</span>
-                    <span className="text-2xl font-black text-jumia-orange">₦ {total.toLocaleString()}</span>
+                    <span className="text-sm font-black text-j-text uppercase tracking-widest">Subtotal Amount</span>
+                    <span className="text-2xl font-black text-jumia-orange">₦ {subtotal.toLocaleString()}</span>
                   </div>
                 </div>
 

@@ -1,6 +1,7 @@
 // apps/web/src/components/home/CategorySidebar.tsx
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { api } from '@/trpc/react';
 import * as Icons from 'lucide-react';
 
@@ -18,7 +19,7 @@ export const CategorySidebar = () => {
             >
               <div className="flex items-center gap-3">
                 {cat.imageUrl ? (
-                  <img src={cat.imageUrl} alt={cat.name} className="w-5 h-5 object-contain" />
+                  <Image src={cat.imageUrl} alt={cat.name} width={20} height={20} className="w-5 h-5 object-contain" unoptimized={true} />
                 ) : (
                   <Icons.Layers size={16} className="text-j-text-muted group-hover:text-jumia-orange transition-colors" />
                 )}

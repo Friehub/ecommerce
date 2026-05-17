@@ -29,7 +29,7 @@ export default function WalletPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { showToast } = useToast();
-  const utils = api.useContext();
+  const utils = api.useUtils();
   
   const [isTopUpOpen, setIsTopUpOpen] = React.useState(false);
   const [isWithdrawOpen, setIsWithdrawOpen] = React.useState(false);

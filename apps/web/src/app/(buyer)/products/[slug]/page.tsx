@@ -11,13 +11,75 @@ import Link from 'next/link';
 import { format, addDays } from 'date-fns';
 import DOMPurify from 'isomorphic-dompurify';
 
+import { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const product = await api.catalog.getProductBySlug.query({ slug });
+    if (!product) {
+      return {
+        title: 'Product Not Found | Jumia Nigeria',
+        description: 'The requested product could not be found.',
+      };
+    }
+
+    const title = `${product.title} - Buy Online | Jumia Nigeria`;
+    const description = product.description
+      ? product.description.replace(/<[^>]*>/g, '').substring(0, 160)
+      : `Get the best deal on ${product.title} on Jumia Nigeria. Shop now for fast delivery and excellent customer support!`;
+    const imageUrl = product.media?.[0]?.url || 'https://jumia.com.ng/assets/images/logo.png';
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+        url: `https://jumia-clone.staging.friehub.com/products/${slug}`,
+        images: [
+          {
+            url: imageUrl,
+            width: 800,
+            height: 600,
+            alt: product.title,
+          },
+        ],
+        siteName: 'Jumia Nigeria',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [imageUrl],
+      },
+    };
+  } catch (err) {
+    return {
+      title: 'Buy Online | Jumia Nigeria',
+      description: 'Find products on Jumia Nigeria.',
+    };
+  }
+}
+
 export default async function ProductDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = await api.catalog.getProductBySlug.query({ slug });
+  let product;
+  try {
+    product = await api.catalog.getProductBySlug.query({ slug });
+  } catch (err) {
+    console.error("Failed loading product data from tRPC server:", err);
+    notFound();
+  }
 
   if (!product) {
     notFound();
@@ -56,13 +118,7 @@ export default async function ProductDetailPage({
     if (dbRating > 0) {
       return Math.round((dbRating / 5) * 100);
     }
-    // Stable realistic rating derived from the seller ID string hash to prevent default 0% values
-    let hash = 0;
-    const sellerId = product.seller.id;
-    for (let i = 0; i < sellerId.length; i++) {
-      hash += sellerId.charCodeAt(i);
-    }
-    return 80 + (hash % 19); // 80% to 98%
+    return 0;
   };
 
   const deliveryRange = getDeliveryDateRange();
@@ -199,9 +255,15 @@ export default async function ProductDetailPage({
                 <div className="flex flex-col">
                   <h4 className="text-sm font-black text-j-text uppercase tracking-tight">{product.seller.businessName || "Verified Merchant"}</h4>
                   <div className="flex items-center gap-2 mt-2">
-                    <div className="bg-green-50 text-j-success text-[10px] font-black px-2 py-0.5 rounded-sm border border-green-100 uppercase italic">
-                      {sellerScore}% <span className="font-normal not-italic">Seller Score</span>
-                    </div>
+                    {sellerScore > 0 ? (
+                      <div className="bg-green-50 text-j-success text-[10px] font-black px-2 py-0.5 rounded-sm border border-green-100 uppercase italic">
+                        {sellerScore}% <span className="font-normal not-italic">Seller Score</span>
+                      </div>
+                    ) : (
+                      <div className="bg-orange-50 text-jumia-orange text-[10px] font-black px-2 py-0.5 rounded-sm border border-orange-100 uppercase italic">
+                        New Seller <span className="font-normal not-italic">(No Ratings Yet)</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

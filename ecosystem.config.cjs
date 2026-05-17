@@ -42,7 +42,8 @@ module.exports = {
       cwd: path.join(ROOT, 'apps/api-server'),
       env: {
         ...stagingEnv,
-        PORT: 4000
+        PORT: 4000,
+        INTERNAL_API_TOKEN: stagingEnv.INTERNAL_API_TOKEN || process.env.INTERNAL_API_TOKEN
       }
     },
     {
@@ -52,7 +53,8 @@ module.exports = {
       env: {
         ...stagingEnv,
         PORT: 3000,
-        HOSTNAME: '127.0.0.1'
+        HOSTNAME: '127.0.0.1',
+        INTERNAL_API_TOKEN: stagingEnv.INTERNAL_API_TOKEN || process.env.INTERNAL_API_TOKEN
       }
     },
     {

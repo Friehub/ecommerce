@@ -283,7 +283,7 @@ export default function NewProduct() {
  <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
  {formData.images.map((img, i) => (
  <div key={i} className="aspect-square bg-surface-container-low rounded border border-surface-container-lowest relative group overflow-hidden shadow-soft hover:scale-105 transition-all duration-700">
- <img src={img.url} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" />
+ <img src={img.url} alt="Product image preview" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" />
  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
  <button 
  type="button"

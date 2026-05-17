@@ -19,6 +19,7 @@ import { notificationRouter } from './modules/notification/router/index.js'
 import { advertisingRouter } from './modules/advertising/router/index.js'
 import { affiliateRouter } from './modules/affiliate/router/index.js'
 import { mediaRouter } from './modules/media/router/index.js'
+import { supportRouter } from './modules/support/router/index.js'
 
 const _appRouter = createTRPCRouter({
   iam: iamRouter,
@@ -41,6 +42,7 @@ const _appRouter = createTRPCRouter({
   advertising: advertisingRouter,
   affiliate: affiliateRouter,
   media: mediaRouter,
+  support: supportRouter,
 });
 
 export const appRouter = _appRouter;

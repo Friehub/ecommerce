@@ -1,0 +1,34 @@
+// support.prisma
+model SupportTicket {
+  id        String           @id @default(cuid())
+  userId    String
+  subject   String           @default("General Support")
+  status    SupportStatus    @default(OPEN)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  user      User             @relation("UserSupportTickets", fields: [userId], references: [id], onDelete: Cascade)
+  messages  SupportMessage[]
+
+  @@index([userId])
+}
+
+model SupportMessage {
+  id        String   @id @default(cuid())
+  ticketId  String
+  senderId  String
+  senderRole String   // "USER" | "AGENT" | "SYSTEM"
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+enum SupportStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}

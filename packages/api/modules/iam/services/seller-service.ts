@@ -17,16 +17,25 @@ export const sellerService = {
   deleteMany: prisma.seller.deleteMany,
   upsert: prisma.seller.upsert,
   async onboard(userId: string, data: { businessName: string }) {
-    const existing = await sellerService.findUnique({ where: { userId } })
+    const existing = await prisma.seller.findUnique({ where: { userId } })
     if (existing) throw new Error('SELLER_PROFILE_EXISTS')
 
-    return sellerService.create({
-      data: {
-        userId,
-        businessName: data.businessName,
-        status: 'PENDING_VERIFICATION',
-      },
-    })
+    return prisma.$transaction(async (tx) => {
+      const seller = await tx.seller.create({
+        data: {
+          userId,
+          businessName: data.businessName,
+          status: 'PENDING_VERIFICATION',
+        },
+      });
+
+      await tx.user.update({
+        where: { id: userId },
+        data: { role: 'SELLER' },
+      });
+
+      return seller;
+    });
   },
 
   async uploadDocument(sellerId: string, doc: { type: string; url: string }) {

@@ -19,11 +19,14 @@ export default {
     })
   ],
   callbacks: {
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
       // Persist role and id into the JWT when the user first signs in.
       if (user) {
         token.id = user.id;
         token.role = user.role;
+      }
+      if (trigger === "update" && session?.role) {
+        token.role = session.role;
       }
       return token;
     },

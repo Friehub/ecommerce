@@ -10,9 +10,9 @@ export default function PrivacyTermsPage() {
  <div className="container py-12 max-w-5xl mx-auto px-6">
  {/* Breadcrumbs */}
  <div className="flex items-center gap-3 mb-10 font-semibold text-on-surface-variant text-[10px] uppercase ">
- <Link href="/" className="hover:text-jumia-orange transition-colors">Hub</Link>
+ <Link href="/" className="hover:text-jumia-orange transition-colors">Home</Link>
  <ChevronRight size={14} className="opacity-30" />
- <span className="text-on-surface">Legal Framework</span>
+ <span className="text-on-surface">Privacy Policy & Terms</span>
  </div>
 
  {/* Hero Banner */}

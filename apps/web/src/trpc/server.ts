@@ -7,6 +7,11 @@ export const api = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
       url: getUrl(),
+      headers() {
+        return {
+          "x-internal-token": `Bearer ${process.env.INTERNAL_API_TOKEN}`,
+        };
+      },
     }),
   ],
 });

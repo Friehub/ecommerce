@@ -9,24 +9,43 @@ interface ProductCardProps {
     name?: string;
     title?: string;
     slug: string;
-    price: number;
-    originalPrice?: number;
+    price?: number | any;
+    originalPrice?: number | any;
     imageUrl?: string;
     media?: { url: string }[];
     discount?: number;
-    inventory: number;
+    inventory?: number;
     isExpress?: boolean;
+    variants?: any[];
   };
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
   const name = product.name || product.title || 'Product';
   const imageUrl = product.imageUrl || product.media?.[0]?.url || '/placeholder.png';
-  const originalPrice = product.originalPrice || (product.discount ? product.price / (1 - product.discount / 100) : 0);
+  
+  // Resiliently resolve price from flattened format or nested variants
+  const rawPrice = product.price !== undefined 
+    ? product.price 
+    : (product.variants?.[0]?.price !== undefined ? Number(product.variants[0].price) : 0);
+  
+  const rawComparePrice = product.originalPrice !== undefined
+    ? product.originalPrice
+    : (product.variants?.[0]?.comparePrice !== undefined ? Number(product.variants[0].comparePrice) : 0);
 
-  const discount = originalPrice > product.price
-    ? Math.round(((originalPrice - product.price) / originalPrice) * 100)
+  const price = Number(rawPrice ?? 0);
+  const originalPrice = Number(rawComparePrice ?? 0) || (product.discount ? price / (1 - product.discount / 100) : 0);
+
+  const discount = originalPrice > price
+    ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
+
+  const isExpress = product.isExpress ?? false;
+  
+  // Resolve inventory count resiliently
+  const inventory = product.inventory !== undefined
+    ? product.inventory
+    : (product.variants?.[0]?.stockLevels?.reduce((sum: number, sl: any) => sum + (sl.qtyOnHand || 0) - (sl.qtyReserved || 0), 0) ?? 10);
 
   return (
     <Link 
@@ -56,19 +75,19 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         <div className="mt-auto space-y-1">
           <div className="flex items-center justify-between">
             <p className="text-lg font-normal text-j-text">
-              ₦ {product.price.toLocaleString()}
+              ₦ {price.toLocaleString()}
             </p>
           </div>
-          {originalPrice > product.price && (
+          {originalPrice > price && (
             <p className="text-[10px] text-j-text-muted line-through font-bold">
               ₦ {originalPrice.toLocaleString()}
             </p>
           )}
         </div>
 
-        {/* Jumia Express Badge (rendered only if the product qualifies in the DB) */}
+        {/* Jumia Express Badge */}
         <div className="mt-3 flex items-center gap-2 h-4">
-          {product.isExpress && (
+          {isExpress && (
             <div className="bg-blue-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-sm uppercase italic tracking-tighter">
               Jumia <span className="font-normal">Express</span>
             </div>
@@ -77,19 +96,19 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
         {/* Stock / Flash Progress */}
         <div className="mt-3 min-h-[14px]">
-          {product.inventory < 10 && product.inventory > 0 ? (
+          {inventory < 10 && inventory > 0 ? (
             <div className="space-y-1">
               <div className="w-full h-1 bg-j-surface-container rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-jumia-orange" 
-                  style={{ width: `${(product.inventory / 10) * 100}%` }}
+                  style={{ width: `${(inventory / 10) * 100}%` }}
                 />
               </div>
               <p className="text-[9px] text-jumia-orange font-black uppercase italic">
-                {product.inventory} items left
+                {inventory} items left
               </p>
             </div>
-          ) : product.inventory === 0 ? (
+          ) : inventory === 0 ? (
             <p className="text-[9px] text-j-error font-black uppercase tracking-widest">
               Sold Out
             </p>

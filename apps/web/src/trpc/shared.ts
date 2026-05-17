@@ -9,9 +9,9 @@ function getBaseUrl() {
     // In dev it falls back to Next.js own /api/trpc handler
     return process.env.NEXT_PUBLIC_API_URL ?? "";
   }
-  // Server-side rendering: talk directly to the API container on the Docker network
+  // Server-side rendering: talk to the API server via internal loopback or specified Docker network URL
   if (process.env.NODE_ENV === "production") {
-    return "http://api:4000";
+    return process.env.INTERNAL_API_URL ?? "http://127.0.0.1:4000";
   }
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }

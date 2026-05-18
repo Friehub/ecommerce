@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Jumia Clone API",
+    "title": "FreshCart API",
     "description": "OpenAPI documentation for the Modular Ecommerce Infrastructure (Core Endpoints)",
     "version": "1.0.0"
   },

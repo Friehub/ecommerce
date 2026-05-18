@@ -8,12 +8,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Core Jumia Palette
-        'jumia-orange': '#f68b1e',
-        'jumia-orange-dark': '#df7d1b',
+        // Core FreshCart Palette (Mint Green)
+        'jumia-orange': '#00bfa5',
+        'jumia-orange-dark': '#00a892',
         'jumia-blue': '#2a5bd7',
         'jumia-red': '#e61601',
-        'j-primary': '#f68b1e',
+        'j-primary': '#00bfa5',
         'j-on-primary': '#ffffff',
         
         // Surfaces & Backgrounds

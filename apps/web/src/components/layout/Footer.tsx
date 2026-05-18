@@ -17,7 +17,7 @@ export const Footer = () => {
               <Mail size={24} />
             </div>
             <div>
-              <h3 className="text-sm font-black uppercase tracking-wider">New to Jumia?</h3>
+              <h3 className="text-sm font-black uppercase tracking-wider">New to FreshCart?</h3>
               <p className="text-[10px] font-bold text-white/70 uppercase">Subscribe to our newsletter to get updates on our latest offers!</p>
             </div>
           </div>
@@ -39,30 +39,30 @@ export const Footer = () => {
           <div className="flex flex-col gap-4">
             <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">LET US HELP YOU</h4>
             <Link href="/help" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Help Center</Link>
-            <Link href="/help" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">How to buy on Jumia</Link>
+            <Link href="/help" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">How to buy on FreshCart</Link>
             <Link href="/help" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Delivery timelines</Link>
             <Link href="/support" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Return Policy</Link>
             <Link href="/support" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Corporate & Bulk Purchase</Link>
           </div>
           
           <div className="flex flex-col gap-4">
-            <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">ABOUT JUMIA</h4>
+            <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">ABOUT FRESHCART</h4>
             <Link href="/help" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">About Us</Link>
-            <Link href="/support" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Jumia Careers</Link>
+            <Link href="/support" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">FreshCart Careers</Link>
             <Link href="/jumia-express" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Express Delivery</Link>
             <Link href="/privacy" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Terms and Conditions</Link>
             <Link href="/privacy" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Privacy Notice</Link>
           </div>
           
           <div className="flex flex-col gap-4">
-            <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">MAKE MONEY WITH JUMIA</h4>
-            <Link href="/seller" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Sell on Jumia</Link>
+            <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">MAKE MONEY WITH FRESHCART</h4>
+            <Link href="/seller" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Sell on FreshCart</Link>
             <Link href="/seller" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Become a Sales Consultant</Link>
             <Link href="/support" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Become a Logistics Partner</Link>
           </div>
           
           <div className="flex flex-col gap-4">
-            <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">JUMIA INTERNATIONAL</h4>
+            <h4 className="text-[11px] font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-2">FRESHCART INTERNATIONAL</h4>
             <div className="grid grid-cols-2 gap-2">
               <Link href="/" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Algeria</Link>
               <Link href="/" className="text-[10px] font-bold text-white/60 hover:text-jumia-orange transition-colors uppercase">Egypt</Link>
@@ -82,7 +82,7 @@ export const Footer = () => {
             <ExternalLink className="text-white/60 hover:text-white transition-colors cursor-pointer" size={20} />
           </div>
           <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
-            © {new Date().getFullYear()} Jumia. All Rights Reserved.
+            © {new Date().getFullYear()} FreshCart. All Rights Reserved.
           </p>
         </div>
       </div>

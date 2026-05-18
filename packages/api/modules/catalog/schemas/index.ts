@@ -1,21 +1,21 @@
 import { z } from 'zod'
 
 export const productVariantSchema = z.object({
-  sku: z.string().min(1),
-  price: z.number().min(1, "Price must be at least 1"),
-  comparePrice: z.number().positive().optional(),
-  attributes: z.record(z.any()),
-  weightGrams: z.number().int().positive().optional(),
+  sku: z.string().min(1, "SKU is required"),
+  price: z.number().min(0, "Price must be at least 0"),
+  comparePrice: z.number().min(0).optional(),
+  attributes: z.record(z.any()).optional().default({}),
+  weightGrams: z.number().int().min(0).optional(),
   stock: z.number().int().min(0).optional().default(0),
 })
 
 export const productSchema = z.object({
-  title: z.string().min(3),
-  description: z.string().min(10),
-  brandId: z.string(),
-  categoryId: z.string(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  brandId: z.string().min(1, "Brand is required"),
+  categoryId: z.string().min(1, "Category is required"),
   images: z.array(z.string()).optional(),
-  variants: z.array(productVariantSchema).min(1),
+  variants: z.array(productVariantSchema).min(1, "At least one variant is required"),
 })
 
 export const categorySchema = z.object({

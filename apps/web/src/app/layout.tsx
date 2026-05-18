@@ -11,8 +11,8 @@ import { ReferralTracker } from "../components/affiliate/ReferralTracker";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Jumia Nigeria | Online Shopping for Electronics, Fashion & More",
-  description: "Shop Jumia Nigeria. Best prices on phones, fashion, electronics and more. Fast delivery across Nigeria.",
+  title: "FreshCart Nigeria | Online Shopping for Electronics, Fashion & More",
+  description: "Shop FreshCart Nigeria. Best prices on phones, fashion, electronics and more. Fast delivery across Nigeria.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

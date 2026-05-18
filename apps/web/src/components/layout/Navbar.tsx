@@ -89,7 +89,7 @@ export const Navbar = () => {
         <div className="max-w-[1184px] mx-auto flex justify-between items-center h-8 px-4">
           <div className="flex items-center gap-6">
             <Link href="/seller" className="flex items-center gap-2 text-[10px] font-black text-jumia-orange uppercase hover:underline">
-              <Store size={12} /> Sell on Jumia
+              <Store size={12} /> Sell on FreshCart
             </Link>
           </div>
           <div className="flex items-center gap-6">
@@ -120,7 +120,7 @@ export const Navbar = () => {
               
               {/* Brand Logo */}
               <Link href="/" className="text-3xl md:text-4xl font-black text-jumia-orange tracking-tighter flex-shrink-0">
-                Jumia
+                FreshCart
               </Link>
             </div>
 
@@ -286,7 +286,7 @@ export const Navbar = () => {
               <div>
                 <h3 className="text-xs font-black uppercase text-j-text-muted">Welcome</h3>
                 <p className="text-sm font-black text-j-text uppercase mt-0.5">
-                  {session?.user?.name ? `Hi, ${session.user.name.split(' ')[0]}` : 'Jumia Shopper'}
+                  {session?.user?.name ? `Hi, ${session.user.name.split(' ')[0]}` : 'FreshCart Shopper'}
                 </p>
               </div>
               <button 
@@ -387,7 +387,7 @@ export const Navbar = () => {
                   className="flex items-center gap-3 px-6 py-3 text-xs font-black text-jumia-orange uppercase tracking-wider hover:bg-j-surface-container-low transition-all"
                 >
                   <Store size={18} />
-                  Sell on Jumia
+                  Sell on FreshCart
                 </Link>
                 <Link 
                   href="/help" 
